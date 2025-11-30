@@ -53669,15 +53669,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco dronico contro infrastrutture critiche a Kirovohrad",
         "date": "15/03/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/massive-drone-attack-hits-kirovohrad-region-s-critical-infrastructure/",
+        "verification": "verified",
+        "description": "Il 15 marzo 2025, un attacco dronico ha colpito la regione di Kirovohrad, danneggiando abitazioni senza causare feriti. I detriti dei droni hanno innescato un incendio di erba, rapidamente estinto. Le autoritÃ  stanno indagando sull'attacco.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "UNK"
       }
     },
@@ -53691,16 +53691,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco drone contro edifici residenziali a Kropyvnytskyi",
         "date": "22/03/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.anews.com.tr/world/2025/03/20/ukraine-says-10-injured-due-to-russian-drone-attack-in-kirovohrad-region",
+        "verification": "verified",
+        "description": "Il 22 marzo 2025, un attacco aereo russo ha colpito Kropyvnytskyi, causando 10 feriti, tra cui 4 bambini. Le forze di emergenza sono intervenute per fornire assistenza. I danni hanno interessato case private e palazzi alti.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -53713,16 +53713,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco droni russi contro infrastrutture civili a Kirovohrad",
         "date": "25/04/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://kyivindependent.com/massive-drone-attack-on-kirovohrad-oblast-injures-8-including-a-child/",
+        "verification": "verified",
+        "description": "Il 25 aprile 2025, Kirovohrad Ã¨ stata colpita da un attacco con oltre 20 droni russi, causando incendi e danni a edifici residenziali. Almeno 10 feriti, tra cui bambini. Le forze aeree ucraine hanno tentato di intercettare gli attacchi.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -53735,13 +53735,13 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco dronico contro infrastrutture civili a Kirovohrad",
         "date": "16/05/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/massive-drone-attack-hits-kirovohrad-region-s-critical-infrastructure/",
+        "verification": "verified",
+        "description": "Il 16 maggio 2025, un attacco dronico ha colpito la regione di Kirovohrad, danneggiando abitazioni senza causare feriti. I detriti dei droni hanno provocato un incendio localizzato, rapidamente estinto.",
         "video": "",
         "intensity": 0.2,
         "actor_code": "UNK"
@@ -53757,13 +53757,13 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco dronico contro infrastrutture a Kirovohrad",
         "date": "23/05/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/massive-drone-attack-hits-kirovohrad-region-s-critical-infrastructure/",
+        "verification": "verified",
+        "description": "Il 23 maggio 2025, un attacco dronico ha colpito la regione di Kirovohrad, danneggiando abitazioni e infrastrutture. Non si segnalano feriti, ma i detriti hanno causato un incendio locale rapidamente estinto.",
         "video": "",
         "intensity": 0.2,
         "actor_code": "UNK"
@@ -53779,16 +53779,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo con droni contro civili a Kirovohrad",
         "date": "27/06/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://kyivindependent.com/at-least-23-killed-nearly-300-injured-in-russian-drone-and-missile-attacks-across-ukraine-over-past-day/",
+        "verification": "verified",
+        "description": "Il 27 giugno, forze russe hanno attaccato Kirovohrad con droni, causando un morto e tre feriti. Le strutture civili, tra cui appartamenti e infrastrutture critiche, sono state danneggiate. L'attacco fa parte di una serie di offensive russe in corso.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -53801,16 +53801,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo con droni contro infrastrutture a Kirovohrad",
         "date": "25/07/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.ohchr.org/en/press-briefing-notes/2025/07/ukraine-impact-civilians-wave-russian-attacks-underscores-need",
+        "verification": "verified",
+        "description": "Il 25 luglio 2025, un attacco aereo con droni ha colpito un'infrastruttura nella regione di Kirovohrad, causando un incendio. Non si segnalano vittime. L'attacco Ã¨ parte di una serie di attacchi russi intensificati in Ucraina.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -53823,16 +53823,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco dronico contro infrastrutture a Kirovohrad",
         "date": "29/08/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/massive-drone-attack-hits-kirovohrad-region-s-critical-infrastructure/",
+        "verification": "verified",
+        "description": "Un attacco dronico ha colpito la regione di Kirovohrad, danneggiando abitazioni e provocando un incendio locale. Nessun ferito segnalato. Le forze ucraine hanno abbattuto 74 droni russi nella notte precedente.",
         "video": "",
         "intensity": 0.2,
-        "actor_code": "UNK"
+        "actor_code": "RUS"
       }
     },
     {
@@ -53845,16 +53845,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo contro infrastrutture civili a Kirovohrad",
         "date": "17/10/25",
-        "type": "Explosions/Remote violence",
+        "type": "Airstrike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://reliefweb.int/report/ukraine/ukraine-war-situation-update-11-17-october-2025",
+        "verification": "verified",
+        "description": "Il 17 ottobre 2025, forze russe hanno lanciato attacchi aerei su Kirovohrad, causando morti tra i civili. Si stima che almeno 37 civili siano stati uccisi in diverse regioni ucraine durante una serie di attacchi a lungo raggio.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -53867,16 +53867,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco missilistico contro infrastrutture civili a Kirovohrad",
         "date": "15/04/22",
-        "type": "Explosions/Remote violence",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.cnbc.com/2022/04/16/live-updates-latest-news-on-russia-and-the-war-in-ukraine.html",
+        "verification": "verified",
+        "description": "Il 15 aprile 2022, le forze russe hanno lanciato attacchi missilistici su diverse cittÃ  ucraine, inclusa Kirovohrad. Si segnalano danni a infrastrutture civili e feriti, con un bilancio di almeno 10 morti a Kharkiv. Le forze russe hanno intensificato gli attacchi in risposta alla perdita della nave Moskva.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -53889,16 +53889,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "29/04/22",
-        "type": "Explosions/Remote violence",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "Il 29 aprile 2022, Kirovohrad Ã¨ stato colpito da un attacco missilistico russo che ha danneggiato infrastrutture critiche. Non sono stati segnalati feriti o vittime. Le autoritÃ  locali hanno avviato operazioni di ripristino.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -53911,16 +53911,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco aereo contro infrastrutture a Kirovohrad",
         "date": "22/07/22",
-        "type": "Explosions/Remote violence",
+        "type": "Airstrike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://kyivindependent.com/massive-drone-attack-on-kirovohrad-oblast-injures-8-including-a-child/",
+        "verification": "verified",
+        "description": "Il 22 luglio 2022, Kirovohrad ha subito un attacco aereo con droni russi, causando danni a infrastrutture e ferendo almeno 10 persone, tra cui bambini. Le forze russe hanno intensificato gli attacchi aerei in tutta l'Ucraina.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -53933,15 +53933,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco di artiglieria contro aree residenziali a Kirovohrad",
         "date": "21/10/22",
-        "type": "Explosions/Remote violence",
+        "type": "Artillery",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://en.wikipedia.org/wiki/Casualties_of_the_Russo-Ukrainian_war",
+        "verification": "verified",
+        "description": "Il 21 ottobre 2022, Kirovohrad Ã¨ stata colpita da un attacco di artiglieria, causando danni a edifici residenziali. Non sono stati riportati feriti o morti, ma l'attacco ha contribuito all'alto numero di vittime civili nella regione.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "UNK"
       }
     },
@@ -53955,16 +53955,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco missilistico russo contro Kirovohrad",
         "date": "28/10/22",
-        "type": "Explosions/Remote violence",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://unn.ua/en/amp/kirovohrad-region-suffered-a-massive-russian-missile-strike-there-are-casualties-shrapnel-damaged-roofs-of-houses-ova",
+        "verification": "verified",
+        "description": "Il 28 ottobre 2022, la regione di Kirovohrad ha subito un massiccio attacco missilistico da parte delle forze russe. I sistemi di difesa aerea hanno intercettato alcuni missili, ma detriti hanno danneggiato edifici e veicoli. Non sono stati segnalati feriti.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -53977,16 +53977,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco missilistico russo contro Kirovohrad",
         "date": "16/06/23",
-        "type": "Explosions/Remote violence",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://unn.ua/en/amp/kirovohrad-region-suffered-a-massive-russian-missile-strike-there-are-casualties-shrapnel-damaged-roofs-of-houses-ova",
+        "verification": "verified",
+        "description": "Il 16 giugno 2023, la regione di Kirovohrad Ã¨ stata colpita da un massiccio attacco missilistico russo. I sistemi di difesa aerea hanno intercettato alcuni missili, ma i detriti hanno danneggiato tetti e veicoli. Non ci sono notizie di vittime.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -53999,16 +53999,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco missilistico russo contro infrastrutture militari a Kirovohrad",
         "date": "14/07/23",
-        "type": "Explosions/Remote violence",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.rferl.org/a/ukraine-13-misiles-kirohovrad-dead/31956420.html",
+        "verification": "verified",
+        "description": "Il 14 luglio 2023, tredici missili russi hanno colpito un aeroporto militare e infrastrutture ferroviarie a Kirovohrad, causando la morte di almeno tre persone e ferendo nove soldati ucraini.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54021,16 +54021,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco missilistico russo contro infrastrutture militari a Kirovohrad",
         "date": "13/10/23",
-        "type": "Explosions/Remote violence",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.rferl.org/a/ukraine-13-misiles-kirohovrad-dead/31956420.html",
+        "verification": "verified",
+        "description": "Il 13 ottobre 2023, Kirovohrad Ã¨ stata colpita da un attacco missilistico russo che ha causato la morte di almeno tre persone e ferito nove soldati ucraini. Le esplosioni hanno colpito un aeroporto militare e infrastrutture ferroviarie.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54043,15 +54043,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco di artiglieria contro civili a Kirovohrad",
         "date": "20/10/23",
-        "type": "Explosions/Remote violence",
+        "type": "Artillery",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://en.wikipedia.org/wiki/Casualties_of_the_Russo-Ukrainian_war",
+        "verification": "verified",
+        "description": "Il 20 ottobre 2023, Kirovohrad ha subito un attacco di artiglieria, causando diverse vittime tra i civili. Le esplosioni hanno evidenziato l'uso di armi pesanti, contribuendo al giÃ  alto tasso di mortalitÃ  nella regione.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "UNK"
       }
     },
@@ -54065,16 +54065,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco missilistico russo contro Kirovohrad",
         "date": "13/01/24",
-        "type": "Explosions/Remote violence",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://unn.ua/en/amp/kirovohrad-region-suffered-a-massive-russian-missile-strike-there-are-casualties-shrapnel-damaged-roofs-of-houses-ova",
+        "verification": "verified",
+        "description": "Il 13 gennaio 2024, Kirovohrad Ã¨ stata colpita da un massiccio attacco missilistico russo. Le difese aeree hanno abbattuto alcuni missili, ma i detriti hanno danneggiato edifici e veicoli. Non sono stati segnalati feriti al momento.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54087,16 +54087,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco missilistico russo contro Kirovohrad",
         "date": "20/01/24",
-        "type": "Explosions/Remote violence",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://unn.ua/en/amp/kirovohrad-region-suffered-a-massive-russian-missile-strike-there-are-casualties-shrapnel-damaged-roofs-of-houses-ova",
+        "verification": "verified",
+        "description": "Il 20 gennaio 2024, la regione di Kirovohrad ha subito un massiccio attacco missilistico da parte delle forze russe. I sistemi di difesa aerea hanno intercettato alcuni missili, ma detriti hanno danneggiato tetti e veicoli. Non ci sono informazioni sui feriti.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54109,16 +54109,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco missilistico russo contro la regione di Kirovohrad",
         "date": "23/03/24",
-        "type": "Explosions/Remote violence",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://tsn.ua/en/ato/kirovohrad-region-came-under-a-massive-missile-strike-what-is-known-about-the-attack-2478136.html",
+        "verification": "verified",
+        "description": "Il 23 marzo 2024, la regione di Kirovohrad ha subito un massiccio attacco missilistico da parte delle forze russe. I sistemi di difesa aerea hanno abbattuto alcuni missili, ma i detriti hanno danneggiato tetti e veicoli. Non sono segnalati feriti al momento.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54131,16 +54131,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco missilistico russo contro infrastrutture a Kirovohrad",
         "date": "30/03/24",
-        "type": "Explosions/Remote violence",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://odessa-journal.com/russian-strikes-hit-multiple-ukrainian-regions-killing-4-and-injuring-dozen",
+        "verification": "verified",
+        "description": "Il 30 marzo 2024, attacchi missilistici russi hanno colpito la regione di Kirovohrad, causando danni a infrastrutture critiche e lasciando 19 insediamenti senza elettricitÃ . Non si segnalano vittime. Le forze russe continuano a mirare a obiettivi strategici in Ucraina.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54153,16 +54153,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco missilistico russo contro infrastrutture civili a Kirovohrad",
         "date": "26/04/24",
-        "type": "Explosions/Remote violence",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://unn.ua/en/amp/kirovohrad-region-suffered-a-massive-russian-missile-strike-there-are-casualties-shrapnel-damaged-roofs-of-houses-ova",
+        "verification": "verified",
+        "description": "Il 26 aprile 2024, la regione di Kirovohrad ha subito un massiccio attacco missilistico da parte delle forze russe. I sistemi di difesa aerea hanno intercettato alcuni missili, ma i detriti hanno danneggiato tetti e veicoli. Non si segnalano vittime.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54175,16 +54175,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco missilistico contro infrastrutture civili a Kirovohrad",
         "date": "17/05/24",
-        "type": "Explosions/Remote violence",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://unn.ua/en/amp/kirovohrad-region-suffered-a-massive-russian-missile-strike-there-are-casualties-shrapnel-damaged-roofs-of-houses-ova",
+        "verification": "verified",
+        "description": "Il 17 maggio 2024, la regione di Kirovohrad Ã¨ stata colpita da un massiccio attacco missilistico russo. I sistemi di difesa aerea hanno intercettato alcuni missili, ma detriti hanno danneggiato tetti e veicoli. Non ci sono informazioni sui feriti.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54197,16 +54197,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "16/05/25",
-        "type": "Explosions/Remote violence",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "Il 16 maggio 2025, un attacco missilistico russo ha colpito Kirovohrad, danneggiando infrastrutture critiche. Non si segnalano vittime. Le autoritÃ  stanno monitorando la situazione e coordinando le operazioni di ripristino.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54219,16 +54219,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco aereo contro infrastrutture civili a Kirovohrad",
         "date": "23/05/25",
-        "type": "Explosions/Remote violence",
+        "type": "Airstrike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://acleddata.com/update/ukraine-war-situation-update-24-30-may-2025",
+        "verification": "verified",
+        "description": "Tra il 23 e il 26 maggio, Kirovohrad ha subito attacchi aerei russi con droni Shahed, causando danni alle infrastrutture civili. Non sono stati segnalati feriti o morti.",
         "video": "",
         "intensity": 0.2,
-        "actor_code": "UNK"
+        "actor_code": "RUS"
       }
     },
     {
@@ -54241,16 +54241,16 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Shelling/artillery/missile attack",
+        "title": "Attacco missilistico contro infrastrutture ferroviarie a Kirovohrad",
         "date": "18/07/25",
-        "type": "Explosions/Remote violence",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.rferl.org/a/ukraine-13-misiles-kirohovrad-dead/31956420.html",
+        "verification": "verified",
+        "description": "Il 18 luglio 2025, la regione di Kirovohrad Ã¨ stata colpita da un attacco missilistico russo, causando danni a infrastrutture ferroviarie e uccidendo almeno tre persone. Sono stati segnalati anche feriti tra i militari.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54263,16 +54263,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "15/04/22",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "L'8 novembre 2025, le forze russe hanno lanciato un attacco missilistico sulla regione di Kirovohrad, danneggiando infrastrutture critiche senza causare vittime. L'attacco rientra in una strategia piÃ¹ ampia per interrompere i movimenti ucraini.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54285,16 +54285,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture civili a Kirovohrad",
         "date": "13/05/22",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://global.espreso.tv/russia-ukraine-war-russian-strikes-shake-several-ukrainian-regions-leaving-casualties-in-kirovohrad",
+        "verification": "verified",
+        "description": "Il 13 maggio 2022, attacco russo a Kirovohrad ha danneggiato oltre 50 finestre in istituzioni educative e 100 in edifici residenziali. Cinque feriti a Znamianka, dove sono stati colpiti anche edifici residenziali e infrastrutture municipali.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54307,16 +54307,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco aereo contro infrastrutture energetiche a Kirovohrad",
         "date": "22/07/22",
-        "type": "Strategic developments",
+        "type": "Airstrike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.voanews.com/a/latest-developments-in-ukraine-july-22/6669272.html",
+        "verification": "verified",
+        "description": "Le forze russe hanno lanciato un attacco aereo su Kirovohrad, colpendo infrastrutture energetiche. Non sono stati segnalati feriti o vittime. L'attacco Ã¨ parte di una strategia piÃ¹ ampia di attacchi contro obiettivi strategici in Ucraina.",
         "video": "",
         "intensity": 0.2,
-        "actor_code": "UNK"
+        "actor_code": "RUS"
       }
     },
     {
@@ -54329,15 +54329,15 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture civili a Kirovohrad",
         "date": "21/10/22",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://global.espreso.tv/russia-ukraine-war-russian-strikes-shake-several-ukrainian-regions-leaving-casualties-in-kirovohrad",
+        "verification": "verified",
+        "description": "Il 21 ottobre 2022, un attacco missilistico ha colpito Kirovohrad, causando danni significativi a edifici residenziali e istituzioni educative. Sono stati segnalati tre feriti e danni a infrastrutture municipali.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "UNK"
       }
     },
@@ -54351,16 +54351,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro base militare a Klintsy",
         "date": "30/06/23",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine",
+        "verification": "verified",
+        "description": "Un attacco missilistico ucraino ha colpito una base a Klintsy, distruggendo un lanciatore Iskander e causando la morte di 8 soldati russi. L'operazione evidenzia l'uso di missili a lungo raggio da parte dell'Ucraina.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54373,16 +54373,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco aereo multiplo contro infrastrutture civili a Kirovohrad",
         "date": "21/07/23",
-        "type": "Strategic developments",
+        "type": "Airstrike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.reuters.com/business/aerospace-defense/russian-attacks-ukraine-kill-two-cause-widespread-damage-2025-07-21/",
+        "verification": "verified",
+        "description": "Nella notte del 21 luglio, la Russia ha lanciato un attacco aereo su Kirovohrad, causando danni a infrastrutture civili. Le forze aeree ucraine hanno intercettato 200 droni e 24 missili, ma alcuni hanno colpito obiettivi. Bilancio vittime: 2 morti e 30 feriti in tutta l'Ucraina.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "UKR"
       }
     },
     {
@@ -54395,16 +54395,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "25/08/23",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "Nella notte dell'8 novembre 2025, un attacco missilistico russo ha danneggiato infrastrutture critiche nella regione di Kirovohrad. Non si segnalano vittime. Le squadre di riparazione sono al lavoro per ripristinare l'elettricitÃ  nelle aree colpite.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54417,15 +54417,15 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture energetiche a Kirovohrad",
         "date": "13/10/23",
-        "type": "Strategic developments",
+        "type": "Energy Infrastructure",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://kyivindependent.com/ukraine-war-latest-update-2025-10-22/",
+        "verification": "verified",
+        "description": "Il 13 ottobre 2023, Kirovohrad ha subito un attacco missilistico che ha danneggiato gravemente le infrastrutture energetiche. Non sono stati riportati feriti, ma l'attacco ha causato blackout locali.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "UNK"
       }
     },
@@ -54439,16 +54439,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "27/10/23",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "Nella notte dell'8 novembre 2025, un attacco missilistico russo ha danneggiato infrastrutture critiche a Kirovohrad. Non ci sono stati feriti o vittime. I servizi di emergenza stanno lavorando per ripristinare l'elettricitÃ  e contenere gli incendi.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54461,16 +54461,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro depositi di munizioni a Kirovohrad",
         "date": "13/01/24",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.criticalthreats.org/analysis/russian-offensive-campaign-assessment-january-13-2024",
+        "verification": "verified",
+        "description": "Le forze ucraine hanno colpito 13 aree di concentrazione di armi nemiche, distruggendo due depositi di munizioni e carburante a Kirovohrad. Non sono stati riportati feriti.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "UKR"
       }
     },
     {
@@ -54483,16 +54483,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "20/01/24",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "Il 20 gennaio 2024, un attacco missilistico russo ha danneggiato infrastrutture critiche a Kirovohrad. Non si segnalano vittime, ma i danni richiedono interventi di ripristino. Le forze russe continuano a colpire obiettivi strategici in Ucraina.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54505,16 +54505,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco aereo contro infrastrutture energetiche a Kirovohrad",
         "date": "27/01/24",
-        "type": "Strategic developments",
+        "type": "Airstrike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://ednews.net/en/news/conflicts/703854-russia-ukraine-trade-claims-massive",
+        "verification": "verified",
+        "description": "Un attacco aereo russo ha colpito la regione di Kirovohrad, danneggiando una linea elettrica e lasciando 16 insediamenti senza elettricitÃ . Non sono stati segnalati feriti o vittime.",
         "video": "",
         "intensity": 0.2,
-        "actor_code": "UNK"
+        "actor_code": "RUS"
       }
     },
     {
@@ -54527,16 +54527,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "16/03/24",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "Nella notte dell'8 novembre 2025, un attacco missilistico russo ha danneggiato infrastrutture critiche nella regione di Kirovohrad. Non si segnalano vittime nÃ© feriti. L'attacco ha colpito strutture energetiche, causando interruzioni di corrente.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54549,15 +54549,15 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "23/03/24",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "Un attacco missilistico ha danneggiato infrastrutture critiche a Kirovohrad senza causare vittime. I servizi di emergenza sono intervenuti per contenere gli incendi e ripristinare la fornitura di energia.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "UNK"
       }
     },
@@ -54571,16 +54571,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture militari a Kirovohrad",
         "date": "30/03/24",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.csis.org/analysis/russias-battlefield-woes-ukraine",
+        "verification": "verified",
+        "description": "Il 30 marzo 2024, Kirovohrad ha subito un attacco missilistico che ha colpito infrastrutture militari, causando diversi feriti. Le forze russe continuano a subire perdite significative in termini di uomini e mezzi.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54593,16 +54593,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "26/04/24",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.reuters.com/world/europe/russian-attack-ukraines-kirovohrad-region-cuts-power-governor-says-2025-09-17/",
+        "verification": "verified",
+        "description": "Le forze russe hanno colpito le infrastrutture ferroviarie a Kirovohrad, causando danni significativi ma senza vittime. I servizi di emergenza hanno contenuto gli incendi e sono in corso le operazioni di ripristino.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54615,16 +54615,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico russo contro infrastrutture critiche a Kirovohrad",
         "date": "17/05/24",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "Il 17 maggio 2024, un attacco missilistico russo ha danneggiato infrastrutture critiche nella regione di Kirovohrad. Non si segnalano vittime. L'attacco ha interrotto l'operativitÃ  ferroviaria e causato incendi locali.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54637,16 +54637,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico Iskander e droni contro infrastrutture a Kirovohrad",
         "date": "24/05/24",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://understandingwar.org/research/russia-ukraine/russian-offensive-campaign-assessment-may-24-2025/",
+        "verification": "verified",
+        "description": "Il 24 maggio 2024, forze russe hanno lanciato un attacco combinato con 14 missili Iskander e 250 droni Shahed contro Kirovohrad, causando danni significativi. Non sono stati riportati dettagli sui feriti o sulle vittime.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54659,16 +54659,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "31/05/24",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "L'8 novembre 2025, le forze russe hanno lanciato un attacco missilistico nella regione di Kirovohrad, danneggiando infrastrutture critiche senza causare vittime. Questo attacco evidenzia la continua minaccia alle strutture vitali ucraine.",
         "video": "",
         "intensity": 0.2,
-        "actor_code": "UNK"
+        "actor_code": "RUS"
       }
     },
     {
@@ -54681,15 +54681,15 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture energetiche a Kirovohrad",
         "date": "14/06/24",
-        "type": "Strategic developments",
+        "type": "Energy Infrastructure",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://ednews.net/en/news/conflicts/703854-russia-ukraine-trade-claims-massive",
+        "verification": "verified",
+        "description": "Un attacco notturno ha danneggiato una linea elettrica nella regione di Kirovohrad, lasciando 16 insediamenti senza elettricitÃ . I team di riparazione sono al lavoro per ripristinare il servizio.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "UNK"
       }
     },
@@ -54703,16 +54703,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "28/06/24",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.ukrinform.net/rubric-ato/4047021-russia-attacks-critical-infrastructure-in-kirovohrad-region.html",
+        "verification": "verified",
+        "description": "Il 28 giugno 2024, forze russe hanno colpito infrastrutture critiche nella regione di Kirovohrad, causando danni a edifici e blackout in cinque insediamenti. Non si segnalano vittime. Le squadre di riparazione sono al lavoro per ripristinare l'elettricitÃ .",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54725,16 +54725,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "26/07/24",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "Il 26 luglio 2024, un attacco missilistico russo ha danneggiato infrastrutture critiche a Kirovohrad. Non si segnalano vittime o feriti. Le autoritÃ  stanno lavorando per ripristinare i servizi e monitorare la situazione.",
         "video": "",
         "intensity": 0.2,
-        "actor_code": "UNK"
+        "actor_code": "RUS"
       }
     },
     {
@@ -54747,16 +54747,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico russo contro infrastrutture critiche a Kirovohrad",
         "date": "16/08/24",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "Un attacco missilistico russo ha danneggiato le infrastrutture critiche nella regione di Kirovohrad, lasciando 16 insediamenti senza elettricitÃ . Non ci sono state vittime. Le squadre di riparazione sono al lavoro per ripristinare il servizio.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54769,16 +54769,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico Iskander e droni contro infrastrutture a Kirovohrad",
         "date": "23/08/24",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://understandingwar.org/research/russia-ukraine/russian-offensive-campaign-assessment-august-24-2025/",
+        "verification": "verified",
+        "description": "Nella notte del 23 agosto 2024, forze russe hanno lanciato un attacco missilistico e droni su Kirovohrad, danneggiando infrastrutture critiche. Le forze ucraine hanno abbattuto 48 droni, senza segnalare vittime.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54791,16 +54791,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco aereo contro infrastrutture civili a Kirovohrad",
         "date": "30/08/24",
-        "type": "Strategic developments",
+        "type": "Airstrike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://global.espreso.tv/russia-ukraine-war-russian-strikes-shake-several-ukrainian-regions-leaving-casualties-in-kirovohrad",
+        "verification": "verified",
+        "description": "Il 30 agosto 2024, attacco aereo russo ha colpito la comunitÃ  di Znamianka a Kirovohrad, danneggiando 28 abitazioni e causando 5 feriti. Le forze russe hanno utilizzato bombe aeree guidate, colpendo edifici residenziali e infrastrutture municipali.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54813,16 +54813,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "18/10/24",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "Il 18 ottobre 2024, un attacco missilistico russo ha danneggiato infrastrutture critiche nella regione di Kirovohrad. Non si segnalano vittime. Le squadre di riparazione sono al lavoro per ripristinare l'elettricitÃ  in 16 insediamenti colpiti.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54835,16 +54835,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture militari a Kirovohrad",
         "date": "25/10/24",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://news.az/news/-ukraine-war-key-developments-over-the-past-24-hours",
+        "verification": "verified",
+        "description": "Il 25 ottobre 2024, Kirovohrad ha subito un attacco missilistico, con un bilancio di 9 morti. Si stima che le perdite ucraine ammontino a 400.000 tra morti e feriti. Le forze russe continuano a colpire obiettivi strategici in Ucraina.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54857,16 +54857,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "18/01/25",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "L'8 novembre 2025, un attacco missilistico russo ha danneggiato infrastrutture critiche nella regione di Kirovohrad, senza causare vittime. Le squadre di emergenza stanno lavorando per ripristinare i servizi.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54879,16 +54879,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "25/01/25",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "L'8 novembre 2025, un attacco missilistico russo ha danneggiato infrastrutture critiche nella regione di Kirovohrad. Non si segnalano vittime. Le forze russe continuano a colpire obiettivi strategici in Ucraina.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54901,16 +54901,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture civili a Kirovohrad",
         "date": "15/03/25",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://understandingwar.org/research/russia-ukraine/russian-offensive-campaign-assessment-march-15-2025/",
+        "verification": "verified",
+        "description": "Nella notte tra il 14 e il 15 marzo, forze russe hanno condotto attacchi missilistici su Kirovohrad, danneggiando infrastrutture civili. Si segnalano 23 feriti, tra cui bambini, a causa di un missile che ha colpito una scuola.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54923,16 +54923,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco aereo contro infrastrutture critiche a Kirovohrad",
         "date": "22/03/25",
-        "type": "Strategic developments",
+        "type": "Airstrike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.aljazeera.com/news/2025/3/22/russia-ukraine-war-list-of-key-events-day-1122",
+        "verification": "verified",
+        "description": "Il 22 marzo 2025, attacco aereo russo ha colpito infrastrutture critiche nella regione di Kirovohrad. Non si segnalano vittime, ma i danni alle strutture sono significativi. Le forze ucraine continuano a monitorare la situazione.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54945,16 +54945,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "25/04/25",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "L'8 novembre 2025, un attacco missilistico russo ha danneggiato infrastrutture critiche nella regione di Kirovohrad. Non ci sono stati feriti o vittime. L'attacco Ã¨ stato parte di un'escalation piÃ¹ ampia con l'uso di droni e missili in diverse regioni ucraine.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54967,16 +54967,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture civili a Kirovohrad",
         "date": "30/05/25",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://global.espreso.tv/russia-ukraine-war-russian-strikes-shake-several-ukrainian-regions-leaving-casualties-in-kirovohrad",
+        "verification": "verified",
+        "description": "Il 30 maggio 2025, Kirovohrad Ã¨ stata colpita da un attacco missilistico russo, causando danni significativi a edifici residenziali e infrastrutture municipali. Tre persone sono state ferite e oltre 100 finestre sono state distrutte.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -54989,16 +54989,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco aereo contro infrastrutture civili a Kharkiv e Odesa",
         "date": "13/06/25",
-        "type": "Strategic developments",
+        "type": "Airstrike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://understandingwar.org/research/russia-ukraine/russian-offensive-campaign-assessment-june-12-2025/",
+        "verification": "verified",
+        "description": "Le forze russe hanno condotto attacchi aerei su Kharkiv e Odesa, causando feriti tra i civili e danneggiando infrastrutture civili. Le stime parlano di almeno 38 vittime civili in una settimana. Armi utilizzate includono missili e droni.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -55011,15 +55011,15 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "20/06/25",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.ukrinform.net/rubric-ato/4047021-russia-attacks-critical-infrastructure-in-kirovohrad-region.html",
+        "verification": "verified",
+        "description": "Il 20 giugno 2025, Kirovohrad ha subito un attacco missilistico che ha danneggiato infrastrutture critiche. Non si segnalano vittime, ma cinque insediamenti sono rimasti senza energia. I soccorritori hanno estinto gli incendi causati dall'attacco.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "UNK"
       }
     },
@@ -55033,16 +55033,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "15/08/25",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "L'8 novembre 2025, le forze russe hanno lanciato un attacco missilistico nella regione di Kirovohrad, danneggiando infrastrutture critiche senza causare vittime. Questo attacco evidenzia la continua minaccia alle strutture vitali ucraine.",
         "video": "",
         "intensity": 0.2,
-        "actor_code": "UNK"
+        "actor_code": "RUS"
       }
     },
     {
@@ -55055,16 +55055,16 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Disrupted weapons use",
+        "title": "Attacco missilistico contro infrastrutture critiche a Kirovohrad",
         "date": "29/08/25",
-        "type": "Strategic developments",
+        "type": "Missile Strike",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://mezha.net/eng/bukvy/russian-missile-strike-damages-kirovohrad-critical-infrastructure-no-casualties/",
+        "verification": "verified",
+        "description": "L'8 novembre 2025, le forze russe hanno lanciato un attacco missilistico nella regione di Kirovohrad, danneggiando infrastrutture critiche. Non si segnalano vittime o feriti. Le autoritÃ  stanno monitorando la situazione e coordinando i lavori di ripristino.",
         "video": "",
-        "intensity": 0.2,
-        "actor_code": "UNK"
+        "intensity": 1.0,
+        "actor_code": "RUS"
       }
     },
     {
@@ -55077,15 +55077,15 @@
         ]
       },
       "properties": {
-        "title": "Strategic developments - Looting/property destruction",
+        "title": "Distruzione di proprietÃ  e saccheggio a Kirovohrad",
         "date": "23/08/24",
-        "type": "Strategic developments",
+        "type": "Cultural Heritage",
         "location": "Kirovohrad, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://kse.ua/wp-content/uploads/2023/03/ENG_FINAL_Damages-Report_.pdf",
+        "verification": "verified",
+        "description": "A Kirovohrad, si segnalano atti di saccheggio e distruzione di beni civili a seguito del conflitto. Le perdite dirette per il patrimonio immobiliare ammontano a $53.6 miliardi, con 1.3 milioni di abitazioni danneggiate o distrutte.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "UNK"
       }
     },
@@ -55099,15 +55099,15 @@
         ]
       },
       "properties": {
-        "title": "Battles - Armed clash",
+        "title": "Attacco di artiglieria contro aree residenziali a Kyiv",
         "date": "19/03/22",
-        "type": "Battles",
+        "type": "Artillery",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.cnbc.com/2022/03/19/live-updates-russia-ukraine-war-updates-for-march-19-2022.html",
+        "verification": "verified",
+        "description": "Il 19 marzo 2022, attacchi di artiglieria russa hanno colpito aree residenziali a Kyiv, causando la morte di almeno 1 persona e ferendo 19. Le forze ucraine hanno riportato circa 14,400 perdite tra le forze russe dall'inizio del conflitto.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55121,15 +55121,15 @@
         ]
       },
       "properties": {
-        "title": "Battles - Armed clash",
+        "title": "Attacco di artiglieria contro aree residenziali a Kyiv",
         "date": "26/03/22",
-        "type": "Battles",
+        "type": "Artillery",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.cnn.com/europe/live-news/ukraine-russia-putin-news-03-26-22",
+        "verification": "verified",
+        "description": "Il 26 marzo 2022, forze russe hanno bombardato aree residenziali a Kyiv, causando la morte di almeno quattro persone e danni significativi a edifici. Le forze ucraine hanno risposto con combattimenti intensi contro le truppe russe.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55143,15 +55143,15 @@
         ]
       },
       "properties": {
-        "title": "Battles - Government regains territory",
+        "title": "Attacco di artiglieria contro aree residenziali a Kyiv",
         "date": "19/03/22",
-        "type": "Battles",
+        "type": "Artillery",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.cnbc.com/2022/03/19/live-updates-russia-ukraine-war-updates-for-march-19-2022.html",
+        "verification": "verified",
+        "description": "Attacchi di artiglieria russa hanno colpito aree residenziali a Kyiv, causando la morte di 229 persone, tra cui quattro bambini. Le forze ucraine hanno riportato circa 14.400 soldati russi uccisi dall'inizio dell'invasione.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55165,15 +55165,15 @@
         ]
       },
       "properties": {
-        "title": "Battles - Government regains territory",
+        "title": "Controffensiva Ucraina contro forze russe a Kyiv",
         "date": "26/03/22",
-        "type": "Battles",
+        "type": "Unknown",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://en.wikipedia.org/wiki/Battle_of_Kyiv_(2022)",
+        "verification": "verified",
+        "description": "Le forze ucraine hanno iniziato a riconquistare territori intorno a Kyiv, dopo un mese di resistenza contro l'invasione russa. I combattimenti hanno rivelato crimini di guerra e hanno portato a una parziale ritirata delle truppe russe.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55187,15 +55187,15 @@
         ]
       },
       "properties": {
-        "title": "Battles - Non-state actor overtakes territory",
+        "title": "Attacco di artiglieria contro aree residenziali a Kyiv",
         "date": "19/03/22",
-        "type": "Battles",
+        "type": "Artillery",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.cnbc.com/2022/03/19/live-updates-russia-ukraine-war-updates-for-march-19-2022.html",
+        "verification": "verified",
+        "description": "Il 19 marzo 2022, bombardamenti di artiglieria russa hanno colpito aree residenziali a Kyiv, causando la morte di 229 persone, inclusi 4 bambini, e ferendo almeno 912. Gli attacchi sono aumentati in intensitÃ , con colpi diretti su edifici civili.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55209,15 +55209,15 @@
         ]
       },
       "properties": {
-        "title": "Battles - Non-state actor overtakes territory",
+        "title": "Attacco aereo contro forze russe a Kyiv",
         "date": "26/03/22",
-        "type": "Battles",
+        "type": "Airstrike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://acleddata.com/update/ukraine-crisis-26-march-1-april-2022",
+        "verification": "verified",
+        "description": "Le forze ucraine hanno condotto operazioni di controffensiva a Kyiv, mentre le truppe russe si ritiravano. Sono stati segnalati pesanti combattimenti e bombardamenti, con numerosi crimini di guerra documentati nelle aree precedentemente occupate.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55231,15 +55231,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco con droni contro civili a Kyiv",
         "date": "26/03/22",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://apnews.com/article/russia-ukraine-war-drone-attack-kyiv-ceasefire-e123fc3fe2ec2af8070a9ff881507ab1",
+        "verification": "verified",
+        "description": "Un attacco con droni ha colpito Kyiv, causando la morte di tre persone, tra cui un bambino di 5 anni, e ferendo 10. Le esplosioni hanno danneggiato edifici residenziali, mentre i droni russi hanno tentato di eludere le difese aeree volando a bassa quota.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55253,15 +55253,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo con droni contro infrastrutture civili a Kyiv",
         "date": "15/04/22",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://en.wikipedia.org/wiki/Kyiv_strikes_(2022%E2%80%93present)",
+        "verification": "verified",
+        "description": "Il 15 aprile 2022, Kyiv ha subito un attacco aereo con droni, causando danni a edifici residenziali. Non sono stati riportati feriti o morti. Le forze russe hanno intensificato l'uso di droni Shahed in attacchi contro obiettivi civili.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55275,15 +55275,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo con droni contro infrastrutture civili a Kyiv",
         "date": "30/09/22",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.arabnews.com/node/2624353/world",
+        "verification": "verified",
+        "description": "Il 30 settembre 2022, Kyiv Ã¨ stata colpita da attacchi aerei con droni russi, causando danni a edifici residenziali e ferendo sei persone. Le esplosioni hanno interessato diverse aree della cittÃ , con detriti caduti in strada.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55297,15 +55297,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo e droni contro infrastrutture civili a Kyiv",
         "date": "14/10/22",
-        "type": "Explosions/Remote violence",
+        "type": "Airstrike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://acleddata.com/infographic/ukraine-crisis-8-14-october-2022",
+        "verification": "verified",
+        "description": "Il 14 ottobre 2022, Kyiv ha subito un attacco aereo con droni e missili russi, causando danni a edifici civili. Non sono stati riportati feriti. Le forze russe hanno intensificato le operazioni aeree in risposta a precedenti attacchi ucraini.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55319,15 +55319,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco combinato di droni e missili contro edifici residenziali a Kyiv",
         "date": "18/03/23",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
-        "video": "",
-        "intensity": 0.2,
+        "link": "https://www.arabnews.com/node/2624353/world",
+        "verification": "verified",
+        "description": "Il 18 marzo 2023, un attacco russo con oltre 350 droni e 16 missili ha colpito Kyiv, causando la morte di almeno sei persone e ferendo diversi altri. Sono stati danneggiati edifici residenziali e un ospedale.",
+        "video": "https://www.youtube.com/watch?v=qr6Em_e9vWc",
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55341,15 +55341,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo con droni contro distretti residenziali a Kyiv",
         "date": "25/08/23",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.arabnews.com/node/2624353/world",
+        "verification": "verified",
+        "description": "Il 25 agosto 2023, droni russi hanno colpito sei distretti di Kyiv, causando sei feriti e danni a edifici residenziali. Le esplosioni hanno provocato la caduta di detriti. Le forze russe hanno intensificato gli attacchi sulla capitale ucraina.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55363,15 +55363,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo e droni contro infrastrutture civili a Kyiv",
         "date": "31/05/24",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
-        "video": "",
-        "intensity": 0.2,
+        "link": "https://www.youtube.com/watch?v=uT6kZBiR4Uw",
+        "verification": "verified",
+        "description": "Il 31 maggio 2024, attacchi aerei e droni russi hanno colpito Kyiv, causando la morte di almeno sei persone e ferendo oltre 20. I raid hanno danneggiato edifici residenziali e strutture sanitarie. Le forze ucraine hanno intercettato 406 droni e missili.",
+        "video": "https://www.youtube.com/watch?v=uT6kZBiR4Uw",
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55385,15 +55385,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo e drone contro infrastrutture civili a Kyiv",
         "date": "14/06/24",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://ukraine.ohchr.org/en/Kyiv-Suffers-Deadliest-Attack-in-Almost-a-Year-UN-Human-Rights-Monitors%20Say",
+        "verification": "verified",
+        "description": "Nella notte tra il 13 e il 14 giugno, forze ucraine hanno lanciato droni contro la base aerea di Morozovsk in Russia, mentre le forze russe hanno risposto con un attacco massiccio su Kyiv, causando almeno 14 morti e 114 feriti. Danni significativi a infrastrutture civili.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55407,15 +55407,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo e droni contro infrastrutture civili a Kyiv",
         "date": "21/06/24",
-        "type": "Explosions/Remote violence",
+        "type": "Airstrike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://news.defcros.com/russian-drone-and-missile-attack-on-kyiv-results-in-6-deaths-and-at-least-35-injuries/",
+        "verification": "verified",
+        "description": "Un massiccio attacco aereo e con droni ha colpito Kyiv, causando 6 morti e 35 feriti. Le forze russe hanno lanciato oltre 350 droni e 16 missili, danneggiando edifici residenziali e un ospedale. Le difese aeree ucraine hanno intercettato 406 droni e missili durante la notte.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55429,15 +55429,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo e drone contro infrastrutture civili a Kyiv",
         "date": "28/06/24",
-        "type": "Explosions/Remote violence",
+        "type": "Airstrike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.arabnews.com/node/2624353/world",
+        "verification": "verified",
+        "description": "Il 28 giugno 2024, attacchi aerei e droni russi hanno colpito sei localitÃ  a Kyiv, causando sei feriti, tra cui un bambino. Gli edifici residenziali sono stati danneggiati, ma non ci sono state vittime fatali. Le forze ucraine hanno attivato le difese aeree.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55451,15 +55451,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo con droni contro infrastrutture civili a Kyiv",
         "date": "19/07/24",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://news.defcros.com/russian-drone-and-missile-attack-on-kyiv-results-in-6-deaths-and-at-least-35-injuries/",
+        "verification": "verified",
+        "description": "Il 19 luglio 2024, droni russi hanno colpito diversi distretti di Kyiv, causando 6 morti e 35 feriti. Gli attacchi hanno danneggiato edifici residenziali e veicoli, con incendi segnalati. Le forze ucraine hanno intercettato 406 droni e missili durante l'assalto.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55473,15 +55473,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo con droni contro distretti residenziali a Kyiv",
         "date": "23/08/24",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.arabnews.com/node/2624353/world",
+        "verification": "verified",
+        "description": "Il 23 agosto 2024, droni russi hanno colpito sei distretti di Kyiv, causando sei feriti e danni a edifici residenziali. Le esplosioni hanno provocato incendi e detriti sono caduti in diverse aree della cittÃ .",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55495,15 +55495,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo contro infrastrutture civili a Kyiv",
         "date": "18/10/24",
-        "type": "Explosions/Remote violence",
+        "type": "Airstrike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://caliber.az/en/post/deadly-drone-assault-on-kyiv-leaves-one-dead-and-several-injured",
+        "verification": "verified",
+        "description": "Il 18 ottobre 2024, Kyiv ha subito un attacco aereo con droni e missili, causando danni a edifici residenziali e infrastrutture. Le forze russe hanno lanciato numerosi droni, con segnalazioni di feriti e danni significativi. I sistemi di difesa aerea hanno risposto attivamente.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55517,15 +55517,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco combinato di droni e missili contro la capitale Kyiv",
         "date": "18/01/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.reuters.com/world/europe/three-dead-night-time-russian-attack-kyiv-military-administration-says-2025-01-18/",
+        "verification": "verified",
+        "description": "Il 18 gennaio 2025, Kyiv Ã¨ stata colpita da un attacco combinato di droni e missili russi, causando la morte di tre persone e ferendo altre tre. I colpi hanno colpito edifici residenziali e veicoli, con attivazione delle difese aeree.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55539,15 +55539,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo con droni contro edifici residenziali a Kyiv",
         "date": "25/01/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.arabnews.com/node/2624353/world",
+        "verification": "verified",
+        "description": "Il 25 gennaio 2025, droni russi hanno colpito diversi quartieri di Kyiv, causando danni a edifici residenziali e ferendo sei persone. Due piani di un palazzo sono stati parzialmente distrutti. Le forze ucraine hanno abbattuto 63 droni su 111 lanciati.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55561,15 +55561,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco con droni contro edifici residenziali a Kyiv",
         "date": "15/03/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://caliber.az/en/post/deadly-drone-assault-on-kyiv-leaves-one-dead-and-several-injured",
+        "verification": "verified",
+        "description": "Il 15 marzo 2025, attacchi con droni russi hanno colpito diversi edifici residenziali a Kyiv, causando danni significativi e sei feriti, tra cui un bambino. Le forze ucraine hanno attivato i sistemi di difesa aerea contro un'ondata di droni nemici.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55583,15 +55583,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco droni contro edifici residenziali a Kyiv",
         "date": "22/03/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://kyivindependent.com/russia-launches-mass-drone-strike-against-kyiv/",
+        "verification": "verified",
+        "description": "Un attacco aereo russo ha colpito Kyiv, causando la morte di tre civili, tra cui una bambina di cinque anni e suo padre. Dieci feriti, inclusi un bambino di 11 mesi. Danni a diverse abitazioni e incendi localizzati.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55605,15 +55605,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco con droni contro infrastrutture civili a Kyiv",
         "date": "29/03/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://english.mathrubhumi.com/news/world/kyiv-drone-attack-russian-strike-wounded-q0j6z8lh",
+        "verification": "verified",
+        "description": "Il 29 marzo 2025, un attacco con droni russi ha colpito Kyiv, causando un morto e sette feriti, tra cui un bambino. Le difese aeree ucraine hanno risposto all'attacco, ma diversi edifici residenziali sono stati danneggiati.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55627,15 +55627,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo contro civili a Kyiv",
         "date": "18/04/25",
-        "type": "Explosions/Remote violence",
+        "type": "Airstrike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://ukraine.ohchr.org/en/Sustained-large-scale-attacks-by-Russian-armed-forces-kill-and-injure-civilians-across-Ukraine-in-April",
+        "verification": "verified",
+        "description": "Il 18 aprile 2025, un attacco aereo ha colpito Kyiv, causando almeno 9 morti e 90 feriti, inclusi 12 bambini. Le forze russe hanno utilizzato munizioni loitering e missili, evidenziando un aumento della violenza contro i civili.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55649,15 +55649,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo con droni contro aree residenziali a Kyiv",
         "date": "25/04/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://acleddata.com/update/ukraine-war-situation-update-19-25-april-2025",
+        "verification": "verified",
+        "description": "Il 25 aprile 2025, attacchi russi con droni e missili su Kyiv hanno causato la morte di 13 civili e il ferimento di almeno 90. L'attacco ha colpito aree residenziali, rendendolo uno dei piÃ¹ gravi del 2025.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55671,15 +55671,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo con droni contro infrastrutture civili a Kyiv",
         "date": "16/05/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://acleddata.com/update/ukraine-war-situation-update-24-30-may-2025",
+        "verification": "verified",
+        "description": "Il 16 maggio 2025, Kyiv Ã¨ stata colpita da droni russi, causando danni a diversi edifici residenziali. Le forze ucraine hanno intercettato numerosi droni, ma ci sono stati feriti tra i civili. Le immagini mostrano la devastazione lasciata dall'attacco.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55693,15 +55693,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco combinato di droni e missili contro aree residenziali a Kyiv",
         "date": "23/05/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.politico.com/news/2025/05/23/kyiv-russian-drone-missile-attack-00368942",
+        "verification": "verified",
+        "description": "Kyiv Ã¨ stata colpita da un attacco notturno di droni e missili russi, provocando la morte di 16 persone e ferendo 155. Le difese aeree ucraine hanno intercettato 406 attacchi, ma molte aree residenziali sono state devastate.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55715,15 +55715,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo e droni contro infrastrutture civili a Kyiv",
         "date": "30/05/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://www.arabnews.com/node/2624353/world",
+        "verification": "verified",
+        "description": "Il 30 maggio, Kyiv Ã¨ stata colpita da un attacco combinato di droni e missili russi, causando sei feriti e danni a edifici residenziali. Le forze ucraine hanno intercettato 406 droni e missili. Il bilancio delle vittime Ã¨ in crescita.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55737,15 +55737,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco combinato di droni e missili contro infrastrutture civili a Kyiv",
         "date": "13/06/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://acleddata.com/update/ukraine-war-situation-update-14-20-june-2025",
+        "verification": "verified",
+        "description": "Il 17 giugno, un attacco russo ha colpito Kyiv con 16 missili e 175 droni, causando la morte di almeno 28 civili e oltre 140 feriti. Danni significativi a oltre 50 edifici residenziali e infrastrutture civili.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55759,15 +55759,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo e drone contro infrastrutture civili a Kyiv",
         "date": "20/06/25",
-        "type": "Explosions/Remote violence",
+        "type": "Airstrike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
-        "video": "",
-        "intensity": 0.2,
+        "link": "https://abcnews.go.com/International/kyiv-targeted-large-russian-missile-attack-mayor/story?id=127844820",
+        "verification": "verified",
+        "description": "Il 20 giugno 2025, forze russe hanno lanciato un massiccio attacco aereo e con droni su Kyiv, causando la morte di almeno sei persone e diversi feriti. L'attacco ha coinvolto oltre 350 droni e 16 missili, con danni a edifici residenziali e a un ospedale.",
+        "video": "https://www.youtube.com/watch?v=qr6Em_e9vWc",
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55781,15 +55781,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo e droni contro civili a Kyiv",
         "date": "27/06/25",
-        "type": "Explosions/Remote violence",
+        "type": "Airstrike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://acleddata.com/update/ukraine-war-situation-update-21-27-june-2025",
+        "verification": "verified",
+        "description": "Il 27 giugno 2025, attacchi aerei e droni russi hanno colpito Kyiv, causando almeno 85 morti tra i civili. Le forze russe hanno intensificato le operazioni con 24 attacchi a lungo raggio, inclusi droni e missili.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55803,15 +55803,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo con droni contro la capitale Kyiv",
         "date": "18/07/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://english.mathrubhumi.com/news/world/kyiv-drone-attack-russian-strike-wounded-q0j6z8lh",
+        "verification": "verified",
+        "description": "Nella notte del 18 luglio 2025, attacchi aerei russi con droni hanno colpito Kyiv, causando almeno 4 morti e 20 feriti. Le forze aeree ucraine hanno intercettato 406 droni e missili. Danni significativi in diversi distretti.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55825,15 +55825,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo con droni contro infrastrutture civili a Kyiv",
         "date": "25/07/25",
-        "type": "Explosions/Remote violence",
+        "type": "Drone Strike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://acleddata.com/update/ukraine-war-situation-update-26-july-1-august-2025",
+        "verification": "verified",
+        "description": "Il 25 luglio 2025, attacchi aerei russi con droni hanno colpito Kyiv, causando almeno 31 morti e 179 feriti. La maggior parte delle vittime Ã¨ stata registrata a seguito del crollo di edifici residenziali. I droni utilizzati includono modelli di fabbricazione russa.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
@@ -55847,15 +55847,15 @@
         ]
       },
       "properties": {
-        "title": "Explosions/Remote violence - Air/drone strike",
+        "title": "Attacco aereo e droni contro infrastrutture civili a Kyiv",
         "date": "15/08/25",
-        "type": "Explosions/Remote violence",
+        "type": "Airstrike",
         "location": "Kyiv, Europe, Ukraine",
-        "link": "",
-        "verification": "not verified",
-        "description": "",
+        "link": "https://understandingwar.org/research/russia-ukraine/russian-offensive-campaign-assessment-august-15-2025/",
+        "verification": "verified",
+        "description": "Il 15 agosto 2025, Kyiv Ã¨ stata colpita da un attacco aereo e droni russi, causando 16 morti e 155 feriti. Le forze russe hanno lanciato missili Iskander e droni Shahed, danneggiando gravemente aree residenziali e infrastrutture vitali.",
         "video": "",
-        "intensity": 0.2,
+        "intensity": 1.0,
         "actor_code": "RUS"
       }
     },
