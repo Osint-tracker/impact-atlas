@@ -1,220 +1,542 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Impact Atlas | Conflict Monitor</title>
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Merriweather:wght@700&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Merriweather:wght@700&family=Rajdhani:wght@500;600;700&display=swap"
+    rel="stylesheet">
+
   <link rel="preload" href="assets/data/events.geojson" as="fetch" crossorigin>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css" />
-  
+
   <link rel="stylesheet" href="assets/css/style.css">
 
   <style>
+    /* --- INTEGRATIONS & OVERRIDES --- */
+
+    /* 1. Stili per i Tab della Sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      /* Importante per gestire lo scroll interno */
+    }
+
+    .sidebar-tabs {
+      display: flex;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+
+    .s-tab-btn {
+      flex: 1;
+      padding: 15px;
+      background: transparent;
+      border: none;
+      color: #64748b;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .s-tab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .s-tab-btn.active {
+      color: #f59e0b;
+      /* Amber - Tuo colore accent */
+      border-bottom: 2px solid #f59e0b;
+      background: linear-gradient(to top, rgba(245, 158, 11, 0.1), transparent);
+    }
+
+    /* 2. Gestione Contenuto Tab */
+    .sidebar-content-wrapper {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .s-tab-content {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+
+    .s-tab-content.active {
+      display: flex;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Riadattamento Scroll Area esistente */
+    .sidebar-scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    /* 3. Stili Nuovi per Selettore Mappe (Layer Cards) */
+    .layer-section-title {
+      font-size: 11px;
+      color: #64748b;
+      margin: 10px 0 15px 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .layer-section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #334155;
+    }
+
+    .map-layer-card {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid #334155;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .map-layer-card:hover {
+      border-color: #64748b;
+      background: rgba(30, 41, 59, 0.8);
+    }
+
+    .map-layer-card.active {
+      background: rgba(245, 158, 11, 0.1);
+      border-color: #f59e0b;
+      box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.2);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .card-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #f1f5f9;
+    }
+
+    .card-desc {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    .badge-source {
+      font-size: 0.65rem;
+      padding: 1px 4px;
+      border-radius: 3px;
+      margin-left: 6px;
+      border: 1px solid;
+      vertical-align: middle;
+    }
+
+    .badge-ua {
+      color: #ffd700;
+      border-color: #ffd700;
+    }
+
+    .badge-us {
+      color: #38bdf8;
+      border-color: #38bdf8;
+    }
+
+    .badge-ru {
+      color: #ef4444;
+      border-color: #ef4444;
+    }
+
+    .status-dot {
+      color: #475569;
+      font-size: 1rem;
+    }
+
+    .map-layer-card.active .status-dot {
+      color: #f59e0b;
+      text-shadow: 0 0 8px #f59e0b;
+    }
+
+    /* Toggle Switch Tech */
+    .tech-toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .tech-toggle-label {
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tech-switch {
+      position: relative;
+      width: 36px;
+      height: 18px;
+      background: #334155;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+
+    .tech-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      background: #94a3b8;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+
+    .tech-toggle-row input {
+      display: none;
+    }
+
+    .tech-toggle-row input:checked+.tech-switch {
+      background: rgba(245, 158, 11, 0.3);
+      border: 1px solid #f59e0b;
+    }
+
+    .tech-toggle-row input:checked+.tech-switch::after {
+      transform: translateX(18px);
+      background: #f59e0b;
+    }
+
+    /* --- END INTEGRATIONS --- */
+
+
+    /* Tieni gli stili originali per la mappa e overlay */
     .map-overlay-controls {
-        position: absolute;
-        bottom: 20px;
-        left: 20px;
-        right: 20px;
-        z-index: 999; /* Sopra la mappa ma sotto eventuali modali */
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        background: rgba(15, 23, 42, 0.9); /* Dark theme compatibile */
-        padding: 10px 20px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(4px);
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: rgba(15, 23, 42, 0.9);
+      padding: 10px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(4px);
     }
-    
+
     .map-btn {
-        background: #334155;
-        border: 1px solid #475569;
-        color: white;
-        padding: 8px 12px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.85rem;
-        transition: all 0.2s;
-        display: flex; align-items: center; gap: 6px;
-        white-space: nowrap;
+      background: #334155;
+      border: 1px solid #475569;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
     }
-    .map-btn:hover { background: #475569; }
-    .map-btn.active { background: #f59e0b; color: #0f172a; border-color: #f59e0b; font-weight: 600; }
+
+    .map-btn:hover {
+      background: #475569;
+    }
+
+    .map-btn.active {
+      background: #f59e0b;
+      color: #0f172a;
+      border-color: #f59e0b;
+      font-weight: 600;
+    }
 
     .slider-container {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .range-slider {
-        width: 100%;
-        -webkit-appearance: none;
-        background: transparent;
-        cursor: pointer;
-        margin-top: 5px;
+      width: 100%;
+      -webkit-appearance: none;
+      background: transparent;
+      cursor: pointer;
+      margin-top: 5px;
     }
-    
+
     .range-slider::-webkit-slider-runnable-track {
-        background: #475569;
-        height: 6px;
-        border-radius: 3px;
+      background: #475569;
+      height: 6px;
+      border-radius: 3px;
     }
+
     .range-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        background: #f59e0b;
-        height: 16px; width: 16px;
-        border-radius: 50%;
-        margin-top: -5px;
-        border: 2px solid #0f172a;
-        box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+      -webkit-appearance: none;
+      background: #f59e0b;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      margin-top: -5px;
+      border: 2px solid #0f172a;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
     }
-    
+
     .date-display {
-        color: #94a3b8;
-        font-size: 0.75rem;
-        font-family: 'JetBrains Mono', monospace;
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
     }
   </style>
 </head>
+
 <body>
 
   <header class="acled-header">
     <div class="header-content">
-        <div class="brand">
-          <h1>IMPACT<span>ATLAS</span></h1>
-          <span class="subtitle" style="color:var(--text-muted); font-size:0.8rem; margin-left:10px;">Global Conflict Monitor</span>
-        </div>
-        <nav>
-          <a href="#" class="active">Dashboard</a>
-          <a href="#methodology">Metodologia</a>
-          <a href="#data">Esporta Dati</a>
-          <a href="#" class="btn-primary" style="padding: 5px 15px;">Accedi</a>
-        </nav>
+      <div class="brand">
+        <h1>IMPACT<span>ATLAS</span></h1>
+        <span class="subtitle" style="color:#94a3b8; font-size:0.8rem; margin-left:10px;">Global Conflict Monitor</span>
+      </div>
+      <nav>
+        <a href="#" class="active">Dashboard</a>
+        <a href="#methodology">Metodologia</a>
+        <a href="#data">Esporta Dati</a>
+        <a href="#" class="btn-primary" style="padding: 5px 15px;">Accedi</a>
+      </nav>
     </div>
   </header>
 
   <div class="dashboard-container">
-    
+
     <aside class="sidebar">
-  
-  <div class="sidebar-header-wrapper">
-    <div class="sidebar-title">FILTRI OPERATIVI</div>
-    
-    <div class="search-box">
-      <i class="fa-solid fa-magnifying-glass search-icon"></i>
-      <input type="text" id="textSearch" placeholder="Cerca evento, città...">
-      
-      <div class="info-icon-wrapper" data-tooltip="Cerca nel titolo o nella descrizione dell'evento (es. 'Odessa', 'Drone'). Premi INVIO per cercare.">
-        <i class="fa-solid fa-circle-info"></i>
+
+      <div class="sidebar-tabs">
+        <button class="s-tab-btn active" onclick="switchSidebarTab('filters')">
+          <i class="fa-solid fa-filter"></i> FILTRI
+        </button>
+        <button class="s-tab-btn" onclick="switchSidebarTab('layers')">
+          <i class="fa-solid fa-layer-group"></i> MAPPE
+        </button>
       </div>
-    </div>
-  </div>
 
-  <div class="sidebar-scroll-area">
-    
-    <div class="filter-block">
-      <label>
-        Finestra Temporale
-        <span class="info-icon-wrapper" data-tooltip="Mostra solo eventi accaduti tra queste due date.">
-          <i class="fa-solid fa-circle-info"></i>
-        </span>
-      </label>
-      <div class="date-group">
-        <input type="date" id="startDate" class="clean-input">
-        <span class="date-arrow"><i class="fa-solid fa-arrow-right"></i></span>
-        <input type="date" id="endDate" class="clean-input">
+      <div class="sidebar-content-wrapper">
+
+        <div id="sidebar-tab-filters" class="s-tab-content active">
+
+          <div class="sidebar-header-wrapper">
+            <div class="search-box" style="margin-top: 15px;">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="textSearch" placeholder="Cerca evento, città...">
+
+              <div class="info-icon-wrapper" data-tooltip="Cerca nel titolo o descrizione.">
+                <i class="fa-solid fa-circle-info"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="sidebar-scroll-area">
+
+            <div class="filter-block">
+              <label>
+                Finestra Temporale
+                <span class="info-icon-wrapper" data-tooltip="Filtra per data.">
+                  <i class="fa-solid fa-circle-info"></i>
+                </span>
+              </label>
+              <div class="date-group">
+                <input type="date" id="startDate" class="clean-input">
+                <span class="date-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                <input type="date" id="endDate" class="clean-input">
+              </div>
+            </div>
+
+            <div class="filter-block">
+              <label>Categoria Evento</label>
+              <div class="custom-select">
+                <select id="chartTypeFilter" class="clean-input">
+                  <option value="">Tutte le categorie</option>
+                </select>
+                <i class="fa-solid fa-chevron-down select-arrow"></i>
+              </div>
+            </div>
+
+            <div class="filter-block">
+              <label>Attori</label>
+              <div class="custom-select">
+                <select id="actorFilter" class="clean-input">
+                  <option value="">Tutti gli attori</option>
+                  <option value="UKR">Ucraina (UKR)</option>
+                  <option value="RUS">Russia (RUS)</option>
+                  <option value="UNK">Sconosciuto / Non attribuito</option>
+                </select>
+                <i class="fa-solid fa-chevron-down select-arrow"></i>
+              </div>
+            </div>
+
+            <div class="filter-block">
+              <label>Livello di Minaccia</label>
+              <div class="toggle-container">
+
+                <label class="toggle-card">
+                  <input type="checkbox" checked value="critical">
+                  <div class="card-content"><span class="dot red"></span> Critico</div>
+                  <i class="fa-solid fa-check check-icon"></i>
+                </label>
+
+                <label class="toggle-card">
+                  <input type="checkbox" checked value="high">
+                  <div class="card-content"><span class="dot orange"></span> Alto</div>
+                  <i class="fa-solid fa-check check-icon"></i>
+                </label>
+
+                <label class="toggle-card">
+                  <input type="checkbox" checked value="medium">
+                  <div class="card-content"><span class="dot yellow"></span> Medio</div>
+                  <i class="fa-solid fa-check check-icon"></i>
+                </label>
+
+              </div>
+            </div>
+
+          </div>
+
+          <div class="sidebar-actions">
+            <button id="applyFilters" class="action-btn primary">Applica Filtri</button>
+            <button id="exportData" class="action-btn ghost"><i class="fa-solid fa-download"></i> CSV</button>
+          </div>
+        </div>
+
+        <div id="sidebar-tab-layers" class="s-tab-content">
+          <div class="sidebar-scroll-area">
+
+            <div class="layer-section-title">FONTE FRONTLINE</div>
+
+            <div class="map-layer-card active" onclick="selectMapSource(this, 'deepstate')">
+              <div class="card-header">
+                <div>
+                  <span class="card-title">DEEPSTATE</span>
+                  <span class="badge-source badge-ua">UA</span>
+                </div>
+                <i class="fa-solid fa-circle-dot status-dot"></i>
+              </div>
+              <div class="card-desc">Aggiornamento live. Fonte primaria basata su prove visive.</div>
+            </div>
+
+            <div class="map-layer-card" onclick="selectMapSource(this, 'isw')">
+              <div class="card-header">
+                <div>
+                  <span class="card-title">ISW RESEARCH</span>
+                  <span class="badge-source badge-us">US</span>
+                </div>
+                <i class="fa-regular fa-circle status-dot"></i>
+              </div>
+              <div class="card-desc">Analisi conservativa con aggiornamento giornaliero.</div>
+            </div>
+
+            <div class="map-layer-card" style="opacity: 0.5; cursor: not-allowed;">
+              <div class="card-header">
+                <div>
+                  <span class="card-title">RYBAR</span>
+                  <span class="badge-source badge-ru">RU</span>
+                </div>
+                <i class="fa-solid fa-lock status-dot"></i>
+              </div>
+              <div class="card-desc">Dati vettoriali non disponibili. Report statici Telegram.</div>
+            </div>
+
+            <div class="layer-section-title">DATI EXTRA</div>
+
+            <label class="tech-toggle-row">
+              <span class="tech-toggle-label"><i class="fa-solid fa-cloud-bolt"></i> Radar Meteo</span>
+              <input type="checkbox">
+              <div class="tech-switch"></div>
+            </label>
+
+            <label class="tech-toggle-row">
+              <span class="tech-toggle-label">
+                <i class="fa-solid fa-fire-flame-curved" style="color:#ef4444;"></i>
+                NASA FIRMS (Termico)
+              </span>
+              <input type="checkbox" onchange="toggleTechLayer('firms', this)">
+              <div class="tech-switch"></div>
+            </label>
+            <label class="tech-toggle-row">
+              <span class="tech-toggle-label"><i class="fa-solid fa-satellite"></i> Satellite (HIR)</span>
+              <input type="checkbox">
+              <div class="tech-switch"></div>
+            </label>
+
+            <label class="tech-toggle-row">
+              <span class="tech-toggle-label"><i class="fa-solid fa-shield-halved"></i> Fortificazioni</span>
+              <input type="checkbox" checked>
+              <div class="tech-switch"></div>
+            </label>
+
+          </div>
+        </div>
+
       </div>
-    </div>
-
-    <div class="filter-block">
-      <label>
-        Categoria Evento
-        <span class="info-icon-wrapper" data-tooltip="Filtra per tipologia tattica (es. Esplosioni, Battaglie).">
-          <i class="fa-solid fa-circle-info"></i>
-        </span>
-      </label>
-      <div class="custom-select">
-        <select id="chartTypeFilter" class="clean-input">
-          <option value="">Tutte le categorie</option>
-          </select>
-        <i class="fa-solid fa-chevron-down select-arrow"></i>
-      </div>
-    </div>
-
-    <div class="filter-block">
-      <label>
-        Attori
-        <span class="info-icon-wrapper" data-tooltip="Filtra usando i codici standardizzati (RUS = Forze Russe/Wagner, UKR = Forze Ucraine).">
-          <i class="fa-solid fa-circle-info"></i>
-        </span>
-      </label>
-      <div class="custom-select">
-        <select id="actorFilter" class="clean-input">
-          <option value="">Tutti gli attori</option>
-          <option value="UKR">Ucraina (UKR)</option>
-          <option value="RUS">Russia (RUS)</option>
-          <option value="UNK">Sconosciuto / Non attribuito</option>
-        </select>
-        <i class="fa-solid fa-chevron-down select-arrow"></i>
-      </div>
-    </div>
-
-    <div class="filter-block">
-      <label>
-        Livello di Minaccia
-        <span class="info-icon-wrapper" data-tooltip="Filtra in base all'intensità stimata dell'impatto.">
-          <i class="fa-solid fa-circle-info"></i>
-        </span>
-      </label>
-      <div class="toggle-container">
-        
-        <label class="toggle-card">
-          <input type="checkbox" checked value="critical">
-          <div class="card-content"><span class="dot red"></span> Critico</div>
-          <i class="fa-solid fa-check check-icon"></i>
-        </label>
-
-        <label class="toggle-card">
-          <input type="checkbox" checked value="high">
-          <div class="card-content"><span class="dot orange"></span> Alto</div>
-          <i class="fa-solid fa-check check-icon"></i>
-        </label>
-
-        <label class="toggle-card">
-          <input type="checkbox" checked value="medium">
-          <div class="card-content"><span class="dot yellow"></span> Medio</div>
-          <i class="fa-solid fa-check check-icon"></i>
-        </label>
-
-      </div>
-    </div>
-
-  </div>
-
-  <div class="sidebar-actions">
-    <button id="applyFilters" class="action-btn primary">Applica Filtri</button>
-    <button id="exportData" class="action-btn ghost"><i class="fa-solid fa-download"></i> CSV</button>
-  </div>
-
-</aside>
+    </aside>
 
     <main class="main-content">
-      
+
       <div class="kpi-bar">
         <div class="kpi-card">
           <span class="kpi-label">Eventi Totali</span>
@@ -225,26 +547,26 @@
           <span class="kpi-value" id="lastUpdate" style="font-size:1.2rem;">Loading...</span>
         </div>
         <div class="kpi-card" id="categoryStats">
-           <span class="kpi-label">Stato Sistema</span>
-           <span class="kpi-value" style="color:var(--primary); font-size:1.2rem;">ONLINE</span>
+          <span class="kpi-label">Stato Sistema</span>
+          <span class="kpi-value" style="color:#f59e0b; font-size:1.2rem;">ONLINE</span>
         </div>
       </div>
 
       <div class="map-container-wrapper" style="position: relative;">
         <div id="map"></div>
-        
+
         <div class="map-overlay-controls">
-            <button id="heatmapToggle" class="map-btn" onclick="toggleVisualMode()">
-                <i class="fa-solid fa-layer-group"></i> Heatmap
-            </button>
-            
-            <div class="slider-container">
-                <div class="date-display">
-                    <span id="sliderStartDate">...</span>
-                    <span id="sliderCurrentDate" style="color: #f59e0b; font-weight: bold;">LIVE</span>
-                </div>
-                <input type="range" id="timeSlider" class="range-slider" min="0" max="100" value="100" disabled>
+          <button id="heatmapToggle" class="map-btn" onclick="toggleVisualMode()">
+            <i class="fa-solid fa-layer-group"></i> Heatmap
+          </button>
+
+          <div class="slider-container">
+            <div class="date-display">
+              <span id="sliderStartDate">...</span>
+              <span id="sliderCurrentDate" style="color: #f59e0b; font-weight: bold;">LIVE</span>
             </div>
+            <input type="range" id="timeSlider" class="range-slider" min="0" max="100" value="100" disabled>
+          </div>
         </div>
       </div>
 
@@ -264,53 +586,63 @@
       </div>
 
       <div class="timeline-section-wrapper">
-        
-        <div class="section-header" style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:end;">
+
+        <div class="section-header"
+          style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:end;">
           <div>
             <h3>Analisi Operativa</h3>
-            <p style="color:var(--text-muted);">Monitoraggio eventi in tempo reale</p>
+            <p style="color:#94a3b8;">Monitoraggio eventi in tempo reale</p>
           </div>
-          
-          <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 5px 15px; border-radius: 20px; display:flex; align-items:center; gap:10px;">
-            <i class="fa-solid fa-robot" style="color:var(--primary);"></i>
-            <span style="font-size:0.8rem; color:var(--primary);"><strong>AI Insight:</strong> Attività elevata nel settore Sud.</span>
+
+          <div
+            style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 5px 15px; border-radius: 20px; display:flex; align-items:center; gap:10px;">
+            <i class="fa-solid fa-robot" style="color:#f59e0b;"></i>
+            <span style="font-size:0.8rem; color:#f59e0b;"><strong>AI Insight:</strong> Attività elevata nel settore
+              Sud.</span>
           </div>
         </div>
 
         <div class="view-switcher">
-          <button class="view-btn active" onclick="switchView('kanban', this)"><i class="fa-solid fa-clipboard-list"></i> War Room</button>
-          <button class="view-btn" onclick="switchView('visual', this)"><i class="fa-solid fa-images"></i> Visual Tracker</button>
-          <button class="view-btn" onclick="switchView('intel', this)"><i class="fa-solid fa-satellite-dish"></i> Intel Feed</button>
+          <button class="view-btn active" onclick="switchView('kanban', this)"><i
+              class="fa-solid fa-clipboard-list"></i> War Room</button>
+          <button class="view-btn" onclick="switchView('visual', this)"><i class="fa-solid fa-images"></i> Visual
+            Tracker</button>
+          <button class="view-btn" onclick="switchView('intel', this)"><i class="fa-solid fa-satellite-dish"></i> Intel
+            Feed</button>
         </div>
 
         <div id="view-kanban" class="view-container active">
           <div class="kanban-board">
             <div class="kanban-column" id="col-ground">
-                <div class="column-header"><span><i class="fa-solid fa-person-rifle"></i> Terra & Scontri</span> <span class="count-badge">0</span></div>
-                <div class="column-content"></div>
+              <div class="column-header"><span><i class="fa-solid fa-person-rifle"></i> Terra & Scontri</span> <span
+                  class="count-badge">0</span></div>
+              <div class="column-content"></div>
             </div>
             <div class="kanban-column" id="col-air">
-                <div class="column-header"><span><i class="fa-solid fa-jet-fighter"></i> Aereo & Deep Strike</span> <span class="count-badge">0</span></div>
-                <div class="column-content"></div>
+              <div class="column-header"><span><i class="fa-solid fa-jet-fighter"></i> Aereo & Deep Strike</span> <span
+                  class="count-badge">0</span></div>
+              <div class="column-content"></div>
             </div>
             <div class="kanban-column" id="col-strat">
-                <div class="column-header"><span><i class="fa-solid fa-city"></i> Civile & Strategico</span> <span class="count-badge">0</span></div>
-                <div class="column-content"></div>
+              <div class="column-header"><span><i class="fa-solid fa-city"></i> Civile & Strategico</span> <span
+                  class="count-badge">0</span></div>
+              <div class="column-content"></div>
             </div>
           </div>
         </div>
 
         <div id="view-visual" class="view-container">
           <div class="visual-grid" id="visual-grid-content">
-            </div>
+          </div>
         </div>
 
         <div id="view-intel" class="view-container">
           <div class="intel-layout">
             <div class="intel-list" id="intel-list-content">
-              </div>
+            </div>
             <div class="intel-detail" id="intel-detail-content">
-              <div style="height:100%; display:flex; align-items:center; justify-content:center; color:#64748b; flex-direction:column;">
+              <div
+                style="height:100%; display:flex; align-items:center; justify-content:center; color:#64748b; flex-direction:column;">
                 <i class="fa-solid fa-crosshairs" style="font-size:3rem; margin-bottom:15px; opacity:0.3;"></i>
                 <p>Seleziona un evento dal feed per visualizzare il dossier.</p>
               </div>
@@ -319,68 +651,109 @@
         </div>
 
       </div>
-      <script>
-        function switchView(viewName, btn) {
-            // UI Button Update
-            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            // View Container Update
-            document.querySelectorAll('.view-container').forEach(c => c.classList.remove('active'));
-            document.getElementById('view-' + viewName).classList.add('active');
-        }
-      </script>
 
-  <div id="videoModal" class="modal-overlay" onclick="closeModal(event)">
-    <div class="modal-content">
-      <span class="close-modal" onclick="closeModal(event)">&times;</span>
-      
-      <div class="modal-header">
-        <div style="flex-grow:1;">
-            <h3 id="modalTitle">Titolo Evento</h3>
-            <div class="modal-meta">
-            <span id="modalDate">Data</span>
-            <span id="modalType" class="modal-tag">Tipo</span>
+      <div id="videoModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+          <span class="close-modal" onclick="closeModal(event)">&times;</span>
+
+          <div class="modal-header">
+            <div style="flex-grow:1;">
+              <h3 id="modalTitle">Titolo Evento</h3>
+              <div class="modal-meta">
+                <span id="modalDate">Data</span>
+                <span id="modalType" class="modal-tag">Tipo</span>
+              </div>
             </div>
-        </div>
-        
-        <div class="confidence-container">
-          <canvas id="confidenceChart"></canvas>
-          <div style="text-align:center; font-size:0.7rem; color:#94a3b8; margin-top:5px;">AFFIDABILITÀ</div>
+
+            <div class="confidence-container">
+              <canvas id="confidenceChart"></canvas>
+              <div style="text-align:center; font-size:0.7rem; color:#94a3b8; margin-top:5px;">AFFIDABILITÀ</div>
+            </div>
+          </div>
+
+          <p id="modalDesc"
+            style="color:#cbd5e1; line-height:1.6; margin-bottom:20px; padding-right: 130px; min-height:60px;"></p>
+
+          <div id="modalVideoContainer" style="margin-bottom:20px;"></div>
+
+          <div id="modalJuxtapose"></div>
+
         </div>
       </div>
 
-      <p id="modalDesc" style="color:#cbd5e1; line-height:1.6; margin-bottom:20px; padding-right: 130px; min-height:60px;"></p>
-      
-      <div id="modalVideoContainer" style="margin-bottom:20px;"></div>
-      
-      <div id="modalJuxtapose"></div>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 
-    </div>
-  </div>
+      <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+      <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-  
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-  
-  <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+      <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
-  
-  <script src="assets/js/charts.js"></script>
-  <script src="assets/js/map.js"></script>
-  
-  <script>
-    function closeModal(event) {
-        if (event.target.id === 'videoModal' || event.target.classList.contains('close-modal')) {
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+      <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
+
+      <script src="assets/js/charts.js"></script>
+      <script src="assets/js/map.js"></script>
+
+      <script>
+        // --- FUNZIONI DI SUPPORTO PER LA UI ---
+
+        function closeModal(event) {
+          if (event.target.id === 'videoModal' || event.target.classList.contains('close-modal')) {
             document.getElementById('videoModal').style.display = 'none';
             const videoContainer = document.getElementById('modalVideoContainer');
-            if(videoContainer) videoContainer.innerHTML = ''; 
+            if (videoContainer) videoContainer.innerHTML = '';
+          }
         }
-    }
-  </script>
+
+        function switchView(viewName, btn) {
+          // UI Button Update
+          document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          // View Container Update
+          document.querySelectorAll('.view-container').forEach(c => c.classList.remove('active'));
+          document.getElementById('view-' + viewName).classList.add('active');
+        }
+
+        // --- LOGICA TAB SIDEBAR (NUOVA) ---
+        function switchSidebarTab(tabName) {
+          // 1. Reset bottoni
+          document.querySelectorAll('.s-tab-btn').forEach(btn => btn.classList.remove('active'));
+          // 2. Attiva bottone cliccato
+          const activeBtn = document.querySelector(`.s-tab-btn[onclick="switchSidebarTab('${tabName}')"]`);
+          if (activeBtn) activeBtn.classList.add('active');
+
+          // 3. Reset contenuti
+          document.querySelectorAll('.s-tab-content').forEach(content => content.classList.remove('active'));
+          // 4. Mostra contenuto giusto
+          document.getElementById(`sidebar-tab-${tabName}`).classList.add('active');
+        }
+
+        // --- LOGICA SELEZIONE MAPPA (SOLO VISIVA PER ORA) ---
+        function selectMapSource(card, sourceName) {
+          // Reset card attive
+          document.querySelectorAll('.map-layer-card').forEach(c => {
+            c.classList.remove('active');
+            const icon = c.querySelector('.status-dot');
+            icon.classList.remove('fa-circle-dot');
+            icon.classList.remove('fa-solid');
+            icon.classList.add('fa-circle');
+            icon.classList.add('fa-regular');
+          });
+
+          // Attiva nuova card
+          card.classList.add('active');
+          const activeIcon = card.querySelector('.status-dot');
+          activeIcon.classList.remove('fa-circle');
+          activeIcon.classList.remove('fa-regular');
+          activeIcon.classList.add('fa-circle-dot');
+          activeIcon.classList.add('fa-solid');
+
+          console.log(`Mappa cambiata in: ${sourceName}`);
+          // TODO: Chiamata reale a Leaflet per cambiare GeoJSON
+        }
+      </script>
 
 </body>
+
 </html>

@@ -1,0 +1,12 @@
+# --- SICUREZZA (NON CANCELLARE MAI QUESTE RIGHE) ---
+.env
+osint_session
+osint_session.session
+
+# --- Log e file temporanei ---
+tracker_log.txt
+*.log
+
+# --- Python spazzatura (file compilati) ---
+__pycache__/
+*.pyc
