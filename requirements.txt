@@ -3,3 +3,4 @@ telethon
 ntscraper
 pandas
 nest_asyncio
+feedparser
