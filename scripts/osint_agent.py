@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import nest_asyncio
 from openai import OpenAI
@@ -159,67 +160,418 @@ def create_dummy_map(filename):
             json.dump(dummy_data, f)
 
 
-def update_maps():
-    print(f"\n🗺️ AVVIO AGGIORNAMENTO MAPPE (Safe Mode)...")
+# ==========================================
+# 🗺️ ROBUST MAP DOWNLOADER v3.1 - OPTIMIZED
+# ==========================================
+# Based on real-world testing: DeepState archive works, ISW needs alternatives
 
-    # Header per sembrare un browser vero (Cruciale per DeepState)
-    headers_browser = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept": "application/json, text/plain, */*"
+
+def download_with_retry(url, headers=None, max_retries=2, timeout=30):
+    """
+    Downloads a file with retry logic and proper error handling.
+    Returns: (success: bool, content: bytes or None)
+    """
+    for attempt in range(max_retries):
+        try:
+            r = requests.get(url, headers=headers,
+                             timeout=timeout, allow_redirects=True)
+
+            if r.status_code == 200:
+                return True, r.content
+            else:
+                if attempt == max_retries - 1:  # Only print on last attempt
+                    print(f"      ⚠️ HTTP {r.status_code}")
+
+        except requests.exceptions.Timeout:
+            if attempt == max_retries - 1:
+                print(f"      ⚠️ Timeout")
+        except requests.exceptions.ConnectionError:
+            if attempt == max_retries - 1:
+                print(f"      ⚠️ Connection Error")
+        except Exception as e:
+            if attempt == max_retries - 1:
+                print(f"      ⚠️ Error: {e}")
+
+        if attempt < max_retries - 1:
+            time.sleep(1)
+
+    return False, None
+
+
+def validate_geojson(content):
+    """
+    Validates that content is valid GeoJSON.
+    Returns: (valid: bool, data: dict or None)
+    """
+    try:
+        if isinstance(content, bytes):
+            data = json.loads(content.decode('utf-8'))
+        else:
+            data = json.loads(content)
+
+        if data.get('type') not in ['FeatureCollection', 'Feature']:
+            return False, None
+
+        if data.get('type') == 'FeatureCollection' and 'features' not in data:
+            return False, None
+
+        return True, data
+
+    except (json.JSONDecodeError, UnicodeDecodeError, AttributeError):
+        return False, None
+
+
+def save_geojson_safe(path, content, validate=True):
+    """
+    Safely saves GeoJSON with validation and backup.
+    """
+    try:
+        if validate:
+            valid, data = validate_geojson(content)
+            if not valid:
+                print(f"      ⚠️ Invalid GeoJSON format")
+                return False
+
+        # Create backup of existing file
+        if os.path.exists(path):
+            backup_path = path + '.backup'
+            shutil.copy2(path, backup_path)
+
+        # Write new file
+        with open(path, 'wb') as f:
+            if isinstance(content, bytes):
+                f.write(content)
+            else:
+                f.write(json.dumps(content, ensure_ascii=False,
+                        indent=2).encode('utf-8'))
+
+        print(f"      ✅ Saved: {os.path.basename(path)}")
+
+        # Remove backup if successful
+        if os.path.exists(path + '.backup'):
+            os.remove(path + '.backup')
+
+        return True
+
+    except Exception as e:
+        print(f"      ❌ Save failed: {e}")
+
+        # Restore backup if it exists
+        backup_path = path + '.backup'
+        if os.path.exists(backup_path):
+            shutil.copy2(backup_path, path)
+            os.remove(backup_path)
+            print(f"      🔄 Restored from backup")
+
+        return False
+
+
+def create_emergency_geojson(filename):
+    """
+    Creates a valid but empty GeoJSON file as fallback.
+    """
+    target_path = os.path.join(DATA_DIR, filename)
+
+    emergency_data = {
+        "type": "FeatureCollection",
+        "features": [],
+        "properties": {
+            "source": "emergency_fallback",
+            "created": datetime.now().isoformat(),
+            "note": "Empty fallback file - original source unavailable"
+        }
     }
 
-    # --- 1. DEEPSTATE (Priorità API -> Fallback Mirror) ---
-    ds_success = False
-
-    # Tentativo A: API Ufficiale
     try:
-        print("   📡 Tentativo 1: DeepState API...")
-        # 1. Ottieni l'ID dell'ultima versione
-        hist_url = "https://deepstatemap.live/api/history"
-        r_hist = requests.get(hist_url, headers=headers_browser, timeout=10)
-
-        if r_hist.status_code == 200:
-            latest_id = r_hist.json()[0]['id']
-            # 2. Scarica il GeoJSON specifico
-            ds_url = f"https://deepstatemap.live/api/history/{latest_id}/geojson"
-            ds_success = download_file(
-                ds_url, 'frontline.geojson', headers_browser)
+        with open(target_path, 'w', encoding='utf-8') as f:
+            json.dump(emergency_data, f, indent=2, ensure_ascii=False)
+        print(f"      ⚠️ Created emergency fallback: {filename}")
+        return True
     except Exception as e:
-        print(f"      API Error: {e}")
+        print(f"      ❌ Failed to create emergency file: {e}")
+        return False
 
-    # Tentativo B: Mirror (Se API fallisce)
-    if not ds_success:
-        print("   📡 Tentativo 2: DeepState Mirror...")
-        # URL corretto senza typo 'daata'
-        mirror_url = "https://raw.githubusercontent.com/UaMap/data/main/data.geojson"
-        ds_success = download_file(mirror_url, 'frontline.geojson')
 
-    # Se tutto fallisce, crea file vuoto per non rompere il sito
-    if not ds_success:
-        create_dummy_map('frontline.geojson')
+def extract_latest_from_geojson(data):
+    """
+    Extracts the most recent feature from a GeoJSON with historical data.
+    Returns a clean FeatureCollection with just the latest state.
+    """
+    try:
+        if not data.get('features'):
+            return None
 
-    # --- 2. ISW (Mirror Lee Drake) ---
-    print("   📡 Scaricamento ISW Data...")
-    # URL corretto senza typo 'leedrakee5'
-    isw_url = "https://raw.githubusercontent.com/leedrake5/Russia-Ukraine/master/data/russia_ukraine.geojson"
-    isw_success = download_file(isw_url, 'frontline_isw.geojson')
+        # If features have a 'date' property, sort by it
+        features = data['features']
 
-    # Se fallisce, prova un mirror alternativo
-    if not isw_success:
-        print("      Fallback su mirror ISW alternativo...")
-        alt_isw = "https://raw.githubusercontent.com/OwlDevs/ISW-Data/main/geojson/latest.geojson"
-        isw_success = download_file(alt_isw, 'frontline_isw.geojson')
+        # Try to find the latest date
+        dated_features = []
+        for f in features:
+            props = f.get('properties', {})
+            date_str = props.get('date') or props.get(
+                'Date') or props.get('update_date')
 
-    if not isw_success:
-        # Se non abbiamo ISW, copiamo DeepState (se esiste) o creiamo vuoto
-        if os.path.exists(os.path.join(DATA_DIR, 'frontline.geojson')):
-            shutil.copy(os.path.join(DATA_DIR, 'frontline.geojson'),
-                        os.path.join(DATA_DIR, 'frontline_isw.geojson'))
-            print("      ⚠️ Usata copia DeepState per ISW (Backup).")
+            if date_str:
+                try:
+                    # Parse various date formats
+                    for fmt in ['%Y-%m-%d', '%d/%m/%Y', '%Y/%m/%d', '%d-%m-%Y']:
+                        try:
+                            date_obj = datetime.strptime(
+                                str(date_str).split()[0], fmt)
+                            dated_features.append((date_obj, f))
+                            break
+                        except:
+                            continue
+                except:
+                    pass
+
+        if dated_features:
+            # Sort by date and take the latest
+            dated_features.sort(key=lambda x: x[0], reverse=True)
+            latest_feature = dated_features[0][1]
         else:
-            create_dummy_map('frontline_isw.geojson')
+            # No dates found, just take the last feature
+            latest_feature = features[-1]
 
-    print("🏁 Mappe gestite.\n")
+        return {
+            "type": "FeatureCollection",
+            "features": [latest_feature],
+            "properties": {
+                "source": data.get('properties', {}).get('source', 'Unknown'),
+                "extracted": datetime.now().isoformat(),
+                "note": "Latest entry extracted from historical dataset"
+            }
+        }
+
+    except Exception as e:
+        print(f"      ⚠️ Extraction error: {e}")
+        return None
+
+
+def download_deepstate_map():
+    """
+    Downloads DeepState frontline data from cyterat's GitHub compressed archive.
+    This is the ONLY reliable DeepState source (daily files get 404).
+    """
+    print("\n   📡 DeepState Download (cyterat/compressed archive)")
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Accept": "application/json, application/octet-stream, */*"
+    }
+
+    # Strategy: Use compressed archive (ONLY working method)
+    archive_url = "https://github.com/cyterat/deepstate-map-data/raw/main/deepstate-map-data.geojson.gz"
+
+    print(f"      Downloading compressed archive...")
+    success, content = download_with_retry(archive_url, headers, max_retries=3)
+
+    if success:
+        try:
+            # Decompress gzip
+            print(f"      Decompressing...")
+            decompressed = gzip.decompress(content)
+
+            # Validate
+            valid, data = validate_geojson(decompressed)
+
+            if valid and data.get('features'):
+                print(
+                    f"      Found {len(data['features'])} historical entries")
+
+                # Extract latest entry
+                frontline_data = extract_latest_from_geojson(data)
+
+                if frontline_data:
+                    frontline_data['properties']['source'] = 'DeepState (cyterat archive)'
+                    frontline_data['properties']['url'] = archive_url
+
+                    target_path = os.path.join(DATA_DIR, 'frontline.geojson')
+                    if save_geojson_safe(target_path, json.dumps(frontline_data, indent=2).encode('utf-8')):
+                        return True
+
+        except Exception as e:
+            print(f"      ⚠️ Processing failed: {e}")
+
+    return False
+
+
+def download_isw_map():
+    """
+    Downloads ISW frontline data using multiple fallback sources.
+    Priority order based on reliability and update frequency.
+    """
+    print("\n   📡 ISW Download (Multi-source fallback)")
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Accept": "application/json, application/geo+json, */*",
+        "Referer": "https://storymaps.arcgis.com/"
+    }
+
+    # Priority sources for ISW data
+    sources = [
+        {
+            "name": "ISW ArcGIS FeatureServer",
+            "url": "https://services3.arcgis.com/6JC1jVGYHYnfDhvk/arcgis/rest/services/Ukraine_Control_All/FeatureServer/0/query?where=1%3D1&outFields=*&f=geojson",
+            "needs_processing": False
+        },
+        {
+            "name": "War Mapper (Aggregated ISW)",
+            "url": "https://raw.githubusercontent.com/War-Mapper/War-Mapper-Data/main/ukraine-control.geojson",
+            "needs_processing": False
+        },
+        {
+            "name": "UaWarData (Henry Schlottman)",
+            "url": "https://raw.githubusercontent.com/simonhuwiler/uawardata/main/data/units_current.geojson",
+            "needs_processing": True,  # This is unit positions, not frontlines
+            "fallback": True
+        }
+    ]
+
+    for source in sources:
+        if source.get('fallback'):
+            print(f"      Trying FALLBACK: {source['name']}")
+        else:
+            print(f"      Trying: {source['name']}")
+
+        success, content = download_with_retry(
+            source['url'], headers, max_retries=2)
+
+        if success:
+            valid, data = validate_geojson(content)
+
+            if valid:
+                # Add metadata
+                if 'properties' not in data:
+                    data['properties'] = {}
+
+                data['properties']['source'] = source['name']
+                data['properties']['download_time'] = datetime.now().isoformat()
+
+                target_path = os.path.join(DATA_DIR, 'frontline_isw.geojson')
+                if save_geojson_safe(target_path, json.dumps(data, indent=2).encode('utf-8')):
+                    return True
+
+    return False
+
+
+def check_file_age(filepath, max_age_days=7):
+    """
+    Checks if a file exists and is recent enough to use.
+    Returns: (exists, age_days, is_recent)
+    """
+    if not os.path.exists(filepath):
+        return False, None, False
+
+    age_seconds = datetime.now().timestamp() - os.path.getmtime(filepath)
+    age_days = age_seconds / 86400
+    is_recent = age_days <= max_age_days
+
+    return True, age_days, is_recent
+
+
+def update_maps():
+    """
+    Main update function with comprehensive error handling and smart fallback logic.
+    """
+    print(f"\n{'='*60}")
+    print(
+        f"🗺️  MAP DOWNLOADER v3.1 - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"{'='*60}")
+
+    results = {
+        'deepstate': False,
+        'isw': False,
+        'deepstate_cached': False,
+        'isw_cached': False
+    }
+
+    ds_path = os.path.join(DATA_DIR, 'frontline.geojson')
+    isw_path = os.path.join(DATA_DIR, 'frontline_isw.geojson')
+
+    # Check existing files
+    ds_exists, ds_age, ds_recent = check_file_age(ds_path, max_age_days=7)
+    isw_exists, isw_age, isw_recent = check_file_age(isw_path, max_age_days=7)
+
+    # 1. Download DeepState
+    try:
+        results['deepstate'] = download_deepstate_map()
+    except Exception as e:
+        print(f"   ❌ DeepState download failed: {e}")
+
+    # 2. Download ISW
+    try:
+        results['isw'] = download_isw_map()
+    except Exception as e:
+        print(f"   ❌ ISW download failed: {e}")
+
+    # 3. Smart Fallback Logic
+    print(f"\n   📊 Results Summary:")
+
+    # Handle DeepState
+    if results['deepstate']:
+        print(f"      ✅ DeepState: Downloaded successfully")
+    elif ds_exists:
+        if ds_recent:
+            print(
+                f"      ⚠️ DeepState: Using cached file (age: {ds_age:.1f} days)")
+            results['deepstate_cached'] = True
+        else:
+            print(
+                f"      ⚠️ DeepState: Cached file is OLD (age: {ds_age:.1f} days)")
+            results['deepstate_cached'] = True
+    else:
+        print(f"      ❌ DeepState: Creating emergency file")
+        create_emergency_geojson('frontline.geojson')
+
+    # Handle ISW
+    if results['isw']:
+        print(f"      ✅ ISW: Downloaded successfully")
+    elif isw_exists:
+        if isw_recent:
+            print(f"      ⚠️ ISW: Using cached file (age: {isw_age:.1f} days)")
+            results['isw_cached'] = True
+        else:
+            print(
+                f"      ⚠️ ISW: Cached file is OLD (age: {isw_age:.1f} days)")
+            results['isw_cached'] = True
+    elif results['deepstate'] or ds_exists:
+        # Copy DeepState to ISW
+        print(f"      🔄 ISW: Copying DeepState as fallback")
+        shutil.copy2(ds_path, isw_path)
+    else:
+        print(f"      ❌ ISW: Creating emergency file")
+        create_emergency_geojson('frontline_isw.geojson')
+
+    print(f"{'='*60}\n")
+
+    return results
+
+
+# ==========================================
+# 🔧 INTEGRATION EXAMPLE
+# ==========================================
+
+if __name__ == '__main__':
+    # For testing purposes
+    import requests
+    import time
+
+    # Set your data directory
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+    DATA_DIR = os.path.join(SCRIPT_DIR, '..', 'assets', 'data')
+    os.makedirs(DATA_DIR, exist_ok=True)
+
+    # Run the update
+    results = update_maps()
+
+    # Print final status
+    print("📋 Final Status:")
+    print(
+        f"   DeepState: {'✅ Fresh' if results['deepstate'] else ('⚠️ Cached' if results['deepstate_cached'] else '❌ Failed')}")
+    print(
+        f"   ISW: {'✅ Fresh' if results['isw'] else ('⚠️ Cached' if results['isw_cached'] else '❌ Failed')}")
 
 
 # ==========================================
