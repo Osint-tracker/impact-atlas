@@ -10,3 +10,9 @@ tracker_log.txt
 # --- Python spazzatura (file compilati) ---
 __pycache__/
 *.pyc
+
+# Aggiungi le regole al file .gitignore
+Add-Content .gitignore "`nscripts/service_account.json"
+Add-Content .gitignore "`n.env"
+Add-Content .gitignore "`n**/*.session"
+
