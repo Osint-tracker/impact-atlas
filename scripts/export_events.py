@@ -2,151 +2,79 @@ import json
 import gspread
 import os
 from google.oauth2.service_account import Credentials
-from pathlib import Path
 from dotenv import load_dotenv
 
-# Carica variabili d'ambiente (.env)
 load_dotenv()
-
-# --- CONFIGURAZIONE ---
-SHEET_URL = "https://docs.google.com/spreadsheets/d/1NEyNXzCSprGOw6gCmVVbtwvFmz8160Oag-WqG93ouoQ/edit?usp=sharing"
-# Percorso relativo alla cartella scripts
+SHEET_URL = "https://docs.google.com/spreadsheets/d/1NEyNXzCSprGOw6gCmVVbtwvFmz8160Oag-WqG93ouoQ/edit"
 OUTPUT_FILE = "../assets/data/events.geojson"
 
 
 def get_google_client():
-    """Connette a Google Sheets cercando il file json in varie posizioni"""
     scope = ['https://www.googleapis.com/auth/spreadsheets',
              'https://www.googleapis.com/auth/drive']
-
-    # Cartella dove si trova questo script
     script_dir = os.path.dirname(os.path.abspath(__file__))
-
-    # Possibili posizioni del file
-    paths_to_check = [
-        # Dentro /scripts
-        os.path.join(script_dir, 'service_account.json'),
-        # Nella cartella principale
-        os.path.join(script_dir, '..', 'service_account.json')
-    ]
-
-    json_key_path = None
-    for path in paths_to_check:
-        if os.path.exists(path):
-            json_key_path = path
-            break
-
-    if not json_key_path:
-        raise FileNotFoundError(
-            f"Errore: Non trovo 'service_account.json'. Controlla di averlo messo nella cartella principale o in 'scripts'.")
-
-    print(f"🔑 Trovate credenziali in: {json_key_path}")  # Debug info
-    creds = Credentials.from_service_account_file(json_key_path, scopes=scope)
-    return gspread.authorize(creds)
-
-
-def map_icon_by_type(event_type):
-    """Assegna un'icona basata sul tipo di evento"""
-    event_type = str(event_type).lower()
-    if "missile" in event_type or "strike" in event_type:
-        return "💥"
-    if "drone" in event_type:
-        return "🚁"
-    if "fire" in event_type or "incendio" in event_type:
-        return "🔥"
-    if "artillery" in event_type:
-        return "💣"
-    if "clash" in event_type or "combat" in event_type:
-        return "⚔️"
-    return "⚠️"  # Default
+    paths = [os.path.join(script_dir, 'service_account.json'), os.path.join(
+        script_dir, '..', 'service_account.json')]
+    json_path = next((p for p in paths if os.path.exists(p)), None)
+    if not json_path:
+        raise FileNotFoundError("Service account json non trovato")
+    return gspread.authorize(Credentials.from_service_account_file(json_path, scopes=scope))
 
 
 def main():
-    print("🌍 Avvio esportazione eventi da Google Sheet a GeoJSON...")
-
+    print("🌍 Exporting Events...")
     try:
-        # 1. Connessione
         gc = get_google_client()
         sh = gc.open_by_url(SHEET_URL)
-        worksheet = sh.get_worksheet(0)
-
-        # 2. Scarica tutti i dati
-        records = worksheet.get_all_records()
-        print(f"📊 Trovate {len(records)} righe nel foglio.")
+        records = sh.get_worksheet(0).get_all_records()
 
         features = []
-        skipped = 0
-
         for row in records:
-            # Filtra: Solo eventi VERIFICATI
-            if str(row.get('Verification', '')).lower() != 'verified':
-                continue
-
-            # Controllo Coordinate
+            # Esportiamo SOLO se abbiamo coordinate valide
             try:
-                lat = row.get('Latitude')
-                lon = row.get('Longitude')
-
-                # Se le coordinate sono vuote o stringhe strane, salta
-                if not lat or not lon:
-                    skipped += 1
+                lat = float(str(row.get('Latitude', 0)).replace(',', '.'))
+                lon = float(str(row.get('Longitude', 0)).replace(',', '.'))
+                if lat == 0 or lon == 0:
                     continue
-
-                lat = float(str(lat).replace(',', '.'))
-                lon = float(str(lon).replace(',', '.'))
-            except ValueError:
-                skipped += 1
+            except:
                 continue
 
-            # Costruisci la "Feature" GeoJSON
+            # Gestione Immagini e Fonti
+            # Cerchiamo colonne come 'Image', 'Video' o 'Media'
+            media_url = row.get('Video') or row.get(
+                'Image') or row.get('Media') or ""
+            source_url = row.get('Source') or "Unknown Source"
+
+            # Pulizia Source (rende cliccabile se è un URL grezzo)
+            if "t.me" in source_url and not source_url.startswith("http"):
+                source_url = "https://" + source_url
+
             feature = {
                 "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    # GeoJSON vuole PRIMA Longitude, POI Latitude
-                    "coordinates": [lon, lat]
-                },
+                "geometry": {"type": "Point", "coordinates": [lon, lat]},
                 "properties": {
-                    "id": str(row.get('ID', '')),
-                    "title": row.get('Title', 'Evento'),
-                    "type": row.get('Type', 'Unknown'),
-                    "description": row.get('Description', ''),
-                    "date": row.get('Date', ''),
-                    "source": row.get('Source', ''),
-                    "intensity": row.get('Intensity', 0.5),
-                    "icon": map_icon_by_type(row.get('Type', ''))
+                    "title": row.get('Title'),
+                    "type": row.get('Type', 'unknown').lower(),
+                    "description": row.get('Description'),
+                    "date": row.get('Date'),
+                    "source": source_url,  # <--- ECCO LA FONTE
+                    "image": media_url,    # <--- ECCO L'IMMAGINE
+                    "intensity": float(str(row.get('Intensity', 0.5)).replace(',', '.')),
+                    "verified": True
                 }
             }
             features.append(feature)
 
-        # 3. Creazione oggetto GeoJSON finale
-        geojson = {
-            "type": "FeatureCollection",
-            "metadata": {
-                "generated_at": "Today",
-                "count": len(features)
-            },
-            "features": features
-        }
-
-        # 4. Salvataggio su file
-        # Calcola percorso assoluto per evitare errori
+        # Salvataggio
+        geojson = {"type": "FeatureCollection", "features": features}
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        output_path = os.path.join(script_dir, OUTPUT_FILE)
-
-        # Assicurati che la cartella esista
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(os.path.join(script_dir, OUTPUT_FILE), 'w', encoding='utf-8') as f:
             json.dump(geojson, f, indent=2, ensure_ascii=False)
 
-        print(f"✅ Esportazione completata!")
-        print(f"   - Eventi salvati: {len(features)}")
-        print(f"   - Eventi saltati (no coords/non verificati): {skipped}")
-        print(f"   - File salvato in: {output_path}")
+        print(f"✅ Export completato: {len(features)} eventi validi.")
 
     except Exception as e:
-        print(f"❌ Errore critico: {e}")
+        print(f"❌ Errore: {e}")
 
 
 if __name__ == "__main__":

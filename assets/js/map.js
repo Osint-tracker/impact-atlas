@@ -201,17 +201,89 @@ function createMarker(e) {
 }
 
 function createPopupContent(e) {
+  // Codifica i dati per il modale
   const eventData = encodeURIComponent(JSON.stringify(e));
   const color = getColor(e.intensity);
-  return `<div class="acled-popup" style="color:#334155;">
-    <div style="border-left: 4px solid ${color}; padding-left: 10px; margin-bottom: 8px;">
-        <h5 style="margin:0; font-weight:700; font-size:0.95rem;">${e.title}</h5>
-        <small style="color:#64748b;">${e.date} | ${e.type}</small>
-    </div>
-    <button onclick="openModal('${eventData}')" class="btn-primary" style="padding:6px; font-size:0.8rem; margin-top:5px;">
-        <i class="fa-solid fa-expand"></i> Apri Dossier
-    </button>
-  </div>`;
+
+  // --- GESTIONE FONTE (DESIGN PROFESSIONALE) ---
+  let sourceFooter = '';
+
+  if (e.source && e.source !== 'Unknown Source') {
+    const url = e.source.startsWith('http') ? e.source : '#';
+    // Se l'URL è lungo, mostriamo solo il dominio o "Fonte Originale"
+    let domain = "Fonte Originale";
+    try {
+      if (url !== '#') domain = new URL(url).hostname.replace('www.', '');
+    } catch (err) { }
+
+    // Footer con stile "scheda" leggermente diverso
+    sourceFooter = `
+        <div style="
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #94a3b8;
+        ">
+            <span style="display:flex; align-items:center; gap:5px;">
+                <i class="fa-solid fa-link"></i> Fonte:
+            </span>
+            <a href="${url}" target="_blank" style="
+                color: #3b82f6; 
+                text-decoration: none; 
+                font-weight: 600; 
+                background: rgba(59, 130, 246, 0.1); 
+                padding: 2px 6px; 
+                border-radius: 4px;
+                transition: background 0.2s;
+            ">
+                ${domain} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.6rem;"></i>
+            </a>
+        </div>
+      `;
+  }
+
+  // --- STRUTTURA POPUP ---
+  return `
+    <div class="acled-popup" style="color:#334155; font-family: 'Inter', sans-serif; min-width: 200px;">
+        
+        <div style="border-left: 4px solid ${color}; padding-left: 12px; margin-bottom: 12px;">
+            <h5 style="margin:0; font-weight:700; font-size:0.95rem; line-height:1.2;">
+                ${e.title}
+            </h5>
+            <div style="color:#64748b; font-size:0.75rem; margin-top:4px; display:flex; gap:10px;">
+                <span><i class="fa-regular fa-calendar"></i> ${e.date}</span>
+                <span><i class="fa-solid fa-tag"></i> ${e.type}</span>
+            </div>
+        </div>
+
+        <div style="font-size:0.85rem; line-height:1.5; color:#475569; margin-bottom:12px;">
+            ${e.description ? (e.description.length > 100 ? e.description.substring(0, 100) + '...' : e.description) : 'Nessuna descrizione disponibile.'}
+        </div>
+
+        <button onclick="openModal('${eventData}')" class="btn-primary" style="
+            width:100%; 
+            padding: 8px; 
+            font-size:0.8rem; 
+            background: #1e293b; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 6px;
+        ">
+            <i class="fa-solid fa-expand"></i> Apri Dossier Completo
+        </button>
+
+        ${sourceFooter}
+
+    </div>`;
 }
 
 // --- LOGICA MODALE COMPLETA (RIPRISTINATA) ---
@@ -409,6 +481,83 @@ window.toggleTechLayer = function (layerName, checkbox) {
   }
   // Qui puoi aggiungere altri casi per meteo, etc.
 };
+
+// ... altre funzioni ...
+
+// --- QUESTA È LA FUNZIONE CHE AGGIORNA TUTTO ---
+window.updateMap = function (events) {
+  window.currentFilteredEvents = events;
+  resetSliderToMax();
+
+  // 1. Disegna i punti sulla mappa
+  renderInternal(window.currentFilteredEvents);
+
+  // 2. AGGIUNTA FONDAMENTALE: Aggiorna anche la griglia visuale!
+  renderVisualGrid(window.currentFilteredEvents);
+};
+
+// ... altre funzioni ...
+
+// --- FUNZIONE VISUAL TRACKER (Incollala in fondo al file) ---
+function renderVisualGrid(events) {
+  const grid = document.getElementById('visual-grid-content');
+  if (!grid) return; // Se non siamo nella tab visuale, esci
+
+  grid.innerHTML = '';
+
+  // Filtra: solo eventi con Immagini O Video Youtube/Esterni
+  const visualEvents = events.filter(e => e.image || (e.video && e.video !== 'null'));
+
+  visualEvents.forEach(e => {
+    const item = document.createElement('div');
+    item.className = 'visual-item';
+    // Stile base card
+    item.style.cssText = "background:#1e293b; border-radius:8px; overflow:hidden; position:relative; aspect-ratio: 16/9; cursor:pointer; border:1px solid #334155;";
+
+    // Logica Thumbnail
+    let bgUrl = e.image;
+
+    // Se non c'è immagine ma c'è video YouTube, ruba la copertina
+    if (!bgUrl && e.video && e.video.includes('youtu')) {
+      try {
+        let vidId = null;
+        if (e.video.includes('v=')) vidId = e.video.split('v=')[1]?.split('&')[0];
+        else if (e.video.includes('youtu.be/')) vidId = e.video.split('youtu.be/')[1]?.split('?')[0];
+
+        if (vidId) bgUrl = `https://img.youtube.com/vi/${vidId}/mqdefault.jpg`;
+      } catch (err) { console.error("Errore parsing YouTube ID", err); }
+    }
+
+    // Se abbiamo trovato qualcosa da mostrare
+    if (bgUrl) {
+      item.innerHTML = `
+            <div style="background-image:url('${bgUrl}'); width:100%; height:100%; background-size:cover; background-position:center; transition:transform 0.3s;"></div>
+            <div style="position:absolute; bottom:0; left:0; width:100%; background:linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding:10px; color:white;">
+                <div style="font-size:0.85rem; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow: 0 1px 2px black;">
+                   ${e.type === 'video' ? '<i class="fa-solid fa-play-circle"></i> ' : ''} ${e.title}
+                </div>
+                <div style="font-size:0.75rem; color:#cbd5e1; display:flex; justify-content:space-between;">
+                    <span>${e.date}</span>
+                    <span style="color:#f59e0b;">${e.intensity > 0.7 ? 'CRITICAL' : ''}</span>
+                </div>
+            </div>
+            `;
+
+      // Cliccando apre il modale esistente
+      const eventData = encodeURIComponent(JSON.stringify(e));
+      item.onclick = () => window.openModal(eventData); // Assicurati che openModal sia globale
+      grid.appendChild(item);
+    }
+  });
+
+  if (visualEvents.length === 0) {
+    grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align:center; color:#64748b; padding:40px;">
+                <i class="fa-solid fa-camera-retro" style="font-size:2rem; margin-bottom:10px; opacity:0.5;"></i><br>
+                Nessun media visivo trovato per i filtri correnti.
+            </div>`;
+  }
+}
 
 // Start App
 initMap();
