@@ -131,11 +131,11 @@
           
           <div style="border-left: 4px solid ${color}; padding-left: 12px; margin-bottom: 12px;">
             <h5 style="margin:0; font-weight:700; font-size:1rem; line-height:1.3; color:#f8fafc;">${e.title}</h5>
-            <div style="color:#94a3b8; font-size:0.75rem; margin-top:6px; display:flex; align-items:center; gap:12px;">
-              <span><i class="fa-regular fa-calendar"></i> ${e.date}</span>
-              <span style="text-transform:uppercase; letter-spacing:0.5px; font-size:0.7rem; background:${color}22; color:${color}; padding:2px 6px; border-radius:4px;">${e.type}</span>
+            
+            <div style="margin-top:8px; display:flex; gap:8px;">
+              <span class="popup-meta-tag"><i class="fa-regular fa-calendar"></i> ${e.date}</span>
+              <span class="popup-meta-tag"><i class="fa-solid fa-tag"></i> ${e.type}</span>
             </div>
-          </div>
 
           <div style="font-size:0.85rem; line-height:1.6; color:#cbd5e1; margin-bottom:15px;">
             ${e.description ? (e.description.length > 120 ? e.description.substring(0, 120) + '...' : e.description) : 'Nessuna descrizione.'}
@@ -586,15 +586,17 @@
   window.openModal = function (eventIdOrObj) {
     let e;
 
-    // FIX: Se arriva un ID (stringa), cerchiamo l'evento nell'array globale
-    if (typeof eventIdOrObj === 'string' && !eventIdOrObj.startsWith('{')) {
-      e = window.globalEvents.find(evt => evt.event_id === eventIdOrObj);
+    // FIX LOGICA IBRIDA:
+    // 1. Se è una stringa che inizia con %7B (codifica di '{') è un vecchio oggetto JSON (War Room)
+    if (typeof eventIdOrObj === 'string' && (eventIdOrObj.startsWith('%7B') || eventIdOrObj.startsWith('{'))) {
+      try { e = JSON.parse(decodeURIComponent(eventIdOrObj)); } catch (err) { console.error(err); return; }
+    }
+    // 2. Se è una stringa normale, è un ID (Mappa)
+    else if (typeof eventIdOrObj === 'string') {
+      e = window.globalEvents.find(evt => (evt.event_id || evt.properties?.event_id) === eventIdOrObj);
       if (!e) { console.error("Evento non trovato per ID:", eventIdOrObj); return; }
     }
-    // Fallback: Se arriva ancora il vecchio oggetto JSON stringificato (retrocompatibilità)
-    else if (typeof eventIdOrObj === 'string') {
-      try { e = JSON.parse(decodeURIComponent(eventIdOrObj)); } catch (err) { return; }
-    }
+    // 3. Se è già un oggetto
     else { e = eventIdOrObj; }
 
     // --- DATI BASE ---

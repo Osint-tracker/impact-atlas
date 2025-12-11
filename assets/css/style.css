@@ -1538,3 +1538,68 @@ header nav a:hover {
   border-color: #3b82f6;
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
 }
+
+/* =========================================
+   STILE POPUP TATTICO (FIX LEGGEBILITÀ)
+   ========================================= */
+
+/* 1. Ridisegna il contenitore principale del popup di Leaflet */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: rgba(15, 23, 42, 0.95) !important;
+  /* Sfondo scuro semitrasparente */
+  color: #e2e8f0 !important;
+  /* Testo chiaro */
+  backdrop-filter: blur(8px);
+  /* Effetto vetro sfocato */
+  border: 1px solid #334155;
+  /* Bordo sottile grigio-blu */
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  /* Ombra profonda */
+  border-radius: 8px !important;
+}
+
+/* 2. Rimuove margini standard per avere controllo totale */
+.leaflet-popup-content {
+  margin: 0 !important;
+  padding: 16px !important;
+  width: 300px !important;
+  /* Leggermente più largo */
+}
+
+/* 3. Stile della "X" di chiusura */
+.leaflet-container a.leaflet-popup-close-button {
+  color: #94a3b8 !important;
+  font-size: 18px !important;
+  top: 8px !important;
+  right: 8px !important;
+  transition: 0.3s;
+}
+
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: #ef4444 !important;
+  /* Rosso al passaggio */
+}
+
+/* 4. Fix Tipografia interna */
+.acled-popup h5 {
+  border-bottom: 1px solid #334155;
+  padding-bottom: 10px;
+  margin-bottom: 12px !important;
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+/* 5. Stile dei tag (Data/Tipo) sotto il titolo */
+.popup-meta-tag {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid #475569;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem !important;
+  font-weight: 600;
+  color: #cbd5e1 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}

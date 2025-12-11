@@ -1,6 +1,7 @@
 import json
 import gspread
 import os
+import hashlib
 from google.oauth2.service_account import Credentials
 from dotenv import load_dotenv
 
@@ -74,6 +75,19 @@ def main():
             if "t.me" in source_url and not source_url.startswith("http"):
                 source_url = "https://" + source_url
 
+                # Generazione ID Univoco (Fondamentale per il bottone Dossier)
+            unique_string = f"{row.get('Date')}{lat}{lon}{row.get('Title')}"
+            event_id = hashlib.md5(unique_string.encode()).hexdigest()[:12]
+
+            # Parsing Fonti Aggregate (da stringa "a | b" a lista ["a", "b"])
+            raw_sources = str(row.get('Aggregated Sources', ''))
+            references = [s.strip()
+                          for s in raw_sources.split('|') if s.strip()]
+
+            # Fallback: se non ci sono fonti aggregate, usa la fonte principale
+            if not references and source_url != "Unknown Source":
+                references.append(source_url)
+
             # 3. Gestione Fonti Aggregate (Importante per il nuovo modale)
             # L'AI le salva come "url1 | url2", qui le trasformiamo in lista
             raw_sources = str(row.get('Aggregated Sources', ''))
@@ -93,7 +107,7 @@ def main():
                     "coordinates": [lon, lat]
                 },
                 "properties": {
-                    # Dati Base
+                    "event_id": event_id,  # <--- NUOVO
                     "title": row.get('Title', 'Evento senza titolo'),
                     "type": str(row.get('Type', 'unknown')).lower(),
                     "description": row.get('Description', ''),
@@ -102,22 +116,16 @@ def main():
                     # Media
                     "source": source_url,
                     "image": media_url,
-                    "video": media_url,  # Per retro-compatibilità con map.js
+                    "video": media_url,  # Per compatibilità
 
-                    # --- NUOVI CAMPI INTELLIGENCE ---
-                    # Impatto Strategico (Intensità)
+                    # Dati Tecnici
                     "intensity": safe_float(row.get('Intensity'), 0.5),
+                    "verified": True,
 
-                    # Bias Fonte (Es. PRO_RUSSIA, NEUTRAL)
+                    # --- NUOVI DATI INTELLIGENCE ---
                     "dominant_bias": str(row.get('Dominant Bias', 'NEUTRAL')),
-
-                    # Tipologia Target (Es. REFINERY, CITY) - map.js lo chiama location_precision
                     "location_precision": str(row.get('Location Precision', 'CITY')),
-
-                    # Lista delle fonti per il footer
-                    "references": references,
-
-                    # Categoria (Utile per il filtro Civile/Militare)
+                    "references": references,  # La lista creata sopra
                     "category": str(row.get('Type', '')).upper()
                 }
             }
