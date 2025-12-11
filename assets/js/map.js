@@ -752,7 +752,41 @@
 
     // --- CHART CONFIDENCE ---
     const conf = e.reliability || e.Reliability || e.confidence || 50;
-    renderConfidenceChart(conf);
+    // Definisci Tier, Colore e Descrizione breve
+    let relData = { label: "NON VERIFICATO", color: "#94a3b8", desc: "Dati insufficienti." };
+
+    if (score >= 90) {
+      relData = { label: "CONFERMATO", color: "#3b82f6", desc: "Info verificata con prove visive." }; // Blu
+    } else if (score >= 70) {
+      relData = { label: "PROBABILE", color: "#22c55e", desc: "Fonti multiple affidabili." }; // Verde
+    } else if (score >= 40) {
+      relData = { label: "POSSIBILE", color: "#f59e0b", desc: "Fonte singola o parziale." }; // Arancio
+    } else {
+      relData = { label: "RUMOR", color: "#ef4444", desc: "Voce non verificata / Propaganda." }; // Rosso
+    }
+
+    // 1. Aggiorna il Grafico con il colore giusto
+    renderConfidenceChart(score, relData.color);
+
+    // 2. Genera il Badge con Tooltip (sostituisce quello statico)
+    const relContainer = document.getElementById('modal-reliability-badge');
+    if (relContainer) {
+      relContainer.innerHTML = `
+            <div class="intensity-badge-wrapper" style="font-size:0.7rem; color:${relData.color}; font-weight:700; letter-spacing:1px; cursor:help;">
+                ${relData.label}
+                <div class="info-icon" style="width:12px; height:12px; font-size:0.6rem; border-color:${relData.color}; color:${relData.color};">i</div>
+                
+                <div class="intensity-tooltip" style="width:260px; right:-20px; left:auto; transform:none; text-align:left; font-weight:400; color:#cbd5e1;">
+                    <strong style="color:${relData.color}; display:block; border-bottom:1px solid #334155; padding-bottom:5px; margin-bottom:5px;">
+                        SCORE: ${score}% (${relData.label})
+                    </strong>
+                    ${relData.desc}<br><br>
+                    <em style="font-size:0.65rem; opacity:0.7;">
+                        Algoritmo basato su: Credibilità Fonte, Prove Visive, Corroborazione e Semantica.
+                    </em>
+                </div>
+            </div>`;
+    }
 
     // Aggiorna il contatore delle fonti nel box metadati
     const sourceCountEl = document.getElementById('modal-source-count');
@@ -826,8 +860,9 @@
     wrapper.querySelector('.juxtapose-handle').style.left = `${pos}%`;
   };
 
+  // Funzione Grafico Aggiornata con Colore Dinamico
   let confChart = null;
-  function renderConfidenceChart(score) {
+  function renderConfidenceChart(score, color = '#f59e0b') { // <--- Aggiunto parametro color
     const ctxEl = document.getElementById('confidenceChart');
     if (!ctxEl) return;
 
@@ -839,12 +874,14 @@
       data: {
         datasets: [{
           data: [score, 100 - score],
-          backgroundColor: ['#f59e0b', '#334155'],
-          borderWidth: 0
+          backgroundColor: [color, '#1e293b'], // <--- Usa il colore dinamico qui
+          borderWidth: 0,
+          borderRadius: 20
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         cutout: '75%',
         animation: false,
         plugins: { tooltip: { enabled: false } }
@@ -852,14 +889,12 @@
       plugins: [{
         id: 'text',
         beforeDraw: function (chart) {
-          const width = chart.width;
-          const height = chart.height;
-          const ctx = chart.ctx;
+          const width = chart.width, height = chart.height, ctx = chart.ctx;
           ctx.restore();
           const fontSize = (height / 100).toFixed(2);
           ctx.font = "bold " + fontSize + "em Inter";
           ctx.textBaseline = "middle";
-          ctx.fillStyle = "#f59e0b";
+          ctx.fillStyle = color; // <--- E anche qui per il testo centrale
           const text = score + "%";
           const textX = Math.round((width - ctx.measureText(text).width) / 2);
           const textY = height / 2;

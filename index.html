@@ -591,34 +591,7 @@
                 <canvas id="confidenceChart"></canvas>
               </div>
 
-              <div class="intensity-badge-wrapper"
-                style="font-size:0.6rem; color:#94a3b8; margin-top:5px; letter-spacing: 1px; justify-content: center;">
-                AFFIDABILITÀ
-                <div class="info-icon" style="width:12px; height:12px; font-size:0.6rem;">i</div>
-
-                <div class="intensity-tooltip"
-                  style="width: 280px; text-align: left; text-transform: none; letter-spacing: normal; line-height: 1.5; right: -20px; left: auto; transform: none;">
-                  <strong
-                    style="color:#f59e0b; display:block; margin-bottom:8px; font-size:0.8rem; border-bottom:1px solid #334155; padding-bottom:5px;">
-                    CALCOLO ALGORITMICO
-                  </strong>
-                  L'indice (0-100%) valuta la solidità dell'informazione basandosi su 4 fattori:
-                  <ul style="padding-left: 15px; margin: 8px 0; color:#cbd5e1;">
-                    <li><strong style="color:#fff;">Fonte (Base):</strong> Punteggio storico (es. GeoConfirmed 90%,
-                      Anonimi 40%).</li>
-                    <li><strong style="color:#fff;">Visual (+20%):</strong> Bonus per video, foto o geoloc.</li>
-                    <li><strong style="color:#fff;">Corroborazione (+10%):</strong> Bonus per ogni fonte indipendente
-                      extra.</li>
-                    <li><strong style="color:#fff;">Semantica (-25%):</strong> Malus per linguaggio incerto ("rumors",
-                      "possibile").</li>
-                  </ul>
-                  <div
-                    style="font-size:0.7rem; color:#64748b; margin-top:8px; font-style:italic; text-align:center; background:rgba(0,0,0,0.2); padding:4px; border-radius:4px;">
-                    <span style="color:#ef4444;">
-                      < 50% Non verificato</span> | <span style="color:#22c55e;">> 90% Accertato</span>
-                  </div>
-                </div>
-              </div>
+              <div id="modal-reliability-badge" style="margin-top:5px; display:flex; justify-content:center;"></div>
 
             </div>
           </div>
