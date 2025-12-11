@@ -15,6 +15,69 @@ SHEET_URL = "https://docs.google.com/spreadsheets/d/1NEyNXzCSprGOw6gCmVVbtwvFmz8
 BATCH_SIZE = 1400  # Numero di righe da processare in un run
 CONFIDENCE_THRESHOLD = 80  # Soglia minima di confidenza per accettazione
 
+# ==============================================================================
+# 📚 DATABASE FONTI & AFFIDABILITÀ (Tier List v2.1 - Calibrated)
+# ==============================================================================
+# Lo script cerca queste stringhe (lowercase) nell'URL o nel nome della fonte.
+# Punteggio Base: 0-100.
+# ==============================================================================
+
+SOURCE_TIERS = {
+    # --- TIER A: GOLD STANDARD (90-100%) ---
+    # Prove visive, geolocalizzazioni confermate, agenzie globali primarie.
+    'geoconfirmed': 90,      'bellingcat': 95,       'oryx': 95,
+    'deepstatemap': 90,      'osinttechnical': 88,   'brady africk': 90,
+    'reuters': 90,           'ap news': 90,          'associated press': 90,
+    'afp': 90,               'nasa firms': 95,       'csis': 88,
+    'militarnyi': 92,        'defencehq': 95,        'balldontliedude': 90,
+
+    # --- TIER B: ALTA AFFIDABILITÀ (75-89%) ---
+    # Media internazionali autorevoli, Think Tanks, Stampa nazionale di qualità.
+    # USA/UK/INT
+    'nytimes': 85,           'new york times': 85,   'washington post': 85,
+    'wsj': 85,               'bbc': 85,              'guardian': 82,
+    'financial times': 85,   'economist': 85,        'politico': 80,
+    'isw': 85,               'defense express': 85,  'the war zone': 82,
+    # UCRAINA & OSINT SPECIFICI
+    'cinca_afu': 80,         'tatarigami_ua': 80,    'dronebomber': 80,
+    'karymat': 80,           'stanislav_osman': 80,  'officer_33': 80,
+    'warmonitors': 85,       'majakovsk73': 85,      'chriso_wiki': 80,
+    'kyiv independent': 80,  'ukrainska pravda': 78, 'maks23_nafo': 75,
+    'noel_reports': 75,      'liveuamap': 78,        'playfraosint': 80,
+    # ITALIA (Top Quality)
+    'il sole 24 ore': 80,    'il post': 80,          'rainews': 80,
+    'ansa': 75,              'adnkronos': 72,        'avvenire': 70,
+
+    # --- TIER C: MEDIA AFFIDABILITÀ / PARTISAN (50-74%) ---
+    # Fonti generaliste, canali Telegram di parte ma informati.
+    # TELEGRAM RU/UA (Bias noto)
+    'rybar': 70,             'britishmi6': 70,       'two_majors': 55,
+    'dariodangelo': 80,      'deepstateua': 75,      'ukrliberation': 65,
+    'fighter_bomber': 65,    'strelkovii': 60,       'lost_armour': 60,
+    'grey_zone': 55,         'wargonzo': 55,          'ukrainewarcrimes': 60,
+    # STAMPA ITALIANA GENERALISTA
+    'corriere': 70,          'repubblica': 70,       'la stampa': 70,
+    'sky tg24': 70,          'tgcom24': 60,          'fanpage': 65,
+    'open': 60,
+    # INTERNAZIONALI
+    'cnn': 70,               'fox news': 60,         'le monde': 74,
+    'nexta': 65,             'visegrad24': 60,       'spectator': 65,
+
+    # --- TIER D: BASSA AFFIDABILITÀ / PROPAGANDA / TABLOID (10-49%) ---
+    # Tabloid, media di stato russi, clickbait estremo.
+    # TABLOID ITALIANI
+    'il fatto quotidiano': 40, 'libero': 40,          'la verità': 40,
+    'il giornale': 40,         'dagospia': 40,
+    # TABLOID INTERNAZIONALI
+    'daily mail': 45,          'the sun': 40,         'nypost': 45,
+    # PROPAGANDA RU
+    'tass': 40,                'ria novosti': 40,     'rt': 30,
+    'sputnik': 30,             'intel slava': 30,     'azgeopolitics': 30,
+    # GENERICI
+    'twitter': 45,             'x.com': 45,           'telegram': 45,
+    'facebook': 30,            'tiktok': 20,          'unknown': 30
+}
+
 
 def setup_clients():
     """Configura i client per Google Sheets, OpenAI e Tavily."""
@@ -66,7 +129,7 @@ def safe_update(worksheet, row, col, value):
 
 def analyze_event_pro(openai, event, news_context):
     """
-    Agente Intelligence v2: Coordinate, Bias, Fonti e Impatto Strategico.
+    Agente Intelligence v3: Coordinate, Bias, Fonti, Impatto Strategico e Affidabilità Algoritmica.
     """
     prompt = f"""
     Sei un analista di intelligence militare (conflitto UKR-RUS).
@@ -107,6 +170,11 @@ def analyze_event_pro(openai, event, news_context):
     4. FONTI AGGREGATE:
        Estrai i LINK delle fonti pertinenti trovate nel contesto.
 
+    5. FATTORI DI AFFIDABILITÀ (PER ALGORITMO INTERNO):
+       - "has_visual": true SE c'è menzione esplicita di VIDEO, FOTO, IMMAGINI SATELLITARI o GEOLOCALIZZAZIONE confermata.
+       - "is_uncertain": true SE il testo usa parole come "rumors", "unconfirmed", "allegedly", "possible", "claims".
+       - "num_sources": Stima intera del numero di fonti diverse citate o trovate nel contesto.
+
     OUTPUT JSON:
     {{
         "match": true,
@@ -117,10 +185,13 @@ def analyze_event_pro(openai, event, news_context):
         "video_url": "URL o null",
         "intensity": 0.5,
         "dominant_bias": "NEUTRAL",
-        "location_precision": "CITY", // o qualsiasi altra categoria
-        "lat": 0.0,  // Metti 0 se non trovi di meglio di quanto già presente
+        "location_precision": "CITY", # Una delle categorie sopra
+        "lat": 0.0,
         "lon": 0.0,
-        "sources": ["url1", "url2"]
+        "sources": ["url1", "url2"],
+        "has_visual": false,
+        "is_uncertain": false,
+        "num_sources": 1
     }}
     """
 
@@ -131,7 +202,41 @@ def analyze_event_pro(openai, event, news_context):
             response_format={"type": "json_object"},
             temperature=0.1
         )
-        return json.loads(response.choices[0].message.content)
+        data = json.loads(response.choices[0].message.content)
+
+        # --- ALGORITMO DI CALCOLO AFFIDABILITÀ (Hybrid Score) ---
+
+        # 1. Base Score (Gerarchia Fonti)
+        # Recupera lo score dal dizionario globale SOURCE_TIERS (definito a inizio script)
+        source_name = str(event.get('Source', '')).lower()
+        base_score = 40  # Default Tier D
+
+        # Cerca nel dizionario globale
+        if 'SOURCE_TIERS' in globals():
+            for key, score in SOURCE_TIERS.items():
+                if key in source_name:
+                    base_score = score
+                    break
+
+        # 2. Moltiplicatori (Evidence & Corroboration)
+        visual_bonus = 20 if data.get('has_visual') else 0
+
+        # Bonus fonti: +10 per ogni fonte extra (max 30 punti bonus)
+        src_count = int(data.get('num_sources', 1))
+        corroboration_bonus = min((src_count - 1) * 10, 30)
+        if corroboration_bonus < 0:
+            corroboration_bonus = 0
+
+        # 3. Malus (Incertezza Semantica)
+        uncertainty_malus = -25 if data.get('is_uncertain') else 0
+
+        # 4. Calcolo Finale (Limitato tra 10 e 100)
+        final_score = base_score + visual_bonus + \
+            corroboration_bonus + uncertainty_malus
+        data['reliability_score'] = max(10, min(100, final_score))
+
+        return data
+
     except Exception as e:
         print(f"Errore AI: {e}")
         return {"match": False, "confidence": 0}
@@ -165,12 +270,12 @@ def main():
             'desc': get_col_index('Description'),
             'vid': get_col_index('Video'),
             'int': get_col_index('Intensity'),
-            # Nuove Colonne
             'lat': get_col_index('Latitude'),
             'lon': get_col_index('Longitude'),
             'bias': get_col_index('Dominant Bias'),
             'prec': get_col_index('Location Precision'),
-            'agg_src': get_col_index('Aggregated Sources')
+            'agg_src': get_col_index('Aggregated Sources'),
+            'rel': get_col_index('Reliability')
         }
 
         if not col_map['bias']:
@@ -239,6 +344,11 @@ def main():
                     src_str = " | ".join(res['sources'])[:4000]
                     cells.append(gspread.Cell(
                         row_idx, col_map['agg_src'], src_str))
+
+                    # Aggiornamento Affidabilità Calcolata
+                if col_map.get('rel') and res.get('reliability_score'):
+                    cells.append(gspread.Cell(
+                        row_idx, col_map['rel'], res['reliability_score']))
 
                 # Coordinate (Solo se trovate nuove)
                 new_lat = res.get('lat', 0)
