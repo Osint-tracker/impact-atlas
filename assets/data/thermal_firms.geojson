@@ -1,0 +1,27 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "generated": "2025-12-02T17:03:35.892107",
+    "source": "NASA FIRMS",
+    "days": 1
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.67731,
+          44.8376
+        ]
+      },
+      "properties": {
+        "brightness": 295.98,
+        "confidence": "n",
+        "acq_date": "2025-12-02",
+        "acq_time": "7",
+        "satellite": "VIIRS"
+      }
+    }
+  ]
+}

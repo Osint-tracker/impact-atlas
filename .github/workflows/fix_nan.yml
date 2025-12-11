@@ -1,0 +1,73 @@
+name: Fix NaN in JSON files
+
+on:
+  workflow_dispatch:  # Esegui manualmente dal tab Actions
+
+jobs:
+  fix-nan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Create fix script
+        run: |
+          cat > fix_nan.py << 'EOF'
+          import json
+          import os
+          import math
+
+          def fix_nan_in_value(value):
+              if isinstance(value, float) and math.isnan(value):
+                  return None
+              elif isinstance(value, str) and value.lower() in ['nan', 'NaN']:
+                  return None
+              elif isinstance(value, dict):
+                  return {k: fix_nan_in_value(v) for k, v in value.items()}
+              elif isinstance(value, list):
+                  return [fix_nan_in_value(item) for item in value]
+              return value
+
+          def process_json_file(filepath):
+              try:
+                  with open(filepath, 'r', encoding='utf-8') as f:
+                      data = json.load(f)
+                  cleaned_data = fix_nan_in_value(data)
+                  with open(filepath, 'w', encoding='utf-8') as f:
+                      json.dump(cleaned_data, f, indent=2, ensure_ascii=False)
+                  print(f"✓ {filepath}")
+                  return True
+              except Exception as e:
+                  print(f"✗ {filepath}: {e}")
+                  return False
+
+          for dirpath, dirnames, filenames in os.walk('.'):
+              dirnames[:] = [d for d in dirnames if d not in ['.git', 'node_modules', '__pycache__']]
+              for filename in filenames:
+                  if filename.endswith(('.json', '.geojson')):
+                      process_json_file(os.path.join(dirpath, filename))
+          EOF
+      
+      - name: Run fix script
+        run: python fix_nan.py
+      
+      - name: Commit changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-fix: Sostituiti NaN con null nei file JSON"
+      
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}

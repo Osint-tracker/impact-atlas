@@ -1,0 +1,62 @@
+name: AI Verification & Site Update
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # Esegue ogni 6 ore
+  workflow_dispatch:      # Esegue manuale
+
+permissions:
+  contents: write
+
+jobs:
+  ai-and-sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Scarica tutta la storia per evitare conflitti di merge
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # Installa le librerie necessarie per ENTRAMBI gli script
+      - name: Install dependencies
+        run: pip install pandas requests numpy gspread google-auth tavily-python openai
+
+      # --- FASE 1: INTELLIGENZA ARTIFICIALE ---
+      # Lancia l'Agente AI (se presente) per verificare le news
+      - name: 🤖 Run AI Agent
+        env:
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GCP_CREDENTIALS_JSON: ${{ secrets.GCP_CREDENTIALS_JSON }}
+        run: python3 scripts/ai_agent.py || echo "AI Agent finished with warnings (continuing...)"
+
+      # --- FASE 2: ELABORAZIONE DATI ---
+      # Lancia il nuovo script che hai appena creato
+      - name: 🏭 Process Data & Generate Site Files
+        run: python3 scripts/process_data.py
+
+      # --- FASE 3: SALVATAGGIO ---
+      - name: Commit and push updates
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          
+          # Allineamento forzato per evitare conflitti
+          git fetch origin main
+          git reset --soft origin/main
+          
+          git add assets/data/events.geojson assets/data/events_timeline.json
+          
+          if git diff --cached --quiet; then
+            echo "Nessuna modifica ai dati."
+            exit 0
+          fi
+          
+          git commit -m "Auto-update: Data Refresh via Polyglot Script"
+          git push origin main

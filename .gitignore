@@ -1,0 +1,14 @@
+# --- SICUREZZA ---
+.env
+osint_session
+osint_session.session
+**/*.session
+scripts/service_account.json
+
+# --- Log e file temporanei ---
+tracker_log.txt
+*.log
+
+# --- Python ---
+__pycache__/
+*.pyc
