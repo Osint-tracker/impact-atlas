@@ -751,7 +751,7 @@
     }
 
     // --- CHART CONFIDENCE ---
-    const conf = e.confidence || 85;
+    const conf = e.reliability || e.Reliability || e.confidence || 50;
     renderConfidenceChart(conf);
 
     // Aggiorna il contatore delle fonti nel box metadati
