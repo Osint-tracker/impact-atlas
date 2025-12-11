@@ -301,6 +301,19 @@
             </div>
 
             <div class="filter-block">
+              <label>Filtro Operativo</label>
+              <div class="toggle-container" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;">
+                <label class="tech-toggle-row" style="margin:0; width:100%;">
+                  <span class="tech-toggle-label" style="font-size: 0.85rem; color: #94a3b8;">
+                    <i class="fa-solid fa-users"></i> Mostra Eventi Civili
+                  </span>
+                  <input type="checkbox" id="civilianToggle" onchange="window.applyMapFilters()">
+                  <div class="tech-switch"></div>
+                </label>
+              </div>
+            </div>
+
+            <div class="filter-block">
               <label>Categoria Evento</label>
               <div class="custom-select">
                 <select id="chartTypeFilter" class="clean-input">
@@ -595,159 +608,156 @@
 
               <div class="meta-item">
                 <div
-                  style="font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">
-                  📍 Precisione Location</div>
+                  style="font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700;">
+                  Tipologia Target</div>
                 <div id="modal-location-precision" style="color: #f1f5f9; font-weight: 600;">Loading...</div>
               </div>
 
               <div class="meta-item">
                 <div
-                  style="font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">
-                  📊 Bias Dominante</div>
+                  style="font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700;">
+                  Bias Fonte</div>
                 <div id="modal-dominant-bias" style="color: #f1f5f9; font-weight: 600;">Loading...</div>
               </div>
 
               <div class="meta-item">
                 <div
-                  style="font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">
-                  🔗 Fonti Aggregate</div>
+                  style="font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700;">
+                  Fonti </div>
                 <div id="modal-source-count" style="color: #f59e0b; font-weight: 700; font-size: 1.2rem;">0</div>
               </div>
 
               <div class="meta-item">
                 <div
-                  style="font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">
-                  ⚠️ Intensità</div>
+                  style="font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700;">
+                  Impatto Strategico</div>
                 <div id="modal-intensity" style="font-weight: 700; font-size: 1.2rem;">Loading...</div>
               </div>
 
             </div>
           </div>
 
-        </div>
-      </div>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+          <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+          <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
-      <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-      <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+          <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 
-      <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+          <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
 
-      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-      <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
+          <script src="assets/js/charts.js"></script>
+          <script src="assets/js/map.js"></script>
 
-      <script src="assets/js/charts.js"></script>
-      <script src="assets/js/map.js"></script>
+          <script>
+            // --- FUNZIONI DI SUPPORTO PER LA UI ---
 
-      <script>
-        // --- FUNZIONI DI SUPPORTO PER LA UI ---
+            function closeModal(event) {
+              if (event.target.id === 'videoModal' || event.target.classList.contains('close-modal')) {
+                document.getElementById('videoModal').style.display = 'none';
+                const videoContainer = document.getElementById('modalVideoContainer');
+                if (videoContainer) videoContainer.innerHTML = '';
+              }
+            }
 
-        function closeModal(event) {
-          if (event.target.id === 'videoModal' || event.target.classList.contains('close-modal')) {
-            document.getElementById('videoModal').style.display = 'none';
-            const videoContainer = document.getElementById('modalVideoContainer');
-            if (videoContainer) videoContainer.innerHTML = '';
-          }
-        }
+            function switchView(viewName, btn) {
+              // UI Button Update
+              document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
 
-        function switchView(viewName, btn) {
-          // UI Button Update
-          document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
+              // View Container Update
+              document.querySelectorAll('.view-container').forEach(c => c.classList.remove('active'));
+              document.getElementById('view-' + viewName).classList.add('active');
+            }
 
-          // View Container Update
-          document.querySelectorAll('.view-container').forEach(c => c.classList.remove('active'));
-          document.getElementById('view-' + viewName).classList.add('active');
-        }
+            // --- LOGICA TAB SIDEBAR (NUOVA) ---
+            function switchSidebarTab(tabName) {
+              // 1. Reset bottoni
+              document.querySelectorAll('.s-tab-btn').forEach(btn => btn.classList.remove('active'));
+              // 2. Attiva bottone cliccato
+              const activeBtn = document.querySelector(`.s-tab-btn[onclick="switchSidebarTab('${tabName}')"]`);
+              if (activeBtn) activeBtn.classList.add('active');
 
-        // --- LOGICA TAB SIDEBAR (NUOVA) ---
-        function switchSidebarTab(tabName) {
-          // 1. Reset bottoni
-          document.querySelectorAll('.s-tab-btn').forEach(btn => btn.classList.remove('active'));
-          // 2. Attiva bottone cliccato
-          const activeBtn = document.querySelector(`.s-tab-btn[onclick="switchSidebarTab('${tabName}')"]`);
-          if (activeBtn) activeBtn.classList.add('active');
+              // 3. Reset contenuti
+              document.querySelectorAll('.s-tab-content').forEach(content => content.classList.remove('active'));
+              // 4. Mostra contenuto giusto
+              document.getElementById(`sidebar-tab-${tabName}`).classList.add('active');
+            }
 
-          // 3. Reset contenuti
-          document.querySelectorAll('.s-tab-content').forEach(content => content.classList.remove('active'));
-          // 4. Mostra contenuto giusto
-          document.getElementById(`sidebar-tab-${tabName}`).classList.add('active');
-        }
+            // --- LOGICA SELEZIONE MAPPA (SOLO VISIVA PER ORA) ---
+            function selectMapSource(card, sourceName) {
+              // Reset card attive
+              document.querySelectorAll('.map-layer-card').forEach(c => {
+                c.classList.remove('active');
+                const icon = c.querySelector('.status-dot');
+                icon.classList.remove('fa-circle-dot');
+                icon.classList.remove('fa-solid');
+                icon.classList.add('fa-circle');
+                icon.classList.add('fa-regular');
+              });
 
-        // --- LOGICA SELEZIONE MAPPA (SOLO VISIVA PER ORA) ---
-        function selectMapSource(card, sourceName) {
-          // Reset card attive
-          document.querySelectorAll('.map-layer-card').forEach(c => {
-            c.classList.remove('active');
-            const icon = c.querySelector('.status-dot');
-            icon.classList.remove('fa-circle-dot');
-            icon.classList.remove('fa-solid');
-            icon.classList.add('fa-circle');
-            icon.classList.add('fa-regular');
-          });
+              // Attiva nuova card
+              card.classList.add('active');
+              const activeIcon = card.querySelector('.status-dot');
+              activeIcon.classList.remove('fa-circle');
+              activeIcon.classList.remove('fa-regular');
+              activeIcon.classList.add('fa-circle-dot');
+              activeIcon.classList.add('fa-solid');
 
-          // Attiva nuova card
-          card.classList.add('active');
-          const activeIcon = card.querySelector('.status-dot');
-          activeIcon.classList.remove('fa-circle');
-          activeIcon.classList.remove('fa-regular');
-          activeIcon.classList.add('fa-circle-dot');
-          activeIcon.classList.add('fa-solid');
+              console.log(`Mappa cambiata in: ${sourceName}`);
+              // TODO: Chiamata reale a Leaflet per cambiare GeoJSON
+            }
+          </script>
 
-          console.log(`Mappa cambiata in: ${sourceName}`);
-          // TODO: Chiamata reale a Leaflet per cambiare GeoJSON
-        }
-      </script>
+          <div id="playfraModal"
+            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background:rgba(0,0,0,0.8);">
 
-      <div id="playfraModal"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background:rgba(0,0,0,0.8);">
+            <div
+              style="position:relative; width:90%; height:90%; margin:2% auto; background:#1e1e1e; border: 2px solid #444; box-shadow: 0 0 30px black;">
 
-        <div
-          style="position:relative; width:90%; height:90%; margin:2% auto; background:#1e1e1e; border: 2px solid #444; box-shadow: 0 0 30px black;">
+              <div
+                style="height:40px; background:#2b2b2b; display:flex; justify-content:space-between; align-items:center; padding:0 15px; border-bottom:1px solid #444;">
+                <span style="color:#eee; font-family:sans-serif;">
+                  <strong>Mappa del Fronte</strong> | Fonte:
+                  <a href="https://google.com/maps/d/..." target="_blank" style="color:#4CAF50; text-decoration:none;">
+                    Playfra / Google MyMaps ↗
+                  </a>
+                  <span style="color:#888; font-size:0.8em; margin-left:10px;">(Visualizzazione esterna non
+                    modificata)</span>
+                </span>
+                <button onclick="closeExternalMap()"
+                  style="background:#d32f2f; color:white; border:none; padding:5px 15px; cursor:pointer; font-weight:bold;">
+                  CHIUDI X
+                </button>
+              </div>
 
-          <div
-            style="height:40px; background:#2b2b2b; display:flex; justify-content:space-between; align-items:center; padding:0 15px; border-bottom:1px solid #444;">
-            <span style="color:#eee; font-family:sans-serif;">
-              <strong>Mappa del Fronte</strong> | Fonte:
-              <a href="https://google.com/maps/d/..." target="_blank" style="color:#4CAF50; text-decoration:none;">
-                Playfra / Google MyMaps ↗
-              </a>
-              <span style="color:#888; font-size:0.8em; margin-left:10px;">(Visualizzazione esterna non
-                modificata)</span>
-            </span>
-            <button onclick="closeExternalMap()"
-              style="background:#d32f2f; color:white; border:none; padding:5px 15px; cursor:pointer; font-weight:bold;">
-              CHIUDI X
-            </button>
+              <iframe src="https://www.google.com/maps/d/embed?mid=1oEtMBEGWIrZIIgIqOWcr7g99dujWshQ" width="100%"
+                height="calc(100% - 40px)" style="border:none;">
+              </iframe>
+            </div>
           </div>
 
-          <iframe src="https://www.google.com/maps/d/embed?mid=1oEtMBEGWIrZIIgIqOWcr7g99dujWshQ" width="100%"
-            height="calc(100% - 40px)" style="border:none;">
-          </iframe>
-        </div>
-      </div>
+          <script>
+            // Funzioni per aprire/chiudere il modale
+            function openExternalMap() {
+              document.getElementById('playfraModal').style.display = 'block';
+            }
 
-      <script>
-        // Funzioni per aprire/chiudere il modale
-        function openExternalMap() {
-          document.getElementById('playfraModal').style.display = 'block';
-        }
+            function closeExternalMap() {
+              document.getElementById('playfraModal').style.display = 'none';
+            }
 
-        function closeExternalMap() {
-          document.getElementById('playfraModal').style.display = 'none';
-        }
+            // Chiude se clicchi fuori dalla mappa (sullo sfondo scuro)
+            window.onclick = function (event) {
+              let modal = document.getElementById('playfraModal');
+              if (event.target == modal) {
+                modal.style.display = "none";
+              }
+            }
+          </script>
 
-        // Chiude se clicchi fuori dalla mappa (sullo sfondo scuro)
-        window.onclick = function (event) {
-          let modal = document.getElementById('playfraModal');
-          if (event.target == modal) {
-            modal.style.display = "none";
-          }
-        }
-      </script>
-
-      <script src="map.js"></script>
+          <script src="map.js"></script>
 </body>
 
 </html>

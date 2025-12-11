@@ -388,8 +388,14 @@
           };
         }).sort((a, b) => a.timestamp - b.timestamp);
 
-        console.log(`✅ Events processed: ${window.globalEvents.length} ready for map`);
+        // ... (dopo aver ordinato window.globalEvents) ...
 
+        console.log(`✅ Events processed: ${window.globalEvents.length}`);
+
+        // APPLICA I FILTRI INIZIALI (Nasconde civili di default)
+        window.applyMapFilters();
+
+        // (Rimuovi o commenta la vecchia riga: renderInternal(window.globalEvents);)
         window.currentFilteredEvents = [...window.globalEvents];
 
         // Update UI
@@ -409,9 +415,6 @@
 
         // Setup slider AFTER data is ready
         setupTimeSlider(window.globalEvents);
-
-        // Initial render
-        renderInternal(window.globalEvents);
 
       })
       .catch(err => {
@@ -499,6 +502,28 @@
         if (firmsLayer) map.removeLayer(firmsLayer);
       }
     }
+  };
+
+  // Funzione filtro globale
+  window.applyMapFilters = function () {
+    const showCivilian = document.getElementById('civilianToggle').checked;
+
+    const filtered = window.globalEvents.filter(e => {
+      // Logica per identificare eventi civili
+      // Cerca "CIVIL" nella categoria o "CIVILIAN" nella precisione o nel tipo
+      const isCivil = (e.category || '').toUpperCase().includes('CIVIL') ||
+        (e.location_precision || '').toUpperCase().includes('CIVILIAN') ||
+        (e.type || '').toUpperCase().includes('CIVIL');
+
+      // Se l'evento è civile e il toggle è spento, nascondilo
+      if (isCivil && !showCivilian) return false;
+
+      return true;
+    });
+
+    window.currentFilteredEvents = filtered;
+    // Aggiorna mappa e contatori
+    renderInternal(filtered);
   };
 
   // ============================================
@@ -600,38 +625,48 @@
             `;
     }
 
-    // --- 3. INTENSITÀ (Strategic Impact Score) ---
+    // --- 3. IMPATTO STRATEGICO (Intensità) ---
     const intEl = document.getElementById('modal-intensity');
     if (intEl) {
-      const val = parseFloat(e.intensity || 0);
-      let label = "UNKNOWN";
-      let colorClass = "#64748b";
-      let desc = "Dati insufficienti.";
+      // Controlla se è un evento civile
+      const isCivil = (e.category || '').toUpperCase().includes('CIVIL') ||
+        (e.location_precision || '').toUpperCase().includes('CIVILIAN');
 
-      if (val <= 0.3) {
-        label = "TACTICAL"; colorClass = "#22c55e";
-        desc = "Impatto limitato. Schermaglie, droni intercettati, danni lievi.";
-      } else if (val <= 0.6) {
-        label = "OPERATIONAL"; colorClass = "#f97316";
-        desc = "Impatto operativo. Danni a infrastrutture, vittime civili limitate.";
-      } else if (val <= 0.8) {
-        label = "STRATEGIC"; colorClass = "#ef4444";
-        desc = "Alto impatto strategico. Colpi a centrali, città o pesanti perdite.";
+      if (isCivil) {
+        // Se civile, mostra N/D disabilitato
+        intEl.innerHTML = `<span style="color:#475569; font-weight:600; font-size:1rem;">N/D <small style="font-size:0.6rem; text-transform:uppercase;">(Target Civile)</small></span>`;
       } else {
-        label = "CRITICAL"; colorClass = "#000000";
-        desc = "Evento di portata storica o catastrofica.";
+        // Se militare, calcola il punteggio normalmente
+        const val = parseFloat(e.intensity || 0);
+        let label = "UNKNOWN";
+        let colorClass = "#64748b";
+        let desc = "Dati insufficienti.";
+
+        if (val <= 0.3) {
+          label = "TACTICAL"; colorClass = "#22c55e";
+          desc = "Impatto limitato. Schermaglie, droni intercettati, danni lievi.";
+        } else if (val <= 0.6) {
+          label = "OPERATIONAL"; colorClass = "#f97316";
+          desc = "Impatto operativo. Danni a infrastrutture tattiche o logistiche.";
+        } else if (val <= 0.8) {
+          label = "STRATEGIC"; colorClass = "#ef4444";
+          desc = "Alto impatto strategico. Colpi a centrali, nodi logistici chiave o comandi.";
+        } else {
+          label = "CRITICAL"; colorClass = "#000000";
+          desc = "Evento di portata storica o catastrofica.";
+        }
+
+        const style = `color: ${colorClass}; font-weight: 800; font-size: 1.1rem; text-shadow: 0 0 15px ${colorClass}44;`;
+
+        intEl.innerHTML = `
+                    <div class="intensity-badge-wrapper">
+                        <span style="${style}">${label} (${(val * 10).toFixed(1)})</span>
+                        <div class="info-icon" style="color:${colorClass}; border-color:${colorClass}">i</div>
+                        <div class="intensity-tooltip">
+                            <strong style="color:${colorClass}">${label} IMPACT</strong><br>${desc}
+                        </div>
+                    </div>`;
       }
-
-      const style = `color: ${colorClass}; font-weight: 800; font-size: 1.1rem; text-shadow: 0 0 15px ${colorClass}44;`;
-
-      intEl.innerHTML = `
-            <div class="intensity-badge-wrapper">
-                <span style="${style}">${label} (${(val * 10).toFixed(1)})</span>
-                <div class="info-icon" style="color:${colorClass}; border-color:${colorClass}">i</div>
-                <div class="intensity-tooltip">
-                    <strong style="color:${colorClass}">${label} IMPACT</strong><br>${desc}
-                </div>
-            </div>`;
     }
 
     // --- GESTIONE VIDEO ---
