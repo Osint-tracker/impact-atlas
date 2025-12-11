@@ -1457,3 +1457,84 @@ header nav a:hover {
   justify-content: space-between;
   width: 100%;
 }
+
+/* =========================================
+   STILE PULSANTE DOSSIER & LINK FONTI
+   ========================================= */
+
+/* Pulsante "APRI DOSSIER" - Stile Tattico/Militare */
+.custom-dossier-btn {
+  width: 100%;
+  margin-top: 15px;
+  padding: 12px;
+  font-family: 'Rajdhani', sans-serif;
+  /* Font tecnico se disponibile, altrimenti eredita */
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #e2e8f0;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid #475569;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Effetto Hover (quando passi sopra col mouse) */
+.custom-dossier-btn:hover {
+  border-color: #f59e0b;
+  /* Colore Ambra */
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+  /* Glow effect */
+  transform: translateY(-2px);
+}
+
+/* Effetto Click */
+.custom-dossier-btn:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+/* Icona dentro il pulsante */
+.custom-dossier-btn i {
+  color: #94a3b8;
+  transition: transform 0.3s ease;
+}
+
+.custom-dossier-btn:hover i {
+  color: #f59e0b;
+  transform: scale(1.2) rotate(-10deg);
+}
+
+/* Link Fonte nel footer del popup */
+.source-link-styled {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(59, 130, 246, 0.1);
+  /* Blu trasparente */
+  color: #60a5fa !important;
+  padding: 4px 10px;
+  border-radius: 20px;
+  /* Pillola */
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none !important;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  transition: all 0.2s ease;
+}
+
+.source-link-styled:hover {
+  background: rgba(59, 130, 246, 0.25);
+  border-color: #3b82f6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}

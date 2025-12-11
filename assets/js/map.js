@@ -101,9 +101,13 @@
   }
 
   function createPopupContent(e) {
-    const eventData = encodeURIComponent(JSON.stringify(e));
+    // 1. Recupera l'ID in modo sicuro (fondamentale per il fix del click)
+    const safeId = e.event_id || e.properties?.event_id;
+
+    // 2. Colore per la barra laterale
     const color = getColor(e.intensity);
 
+    // 3. Gestione Footer Fonte (con nuovo stile)
     let sourceFooter = '';
     if (e.source && e.source !== 'Unknown Source') {
       const url = e.source.startsWith('http') ? e.source : '#';
@@ -113,29 +117,36 @@
       } catch (err) { }
 
       sourceFooter = `
-        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
-          <span style="display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-link"></i> Fonte:</span>
-          <a href="${url}" target="_blank" style="color: #3b82f6; text-decoration: none; font-weight: 600; background: rgba(59, 130, 246, 0.1); padding: 2px 6px; border-radius: 4px;">${domain} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.6rem;"></i></a>
-        </div>`;
+            <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #334155; display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 0.7rem; color: #64748b;">Fonte:</span>
+              <a href="${url}" target="_blank" class="source-link-styled">
+                 <i class="fa-solid fa-link"></i> ${domain}
+              </a>
+            </div>`;
     }
 
+    // 4. Costruzione HTML Popup
     return `
-    <div class="acled-popup" style="color:#334155; font-family: 'Inter', sans-serif; min-width: 200px;">
-      <div style="border-left: 4px solid ${color}; padding-left: 12px; margin-bottom: 12px;">
-        <h5 style="margin:0; font-weight:700; font-size:0.95rem; line-height:1.2;">${e.title}</h5>
-        <div style="color:#64748b; font-size:0.75rem; margin-top:4px; display:flex; gap:10px;">
-          <span><i class="fa-regular fa-calendar"></i> ${e.date}</span>
-          <span><i class="fa-solid fa-tag"></i> ${e.type}</span>
-        </div>
-      </div>
-      <div style="font-size:0.85rem; line-height:1.5; color:#475569; margin-bottom:12px;">
-        ${e.description ? (e.description.length > 100 ? e.description.substring(0, 100) + '...' : e.description) : 'Nessuna descrizione disponibile.'}
-      </div>
-      <button onclick="openModal('${eventData}')" class="btn-primary" style="width:100%; padding: 8px; font-size:0.8rem; background: #1e293b; color: white; border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-        <i class="fa-solid fa-expand"></i> Apri Dossier Completo
-      </button>
-      ${sourceFooter}
-    </div>`;
+        <div class="acled-popup" style="color:#e2e8f0; font-family: 'Inter', sans-serif; min-width: 260px;">
+          
+          <div style="border-left: 4px solid ${color}; padding-left: 12px; margin-bottom: 12px;">
+            <h5 style="margin:0; font-weight:700; font-size:1rem; line-height:1.3; color:#f8fafc;">${e.title}</h5>
+            <div style="color:#94a3b8; font-size:0.75rem; margin-top:6px; display:flex; align-items:center; gap:12px;">
+              <span><i class="fa-regular fa-calendar"></i> ${e.date}</span>
+              <span style="text-transform:uppercase; letter-spacing:0.5px; font-size:0.7rem; background:${color}22; color:${color}; padding:2px 6px; border-radius:4px;">${e.type}</span>
+            </div>
+          </div>
+
+          <div style="font-size:0.85rem; line-height:1.6; color:#cbd5e1; margin-bottom:15px;">
+            ${e.description ? (e.description.length > 120 ? e.description.substring(0, 120) + '...' : e.description) : 'Nessuna descrizione.'}
+          </div>
+          
+          <button onclick="window.openModal('${safeId}')" class="custom-dossier-btn">
+            <i class="fa-solid fa-folder-open"></i> APRI DOSSIER
+          </button>
+          
+          ${sourceFooter}
+        </div>`;
   }
 
   // ============================================
@@ -571,8 +582,20 @@
   // 10. MODAL FUNCTIONS (Preserve Visual Features)
   // ============================================
 
-  window.openModal = function (eventJson) {
-    const e = JSON.parse(decodeURIComponent(eventJson));
+  // --- FUNZIONE AGGIORNATA PER USARE ID ---
+  window.openModal = function (eventIdOrObj) {
+    let e;
+
+    // FIX: Se arriva un ID (stringa), cerchiamo l'evento nell'array globale
+    if (typeof eventIdOrObj === 'string' && !eventIdOrObj.startsWith('{')) {
+      e = window.globalEvents.find(evt => evt.event_id === eventIdOrObj);
+      if (!e) { console.error("Evento non trovato per ID:", eventIdOrObj); return; }
+    }
+    // Fallback: Se arriva ancora il vecchio oggetto JSON stringificato (retrocompatibilità)
+    else if (typeof eventIdOrObj === 'string') {
+      try { e = JSON.parse(decodeURIComponent(eventIdOrObj)); } catch (err) { return; }
+    }
+    else { e = eventIdOrObj; }
 
     // --- DATI BASE ---
     document.getElementById('modalTitle').innerText = e.title || "Titolo non disponibile";
