@@ -120,9 +120,8 @@ def main():
 
                     # Dati Tecnici
                     "intensity": safe_float(row.get('Intensity'), 0.5),
-                    "verified": True,
                     "reliability": safe_float(row.get('Reliability'), 50),
-                    "verified": True,
+                    "verified": True,  # Supponiamo che tutti gli eventi siano verificati
 
                     # --- NUOVI DATI INTELLIGENCE ---
                     "dominant_bias": str(row.get('Dominant Bias', 'NEUTRAL')),
