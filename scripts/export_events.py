@@ -12,15 +12,15 @@ OUTPUT_FILE = "../assets/data/events.geojson"
 
 
 def get_google_client():
+    """Autenticazione Google Sheet sicura"""
     scope = ['https://www.googleapis.com/auth/spreadsheets',
              'https://www.googleapis.com/auth/drive']
 
-    # Cerca il file delle credenziali in modo flessibile
     script_dir = os.path.dirname(os.path.abspath(__file__))
     json_key_path = os.path.join(script_dir, 'service_account.json')
 
+    # Fallback per percorsi diversi
     if not os.path.exists(json_key_path):
-        # Fallback: prova nella cartella superiore
         json_key_path = os.path.join(script_dir, '..', 'service_account.json')
 
     if not os.path.exists(json_key_path):
@@ -31,18 +31,13 @@ def get_google_client():
 
 
 def safe_float(value, default=0.0):
-    """
-    Converte una stringa in float gestendo errori, virgole e stringhe vuote.
-    """
+    """Pulisce coordinate e numeri (gestisce virgole e spazi)"""
     if not value:
         return default
     try:
-        # Gestisce sia "45.5" che "45,5"
         clean_val = str(value).replace(',', '.').strip()
-        if clean_val == "":
-            return default
-        return float(clean_val)
-    except (ValueError, TypeError):
+        return float(clean_val) if clean_val else default
+    except:
         return default
 
 
@@ -53,68 +48,101 @@ def main():
         gc = get_google_client()
         sh = gc.open_by_url(SHEET_URL)
         worksheet = sh.get_worksheet(0)
-        records = worksheet.get_all_records()
 
+        # Scarica tutti i dati in una volta sola
+        records = worksheet.get_all_records()
         print(f"📊 Trovate {len(records)} righe totali.")
 
         features = []
         skipped = 0
 
         for row in records:
-            # 1. Pulizia e Conversione Coordinate
+            # 1. Coordinate (Fondamentali)
             lat = safe_float(row.get('Latitude'), 0)
             lon = safe_float(row.get('Longitude'), 0)
 
-            # Se le coordinate sono 0 (o fallite), saltiamo la riga
             if lat == 0 or lon == 0:
                 skipped += 1
                 continue
 
-            # 2. Gestione Media e Fonti
+            # 2. Gestione Media e Fonte Principale
             media_url = row.get('Video') or row.get(
                 'Image') or row.get('Media') or ""
             source_url = row.get('Source') or "Unknown Source"
 
-            # Rende il link cliccabile se è un username telegram
+            # Fix link Telegram
             if "t.me" in source_url and not source_url.startswith("http"):
                 source_url = "https://" + source_url
 
-            # 3. Costruzione Feature GeoJSON
+            # 3. Gestione Fonti Aggregate (Importante per il nuovo modale)
+            # L'AI le salva come "url1 | url2", qui le trasformiamo in lista
+            raw_sources = str(row.get('Aggregated Sources', ''))
+            references = [s.strip()
+                          for s in raw_sources.split('|') if s.strip()]
+
+            # Se non ci sono fonti aggregate, usiamo la fonte principale come fallback
+            if not references and source_url != "Unknown Source":
+                references.append(source_url)
+
+            # 4. Costruzione Feature GeoJSON
             feature = {
                 "type": "Feature",
                 "geometry": {
                     "type": "Point",
-                    "coordinates": [lon, lat]  # GeoJSON vuole [Lon, Lat]
+                    # GeoJSON vuole prima Longitude, poi Latitude
+                    "coordinates": [lon, lat]
                 },
                 "properties": {
+                    # Dati Base
                     "title": row.get('Title', 'Evento senza titolo'),
                     "type": str(row.get('Type', 'unknown')).lower(),
                     "description": row.get('Description', ''),
                     "date": str(row.get('Date', '')),
+
+                    # Media
                     "source": source_url,
                     "image": media_url,
+                    "video": media_url,  # Per retro-compatibilità con map.js
+
+                    # --- NUOVI CAMPI INTELLIGENCE ---
+                    # Impatto Strategico (Intensità)
                     "intensity": safe_float(row.get('Intensity'), 0.5),
-                    "verified": True
+
+                    # Bias Fonte (Es. PRO_RUSSIA, NEUTRAL)
+                    "dominant_bias": str(row.get('Dominant Bias', 'NEUTRAL')),
+
+                    # Tipologia Target (Es. REFINERY, CITY) - map.js lo chiama location_precision
+                    "location_precision": str(row.get('Location Precision', 'CITY')),
+
+                    # Lista delle fonti per il footer
+                    "references": references,
+
+                    # Categoria (Utile per il filtro Civile/Militare)
+                    "category": str(row.get('Type', '')).upper()
                 }
             }
             features.append(feature)
 
-        # 4. Salvataggio su file
+        # 5. Salvataggio su file
         geojson = {
             "type": "FeatureCollection",
-            "metadata": {"count": len(features)},
+            "metadata": {
+                "count": len(features),
+                "generated": "Impact Atlas Exporter"
+            },
             "features": features
         }
 
+        # Calcola percorso assoluto per evitare errori
         script_dir = os.path.dirname(os.path.abspath(__file__))
         output_path = os.path.join(script_dir, OUTPUT_FILE)
 
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(geojson, f, indent=2, ensure_ascii=False)
 
-        print(f"✅ Export completato!")
+        print(f"✅ Export completato con successo!")
         print(f"   - Eventi validi esportati: {len(features)}")
-        print(f"   - Eventi saltati (no coords): {skipped}")
+        print(f"   - Eventi saltati (no coordinate): {skipped}")
         print(f"   - File salvato in: {output_path}")
 
     except Exception as e:

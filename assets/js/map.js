@@ -22,6 +22,23 @@
 
   let mapDates = []; // Historical dates index
 
+  // Helper centrale per definire cosa è civile
+  function isCivilianEvent(e) {
+    // Unisce tutti i campi di testo per cercare parole chiave
+    const fullText = (e.category + ' ' + e.type + ' ' + e.location_precision + ' ' + e.filters).toUpperCase();
+
+    // Parole che identificano un evento NON strettamente militare/cinetico
+    const civKeywords = ['CIVIL', 'POLITIC', 'ECONOM', 'HUMANITAR', 'DIPLOMA', 'ACCIDENT', 'STATEMENT'];
+
+    // Se trova una di queste parole, è civile
+    if (civKeywords.some(k => fullText.includes(k))) return true;
+
+    // Opzionale: esclude tutto ciò che non è in UA/RU (Geofencing grezzo)
+    // if (e.lat < 44 || e.lat > 57 || e.lon < 22 || e.lon > 50) return true; 
+
+    return false;
+  }
+
   // ============================================
   // 2. CONFIGURATION
   // ============================================
@@ -393,7 +410,22 @@
         console.log(`✅ Events processed: ${window.globalEvents.length}`);
 
         // APPLICA I FILTRI INIZIALI (Nasconde civili di default)
-        window.applyMapFilters();
+        window.applyMapFilters = function () {
+          const showCivilian = document.getElementById('civilianToggle').checked;
+
+          const filtered = window.globalEvents.filter(e => {
+            // Usa l'helper intelligente
+            const isCivil = isCivilianEvent(e);
+
+            // Se è civile e la levetta è spenta, NASCONDI
+            if (isCivil && !showCivilian) return false;
+
+            return true;
+          });
+
+          window.currentFilteredEvents = filtered;
+          renderInternal(filtered);
+        };
 
         // (Rimuovi o commenta la vecchia riga: renderInternal(window.globalEvents);)
         window.currentFilteredEvents = [...window.globalEvents];
@@ -413,8 +445,17 @@
           console.log("Charts not available:", e);
         }
 
+        console.log(`✅ Events processed: ${window.globalEvents.length} ready for map`);
+
         // Setup slider AFTER data is ready
         setupTimeSlider(window.globalEvents);
+
+        // Initial render FILTERED (Applica subito il filtro civili)
+        if (typeof window.applyMapFilters === 'function') {
+          window.applyMapFilters();
+        } else {
+          renderInternal(window.globalEvents);
+        }
 
       })
       .catch(err => {
@@ -628,33 +669,22 @@
     // --- 3. IMPATTO STRATEGICO (Intensità) ---
     const intEl = document.getElementById('modal-intensity');
     if (intEl) {
-      // Controlla se è un evento civile
-      const isCivil = (e.category || '').toUpperCase().includes('CIVIL') ||
-        (e.location_precision || '').toUpperCase().includes('CIVILIAN');
-
-      if (isCivil) {
-        // Se civile, mostra N/D disabilitato
-        intEl.innerHTML = `<span style="color:#475569; font-weight:600; font-size:1rem;">N/D <small style="font-size:0.6rem; text-transform:uppercase;">(Target Civile)</small></span>`;
+      // Usa lo stesso helper del filtro per coerenza totale
+      if (isCivilianEvent(e)) {
+        // VISUALIZZAZIONE PER CIVILI
+        intEl.innerHTML = `
+                    <div class="intensity-badge-wrapper" style="opacity:0.7;">
+                        <span style="color:#94a3b8; font-weight:700; font-size:1rem;">N/D <small style="font-size:0.65rem;">(NON-MILITARY)</small></span>
+                    </div>`;
       } else {
-        // Se militare, calcola il punteggio normalmente
+        // VISUALIZZAZIONE PER MILITARI (La tua logica colori corretta)
         const val = parseFloat(e.intensity || 0);
-        let label = "UNKNOWN";
-        let colorClass = "#64748b";
-        let desc = "Dati insufficienti.";
+        let label = "UNKNOWN"; let colorClass = "#64748b"; let desc = "Dati insufficienti.";
 
-        if (val <= 0.3) {
-          label = "TACTICAL"; colorClass = "#22c55e";
-          desc = "Impatto limitato. Schermaglie, droni intercettati, danni lievi.";
-        } else if (val <= 0.6) {
-          label = "OPERATIONAL"; colorClass = "#f97316";
-          desc = "Impatto operativo. Danni a infrastrutture tattiche o logistiche.";
-        } else if (val <= 0.8) {
-          label = "STRATEGIC"; colorClass = "#ef4444";
-          desc = "Alto impatto strategico. Colpi a centrali, nodi logistici chiave o comandi.";
-        } else {
-          label = "CRITICAL"; colorClass = "#000000";
-          desc = "Evento di portata storica o catastrofica.";
-        }
+        if (val <= 0.3) { label = "TACTICAL"; colorClass = "#22c55e"; desc = "Schermaglie, droni intercettati, danni lievi."; }
+        else if (val <= 0.6) { label = "OPERATIONAL"; colorClass = "#f97316"; desc = "Danni infrastrutture, vittime civili limitate."; }
+        else if (val <= 0.8) { label = "STRATEGIC"; colorClass = "#ef4444"; desc = "Colpi a centrali, città o pesanti perdite."; }
+        else { label = "CRITICAL"; colorClass = "#000000"; desc = "Evento di portata storica o catastrofica."; }
 
         const style = `color: ${colorClass}; font-weight: 800; font-size: 1.1rem; text-shadow: 0 0 15px ${colorClass}44;`;
 
