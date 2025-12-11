@@ -743,6 +743,7 @@
     document.getElementById('videoModal').style.display = 'flex';
   };
 
+  // Funzione per disegnare le fonti (Aggiornata per liste URL)
   function renderBibliography(references) {
     const container = document.getElementById('modal-bibliography');
     if (!container) return;
@@ -751,29 +752,40 @@
 
     // Se non ci sono reference o è una lista vuota
     if (!references || references.length === 0) {
-      container.innerHTML = '<p style="color:#64748b; font-style:italic; font-size:0.85rem;">Nessuna fonte aggregata disponibile.</p>';
+      container.innerHTML = '<div style="padding:10px; background:rgba(255,255,255,0.02); border-radius:4px; color:#64748b; font-style:italic; font-size:0.85rem; text-align:center;">Nessuna fonte aggregata disponibile per questo evento.</div>';
       return;
     }
 
-    let html = `<h5 style="color:#94a3b8; font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; border-bottom:1px solid #334155; padding-bottom:5px;">Fonti Correlate & Intelligence</h5>`;
+    let html = `<h5 style="color:#94a3b8; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:15px; border-bottom:1px solid #334155; padding-bottom:5px; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-link"></i> Fonti Correlate & Intelligence</h5>`;
 
-    // Supporta sia formato oggetto {url: '...'} che stringa semplice "http..."
     references.forEach((ref, idx) => {
-      // Se ref è un oggetto usa ref.url, altrimenti se è una stringa usa ref direttamente
+      // Gestione robusta: supporta sia stringhe (URL) che oggetti vecchi
       let url = (typeof ref === 'object' && ref.url) ? ref.url : ref;
-      // Se è solo una stringa che non sembra un URL, non renderla link
-      let isLink = url && url.startsWith('http');
 
-      // Pulizia nome dominio per visualizzazione
-      let domain = "Fonte Esterna";
-      try { if (isLink) domain = new URL(url).hostname.replace('www.', ''); } catch (e) { }
+      // Se non è un link valido, lo mostriamo come testo, altrimenti creiamo il link
+      let isLink = typeof url === 'string' && (url.startsWith('http') || url.startsWith('www'));
+
+      // Estetica: Estrae il dominio per non mostrare URL chilometrici (es. "twitter.com")
+      let displayName = "Fonte Esterna";
+      if (isLink) {
+        try {
+          const urlObj = new URL(url.startsWith('http') ? url : 'https://' + url);
+          displayName = urlObj.hostname.replace('www.', '');
+        } catch (e) { displayName = url; }
+      } else {
+        displayName = "Riferimento d'archivio";
+      }
 
       html += `
-            <div style="margin-bottom:8px; font-size:0.85rem;">
-                <span style="color:#64748b; margin-right:5px;">${idx + 1}.</span>
+            <div style="margin-bottom:8px; display:flex; align-items:center; background:rgba(15, 23, 42, 0.6); padding:8px 12px; border-radius:6px; border:1px solid #334155;">
+                <span style="color:#64748b; font-family:'JetBrains Mono', monospace; font-size:0.8rem; margin-right:10px; min-width:20px;">${idx + 1}.</span>
+                
                 ${isLink ?
-          `<a href="${url}" target="_blank" style="color:#3b82f6; text-decoration:none; border-bottom:1px solid #1e3a8a;">${domain} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.7em;"></i></a>`
-          : `<span style="color:#cbd5e1;">${ref}</span>`
+          `<a href="${url}" target="_blank" style="color:#38bdf8; text-decoration:none; font-size:0.9rem; font-weight:500; display:flex; align-items:center; gap:6px; flex-grow:1; transition: color 0.2s;">
+                        <i class="fa-solid fa-earth-europe" style="font-size:0.8em; opacity:0.7;"></i> ${displayName} 
+                        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.7em; margin-left:auto; opacity:0.5;"></i>
+                    </a>`
+          : `<span style="color:#cbd5e1; font-size:0.9rem;">${ref}</span>`
         }
             </div>`;
     });
@@ -969,25 +981,53 @@
     document.getElementById('videoModal').style.display = 'flex';
   };
 
-  // Funzione per disegnare le fonti
+  // Funzione per disegnare le fonti (Aggiornata per liste URL)
   function renderBibliography(references) {
     const container = document.getElementById('modal-bibliography');
     if (!container) return;
 
+    container.innerHTML = '';
+
+    // Se non ci sono reference o è una lista vuota
     if (!references || references.length === 0) {
-      container.innerHTML = '<p style="color:#64748b; font-style:italic;">Dati sulle fonti non disponibili per questo evento.</p>';
+      container.innerHTML = '<div style="padding:10px; background:rgba(255,255,255,0.02); border-radius:4px; color:#64748b; font-style:italic; font-size:0.85rem; text-align:center;">Nessuna fonte aggregata disponibile per questo evento.</div>';
       return;
     }
 
-    let html = `<h4 style="color:#f59e0b; border-bottom:1px solid #334155; padding-bottom:5px;">FONTI & INTELLIGENCE</h4>`;
+    let html = `<h5 style="color:#94a3b8; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:15px; border-bottom:1px solid #334155; padding-bottom:5px; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-link"></i> Fonti Correlate & Intelligence</h5>`;
 
     references.forEach((ref, idx) => {
+      // Gestione robusta: supporta sia stringhe (URL) che oggetti vecchi
+      let url = (typeof ref === 'object' && ref.url) ? ref.url : ref;
+
+      // Se non è un link valido, lo mostriamo come testo, altrimenti creiamo il link
+      let isLink = typeof url === 'string' && (url.startsWith('http') || url.startsWith('www'));
+
+      // Estetica: Estrae il dominio per non mostrare URL chilometrici (es. "twitter.com")
+      let displayName = "Fonte Esterna";
+      if (isLink) {
+        try {
+          const urlObj = new URL(url.startsWith('http') ? url : 'https://' + url);
+          displayName = urlObj.hostname.replace('www.', '');
+        } catch (e) { displayName = url; }
+      } else {
+        displayName = "Riferimento d'archivio";
+      }
+
       html += `
-        <div style="margin-top:10px; padding:10px; background:rgba(255,255,255,0.05); border-radius:4px; border-left:3px solid #64748b;">
-            <div style="color:#f1f5f9; font-weight:bold;">${idx + 1}. ${ref.source?.name || 'Fonte'}</div>
-            <div style="font-size:0.8rem; color:#cbd5e1; margin-top:5px;">"${(ref.text_preview || '').substring(0, 100)}..."</div>
-        </div>`;
+            <div style="margin-bottom:8px; display:flex; align-items:center; background:rgba(15, 23, 42, 0.6); padding:8px 12px; border-radius:6px; border:1px solid #334155;">
+                <span style="color:#64748b; font-family:'JetBrains Mono', monospace; font-size:0.8rem; margin-right:10px; min-width:20px;">${idx + 1}.</span>
+                
+                ${isLink ?
+          `<a href="${url}" target="_blank" style="color:#38bdf8; text-decoration:none; font-size:0.9rem; font-weight:500; display:flex; align-items:center; gap:6px; flex-grow:1; transition: color 0.2s;">
+                        <i class="fa-solid fa-earth-europe" style="font-size:0.8em; opacity:0.7;"></i> ${displayName} 
+                        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.7em; margin-left:auto; opacity:0.5;"></i>
+                    </a>`
+          : `<span style="color:#cbd5e1; font-size:0.9rem;">${ref}</span>`
+        }
+            </div>`;
     });
+
     container.innerHTML = html;
   }
 
