@@ -721,74 +721,82 @@
         sourceCountEl.style.color = count > 1 ? '#22c55e' : (count === 1 ? '#f59e0b' : '#64748b');
       }
 
-      // ... (poi continua con // --- GESTIONE INTENSITÀ & TOOLTIP ---)
-
     }
 
-    // --- GESTIONE INTENSITÀ & TOOLTIP ---
+    // ============================================================
+    // A. GESTIONE INTENSITÀ (CIVILE vs MILITARE)
+    // ============================================================
     const intEl = document.getElementById('modal-intensity');
     if (intEl) {
-      // FIX CRITICO: Usiamo 'eventData' invece di 'e' che non esiste qui
-      const val = parseFloat(eventData.intensity || 0);
+      // 1. Caso Evento Civile/Politico (Mostra N/D Grigio)
+      if (typeof isCivilianEvent === 'function' && isCivilianEvent(eventData)) {
+        intEl.innerHTML = `
+            <div class="intensity-badge-wrapper" style="opacity:0.8; cursor:default;">
+                <span style="color:#94a3b8; font-weight:700; font-size:1rem;">N/D <small style="font-size:0.65rem;">(NON-MILITARY)</small></span>
+                <div class="info-icon" style="color:#94a3b8; border-color:#94a3b8; transform: scale(0.8);">i</div>
+                <div class="intensity-tooltip" style="bottom:120%;">
+                    <strong style="color:#94a3b8">IMPATTO NON VALUTABILE</strong><br>
+                    L'evento è di natura politica, civile o diplomatica.
+                </div>
+            </div>`;
+      }
+      // 2. Caso Evento Militare (Calcolo Standard)
+      else {
+        const val = parseFloat(eventData.intensity || 0);
+        let label = "UNKNOWN"; let colorClass = "#64748b"; let desc = "Dati insufficienti.";
 
-      // Definisci Label e Colore in base al valore
-      let label = "UNKNOWN";
-      let colorClass = "#64748b";
-      let desc = "Dati non sufficienti.";
+        if (val <= 0.3) { label = "TACTICAL"; colorClass = "#22c55e"; desc = "Impatto limitato. Schermaglie o danni lievi."; }
+        else if (val <= 0.6) { label = "OPERATIONAL"; colorClass = "#f97316"; desc = "Impatto operativo. Danni infrastrutture."; }
+        else if (val <= 0.8) { label = "STRATEGIC"; colorClass = "#ef4444"; desc = "Alto impatto strategico."; }
+        else { label = "CRITICAL"; colorClass = "#000000"; desc = "Evento di portata storica."; }
 
-      if (val <= 0.3) { label = "TACTICAL"; colorClass = "#22c55e"; desc = "Impatto limitato. Schermaglie o danni lievi."; }
-      else if (val <= 0.6) { label = "OPERATIONAL"; colorClass = "#f97316"; desc = "Impatto operativo. Danni infrastrutture."; }
-      else if (val <= 0.8) { label = "STRATEGIC"; colorClass = "#ef4444"; desc = "Alto impatto strategico."; }
-      else { label = "CRITICAL"; colorClass = "#000000"; desc = "Evento di portata storica."; }
+        const textShadow = colorClass === '#000000' ? 'text-shadow: 0 0 10px rgba(255,255,255,0.5);' : '';
+        const style = `color: ${colorClass}; font-weight: 800; font-size: 1.1rem; ${textShadow}`;
 
-      const style = `color: ${colorClass}; font-weight: 800; font-size: 1.1rem; text-shadow: 0 0 15px ${colorClass}44;`;
-
-      intEl.innerHTML = `
-        <div class="intensity-badge-wrapper">
-            <span style="${style}">${label} (${(val * 10).toFixed(1)})</span>
-            <div class="info-icon">i</div>
-            <div class="intensity-tooltip">
-                <strong style="color:${colorClass}">${label} IMPACT</strong><br>${desc}
-            </div>
-        </div>`;
+        intEl.innerHTML = `
+            <div class="intensity-badge-wrapper">
+                <span style="${style}">${label} (${(val * 10).toFixed(1)})</span>
+                <div class="info-icon">i</div>
+                <div class="intensity-tooltip">
+                    <strong style="color:${colorClass}">${label} IMPACT</strong><br>${desc}
+                </div>
+            </div>`;
+      }
     }
 
-    // --- CHART CONFIDENCE ---
+    // ============================================================
+    // B. GESTIONE SCORE & GRAFICO (INSERITO ORA)
+    // ============================================================
 
-    // 1. Normalizziamo il valore (usa 'eventData' invece di 'e')
+    // 1. Normalizza Score
     const score = parseInt(eventData.reliability || eventData.Reliability || eventData.confidence || 0);
 
-    // 2. Definisci Tier, Colore e Descrizione
-    let relData = {
-      label: "NON VERIFICATO",
-      color: "#64748b", // Grigio
-      desc: "Nessuna fonte affidabile o dati insufficienti."
-    };
+    // 2. Definisci Colori e Testi
+    let relData = { label: "NON VERIFICATO", color: "#64748b", desc: "Nessuna fonte affidabile." };
 
     if (score >= 80) {
-      relData = { label: "CONFERMATO", color: "#22c55e", desc: "Info verificata con prove visive." }; // Verde
+      relData = { label: "CONFERMATO", color: "#22c55e", desc: "Info verificata con prove visive." };
     } else if (score >= 60) {
-      relData = { label: "PROBABILE", color: "#3b82f6", desc: "Fonti multiple indipendenti." }; // Blu
+      relData = { label: "PROBABILE", color: "#3b82f6", desc: "Fonti multiple indipendenti." };
     } else if (score > 40) {
-      relData = { label: "POSSIBILE", color: "#f59e0b", desc: "Fonte singola o parziale." }; // Arancio (41-59)
+      relData = { label: "POSSIBILE", color: "#f59e0b", desc: "Fonte singola o parziale." };
     } else if (score > 0) {
-      relData = { label: "RUMOR", color: "#ef4444", desc: "Voce non verificata / Propaganda." }; // Rosso (1-40)
+      relData = { label: "RUMOR", color: "#ef4444", desc: "Voce non verificata (1-40)." };
     }
 
-    // 3. Aggiorna il Grafico a Ciambella
+    // 3. Disegna il Grafico (Chiama la funzione che hai in fondo al file)
     if (typeof renderConfidenceChart === 'function') {
       renderConfidenceChart(score, relData.color);
     }
 
-    // 4. Genera il Badge con Tooltip
+    // 4. Aggiorna il Badge HTML sotto il grafico
     const relContainer = document.getElementById('modal-reliability-badge');
     if (relContainer) {
       relContainer.innerHTML = `
             <div class="intensity-badge-wrapper" style="font-size:0.7rem; color:${relData.color}; font-weight:700; letter-spacing:1px; cursor:help; margin-top:5px; display:flex; align-items:center; justify-content:center; gap:4px;">
                 ${relData.label}
                 <div class="info-icon" style="width:12px; height:12px; font-size:0.6rem; border-color:${relData.color}; color:${relData.color}; display:flex;">i</div>
-                
-                <div class="intensity-tooltip" style="width:200px; right:-10px; left:auto; transform:none; text-align:left; font-weight:400; color:#cbd5e1; bottom:120%;">
+                <div class="intensity-tooltip" style="width:200px; bottom:120%;">
                     <strong style="color:${relData.color}; display:block; border-bottom:1px solid #334155; padding-bottom:5px; margin-bottom:5px;">
                         SCORE: ${score}%
                     </strong>
