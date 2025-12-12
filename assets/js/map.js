@@ -124,7 +124,7 @@
               </a>
             </div>`;
     }
-    const id = feature.properties.event_id;
+    const id = e.event_id || e.id;
     // 4. Costruzione HTML Popup
     return `
     <div class="acled-popup" style="color:#e2e8f0; font-family: 'Inter', sans-serif; min-width: 260px;">
@@ -409,7 +409,7 @@
         window.globalEvents = window.allEventsData.map(f => {
           let m = moment(f.properties.date);
           if (!m.isValid()) {
-            m = moment(f.properties.date, ["DD/MM/YYYY", "DD-MM-YYYY", "DD.MM.YYYY"]);
+            m = moment(f.properties.date, ["DD/MM/YYYY", "DD-MM-YYYY", "DD.MM.YYYY", "DD/MM/YY", "DD/MM/YYYY", "YYYY-MM-DD", "DD-MM-YYYY"]);
           }
           const ts = m.isValid() ? m.valueOf() : moment().valueOf();
 
@@ -590,6 +590,11 @@
   // --- FUNZIONE AGGIORNATA PER USARE ID ---
   window.openModal = function (eventIdOrObj) {
     let e;
+    const eventData = eventsData.find(e => e.event_id === id); // O la tua logica di lookup
+    if (!eventData) return console.error("Evento non trovato:", id);
+
+    // 2. DEFINISCI SCORE (Fix per l'errore riga 763)
+    const score = parseInt(eventData.reliability) || 0;
 
     // FIX LOGICA IBRIDA:
     // 1. Se è una stringa che inizia con %7B (codifica di '{') è un vecchio oggetto JSON (War Room)
