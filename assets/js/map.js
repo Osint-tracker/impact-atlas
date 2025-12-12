@@ -727,7 +727,7 @@
         impactText = "Propaganda di Stato (UKR)";
         explanation = "Narrazione nazionalista. Uso di linguaggio emotivo forte e possibile esagerazione delle perdite inflitte al nemico/omissione di dati critici per l'Ucraina.";
       } else if (score >= 3) {
-        color = "#60a5fa"; // Blu Chiaro (Pro UKR)
+        color = "#06b6d4"; // Ciano (Pro UKR)
         impactText = "Orientamento Filo-Ucraino";
         explanation = "Prospettiva atlantista. La narrazione supporta la legittimità della difesa ucraina ed evidenzia le responsabilità russe.";
       } else {
