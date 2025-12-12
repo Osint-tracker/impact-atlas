@@ -699,10 +699,82 @@
     document.getElementById('modalDate').innerText = eventData.date || "";
 
     // 2. Popola i dati Intelligence (con controlli se mancano)
+    // --- GESTIONE DOMINANT BIAS (Con Tooltip Avanzato & Legenda) ---
     const biasEl = document.getElementById('modal-dominant-bias');
     if (biasEl) {
-      const bias = eventData.dominant_bias || "UNKNOWN";
-      biasEl.innerText = bias.replace('_', ' ');
+      // 1. Recupero Dati (Supporto retrocompatibile)
+      const biasLabel = eventData.dominant_bias || eventData['Bias dominante'] || "NEUTRAL";
+      let score = parseFloat(eventData.bias_score || eventData['Bias Score'] || 0);
+
+      // Clamp score visivo tra -10 e +10 per sicurezza
+      score = Math.max(-10, Math.min(10, score));
+
+      // 2. Logica Estetica (Colore + Descrizione Professionale)
+      let color = "#94a3b8"; // Default Grigio (Neutrale)
+      let explanation = "Il testo analizzato non presenta marcatori semantici significativi.";
+      let impactText = "Report Fattuale";
+
+      if (score <= -7) {
+        color = "#dc2626"; // Rosso Scuro (Propaganda RU)
+        impactText = "Propaganda di Stato (RUS)";
+        explanation = "Rilevata totale coincidenza con la dottrina informativa del Cremlino. Uso massiccio di terminologia disumanizzante e negazione della sovranità ucraina.";
+      } else if (score <= -3) {
+        color = "#f87171"; // Rosso Chiaro (Pro RU)
+        impactText = "Orientamento Filo-Russo";
+        explanation = "Orientamento narrativo filo-russo. Focus selettivo sui successi tattici di Mosca e scetticismo verso le fonti occidentali.";
+      } else if (score >= 7) {
+        color = "#1d4ed8"; // Blu Scuro (Propaganda UKR)
+        impactText = "Propaganda di Stato (UKR)";
+        explanation = "Narrazione nazionalista. Uso di linguaggio emotivo forte e possibile esagerazione delle perdite inflitte al nemico/omissione di dati critici per l'Ucraina.";
+      } else if (score >= 3) {
+        color = "#60a5fa"; // Blu Chiaro (Pro UKR)
+        impactText = "Orientamento Filo-Ucraino";
+        explanation = "Prospettiva atlantista. La narrazione supporta la legittimità della difesa ucraina ed evidenzia le responsabilità russe.";
+      } else {
+        // Neutrale (-2 a +2)
+        color = "#94a3b8"; // Grigio
+        impactText = "Neutrale / Fattuale";
+        explanation = "Reporting asettico. I dati sono presentati senza aggettivazione emotiva o giudizi di valore. Alta verifica fattuale.";
+      }
+
+      // 3. Render HTML (Badge + Tooltip "Intelligence Style")
+      // Nota: Il tooltip è largo 220px per ospitare la spiegazione
+      biasEl.innerHTML = `
+            <div class="intensity-badge-wrapper" style="cursor:help; position:relative; display:inline-block;">
+                
+                <span style="color:${color}; font-weight:700; letter-spacing:0.5px; border-bottom: 1px dashed ${color}44;">
+                    ${biasLabel.replace(/_/g, ' ')}
+                </span>
+                
+                <div class="info-icon" style="color:${color}; border-color:${color}; display:inline-flex; margin-left:6px; transform:scale(0.8);">i</div>
+
+                <div class="intensity-tooltip" style="
+                    width: 240px; 
+                    bottom: 130%; 
+                    left: 50%; 
+                    transform: translateX(-50%);
+                    background: rgba(15, 23, 42, 0.95);
+                    border: 1px solid ${color}44;
+                    padding: 12px;
+                    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+                    text-align: left;
+                ">
+                    <div style="border-bottom: 1px solid #334155; padding-bottom: 8px; margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.7rem; color:#64748b; text-transform:uppercase;">BIAS SCORE</span>
+                        <strong style="color:${color}; font-size:1.1rem;">${score > 0 ? '+' : ''}${score.toFixed(1)}</strong>
+                    </div>
+
+                    <div style="font-size:0.8rem; color:#e2e8f0; line-height:1.4; margin-bottom:8px;">
+                        <strong style="color:${color}; display:block; margin-bottom:4px;">${impactText}</strong>
+                        ${explanation}
+                    </div>
+
+                    <div style="font-size:0.65rem; color:#64748b; font-style:italic; border-top:1px solid #334155; padding-top:6px;">
+                        Valore calcolato su analisi semantica e affidabilità fonte.
+                    </div>
+                </div>
+            </div>
+        `;
     }
 
     const locEl = document.getElementById('modal-location-precision');

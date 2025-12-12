@@ -16,28 +16,33 @@ def get_google_client():
     """Autenticazione Google Sheet sicura"""
     scope = ['https://www.googleapis.com/auth/spreadsheets',
              'https://www.googleapis.com/auth/drive']
-
     script_dir = os.path.dirname(os.path.abspath(__file__))
     json_key_path = os.path.join(script_dir, 'service_account.json')
-
-    # Fallback per percorsi diversi
     if not os.path.exists(json_key_path):
         json_key_path = os.path.join(script_dir, '..', 'service_account.json')
-
     if not os.path.exists(json_key_path):
         raise FileNotFoundError("❌ ERRORE: Non trovo 'service_account.json'.")
-
     creds = Credentials.from_service_account_file(json_key_path, scopes=scope)
     return gspread.authorize(creds)
 
 
 def safe_float(value, default=0.0):
-    """Pulisce coordinate e numeri (gestisce virgole e spazi)"""
+    """Pulisce coordinate e numeri"""
     if not value:
         return default
     try:
         clean_val = str(value).replace(',', '.').strip()
         return float(clean_val) if clean_val else default
+    except:
+        return default
+
+
+def safe_int(value, default=0):
+    """Pulisce interi (utile per reliability/bias score)"""
+    if not value:
+        return default
+    try:
+        return int(float(str(value).replace(',', '.')))
     except:
         return default
 
@@ -49,8 +54,6 @@ def main():
         gc = get_google_client()
         sh = gc.open_by_url(SHEET_URL)
         worksheet = sh.get_worksheet(0)
-
-        # Scarica tutti i dati in una volta sola
         records = worksheet.get_all_records()
         print(f"📊 Trovate {len(records)} righe totali.")
 
@@ -58,7 +61,7 @@ def main():
         skipped = 0
 
         for row in records:
-            # 1. Coordinate (Fondamentali)
+            # 1. Coordinate
             lat = safe_float(row.get('Latitude'), 0)
             lon = safe_float(row.get('Longitude'), 0)
 
@@ -66,74 +69,72 @@ def main():
                 skipped += 1
                 continue
 
-            # 2. Gestione Media e Fonte Principale
+            # 2. Generazione ID Univoco
+            unique_string = f"{row.get('Date')}{lat}{lon}{row.get('Title')}"
+            event_id = hashlib.md5(unique_string.encode()).hexdigest()[:12]
+
+            # 3. Gestione Media
             media_url = row.get('Video') or row.get(
                 'Image') or row.get('Media') or ""
-            source_url = row.get('Source') or "Unknown Source"
 
+            # 4. Gestione Fonti (Parsing Aggregato)
+            source_url = row.get('Source') or "Unknown Source"
             # Fix link Telegram
             if "t.me" in source_url and not source_url.startswith("http"):
                 source_url = "https://" + source_url
 
-                # Generazione ID Univoco (Fondamentale per il bottone Dossier)
-            unique_string = f"{row.get('Date')}{lat}{lon}{row.get('Title')}"
-            event_id = hashlib.md5(unique_string.encode()).hexdigest()[:12]
+            raw_agg = str(row.get('Aggregated Sources', ''))
+            references = [s.strip() for s in raw_agg.split('|') if s.strip()]
 
-            # Parsing Fonti Aggregate (da stringa "a | b" a lista ["a", "b"])
-            raw_sources = str(row.get('Aggregated Sources', ''))
-            references = [s.strip()
-                          for s in raw_sources.split('|') if s.strip()]
-
-            # Fallback: se non ci sono fonti aggregate, usa la fonte principale
+            # Se la lista è vuota, aggiungi la fonte principale
             if not references and source_url != "Unknown Source":
                 references.append(source_url)
 
-            # 3. Gestione Fonti Aggregate (Importante per il nuovo modale)
-            # L'AI le salva come "url1 | url2", qui le trasformiamo in lista
-            raw_sources = str(row.get('Aggregated Sources', ''))
-            references = [s.strip()
-                          for s in raw_sources.split('|') if s.strip()]
-
-            # Se non ci sono fonti aggregate, usiamo la fonte principale come fallback
-            if not references and source_url != "Unknown Source":
-                references.append(source_url)
-
-            # 4. Costruzione Feature GeoJSON
+            # 5. Costruzione GeoJSON
             feature = {
                 "type": "Feature",
                 "geometry": {
                     "type": "Point",
-                    # GeoJSON vuole prima Longitude, poi Latitude
                     "coordinates": [lon, lat]
                 },
                 "properties": {
-                    "event_id": event_id,  # <--- NUOVO
+                    # Identificatori
+                    "event_id": event_id,
                     "title": row.get('Title', 'Evento senza titolo'),
-                    "type": str(row.get('Type', 'unknown')).lower(),
-                    "description": row.get('Description', ''),
                     "date": str(row.get('Date', '')),
+
+                    # Dati Descrittivi
+                    "description": row.get('Description', ''),
+                    "type": str(row.get('Type', 'unknown')).lower(),
+                    # Per retrocompatibilità
+                    "category": str(row.get('Type', '')).upper(),
+
+                    # Intelligence & Metadati
                     "actor": str(row.get('Actor', 'UNK')).upper().strip(),
-
-                    # Media
-                    "source": source_url,
-                    "image": media_url,
-                    "video": media_url,  # Per compatibilità
-
-                    # Dati Tecnici
                     "intensity": safe_float(row.get('Intensity'), 0.5),
-                    "reliability": safe_float(row.get('Reliability'), 50),
-                    "verified": True,  # Supponiamo che tutti gli eventi siano verificati
+                    "reliability": safe_int(row.get('Reliability'), 50),
 
-                    # --- NUOVI DATI INTELLIGENCE ---
-                    "dominant_bias": str(row.get('Dominant Bias', 'NEUTRAL')),
+                    # BIAS (Label + Numero)
+                    # Colonna 15
+                    "dominant_bias": str(row.get('Bias dominante', 'NEUTRAL')),
+                    # Colonna 19 (NUOVA)
+                    "bias_score": safe_float(row.get('Bias Score'), 0.0),
+
+                    # Location
                     "location_precision": str(row.get('Location Precision', 'CITY')),
-                    "references": references,  # La lista creata sopra
-                    "category": str(row.get('Type', '')).upper()
+
+                    # Media & Fonti
+                    "source": source_url,
+                    "references": references,  # Lista JSON per il frontend
+                    "video": media_url,
+                    "image": media_url,
+
+                    "verified": True  # Default
                 }
             }
             features.append(feature)
 
-        # 5. Salvataggio su file
+        # 6. Salvataggio
         geojson = {
             "type": "FeatureCollection",
             "metadata": {
@@ -143,20 +144,19 @@ def main():
             "features": features
         }
 
-        # Calcola percorso assoluto per evitare errori
         script_dir = os.path.dirname(os.path.abspath(__file__))
         output_path = os.path.join(script_dir, OUTPUT_FILE)
 
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(geojson, f, indent=2, ensure_ascii=False)
 
-        print(f"✅ Export completato con successo!")
-        print(f"   - Eventi validi esportati: {len(features)}")
-        print(f"   - Eventi saltati (no coordinate): {skipped}")
-        print(f"   - File salvato in: {output_path}")
+        print(f"✅ Export completato!")
+        print(f"   - Eventi esportati: {len(features)}")
+        print(f"   - Saltati (no coord): {skipped}")
+        print(f"   - File: {output_path}")
 
     except Exception as e:
-        print(f"❌ Errore critico durante l'export: {e}")
+        print(f"❌ Errore critico: {e}")
 
 
 if __name__ == "__main__":
