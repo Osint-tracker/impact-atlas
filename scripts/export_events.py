@@ -112,6 +112,7 @@ def main():
                     "type": str(row.get('Type', 'unknown')).lower(),
                     "description": row.get('Description', ''),
                     "date": str(row.get('Date', '')),
+                    "actor": str(row.get('Actor', 'UNK')).upper().strip(),
 
                     # Media
                     "source": source_url,

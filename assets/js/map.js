@@ -447,25 +447,73 @@
 
         console.log(`✅ Events processed: ${window.globalEvents.length}`);
 
-        // 3. DEFINIZIONE FILTRI (Dentro il then)
-        // Implementazione reale salvata in _applyMapFiltersImpl e poi esposta come applyMapFilters
+        // 3. DEFINIZIONE FILTRI (CIVILI + ATTORI + RICERCA SMART)
         window._applyMapFiltersImpl = function () {
-          // Controllo difensivo se l'elemento esiste
+          // A. Recupera Input (Gestione sicura se mancano elementi)
           const toggle = document.getElementById('civilianToggle');
           const showCivilian = toggle ? toggle.checked : true;
 
+          const searchInput = document.getElementById('textSearch');
+          const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+          const actorSelect = document.getElementById('actorFilter');
+          const selectedActor = actorSelect ? actorSelect.value : '';
+
+          // B. Ciclo di Filtraggio
           const filtered = window.globalEvents.filter(e => {
-            if (typeof isCivilianEvent !== 'function') return true; // Fallback se manca la funzione helper
-            const isCivil = isCivilianEvent(e);
-            if (isCivil && !showCivilian) return false;
+
+            // 1. Filtro Civili (LOGICA ORIGINALE MANTENUTA)
+            if (typeof isCivilianEvent === 'function') {
+              const isCivil = isCivilianEvent(e);
+              if (isCivil && !showCivilian) return false;
+            }
+
+            // 2. Filtro Attore (NUOVO)
+            // Se c'è un attore selezionato nel menu, l'evento deve coincidere
+            if (selectedActor && e.actor !== selectedActor) {
+              return false;
+            }
+
+            // 3. Ricerca Testuale Smart (NUOVO)
+            if (searchTerm) {
+              // Mapping Intelligente: Utente scrive "Russia" -> Cerchiamo Actor "RUS"
+              let targetActor = null;
+              if (['russia', 'russo', 'russi', 'mosca'].some(k => searchTerm.includes(k))) targetActor = 'RUS';
+              if (['ucraina', 'ukraine', 'kiev'].some(k => searchTerm.includes(k))) targetActor = 'UKR';
+
+              // Cerca nei campi di testo
+              const inTitle = (e.title || '').toLowerCase().includes(searchTerm);
+              const inDesc = (e.description || '').toLowerCase().includes(searchTerm);
+              const inLoc = (e.location_precision || '').toLowerCase().includes(searchTerm);
+
+              // Cerca per attore smart (es. ho scritto "attacchi russi" -> mostra eventi RUS)
+              const isSmartMatch = targetActor && e.actor === targetActor;
+
+              // Se non trovo il testo E non è un match smart -> Nascondi
+              if (!inTitle && !inDesc && !inLoc && !isSmartMatch) return false;
+            }
+
             return true;
           });
 
+          // C. Aggiorna Mappa e Contatori
           window.currentFilteredEvents = filtered;
           renderInternal(filtered);
         };
-        // Espone la funzione di filtro dopo che i dati sono stati processati
+
+        // Espone la funzione
         window.applyMapFilters = window._applyMapFiltersImpl;
+
+        // --- ATTIVAZIONE LIVE (FONDAMENTALE) ---
+        // Collega i filtri agli input HTML per aggiornare la mappa in tempo reale
+        const inputsToCheck = ['textSearch', 'actorFilter', 'civilianToggle'];
+        inputsToCheck.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.oninput = window.applyMapFilters; // Per quando scrivi
+            el.onchange = window.applyMapFilters; // Per menu e checkbox
+          }
+        });
 
         // UI Updates
         window.currentFilteredEvents = [...window.globalEvents];
