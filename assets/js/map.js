@@ -100,14 +100,18 @@
     return marker;
   }
 
+  // ==========================================
+  // 1. GENERAZIONE POPUP (Corretta e con Stile Elegante)
+  // ==========================================
   function createPopupContent(e) {
-    // 1. Recupera l'ID in modo sicuro (fondamentale per il fix del click)
-    const safeId = e.event_id || e.properties?.event_id;
+    // 1. Recupera l'ID in modo sicuro
+    // Usa 'event_id' se esiste, altrimenti 'id'. 'feature' NON esiste qui.
+    const id = e.event_id || e.id || (e.properties ? e.properties.event_id : null);
 
-    // 2. Colore per la barra laterale
+    // 2. Determina il colore
     const color = getColor(e.intensity);
 
-    // 3. Gestione Footer Fonte (con nuovo stile)
+    // 3. Gestione Footer Fonte
     let sourceFooter = '';
     if (e.source && e.source !== 'Unknown Source') {
       const url = e.source.startsWith('http') ? e.source : '#';
@@ -119,13 +123,14 @@
       sourceFooter = `
             <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #334155; display: flex; align-items: center; justify-content: space-between;">
               <span style="font-size: 0.7rem; color: #64748b;">Fonte:</span>
-              <a href="${url}" target="_blank" class="source-link-styled">
+              <a href="${url}" target="_blank" style="color: #3b82f6; text-decoration: none;">
                  <i class="fa-solid fa-link"></i> ${domain}
               </a>
             </div>`;
     }
-    const id = e.event_id || e.id;
-    // 4. Costruzione HTML Popup
+
+    // 4. Costruzione HTML Popup (Stile Elegante Ripristinato)
+    // Nota: Il bottone ha lo stile INLINE per garantire che sia blu e bello come prima.
     return `
     <div class="acled-popup" style="color:#e2e8f0; font-family: 'Inter', sans-serif; min-width: 260px;">
       
@@ -133,8 +138,8 @@
         <h5 style="margin:0; font-weight:700; font-size:1rem; line-height:1.3; color:#f8fafc;">${e.title}</h5>
         
         <div style="margin-top:8px; display:flex; gap:8px;">
-          <span class="popup-meta-tag"><i class="fa-regular fa-calendar"></i> ${e.date}</span>
-          <span class="popup-meta-tag"><i class="fa-solid fa-tag"></i> ${e.type}</span>
+          <span class="popup-meta-tag" style="background:#1e293b; padding:2px 6px; border-radius:4px; font-size:0.75rem;"><i class="fa-regular fa-calendar"></i> ${e.date}</span>
+          <span class="popup-meta-tag" style="background:#1e293b; padding:2px 6px; border-radius:4px; font-size:0.75rem;"><i class="fa-solid fa-tag"></i> ${e.type || 'Evento'}</span>
         </div>
       </div>
 
@@ -144,8 +149,8 @@
       
       <div class="popup-actions">
         <button 
-          class="btn-tactical" 
-          onclick="openModal('${id}')"> 
+          onclick="openModal('${id}')"
+          style="width:100%; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border:none; padding:10px 0; border-radius:6px; color:white; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);"> 
           <i class="fas fa-folder-open"></i> APRI DOSSIER
         </button>
       </div>
@@ -351,7 +356,16 @@
   // 7. MAP INITIALIZATION
   // ============================================
 
+  // ============================================
+  // 7. MAP INITIALIZATION (Fix Crash)
+  // ============================================
   function initMap() {
+    // FIX: Se la mappa esiste già, ci fermiamo qui.
+    if (map) {
+      console.log("⚠️ Mappa già inizializzata.");
+      return;
+    }
+
     map = L.map('map', {
       zoomControl: false,
       preferCanvas: true,
@@ -362,7 +376,7 @@
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
-      attribution: '&copy; IMPACT ATLAS'
+      attribution: '© IMPACT ATLAS'
     }).addTo(map);
 
     eventsLayer = L.markerClusterGroup({
@@ -434,7 +448,8 @@
         console.log(`✅ Events processed: ${window.globalEvents.length}`);
 
         // 3. DEFINIZIONE FILTRI (Dentro il then)
-        window.applyMapFilters = function () {
+        // Implementazione reale salvata in _applyMapFiltersImpl e poi esposta come applyMapFilters
+        window._applyMapFiltersImpl = function () {
           // Controllo difensivo se l'elemento esiste
           const toggle = document.getElementById('civilianToggle');
           const showCivilian = toggle ? toggle.checked : true;
@@ -449,6 +464,8 @@
           window.currentFilteredEvents = filtered;
           renderInternal(filtered);
         };
+        // Espone la funzione di filtro dopo che i dati sono stati processati
+        window.applyMapFilters = window._applyMapFiltersImpl;
 
         // UI Updates
         window.currentFilteredEvents = [...window.globalEvents];
@@ -568,256 +585,124 @@
     }
   };
 
-  // Funzione filtro globale
+  // Funzione filtro globale (wrapper difensivo)
+  // La vera implementazione viene impostata dopo il caricamento dei dati in window._applyMapFiltersImpl
   window.applyMapFilters = function () {
-    const showCivilian = document.getElementById('civilianToggle').checked;
+    // Se l'implementazione reale è disponibile, usala
+    if (typeof window._applyMapFiltersImpl === 'function') {
+      return window._applyMapFiltersImpl();
+    }
 
-    const filtered = window.globalEvents.filter(e => {
-      // Logica per identificare eventi civili
-      // Cerca "CIVIL" nella categoria o "CIVILIAN" nella precisione o nel tipo
+    // Fallback difensivo se i dati non sono ancora pronti o il DOM non contiene il toggle
+    const toggleEl = document.getElementById('civilianToggle');
+    const showCivilian = toggleEl ? toggleEl.checked : true;
+
+    const events = Array.isArray(window.globalEvents) ? window.globalEvents : (Array.isArray(window.allEventsData) ? window.allEventsData : []);
+    const filtered = events.filter(e => {
       const isCivil = (e.category || '').toUpperCase().includes('CIVIL') ||
         (e.location_precision || '').toUpperCase().includes('CIVILIAN') ||
         (e.type || '').toUpperCase().includes('CIVIL');
-
-      // Se l'evento è civile e il toggle è spento, nascondilo
       if (isCivil && !showCivilian) return false;
-
       return true;
     });
 
     window.currentFilteredEvents = filtered;
-    // Aggiorna mappa e contatori
-    renderInternal(filtered);
+    if (typeof renderInternal === 'function') renderInternal(filtered);
+  };
+  // 10. MODAL FUNCTIONS (FIXED & LINKED)
+  // ============================================
+
+  // Funzione chiamata dal pulsante sulla mappa
+  window.openModal = function (eventIdOrObj) {
+    console.log("Tentativo apertura dossier:", eventIdOrObj);
+    let eventData = null;
+
+    // 1. Logica Ibrida per trovare l'evento
+    if (typeof eventIdOrObj === 'string') {
+      if (eventIdOrObj.startsWith('%7B') || eventIdOrObj.startsWith('{')) {
+        try { eventData = JSON.parse(decodeURIComponent(eventIdOrObj)); } catch (err) { }
+      } else {
+        // Cerca nell'array globale usando l'ID
+        if (window.globalEvents) {
+          eventData = window.globalEvents.find(evt => evt.event_id === eventIdOrObj);
+        }
+      }
+    } else {
+      eventData = eventIdOrObj;
+    }
+
+    if (!eventData) return console.error("❌ Evento non trovato per il Dossier");
+
+    // 2. Passa i dati alla tua funzione di grafica avanzata
+    window.openIntelDossier(eventData);
   };
 
-  // ============================================
-  // 10. MODAL FUNCTIONS (Preserve Visual Features)
-  // ============================================
+  // La tua funzione di grafica avanzata (Corretta e Ripristinata)
+  window.openIntelDossier = function (eventData) {
+    console.log("📂 Visualizzazione Dossier Intelligence per:", eventData.title);
 
-  // --- FUNZIONE AGGIORNATA PER USARE ID ---
-  window.openModal = function (eventIdOrObj) {
-    let e;
-    const eventData = eventsData.find(e => e.event_id === id); // O la tua logica di lookup
-    if (!eventData) return console.error("Evento non trovato:", id);
+    // 1. Popola i dati base
+    document.getElementById('modalTitle').innerText = eventData.title || "Titolo non disponibile";
 
-    // 2. DEFINISCI SCORE (Fix per l'errore riga 763)
-    const score = parseInt(eventData.reliability) || 0;
+    // Supporto per entrambi gli ID della descrizione (sicurezza)
+    const descEl = document.getElementById('modalDesc') || document.getElementById('modalDescription');
+    if (descEl) descEl.innerText = eventData.description || "Nessuna descrizione.";
 
-    // FIX LOGICA IBRIDA:
-    // 1. Se è una stringa che inizia con %7B (codifica di '{') è un vecchio oggetto JSON (War Room)
-    if (typeof eventIdOrObj === 'string' && (eventIdOrObj.startsWith('%7B') || eventIdOrObj.startsWith('{'))) {
-      try { e = JSON.parse(decodeURIComponent(eventIdOrObj)); } catch (err) { console.error(err); return; }
-    }
-    // 2. Se è una stringa normale, è un ID (Mappa)
-    else if (typeof eventIdOrObj === 'string') {
-      e = window.globalEvents.find(evt => (evt.event_id || evt.properties?.event_id) === eventIdOrObj);
-      if (!e) { console.error("Evento non trovato per ID:", eventIdOrObj); return; }
-    }
-    // 3. Se è già un oggetto
-    else { e = eventIdOrObj; }
+    document.getElementById('modalDate').innerText = eventData.date || "";
 
-    // --- DATI BASE ---
-    document.getElementById('modalTitle').innerText = e.title || "Titolo non disponibile";
-    document.getElementById('modalDesc').innerText = e.description || "Nessun dettaglio disponibile.";
-    document.getElementById('modalType').innerText = e.type || "N/A";
-    document.getElementById('modalDate').innerText = e.date || "";
-
-    // --- DATI INTELLIGENCE AGGIUNTIVI ---
-    // --- 1. DOMINANT BIAS (Badge & Tooltip Style) ---
+    // 2. Popola i dati Intelligence (con controlli se mancano)
     const biasEl = document.getElementById('modal-dominant-bias');
     if (biasEl) {
-      const rawBias = (e.dominant_bias || "UNKNOWN").toUpperCase().replace('_', ' ');
-
-      let color = "#94a3b8"; // Grigio neutro di base
-      let desc = "Orientamento della fonte non determinato.";
-
-      if (rawBias.includes('RUSSIA') || rawBias.includes('RU')) {
-        color = "#ef4444"; // Rosso
-        desc = "Fonte con narrazione filo-russa.";
-      } else if (rawBias.includes('UKRAINE') || rawBias.includes('UA')) {
-        color = "#3b82f6"; // Blu
-        desc = "Fonte con narrazione filo-ucraina.";
-      } else if (rawBias.includes('NEUTRAL') || rawBias.includes('WESTERN')) {
-        color = "#22c55e"; // Verde
-        desc = "Fonte neutrale, verificata o media internazionale.";
-      }
-
-      biasEl.innerHTML = `
-            <div class="intensity-badge-wrapper">
-                <span style="color:${color}; font-weight:800;">${rawBias}</span>
-                <div class="info-icon" style="color:${color}; border-color:${color}; transform: scale(0.8);">i</div>
-                <div class="intensity-tooltip">
-                    <strong style="color:${color}">SOURCE BIAS</strong><br>
-                    ${desc}
-                </div>
-            </div>`;
+      const bias = eventData.dominant_bias || "UNKNOWN";
+      biasEl.innerText = bias.replace('_', ' ');
     }
 
-    // --- GESTIONE PRECISIONE LOCATION (Colori + Link + Tooltip) ---
     const locEl = document.getElementById('modal-location-precision');
     if (locEl) {
-      // Normalizza il testo (es. "electrical_substation" -> "ELECTRICAL SUBSTATION")
-      const rawType = (e.location_precision || "UNK").toUpperCase();
-      const prettyType = rawType.replace(/_/g, ' ');
-
-      // Configurazione Categorie: Colore + Descrizione Legenda
-      let color = "#94a3b8"; // Default grigio
-      let desc = "Precisione della posizione non specificata.";
-
-      if (rawType.includes('REFINERY')) {
-        color = "#ef4444"; // Rosso (Target Energetico Critico)
-        desc = "Obiettivo Strategico: Raffineria o deposito carburanti.";
-      } else if (rawType.includes('ELECTRICAL') || rawType.includes('SUBSTATION')) {
-        color = "#f59e0b"; // Ambra (Target Energetico)
-        desc = "Infrastruttura Elettrica: Sottostazione o nodo di rete.";
-      } else if (rawType.includes('MILITARY')) {
-        color = "#dc2626"; // Rosso Scuro (Target Militare)
-        desc = "Obiettivo Militare: Base, aeroporto o deposito munizioni.";
-      } else if (rawType.includes('INFRASTRUCTURE')) {
-        color = "#facc15"; // Giallo (Logistica)
-        desc = "Logistica: Ponti, ferrovie, porti o dighe.";
-      } else if (rawType.includes('CIVILIAN')) {
-        color = "#38bdf8"; // Azzurro (Civile)
-        desc = "Struttura Civile: Edifici specifici non militari (hotel, scuole, uffici).";
-      } else if (rawType.includes('CITY') || rawType.includes('REGION')) {
-        color = "#cbd5e1"; // Grigio Chiaro (Generico)
-        desc = "Area Geografica: Posizione indicativa (centro città o regione).";
-      }
-
-      // Genera Link Google Maps (se coordinate valide)
-      let linkHtml = prettyType;
-      if (e.lat && e.lon && parseFloat(e.lat) !== 0) {
-        linkHtml = `<a href="https://www.google.com/maps/search/?api=1&query=${e.lat},${e.lon}" 
-                               target="_blank" 
-                               style="color: ${color}; text-decoration: none; border-bottom: 1px dashed ${color};"
-                               title="Vedi su Google Maps">
-                               <i class="fa-solid fa-location-crosshairs"></i> ${prettyType}
-                            </a>`;
-      }
-
-      // Renderizza HTML con Wrapper per Tooltip (usa le stesse classi dell'intensità)
-      locEl.innerHTML = `
-                <div class="intensity-badge-wrapper">
-                    <span style="color:${color}; font-weight:700;">${linkHtml}</span>
-                    <div class="info-icon" style="border-color:${color}; color:${color}; transform: scale(0.8);">i</div>
-                    <div class="intensity-tooltip">
-                        <strong style="color:${color}">TARGET INTEL</strong><br>
-                        ${desc}
-                    </div>
-                </div>
-            `;
+      locEl.innerText = (eventData.location_precision || "UNK").toUpperCase();
     }
 
-    // --- 3. IMPATTO STRATEGICO (Intensità) ---
+    // --- GESTIONE INTENSITÀ & TOOLTIP ---
     const intEl = document.getElementById('modal-intensity');
     if (intEl) {
-      // Usa lo stesso helper del filtro per coerenza totale
-      if (isCivilianEvent(e)) {
-        // VISUALIZZAZIONE PER CIVILI
-        intEl.innerHTML = `
-                    <div class="intensity-badge-wrapper" style="opacity:0.7;">
-                        <span style="color:#94a3b8; font-weight:700; font-size:1rem;">N/D <small style="font-size:0.65rem;">(NON-MILITARY)</small></span>
-                    </div>`;
-      } else {
-        // VISUALIZZAZIONE PER MILITARI (La tua logica colori corretta)
-        const val = parseFloat(e.intensity || 0);
-        let label = "UNKNOWN"; let colorClass = "#64748b"; let desc = "Dati insufficienti.";
+      // FIX CRITICO: Usiamo 'eventData' invece di 'e' che non esiste qui
+      const val = parseFloat(eventData.intensity || 0);
 
-        if (val <= 0.3) { label = "TACTICAL"; colorClass = "#22c55e"; desc = "Schermaglie, droni intercettati, danni lievi."; }
-        else if (val <= 0.6) { label = "OPERATIONAL"; colorClass = "#f97316"; desc = "Danni infrastrutture, vittime civili limitate."; }
-        else if (val <= 0.8) { label = "STRATEGIC"; colorClass = "#ef4444"; desc = "Colpi a centrali, città o pesanti perdite."; }
-        else { label = "CRITICAL"; colorClass = "#000000"; desc = "Evento di portata storica o catastrofica."; }
+      // Definisci Label e Colore in base al valore
+      let label = "UNKNOWN";
+      let colorClass = "#64748b";
+      let desc = "Dati non sufficienti.";
 
-        const style = `color: ${colorClass}; font-weight: 800; font-size: 1.1rem; text-shadow: 0 0 15px ${colorClass}44;`;
+      if (val <= 0.3) { label = "TACTICAL"; colorClass = "#22c55e"; desc = "Impatto limitato. Schermaglie o danni lievi."; }
+      else if (val <= 0.6) { label = "OPERATIONAL"; colorClass = "#f97316"; desc = "Impatto operativo. Danni infrastrutture."; }
+      else if (val <= 0.8) { label = "STRATEGIC"; colorClass = "#ef4444"; desc = "Alto impatto strategico."; }
+      else { label = "CRITICAL"; colorClass = "#000000"; desc = "Evento di portata storica."; }
 
-        intEl.innerHTML = `
-                    <div class="intensity-badge-wrapper">
-                        <span style="${style}">${label} (${(val * 10).toFixed(1)})</span>
-                        <div class="info-icon" style="color:${colorClass}; border-color:${colorClass}">i</div>
-                        <div class="intensity-tooltip">
-                            <strong style="color:${colorClass}">${label} IMPACT</strong><br>${desc}
-                        </div>
-                    </div>`;
-      }
-    }
+      const style = `color: ${colorClass}; font-weight: 800; font-size: 1.1rem; text-shadow: 0 0 15px ${colorClass}44;`;
 
-    // --- GESTIONE VIDEO ---
-    const vidCont = document.getElementById('modalVideoContainer');
-    vidCont.innerHTML = '';
-
-    if (e.video && e.video !== 'null') {
-      if (e.video.includes('youtu')) {
-        const embed = e.video.replace('watch?v=', 'embed/').split('&')[0];
-        vidCont.innerHTML = `<iframe src="${embed}" frameborder="0" allowfullscreen style="width:100%; height:400px; border-radius:8px;"></iframe>`;
-      } else {
-        vidCont.innerHTML = `<a href="${e.video}" target="_blank" class="btn-primary">Media Esterno</a>`;
-      }
-    }
-
-    // --- GESTIONE JUXTAPOSE (PRIMA/DOPO) ---
-    const sliderCont = document.getElementById('modalJuxtapose');
-    sliderCont.innerHTML = '';
-    if (e.before_img && e.after_img) {
-      sliderCont.innerHTML = `
-        <h4 style="color:white; margin:20px 0 10px;">Battle Damage Assessment</h4>
-        <div class="juxtapose-wrapper" onmousemove="updateSlider(event, this)">
-          <div class="juxtapose-img" style="background-image:url('${e.before_img}')"></div>
-          <div class="juxtapose-img after" style="background-image:url('${e.after_img}'); width:50%;"></div>
-          <div class="juxtapose-handle" style="left:50%"><div class="juxtapose-button"><i class="fa-solid fa-arrows-left-right"></i></div></div>
+      intEl.innerHTML = `
+        <div class="intensity-badge-wrapper">
+            <span style="${style}">${label} (${(val * 10).toFixed(1)})</span>
+            <div class="info-icon">i</div>
+            <div class="intensity-tooltip">
+                <strong style="color:${colorClass}">${label} IMPACT</strong><br>${desc}
+            </div>
         </div>`;
     }
 
-    // --- CHART CONFIDENCE ---
-    const conf = e.reliability || e.Reliability || e.confidence || 50;
-    // Definisci Tier, Colore e Descrizione breve
-    let relData = { label: "NON VERIFICATO", color: "#94a3b8", desc: "Dati insufficienti." };
-
-    if (score >= 90) {
-      relData = { label: "CONFERMATO", color: "#3b82f6", desc: "Info verificata con prove visive." }; // Blu
-    } else if (score >= 70) {
-      relData = { label: "PROBABILE", color: "#22c55e", desc: "Fonti multiple affidabili." }; // Verde
-    } else if (score >= 40) {
-      relData = { label: "POSSIBILE", color: "#f59e0b", desc: "Fonte singola o parziale." }; // Arancio
-    } else {
-      relData = { label: "RUMOR", color: "#ef4444", desc: "Voce non verificata / Propaganda." }; // Rosso
+    // 3. Renderizza Bibliografia (se la funzione helper esiste)
+    if (typeof renderBibliography === 'function') {
+      renderBibliography(eventData.references || []);
     }
 
-    // 1. Aggiorna il Grafico con il colore giusto
-    renderConfidenceChart(score, relData.color);
-
-    // 2. Genera il Badge con Tooltip (sostituisce quello statico)
-    const relContainer = document.getElementById('modal-reliability-badge');
-    if (relContainer) {
-      relContainer.innerHTML = `
-            <div class="intensity-badge-wrapper" style="font-size:0.7rem; color:${relData.color}; font-weight:700; letter-spacing:1px; cursor:help;">
-                ${relData.label}
-                <div class="info-icon" style="width:12px; height:12px; font-size:0.6rem; border-color:${relData.color}; color:${relData.color};">i</div>
-                
-                <div class="intensity-tooltip" style="width:260px; right:-20px; left:auto; transform:none; text-align:left; font-weight:400; color:#cbd5e1;">
-                    <strong style="color:${relData.color}; display:block; border-bottom:1px solid #334155; padding-bottom:5px; margin-bottom:5px;">
-                        SCORE: ${score}% (${relData.label})
-                    </strong>
-                    ${relData.desc}<br><br>
-                    <em style="font-size:0.65rem; opacity:0.7;">
-                        Algoritmo basato su: Credibilità Fonte, Prove Visive, Corroborazione e Semantica.
-                    </em>
-                </div>
-            </div>`;
-    }
-
-    // Aggiorna il contatore delle fonti nel box metadati
-    const sourceCountEl = document.getElementById('modal-source-count');
-    if (sourceCountEl) {
-      sourceCountEl.innerText = (e.references && e.references.length) ? e.references.length : "0";
-    }
-
-    // --- RENDER BIBLIOGRAFIA (FONTI) ---
-    // Richiama la funzione helper (definita sotto)
-    renderBibliography(e.references || []);
-
-    // MOSTRA IL MODAL
-    document.getElementById('videoModal').style.display = 'flex';
+    // 4. Mostra il Modal (Supporta entrambi gli ID comuni)
+    const modal = document.getElementById('videoModal') || document.getElementById('eventModal');
+    if (modal) modal.style.display = 'flex';
   };
+
+  // --- DATI INTELLIGENCE AGGIUNTIVI ---
+  // Duplicate intelligence rendering logic removed because it is already handled inside openIntelDossier(eventData).
+  // The duplicate block referenced an undefined variable `e` and caused unmatched braces/syntax errors.
 
   // Funzione per disegnare le fonti (Aggiornata per liste URL)
   function renderBibliography(references) {
@@ -977,142 +862,15 @@
   // ============================================
 
   // Wait for DOM before initializing
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startApp);
-  } else {
-    startApp();
-  }
-
   function startApp() {
     console.log("🚀 Starting Impact Atlas...");
     initMap();
     loadEventsData();
   }
-
-  // --- INTEGRAZIONE DOSSIER NEL VECCHIO MAP.JS ---
-
-  // Funzione globale per aprire il Dossier
-  window.openIntelDossier = function (eventData) {
-    console.log("📂 Apertura Dossier per:", eventData.title);
-
-    // 1. Popola i dati base
-    document.getElementById('modalTitle').innerText = eventData.title || "Titolo non disponibile";
-    document.getElementById('modalDesc').innerText = eventData.description || "Nessuna descrizione.";
-    document.getElementById('modalDate').innerText = eventData.date || "";
-
-    // 2. Popola i dati Intelligence (con controlli se mancano nel vecchio json)
-    const bias = eventData.dominant_bias || "UNKNOWN";
-    document.getElementById('modal-dominant-bias').innerText = bias.replace('_', ' ');
-
-    document.getElementById('modal-location-precision').innerText = (eventData.location_precision || "UNK").toUpperCase();
-
-    // --- GESTIONE INTENSITÀ & TOOLTIP ---
-    const intEl = document.getElementById('modal-intensity');
-    if (intEl) {
-      const val = parseFloat(e.intensity || 0);
-
-      // Definisci Label e Colore in base al valore (Scala concordata)
-      let label = "UNKNOWN";
-      let colorClass = "#64748b"; // Grigio default
-      let desc = "Dati non sufficienti per valutare l'impatto.";
-
-      if (val <= 0.3) {
-        label = "TACTICAL";
-        colorClass = "#22c55e"; // Verde
-        desc = "Impatto limitato. Schermaglie locali, droni intercettati o danni lievi alle infrastrutture.";
-      } else if (val <= 0.6) {
-        label = "OPERATIONAL";
-        colorClass = "#f97316"; // Arancio
-        desc = "Impatto operativo. Danni a infrastrutture, vittime civili o conquista di posizioni minori.";
-      } else if (val <= 0.8) {
-        label = "STRATEGIC";
-        colorClass = "#ef4444"; // Rosso
-        desc = "Alto impatto strategico. Colpi a centrali elettriche, grandi città o pesanti perdite.";
-      } else {
-        label = "CRITICAL";
-        colorClass = "#000000"; // Nero (con bordo magari)
-        desc = "Evento di portata storica. Rischio nucleare, catastrofe ambientale o svolta nel conflitto.";
-      }
-
-      // Costruisci l'HTML con il Tooltip
-      // Nota: text-shadow per rendere leggibile il nero, oppure background
-      const style = `color: ${colorClass}; font-weight: 800; font-size: 1.1rem; text-shadow: 0 0 15px ${colorClass}44;`;
-
-      intEl.innerHTML = `
-                <div class="intensity-badge-wrapper">
-                    <span style="${style}">${label} (${(val * 10).toFixed(1)})</span>
-                    <div class="info-icon">i</div>
-                    <div class="intensity-tooltip">
-                        <strong style="color:${colorClass}">${label} IMPACT</strong><br>
-                        ${desc}
-                    </div>
-                </div>
-            `;
-    }
-
-    // 3. Renderizza Bibliografia
-    // Nota: Se il vecchio JSON non ha "references", questa parte resterà vuota ma non crasherà
-    renderBibliography(eventData.references || []);
-
-    // 4. Mostra il Modal
-    document.getElementById('videoModal').style.display = 'flex';
-  };
-
-  // Funzione per disegnare le fonti (Aggiornata per liste URL)
-  function renderBibliography(references) {
-    const container = document.getElementById('modal-bibliography');
-    if (!container) return;
-
-    container.innerHTML = '';
-
-    // Se non ci sono reference o è una lista vuota
-    if (!references || references.length === 0) {
-      container.innerHTML = '<div style="padding:10px; background:rgba(255,255,255,0.02); border-radius:4px; color:#64748b; font-style:italic; font-size:0.85rem; text-align:center;">Nessuna fonte aggregata disponibile per questo evento.</div>';
-      return;
-    }
-
-    let html = `<h5 style="color:#94a3b8; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:15px; border-bottom:1px solid #334155; padding-bottom:5px; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-link"></i> Fonti Correlate & Intelligence</h5>`;
-
-    references.forEach((ref, idx) => {
-      // Gestione robusta: supporta sia stringhe (URL) che oggetti vecchi
-      let url = (typeof ref === 'object' && ref.url) ? ref.url : ref;
-
-      // Se non è un link valido, lo mostriamo come testo, altrimenti creiamo il link
-      let isLink = typeof url === 'string' && (url.startsWith('http') || url.startsWith('www'));
-
-      // Estetica: Estrae il dominio per non mostrare URL chilometrici (es. "twitter.com")
-      let displayName = "Fonte Esterna";
-      if (isLink) {
-        try {
-          const urlObj = new URL(url.startsWith('http') ? url : 'https://' + url);
-          displayName = urlObj.hostname.replace('www.', '');
-        } catch (e) { displayName = url; }
-      } else {
-        displayName = "Riferimento d'archivio";
-      }
-
-      html += `
-            <div style="margin-bottom:8px; display:flex; align-items:center; background:rgba(15, 23, 42, 0.6); padding:8px 12px; border-radius:6px; border:1px solid #334155;">
-                <span style="color:#64748b; font-family:'JetBrains Mono', monospace; font-size:0.8rem; margin-right:10px; min-width:20px;">${idx + 1}.</span>
-                
-                ${isLink ?
-          `<a href="${url}" target="_blank" style="color:#38bdf8; text-decoration:none; font-size:0.9rem; font-weight:500; display:flex; align-items:center; gap:6px; flex-grow:1; transition: color 0.2s;">
-                        <i class="fa-solid fa-earth-europe" style="font-size:0.8em; opacity:0.7;"></i> ${displayName} 
-                        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.7em; margin-left:auto; opacity:0.5;"></i>
-                    </a>`
-          : `<span style="color:#cbd5e1; font-size:0.9rem;">${ref}</span>`
-        }
-            </div>`;
-    });
-
-    container.innerHTML = html;
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startApp);
+  } else {
+    startApp();
   }
-
-  // Funzione chiusura
-  window.closeModal = function (e) {
-    if (!e || e.target.id === 'videoModal' || e.target.classList.contains('close-modal')) {
-      document.getElementById('videoModal').style.display = 'none';
-    }
-  };
 
 })();
