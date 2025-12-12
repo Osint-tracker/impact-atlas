@@ -690,6 +690,50 @@
         </div>`;
     }
 
+    // --- CHART CONFIDENCE ---
+
+    // 1. Normalizziamo il valore (usa 'eventData' invece di 'e')
+    const score = parseInt(eventData.reliability || eventData.Reliability || eventData.confidence || 0);
+
+    // 2. Definisci Tier, Colore e Descrizione
+    let relData = {
+      label: "NON VERIFICATO",
+      color: "#64748b", // Grigio
+      desc: "Nessuna fonte affidabile o dati insufficienti."
+    };
+
+    if (score >= 80) {
+      relData = { label: "CONFERMATO", color: "#22c55e", desc: "Info verificata con prove visive." }; // Verde
+    } else if (score >= 60) {
+      relData = { label: "PROBABILE", color: "#3b82f6", desc: "Fonti multiple indipendenti." }; // Blu
+    } else if (score > 40) {
+      relData = { label: "POSSIBILE", color: "#f59e0b", desc: "Fonte singola o parziale." }; // Arancio (41-59)
+    } else if (score > 0) {
+      relData = { label: "RUMOR", color: "#ef4444", desc: "Voce non verificata / Propaganda." }; // Rosso (1-40)
+    }
+
+    // 3. Aggiorna il Grafico a Ciambella
+    if (typeof renderConfidenceChart === 'function') {
+      renderConfidenceChart(score, relData.color);
+    }
+
+    // 4. Genera il Badge con Tooltip
+    const relContainer = document.getElementById('modal-reliability-badge');
+    if (relContainer) {
+      relContainer.innerHTML = `
+            <div class="intensity-badge-wrapper" style="font-size:0.7rem; color:${relData.color}; font-weight:700; letter-spacing:1px; cursor:help; margin-top:5px; display:flex; align-items:center; justify-content:center; gap:4px;">
+                ${relData.label}
+                <div class="info-icon" style="width:12px; height:12px; font-size:0.6rem; border-color:${relData.color}; color:${relData.color}; display:flex;">i</div>
+                
+                <div class="intensity-tooltip" style="width:200px; right:-10px; left:auto; transform:none; text-align:left; font-weight:400; color:#cbd5e1; bottom:120%;">
+                    <strong style="color:${relData.color}; display:block; border-bottom:1px solid #334155; padding-bottom:5px; margin-bottom:5px;">
+                        SCORE: ${score}%
+                    </strong>
+                    ${relData.desc}
+                </div>
+            </div>`;
+    }
+
     // 3. Renderizza Bibliografia (se la funzione helper esiste)
     if (typeof renderBibliography === 'function') {
       renderBibliography(eventData.references || []);
