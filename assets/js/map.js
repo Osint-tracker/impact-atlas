@@ -660,6 +660,21 @@
     const locEl = document.getElementById('modal-location-precision');
     if (locEl) {
       locEl.innerText = (eventData.location_precision || "UNK").toUpperCase();
+
+      // --- AGGIORNAMENTO CONTATORE FONTI (FIX BUG 0) ---
+      const sourceCountEl = document.getElementById('modal-source-count');
+      if (sourceCountEl) {
+        // Usa 'references' se c'è, altrimenti 0.
+        // eventData.references viene popolato da export_events.py
+        const count = (eventData.references && Array.isArray(eventData.references)) ? eventData.references.length : 0;
+        sourceCountEl.innerText = count;
+
+        // Opzionale: colora il numero se è alto (>1)
+        sourceCountEl.style.color = count > 1 ? '#22c55e' : (count === 1 ? '#f59e0b' : '#64748b');
+      }
+
+      // ... (poi continua con // --- GESTIONE INTENSITÀ & TOOLTIP ---)
+
     }
 
     // --- GESTIONE INTENSITÀ & TOOLTIP ---
