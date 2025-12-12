@@ -149,8 +149,8 @@
       
       <div class="popup-actions">
         <button 
-          onclick="openModal('${id}')"
-          style="width:100%; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border:none; padding:10px 0; border-radius:6px; color:white; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);"> 
+          class="custom-dossier-btn" 
+          onclick="openModal('${id}')"> 
           <i class="fas fa-folder-open"></i> APRI DOSSIER
         </button>
       </div>
