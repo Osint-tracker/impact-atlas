@@ -397,7 +397,8 @@
     fetch('assets/data/events.geojson')
       .then(response => response.json())
       .then(data => {
-        window.allEventsData = data.features || [];
+        // 1. Dati Grezzi
+        window.allEventsData = data.features || data;
         console.log(`💾 Data downloaded: ${window.allEventsData.length} raw events`);
 
         if (window.allEventsData.length === 0) {
@@ -405,37 +406,43 @@
           return;
         }
 
-        // CRITICAL: Process events WITH MOMENT.JS
+        // 2. PROCESSAMENTO (Unico ciclo map corretto)
         window.globalEvents = window.allEventsData.map(f => {
-          let m = moment(f.properties.date);
+          // Logica Moment.js
+          const props = f.properties || f;
+
+          // Tentativo con formati espliciti
+          let m = moment(props.date, ["DD/MM/YY", "DD/MM/YYYY", "YYYY-MM-DD", "DD-MM-YYYY"]);
+
+          // Fallback se non valido
           if (!m.isValid()) {
-            m = moment(f.properties.date, ["DD/MM/YYYY", "DD-MM-YYYY", "DD.MM.YYYY", "DD/MM/YY", "DD/MM/YYYY", "YYYY-MM-DD", "DD-MM-YYYY"]);
+            m = moment(props.date);
           }
+
           const ts = m.isValid() ? m.valueOf() : moment().valueOf();
 
           return {
-            ...f.properties,
-            lat: f.geometry.coordinates[1],
-            lon: f.geometry.coordinates[0],
-            timestamp: ts
+            ...props,
+            lat: f.geometry ? f.geometry.coordinates[1] : props.lat,
+            lon: f.geometry ? f.geometry.coordinates[0] : props.lon,
+            timestamp: ts,
+            // Normalizziamo la data per la visualizzazione
+            date: m.isValid() ? m.format("DD/MM/YYYY") : props.date
           };
-        }).sort((a, b) => a.timestamp - b.timestamp);
-
-        // ... (dopo aver ordinato window.globalEvents) ...
+        }).sort((a, b) => b.timestamp - a.timestamp); // Ordine decrescente
 
         console.log(`✅ Events processed: ${window.globalEvents.length}`);
 
-        // APPLICA I FILTRI INIZIALI (Nasconde civili di default)
+        // 3. DEFINIZIONE FILTRI (Dentro il then)
         window.applyMapFilters = function () {
-          const showCivilian = document.getElementById('civilianToggle').checked;
+          // Controllo difensivo se l'elemento esiste
+          const toggle = document.getElementById('civilianToggle');
+          const showCivilian = toggle ? toggle.checked : true;
 
           const filtered = window.globalEvents.filter(e => {
-            // Usa l'helper intelligente
+            if (typeof isCivilianEvent !== 'function') return true; // Fallback se manca la funzione helper
             const isCivil = isCivilianEvent(e);
-
-            // Se è civile e la levetta è spenta, NASCONDI
             if (isCivil && !showCivilian) return false;
-
             return true;
           });
 
@@ -443,37 +450,35 @@
           renderInternal(filtered);
         };
 
-        // (Rimuovi o commenta la vecchia riga: renderInternal(window.globalEvents);)
+        // UI Updates
         window.currentFilteredEvents = [...window.globalEvents];
 
-        // Update UI
         if (document.getElementById('eventCount')) {
           document.getElementById('eventCount').innerText = window.globalEvents.length;
           document.getElementById('lastUpdate').innerText = new Date().toLocaleDateString();
         }
 
-        // Initialize charts if available
+        // Charts Init
         try {
-          if (typeof window.initCharts === 'function') {
-            window.initCharts(window.globalEvents);
-          }
-        } catch (e) {
-          console.log("Charts not available:", e);
-        }
+          if (typeof window.initCharts === 'function') window.initCharts(window.globalEvents);
+        } catch (e) { console.log("Charts error:", e); }
 
         console.log(`✅ Events processed: ${window.globalEvents.length} ready for map`);
 
-        // Setup slider AFTER data is ready
-        setupTimeSlider(window.globalEvents);
+        // Slider Init
+        if (typeof setupTimeSlider === 'function') setupTimeSlider(window.globalEvents);
 
-        // Initial render FILTERED (Applica subito il filtro civili)
+        // 4. AVVIO MAPPA E RENDERING
         if (typeof window.applyMapFilters === 'function') {
           window.applyMapFilters();
         } else {
           renderInternal(window.globalEvents);
         }
 
-      })
+        // Inizializza Cluster/Map
+        initMap(window.globalEvents);
+
+      }) // <--- QUESTA CHIUDE IL .THEN (Il punto critico degli errori precedenti)
       .catch(err => {
         console.error("❌ CRITICAL: Failed to load events:", err);
       });
@@ -483,10 +488,12 @@
   // 9. PUBLIC API (Expose to Window)
   // ============================================
 
+
+
   window.updateMap = function (events) {
     window.currentFilteredEvents = events;
     renderInternal(events);
-  };
+  }
 
   window.loadHistoricalMap = loadHistoricalMap;
   window.filterEventsByDate = filterEventsByDate;
