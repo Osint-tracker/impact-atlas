@@ -799,6 +799,38 @@ header nav a:hover {
   bottom: 125%;
 }
 
+/* --- OVERRIDE PER TOOLTIP IN BASSO (Solo per Affidabilità) --- */
+
+/* Posiziona il box SOTTO invece che sopra */
+.info-icon-wrapper.tooltip-bottom::after {
+  bottom: auto;
+  /* Annulla la regola 'bottom' standard */
+  top: 135%;
+  /* Spinge il box verso il basso */
+}
+
+/* Posiziona il triangolo SOTTO */
+.info-icon-wrapper.tooltip-bottom::before {
+  bottom: auto;
+  top: 125%;
+  /* Inverte il triangolo: ora punta verso l'alto (colore sul bordo inferiore) */
+  border-color: transparent transparent #334155 transparent;
+}
+
+/* --- GESTIONE HOVER SPECIFICA PER IL BASSO --- */
+
+/* Quando passi il mouse, il box scende leggermente (animazione) */
+.info-icon-wrapper.tooltip-bottom:hover::after {
+  bottom: auto;
+  top: 145%;
+}
+
+/* Anche il triangolo scende leggermente */
+.info-icon-wrapper.tooltip-bottom:hover::before {
+  bottom: auto;
+  top: 135%;
+}
+
 /* --- NUOVI STILI PER LE VISTE AVANZATE --- */
 
 /* Tab Switcher */

@@ -853,28 +853,28 @@
 
     if (score >= 80) {
       relData = {
-        label: "Confermato",
+        label: "CONFERMATA",
         color: "#22c55e",
         desc: "Confermato visivamente. L'evento è supportato da documentazione multimediale verificata o geolocalizzazione precisa.",
         footer: "Score massimo garantito dalla presenza di prove visive (IMINT) o geolocalizzazione confermata."
       };
     } else if (score >= 60) {
       relData = {
-        label: "Alta Affidabilità",
-        color: "#3b82f6",
+        label: "ATTENDIBILE",
+        color: "#84cc16",
         desc: "Molto probabile. Evento confermato da molteplici vettori indipendenti o da fonti istituzionali con alto grado di accuratezza.",
         footer: "Score elevato grazie alla convergenza narrativa rilevata tra molteplici fonti non collegate."
       };
-    } else if (score > 40) {
+    } else if (score >= 40) {
       relData = {
-        label: "Media Affidabilità",
+        label: "INCERTA",
         color: "#f59e0b",
         desc: "In attesa di riscontro. Riportato da fonti mainstream o locali credibili, ma non ancora verificato sul campo.",
         footer: "Score assegnato sulla base della reputazione storica della fonte, in attesa di evidenze materiali."
       };
-    } else if (score > 0) {
+    } else if (score < 40) {
       relData = {
-        label: "Bassa Affidabilità",
+        label: "DUBBIA",
         color: "#ef4444",
         desc: "Bassa Confidenza. Dati insufficienti per confermare l'evento. Rischio elevato di disinformazione o errore.",
         footer: "Score limitato dall'assenza di riscontri indipendenti o dalla natura speculativa della fonte."
