@@ -254,27 +254,38 @@ function showIntelDetail(e) {
     `;
 }
 
-// --- HELPER: NORMALIZZAZIONE CATEGORIE MILITARI ---
+// --- HELPER: NORMALIZZAZIONE CATEGORIE (Militari + Civili) ---
 function getNormalizedType(rawType) {
     if (!rawType) return null;
     const t = rawType.toLowerCase();
 
-    // 1. NAVAL ENGAGEMENT
-    if (t.match(/naval|sea|ship|boat|maritime|vessel/)) return "NAVAL ENGAGEMENT";
-    // 2. DRONE STRIKE
-    if (t.match(/drone|uav|loitering|kamikaze|quadcopter|unmanned/)) return "DRONE STRIKE";
-    // 3. MISSILE STRIKE
-    if (t.match(/missile|rocket|ballistic|cruise|himars|mlrs/)) return "MISSILE STRIKE";
-    // 4. AIRSTRIKE
-    if (t.match(/air|jet|plane|bombing|airstrike|su-/)) return "AIRSTRIKE";
-    // 5. ARTILLERY SHELLING
-    if (t.match(/artillery|shelling|mortar|howitzer|grad|cannon/)) return "ARTILLERY SHELLING";
-    // 6. IED / EXPLOSION
-    if (t.match(/ied|mine|landmine|vbied|explosion|trap/)) return "IED / EXPLOSION";
-    // 7. GROUND CLASH
-    if (t.match(/clash|firefight|skirmish|ambush|raid|attack|ground|shooting|sniper/)) return "GROUND CLASH";
+    // --- PRIORITÀ 1: EVENTI MILITARI CINETICI ---
 
-    return null; // Scarta tutto il resto (Politica, Proteste, etc.)
+    // 1. NAVAL ENGAGEMENT
+    if (t.match(/naval|sea|ship|boat|maritime|vessel/)) return "Naval Engagement";
+    // 2. DRONE STRIKE
+    if (t.match(/drone|uav|loitering|kamikaze|quadcopter|unmanned/)) return "Drone Strike";
+    // 3. MISSILE STRIKE
+    if (t.match(/missile|rocket|ballistic|cruise|himars|mlrs/)) return "Missile Strike";
+    // 4. AIRSTRIKE
+    if (t.match(/air|jet|plane|bombing|airstrike|su-/)) return "Airstrike";
+    // 5. ARTILLERY SHELLING
+    if (t.match(/artillery|shelling|mortar|howitzer|grad|cannon/)) return "Artillery Shelling";
+    // 6. IED / EXPLOSION
+    if (t.match(/ied|mine|landmine|vbied|explosion|trap/)) return "IED / Explosion";
+    // 7. GROUND CLASH (Include 'firefight')
+    if (t.match(/clash|firefight|skirmish|ambush|raid|attack|ground|shooting|sniper/)) return "Ground Clash";
+
+    // --- PRIORITÀ 2: CONTESTO CIVILE E POLITICO ---
+
+    // 8. POLITICAL / UNREST (Proteste, Politica, Diplomazia)
+    if (t.match(/politic|protest|riot|demonstration|diploma|unrest|arrest/)) return "Political / Unrest";
+
+    // 9. CIVIL / ACCIDENT (Incidenti, Incendi generici, Infrastrutture)
+    // Nota: Messo per ultimo per evitare che 'fire' (incendio) catturi 'firefight' (combattimento)
+    if (t.match(/civil|accident|crash|fire|infrastructure|logistics|humanitarian/)) return "Civil / Accident";
+
+    return null; // Scarta tutto il resto
 }
 
 
