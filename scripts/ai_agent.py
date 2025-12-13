@@ -325,7 +325,7 @@ class OSINTAgent:
             "Longitude": final_lon,  # Scriviamo la lon (vecchia o nuova)
             "Aggregated Sources": " | ".join(urls[:5]),
             "Reliability": final_reliability,
-
+            "Verification": "Verified",
             # Debug info
             "Bias Score": final_score
         }
@@ -339,7 +339,7 @@ class OSINTAgent:
 # 🚀 MAIN LOOP (LOGICA DI SELEZIONE E AGGIORNAMENTO)
 # =============================================================================
 def main():
-    print("🤖 Avvio AI Agent (Smart Selection + Bias Tooltip)...")
+    print("🤖 Avvio AI LDO MORO...")
 
     # 1. Connessione Google Sheets
     scope = ['https://www.googleapis.com/auth/spreadsheets',
@@ -367,76 +367,73 @@ def main():
         except ValueError:
             return None
 
-    # Mappa basata sulle 19 colonne (18 originali + Bias Score per il tooltip)
     col_map = {
-        'Title': get_col_index('Title'),                           # Col 1
-        'Source': get_col_index('Source'),                         # Col 7
-        # Col 9 (Filtro)
-        'Verification': get_col_index('Verification'),
-        'Description': get_col_index('Description'),               # Col 10
-        'Intensity': get_col_index('Intensity'),                   # Col 13
-        'Actor': get_col_index('Actor'),                           # Col 14
-        'Bias dominante': get_col_index('Bias dominante'),         # Col 15
-        'Location Precision': get_col_index('Location Precision'),  # Col 16
-        'Aggregated Sources': get_col_index('Aggregated Sources'),  # Col 17
-        'Reliability': get_col_index('Reliability'),               # Col 18
-        # Col 19 (NUOVO)
-        'Bias Score': get_col_index('Bias Score'),
-        'Latitude': get_col_index('Latitude'),                     # Col 5
-        'Longitude': get_col_index('Longitude')                    # Col 6
+        'Title': get_col_index('Title'),
+        'Source': get_col_index('Source'),
+        'Verification': get_col_index('Verification'),             # Col 9
+        'Description': get_col_index('Description'),
+        'Intensity': get_col_index('Intensity'),
+        'Actor': get_col_index('Actor'),
+        'Bias dominante': get_col_index('Bias dominante'),
+        'Location Precision': get_col_index('Location Precision'),
+        'Aggregated Sources': get_col_index('Aggregated Sources'),
+        'Reliability': get_col_index('Reliability'),
+        'Bias Score': get_col_index('Bias Score'),                 # Col 19
+        'Latitude': get_col_index('Latitude'),
+        'Longitude': get_col_index('Longitude')
     }
 
-    # Controllo colonne critiche
-    if not col_map['Bias dominante']:
-        print("⚠️ ERRORE CRITICO: Colonna 'Bias dominante' non trovata!")
+    if not col_map['Verification']:
+        print("⚠️ ERRORE: Colonna 'Verification' non trovata! Impossibile tracciare il progresso.")
         return
-    if not col_map['Bias Score']:
-        print("⚠️ AVVISO: Colonna 'Bias Score' (19) non trovata. Il tooltip numerico non funzionerà.")
 
     # 3. Selezione Righe da Processare
     data = sheet.get_all_records()
     rows_to_process = []
 
-    print("🔍 Analisi righe da aggiornare...")
+    print("🔍 Cerco le righe non ancora verificate...")
 
     for i, row in enumerate(data):
-        # Logica: Processa se NON è "Verified" OPPURE se è "Verified" ma manca il Bias
-        is_verified = str(row.get('Verification', '')
-                          ).strip().lower() == 'verified'
-        has_bias = str(row.get('Bias dominante', '')).strip() != ''
+        # Normalizziamo il valore di Verification (toglie spazi e mette minuscolo)
+        verification_status = str(row.get('Verification', '')).strip().lower()
 
+        # LOGICA DI SALTO:
+        # Se c'è scritto "verified", SALTALA.
+        # Se è vuota o c'è scritto altro (es. "pending"), PROCESSALA.
+        if verification_status == 'verified':
+            continue
+
+        # Se manca il titolo, saltiamo a prescindere (riga vuota)
         if not row.get('Title') and not row.get('Event'):
             continue
 
-        if not is_verified or (is_verified and not has_bias):
-            rows_to_process.append((i + 2, row))
+        # Aggiungiamo alla lista delle cose da fare
+        rows_to_process.append((i + 2, row))
 
-    BATCH_SIZE = 1400  # Mantenuto il tuo valore aggressivo
-    print(
-        f"📋 Eventi in coda: {len(rows_to_process)}. Avvio batch di {BATCH_SIZE}...")
+    BATCH_SIZE = 1400
+    print(f"📋 Trovate {len(rows_to_process)} righe da fare. Inizio...")
 
     # 4. Elaborazione Batch
     for row_idx, row_data in rows_to_process[:BATCH_SIZE]:
         print(
-            f"\n⚙️ Elaborazione Riga #{row_idx}: {row_data.get('Title') or 'No Title'}...")
+            f"\n⚙️ Riga #{row_idx}: {row_data.get('Title') or 'No Title'}...")
 
         try:
             result = agent.process_row(row_data)
 
             if result:
-                print(f"   💾 Scrivo dati per riga {row_idx}...")
+                print(f"   💾 Scrivo dati e timbro 'Verified'...")
 
-                # Itera sui risultati e scrivi Cella per Cella usando safe_update
+                # Scrittura Cella per Cella (inclusa Verification)
                 for key, value in result.items():
                     if key in col_map and col_map[key] is not None:
                         col_idx = col_map[key]
-
                         if isinstance(value, list):
                             value = str(value)
 
                         safe_update(sheet, row_idx, col_idx, value)
 
-                print(f"   ✅ Riga {row_idx} completata.")
+                print(f"   ✅ Riga {row_idx} completata e verificata.")
 
         except Exception as e:
             print(f"   ⚠️ Errore riga {row_idx}: {e}")
