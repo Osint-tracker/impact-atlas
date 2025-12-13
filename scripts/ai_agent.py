@@ -1,3 +1,5 @@
+import requests
+from bs4 import BeautifulSoup
 import os
 import json
 import time
@@ -68,9 +70,27 @@ class OSINTAgent:
 
     def _load_json_db(self, path, key_name):
         try:
-            with open(path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                return data.get(key_name, {})
+            if os.path.exists(path):
+                with open(path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+
+                    # Gestiamo sia il formato lista (tua repo) che dict
+                    content = data.get(key_name, [])
+
+                    # Se è una lista (come nel sources.json standard), la convertiamo in dict per ricerca veloce
+                    if isinstance(content, list):
+                        db_dict = {}
+                        for item in content:
+                            # Chiave primaria: dominio o keyword
+                            key = item.get('domain') or item.get('word')
+                            if key:
+                                db_dict[key.lower().replace('www.', '')] = item
+                        return db_dict
+
+                    return content if isinstance(content, dict) else {}
+            else:
+                print(f"⚠️ File non trovato: {path}")
+                return {}
         except Exception as e:
             print(f"❌ Errore caricamento DB {path}: {e}")
             return {}
@@ -78,48 +98,68 @@ class OSINTAgent:
     # =========================================================================
     # 🧠 CORE LOGIC: FORMULA HBC (Hybrid Bias Calculation)
     # =========================================================================
-    def calculate_hybrid_bias(self, source_name, text, ai_score):
+    def calculate_hybrid_bias(self, source_url, text, ai_score):
         """
         Applica la formula 'Reliability-Gated Weighting'.
         Score = (B_base * 2 * 0.4) + (S_ai * 0.4) + (S_sem * M_rel)
         """
-        # 1. Recupera metriche Fonte
-        source_data = self.sources_db.get(source_name.lower(), {})
+        # A. Estrazione Dominio (MIGLIORAMENTO NECESSARIO)
+        domain = source_url.lower()
+        try:
+            from urllib.parse import urlparse
+            if source_url and source_url.startswith('http'):
+                domain = urlparse(
+                    source_url).netloc.lower().replace('www.', '')
+        except:
+            pass
 
-        # Fuzzy match
+        # 1. Recupera metriche Fonte (TUA LOGICA)
+        # Cerca corrispondenza esatta o parziale nel dizionario caricato
+        source_data = self.sources_db.get(domain, {})
+
+        # Fallback: Fuzzy match se non trova chiave esatta
         if not source_data:
             for db_key, db_val in self.sources_db.items():
-                if db_key in source_name.lower():
+                if db_key in domain:  # Es. trova 'tass.com' dentro 'subdomain.tass.com'
                     source_data = db_val
                     break
 
-        R = source_data.get('reliability', 50)      # R
+        R = source_data.get('reliability', 50)      # R (Default 50)
         B_base = source_data.get('bias', 0)         # B_base
 
-        # 2. Calcolo Score Semantico (S_sem)
+        # 2. Calcolo Score Semantico (S_sem) (TUA LOGICA)
         S_sem = 0
         text_lower = text.lower()
 
-        for keyword, score in self.keywords_db.items():
-            if keyword.startswith("__"):
-                continue
-            if keyword in text_lower:
-                S_sem += score
+        # Itera sul dizionario keywords caricato dal JSON
+        for keyword, item in self.keywords_db.items():
+            # Supporto per struttura complessa (item = {'score': -5}) o semplice (item = -5)
+            score_val = item.get('score', 0) if isinstance(
+                item, dict) else item
 
-        # 3. Calcolo Moltiplicatore di Affidabilità (M_rel)
+            if keyword in text_lower:
+                S_sem += score_val
+                # print(f"   ⚠️ Trigger Semantic: {keyword} ({score_val})") # Debug opzionale
+
+        # 3. Calcolo Moltiplicatore di Affidabilità (M_rel) (TUA FORMULA)
+        # Se la fonte è affidabile (R alto), M_rel è basso -> le parole contano meno.
+        # Se la fonte è inaffidabile (R basso), M_rel è alto -> le parole contano di più.
         M_rel = max(0.2, 1.2 - (R / 100.0))
 
-        # 4. Applicazione Formula Matematica
+        # 4. Applicazione Formula Matematica (TUA FORMULA)
         W_base = 0.4
         W_ai = 0.4
 
+        # Nota: B_base * 2 serve a portarlo sulla scala -10/+10 se nel JSON è -5/+5
+        # Se nel JSON è già -10/+10, togli il * 2. Assumo sia -5/+5 come standard.
         raw_score = (B_base * 2 * W_base) + (ai_score * W_ai) + (S_sem * M_rel)
 
         # 5. Clamping (-10 a +10)
         final_score = max(-10, min(10, raw_score))
 
         # 6. Safety Check
-        if abs(ai_score - S_sem) > 5:
+        # Se AI e Semantica divergono troppo (>5 punti), riduciamo la fiducia.
+        if abs(ai_score - S_sem) > 5 and S_sem != 0:
             final_score = final_score * 0.8
             R = int(R * 0.8)
 
@@ -172,8 +212,9 @@ class OSINTAgent:
 
     def run_analyst_hat(self, raw_text, current_row):
         """
-        Agente Intelligence v3: Coordinate, Bias, Fonti, Impatto Strategico e Affidabilità.
-        Incorpora la logica 'analyze_event_pro'.
+        Agente Intelligence v3.5 (Balanced Courage):
+        Coordinate, Bias, Fonti, Impatto Strategico e Affidabilità.
+        Sensibile ai bias editoriali, ma accetta la neutralità se reale.
         """
         if not raw_text:
             return None
@@ -185,9 +226,13 @@ class OSINTAgent:
         evt_lat = current_row.get('Latitude', '0')
         evt_lon = current_row.get('Longitude', '0')
 
+        # Tronca il testo mantenendo contesto sufficiente
+        context_text = raw_text[:5000]
+
         prompt = f"""
-        Sei un analista di intelligence militare (conflitto UKR-RUS).
-        
+        Sei un SENIOR INTELLIGENCE ANALYST specializzato in GUERRA IBRIDA e SEMANTICA (Conflitto UKR-RUS).
+        Il tuo compito è analizzare la fonte per estrarre intelligence tecnica e valutare l'orientamento politico (Bias).
+
         DATI ESISTENTI:
         - Titolo: {evt_title}
         - Luogo: {evt_loc}
@@ -195,7 +240,7 @@ class OSINTAgent:
         - Coord attuali: {evt_lat}, {evt_lon}
 
         NEWS CONTEXT:
-        {raw_text[:4000]}
+        {context_text}
 
         --- TASK ---
         1. GEOLOCALIZZAZIONE E TIPO TARGET (CRITICO):
@@ -210,10 +255,16 @@ class OSINTAgent:
              * "REGION": Area vasta/indefinita.
            - Restituisci lat/lon 0.0 se non trovi nulla di meglio di quanto già presente.
 
-        2. INTELLIGENCE:
-           - "dominant_bias_label": PRO_RUSSIA, PRO_UKRAINE, o NEUTRAL (basato sul tono).
-           - "ai_score": Punteggio da -10 (Max RUS) a +10 (Max UKR).
+        2. INTELLIGENCE & BIAS (Sensibilità Alta):
            - "actor": Chi ha attaccato? (RUS, UKR, UNK).
+           - "ai_score": Punteggio da -10 (Max RUS) a +10 (Max UKR).
+             
+           GUIDA ALLA SCALA BIAS:
+           - 0 (NEUTRAL): SOLO per bollettini puramente tecnici o asettici. Se sono tendenti ma hai dubbi usa numeri bassi, es. +/-0,6.
+           - +/- 3-5 (EDITORIAL BIAS): La fonte è fattuale ma usa aggettivi orientati.
+           - +/- 7-10 (PROPAGANDA): Linguaggio emotivo, "Regime", "Nazisti", "Orchi", "Terroristi".
+           
+           REGOLA D'ORO: Se sei indeciso tra 0 e un bias leggero (es. 1 o 2 o 1,4), SCEGLI IL BIAS. Lo 0 è solo per l'assenza totale di opinione. Puoi anche assegnare un valore decimale (es. 2.5 o 1,6). Non esagerare con i Bias e non vederli dove non ci sono.
 
         3. INTENSITÀ (SCALA RIGIDA 0.0-1.0):
            - 0.1-0.3 (TACTICAL): Danni lievi, schermaglie, droni abbattuti.
@@ -245,10 +296,12 @@ class OSINTAgent:
         try:
             response = self.client.chat.completions.create(
                 model="gpt-4o-mini",
-                messages=[{"role": "system", "content": "Sei un analista intelligence esperto."},
-                          {"role": "user", "content": prompt}],
+                messages=[
+                    {"role": "system", "content": "Sei un analista esperto. Rilevi sfumature che altri ignorano."},
+                    {"role": "user", "content": prompt}
+                ],
                 response_format={"type": "json_object"},
-                temperature=0.2
+                temperature=0.1  # Bassa per rimanere ancorato al testo
             )
             return json.loads(response.choices[0].message.content)
         except Exception as e:
@@ -258,23 +311,57 @@ class OSINTAgent:
     # =========================================================================
     # 🔄 PROCESS FLOW
     # =========================================================================
+
+    def fetch_url_text(self, url):
+        """Scarica il testo direttamente da un URL esistente."""
+        try:
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+            response = requests.get(url, headers=headers, timeout=10)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'html.parser')
+                # Prende paragrafi e titoli
+                text = ' '.join([p.get_text()
+                                for p in soup.find_all(['p', 'h1', 'h2', 'h3'])])
+                return text[:5000]  # Limitiamo a 5000 caratteri
+        except Exception as e:
+            print(f"   ⚠️ Impossibile leggere URL fornito: {e}")
+        return None
+
     def process_row(self, row):
         query = row.get('Title') or row.get('Event')
         if not query:
             return None
 
-        # 1. Ricerca
-        raw_text, prim_src, urls = self.perform_search(query)
+        existing_source = str(row.get('Source', '')).strip()
+        raw_text = ""
+        urls = []
+        prim_src = ""
+
+        # --- A. BIVIO: FONTE ESISTENTE vs NUOVA RICERCA ---
+        if existing_source and existing_source.startswith('http'):
+            print(f"   🔗 Fonte trovata nel Sheet. Analizzo quella...")
+            # Scarichiamo il contenuto di QUELLA fonte specifica
+            raw_text = self.fetch_url_text(existing_source)
+            if not raw_text:
+                # Se fallisce lo scraping diretto, usiamo il titolo per contesto ma manteniamo la fonte
+                raw_text = f"Evento: {query}. Fonte dichiarata: {existing_source}"
+
+            urls = [existing_source]
+            prim_src = existing_source
+        else:
+            # Nessuna fonte: Cerchiamo sul web
+            raw_text, prim_src, urls = self.perform_search(query)
+
         if not raw_text:
             return None
 
-        # 2. Analisi Avanzata (Unico passaggio Intelligence)
-        # Passiamo 'row' per permettere all'AI di vedere i dati esistenti
+        # --- B. ANALISI AI ---
         ai_data = self.run_analyst_hat(raw_text, row)
         if not ai_data:
             return None
 
-        # 3. Estrazione Dati AI
+        # Estrazione Dati AI
         ai_score = int(ai_data.get('ai_score', 0))
         intensity = float(ai_data.get('intensity', 0.5))
         precision = ai_data.get('location_precision', 'REGION')
@@ -282,54 +369,56 @@ class OSINTAgent:
         desc = ai_data.get('description_it', '')
         new_title = ai_data.get('new_title', query)
 
-        # Gestione Coordinate (Logica "Tranne se personalizzata")
-        # Se l'AI restituisce 0.0 o valori nulli, manteniamo quelli del foglio
+        # Gestione Coordinate (Solo se AI ne trova di nuove E quelle vecchie sono 0)
         new_lat = ai_data.get('lat', 0)
         new_lon = ai_data.get('lon', 0)
 
-        final_lat = row.get('Latitude')
-        final_lon = row.get('Longitude')
-        final_loc_prec = row.get('Location Precision') or precision
-
-        # Se l'AI ha trovato coordinate specifiche diverse da 0, usiamo quelle
-        if new_lat != 0 and new_lon != 0:
-            final_lat = new_lat
-            final_lon = new_lon
-            final_loc_prec = precision  # Aggiorniamo la precisione se cambiamo le coord
-
-        # 4. Formula HBC (Hybrid Bias Calculation)
+        # --- C. CALCOLO FINALE (HBC) ---
         final_score, base_reliability = self.calculate_hybrid_bias(
             prim_src, raw_text, ai_score)
 
-        # Raffinamento Reliability basato su fattori interni (Visual / Incertezza)
         final_reliability = base_reliability
         if ai_data.get('has_visual'):
-            # Boost se c'è video/foto
             final_reliability = min(100, int(final_reliability * 1.15))
         if ai_data.get('is_uncertain'):
-            final_reliability = int(
-                final_reliability * 0.75)  # Penalità se rumors
+            final_reliability = int(final_reliability * 0.75)
 
         bias_label = self.get_bias_label(final_score)
 
-        # 5. Output Completo
-        return {
-            "Title": new_title,
-            "Source": urls[0] if urls else "",
-            "Description": desc,
-            "Intensity": intensity,
-            "Actor": actor,
-            "Bias dominante": bias_label,
-            "Location Precision": final_loc_prec,
-            "Latitude": final_lat,  # Scriviamo la lat (vecchia o nuova)
-            "Longitude": final_lon,  # Scriviamo la lon (vecchia o nuova)
-            "Aggregated Sources": " | ".join(urls[:5]),
-            "Reliability": final_reliability,
-            "Verification": "Verified",
-            # Debug info
-            "Bias Score": final_score
-        }
+        # --- D. OUTPUT CON PROTEZIONE SOVRASCRITTURA ---
+        # La logica è: row.get('Campo') or nuovo_valore
+        # Se row.get('Campo') ha testo, vince lui. Se è vuoto, vince l'AI.
 
+        return {
+            # Se hai già un titolo, tieni il tuo.
+            "Title": row.get('Title') or new_title,
+
+            # Se hai già una fonte, tieni la tua.
+            "Source": row.get('Source') or (urls[0] if urls else ""),
+
+            # Se hai già una descrizione, tieni la tua.
+            "Description": row.get('Description') or desc,
+
+            # Questi spesso li vuoi ricalcolati, ma se li hai messi a mano, li tiene
+            "Intensity": row.get('Intensity') or intensity,
+            "Actor": row.get('Actor') or actor,
+            "Bias dominante": row.get('Bias dominante') or bias_label,
+            "Location Precision": row.get('Location Precision') or precision,
+
+            # Coordinate: Qui è delicato. Se hai 0, usa AI. Se hai valori, usa i tuoi.
+            "Latitude": row.get('Latitude') or (new_lat if new_lat != 0 else 0),
+            "Longitude": row.get('Longitude') or (new_lon if new_lon != 0 else 0),
+
+            # Fonti aggregate: se ne avevi già, le tiene
+            "Aggregated Sources": row.get('Aggregated Sources') or " | ".join(urls[:5]),
+
+            # Reliability e Bias Score: Se sono 0 o vuoti, li calcola l'AI.
+            # (Usiamo 'safe_int' logic implicita: se c'è un valore > 0 nel foglio, lo tiene)
+            "Reliability": row.get('Reliability') or final_reliability,
+            "Bias Score": row.get('Bias Score') or final_score,
+
+            "Verification": "Verified"
+        }
 # =============================================================================
 # 🚀 MAIN LOOP (18 COLONNE)
 # =============================================================================
