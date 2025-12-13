@@ -843,36 +843,98 @@
     // 1. Normalizza Score
     const score = parseInt(eventData.reliability || eventData.Reliability || eventData.confidence || 0);
 
-    // 2. Definisci Colori e Testi
-    let relData = { label: "NON VERIFICATO", color: "#64748b", desc: "Nessuna fonte affidabile." };
+    // 2. Definisci Colori e Testi (AGGIUNTO IL FOOTER EXECUTIVE)
+    let relData = {
+      label: "NON VERIFICATO",
+      color: "#64748b",
+      desc: "Dati insufficienti per valutare l'attendibilità.",
+      footer: "Dati insufficienti per il calcolo algoritmico."
+    };
 
     if (score >= 80) {
-      relData = { label: "CONFERMATO", color: "#22c55e", desc: "Info verificata con prove visive." };
+      relData = {
+        label: "Confermato",
+        color: "#22c55e",
+        desc: "Confermato visivamente. L'evento è supportato da documentazione multimediale verificata o geolocalizzazione precisa.",
+        footer: "Score massimo garantito dalla presenza di prove visive (IMINT) o geolocalizzazione confermata."
+      };
     } else if (score >= 60) {
-      relData = { label: "PROBABILE", color: "#3b82f6", desc: "Fonti multiple indipendenti." };
+      relData = {
+        label: "Alta Affidabilità",
+        color: "#3b82f6",
+        desc: "Molto probabile. Evento confermato da molteplici vettori indipendenti o da fonti istituzionali con alto grado di accuratezza.",
+        footer: "Score elevato grazie alla convergenza narrativa rilevata tra molteplici fonti non collegate."
+      };
     } else if (score > 40) {
-      relData = { label: "POSSIBILE", color: "#f59e0b", desc: "Fonte singola o parziale." };
+      relData = {
+        label: "Media Affidabilità",
+        color: "#f59e0b",
+        desc: "In attesa di riscontro. Riportato da fonti mainstream o locali credibili, ma non ancora verificato sul campo.",
+        footer: "Score assegnato sulla base della reputazione storica della fonte, in attesa di evidenze materiali."
+      };
     } else if (score > 0) {
-      relData = { label: "RUMOR", color: "#ef4444", desc: "Voce non verificata (1-40)." };
+      relData = {
+        label: "Bassa Affidabilità",
+        color: "#ef4444",
+        desc: "Bassa Confidenza. Dati insufficienti per confermare l'evento. Rischio elevato di disinformazione o errore.",
+        footer: "Score limitato dall'assenza di riscontri indipendenti o dalla natura speculativa della fonte."
+      };
     }
 
-    // 3. Disegna il Grafico (Chiama la funzione che hai in fondo al file)
+    // 3. Disegna il Grafico (INVARIATO)
     if (typeof renderConfidenceChart === 'function') {
       renderConfidenceChart(score, relData.color);
     }
 
-    // 4. Aggiorna il Badge HTML sotto il grafico
+    // 4. Aggiorna il Badge HTML (AGGIORNATO CON STILE PROFESSIONALE E FOOTER)
     const relContainer = document.getElementById('modal-reliability-badge');
     if (relContainer) {
       relContainer.innerHTML = `
-            <div class="intensity-badge-wrapper" style="font-size:0.7rem; color:${relData.color}; font-weight:700; letter-spacing:1px; cursor:help; margin-top:5px; display:flex; align-items:center; justify-content:center; gap:4px;">
+            <div class="intensity-badge-wrapper" style="
+                font-size:0.7rem; 
+                color:${relData.color}; 
+                font-weight:700; 
+                letter-spacing:1px; 
+                cursor:help; 
+                margin-top:5px; 
+                display:flex; 
+                align-items:center; 
+                justify-content:center; 
+                gap:4px;
+                position: relative;
+            ">
                 ${relData.label}
-                <div class="info-icon" style="width:12px; height:12px; font-size:0.6rem; border-color:${relData.color}; color:${relData.color}; display:flex;">i</div>
-                <div class="intensity-tooltip" style="width:200px; bottom:120%;">
-                    <strong style="color:${relData.color}; display:block; border-bottom:1px solid #334155; padding-bottom:5px; margin-bottom:5px;">
-                        SCORE: ${score}%
-                    </strong>
-                    ${relData.desc}
+                <div class="info-icon" style="
+                    width:12px; height:12px; font-size:0.6rem; 
+                    border-color:${relData.color}; color:${relData.color}; 
+                    display:flex;
+                ">i</div>
+                
+                <div class="intensity-tooltip" style="
+                    width: 240px; 
+                    bottom: 130%; 
+                    left: 50%; 
+                    transform: translateX(-50%);
+                    background: rgba(15, 23, 42, 0.95);
+                    border: 1px solid ${relData.color}44;
+                    padding: 12px;
+                    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+                    text-align: left;
+                    white-space: normal; /* Importante per il testo lungo */
+                    z-index: 100;
+                ">
+                    <div style="border-bottom: 1px solid #334155; padding-bottom: 8px; margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.7rem; color:#64748b; text-transform:uppercase;">CONFIDENCE SCORE</span>
+                        <strong style="color:${relData.color}; font-size:1.1rem;">${score}%</strong>
+                    </div>
+
+                    <div style="font-size:0.8rem; color:#e2e8f0; line-height:1.4; margin-bottom:8px; font-weight:400;">
+                        ${relData.desc}
+                    </div>
+
+                    <div style="font-size:0.65rem; color:#94a3b8; font-style:italic; border-top:1px solid #334155; padding-top:6px; line-height:1.3;">
+                        ${relData.footer}
+                    </div>
                 </div>
             </div>`;
     }
