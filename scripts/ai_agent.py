@@ -1,533 +1,1673 @@
+import sqlite3
 import requests
 from bs4 import BeautifulSoup
 import os
 import json
+import re
 import time
 import math
-import gspread
-from google.oauth2.service_account import Credentials
-from tavily import TavilyClient
+import logging
+from datetime import datetime, timedelta
 from openai import OpenAI
 from dotenv import load_dotenv
 
-# Carica variabili d'ambiente
+# --- SETUP LOGGING ---
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("SUPER_SQUAD")
+
+# --- LOAD ENV ---
 load_dotenv()
 
-# --- CONFIGURAZIONE ---
-SHEET_URL = "https://docs.google.com/spreadsheets/d/1NEyNXzCSprGOw6gCmVVbtwvFmz8160Oag-WqG93ouoQ/edit"
-
-# Percorsi Assoluti per i Database JSON
+# Absolute Paths for JSON Databases
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SOURCES_DB_PATH = os.path.join(BASE_DIR, '../assets/data/sources_db.json')
 KEYWORDS_DB_PATH = os.path.join(BASE_DIR, '../assets/data/keywords_db.json')
 
-# --- FUNZIONE HELPER PER SCRITTURA SICURA ---
+# --- PROTOCOL CONSTANTS (HARDCODED) ---
+INTENSITY_DB = {
+    # TIER A (1.0) - Existential
+    "CRITICAL_NUCLEAR": 1.0, "CRITICAL_DAM": 1.0, "MIL_AIRBASE": 1.0,
+    # TIER B (0.75 - 0.9) - Strategic
+    "IND_DEFENSE_PLANT": 0.9,
+    "MIL_AIR_DEFENSE_LONG": 0.85, "MIL_SHIP": 0.85, "INFRA_STRATEGIC_BRIDGE": 0.85,
+    "INFRA_REFINERY": 0.8, "MIL_EW_RADAR": 0.8, "INFRA_GENERATION": 0.8,
+    "MIL_AMMO_DEPOT": 0.75, "MIL_MLRS_STRATEGIC": 0.75,
+    # TIER C (0.45 - 0.55) - Operational
+    "MIL_HQ": 0.55, "MIL_AIR_DEFENSE_SHORT": 0.55,
+    "MIL_ARTILLERY": 0.5, "MIL_APC_TANK": 0.5, "MIL_MLRS_TACTICAL": 0.5,
+    "INFRA_FUEL_DEPOT": 0.45, "IND_FACTORY": 0.45,
+    # TIER D (0.3 - 0.35) - Tactical/Logistics
+    "INFRA_LOGISTICS": 0.35, "INFRA_GRID_LOCAL": 0.35,
+    "MIL_TRENCH": 0.3, "MIL_VEHICLE_LIGHT": 0.3, "MIL_PERSONNEL_OPEN": 0.3,
+    # TIER E (0.05 - 0.2) - Civilian/Low
+    "CIV_PUBLIC": 0.2, "CIV_COMMERCIAL": 0.2, "CIV_RESIDENTIAL": 0.15,
+    "OPEN_FIELD": 0.05, "UNKNOWN": 0.0
+}
+
+DAMAGE_MODIFIERS = {
+    "CRITICAL": 1.0,  # Destroyed / Sunk / Collapsed
+    "HEAVY": 0.8,     # Fire / Halted Traffic / Mission Kill
+    "LIGHT": 0.5,     # Repairable / Broken Windows
+    "NONE": 0.1       # Intercepted / No Damage
+}
+
+# --- SYSTEM PROMPTS ---
+
+SOLDIER_SYSTEM_PROMPT = """
+### SYSTEM PROMPT: THE TACTICAL ANALYST
+
+**ROLE**
+You are a Senior Military Intelligence Analyst (OSINT) specializing in the Russo-Ukrainian conflict.
+Your task is to convert a CLUSTER of raw, noisy, multi-lingual telegram messages (RU/UA/EN) into a single, rigorous JSON INTELLIGENCE REPORT.
+
+**INPUT DATA**
+You will receive a "Cluster Object" containing:
+1.  `reference_timestamp`: The ISO timestamp of the newest message (the anchor time).
+2.  `raw_messages`: A list of text snippets from different sources about the same event.
+
+**CORE DIRECTIVES (NON-NEGOTIABLE)**
+
+1.  **GEOLOCATION PROTOCOL (Critical):**
+    * **EXPLICIT COORDS:** ONLY if the text contains numerical coordinates (e.g., "48.123, 37.456"), extract them into `geo_location.explicit`.
+    * **INFERRED:** If no numbers are present, extract the Toponym (City/Village) and the specific landmark (e.g., "School No.3", "Industrial Zone") into `geo_location.inferred`.
+    * **NEVER HALLUCINATE:** Do not convert a city name into coordinates yourself. If no coordinates are written in text, `geo_location.explicit` must be `null`.
+
+2.  **TIME RECONSTRUCTION:**
+    * Analyze time references relative to `reference_timestamp`.
+    * "Tonight" -> Same date as reference.
+    * "Yesterday" -> Reference date minus 1 day.
+    * Output the estimated event time in ISO format.
+
+3.  **SLANG DECODING (Glossary):**
+    * "Bird", "Mavic", "Baba Yaga" -> TYPE: "UAV/Drone"
+    * "Box", "Armor" -> TYPE: "Armored Vehicle"
+    * "200" -> KILLED / "300" -> WOUNDED.
+    * "Cotton" (Bavovna) -> Explosion.
+
+**OUTPUT JSON SCHEMA**
+Return ONLY a valid JSON object matching this structure:
+
+{
+  "event_analysis": {
+    "is_kinetic_military_event": true,
+    "confidence_level": "HIGH | MEDIUM | LOW",
+    "summary_en": "Concise tactical summary (max 20 words)"
+  },
+  "timing": {
+    "reference_timestamp_used": "ISO_STRING",
+    "estimated_event_timestamp": "ISO_STRING | null",
+    "time_precision": "EXACT_TIME | MORNING/EVENING | DAY_PRECISION | UNKNOWN"
+  },
+  "geo_location": {
+    "explicit": {
+      "lat": null,
+      "lon": null,
+      "source_text_snippet": "extraction or null"
+    },
+    "inferred": {
+      "toponym_raw": "e.g. Bakhmut",
+      "landmark_description": "e.g. Near the train station",
+      "spatial_relation": "e.g. 5km North of..."
+    }
+  },
+  "actors": {
+    "aggressor": {
+      "side": "RU | UA | UNKNOWN",
+      "unit_mentioned": "e.g. 93rd Brigade or null",
+      "equipment_used": ["List identified equipment"]
+    },
+    "target": {
+      "side": "RU | UA | CIVILIAN",
+      "type": "INFRASTRUCTURE | MILITARY_UNIT | LOGISTICS | RESIDENTIAL",
+      "status_after_event": "DESTROYED | DAMAGED | INTACT | UNKNOWN"
+    }
+  },
+  "casualties": {
+    "killed_kia": 0,
+    "wounded_wia": 0,
+    "civilian_mentioned": false
+  }
+}
+"""
 
 
-def safe_update(worksheet, row, col, value):
-    """
-    Gestisce il limite di velocità di Google (Errore 429).
-    Se bloccati, aspetta e riprova.
-    """
-    if value is None:
-        return
+class SuperSquadAgent:
 
-    max_retries = 5
-    for attempt in range(max_retries):
-        try:
-            worksheet.update_cell(row, col, value)
-            time.sleep(0.8)  # Pausa preventiva
-            return
-        except Exception as e:
-            if "429" in str(e) or "Quota exceeded" in str(e):
-                print(
-                    f"   ⏳ Google ci sta bloccando (Quota 429). Pausa caffè di 60 secondi...")
-                time.sleep(65)
-                print("   ▶️ Riprendo...")
-            else:
-                print(
-                    f"   ⚠️ Errore scrittura cella {row},{col} (ignoro): {e}")
-                return
-
-
-class OSINTAgent:
     def __init__(self):
-        # 1. Setup API
-        self.tavily_api_key = os.getenv("TAVILY_API_KEY")
+        # 1. API Keys
         self.openai_api_key = os.getenv("OPENAI_API_KEY")
+        self.openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
 
-        if not self.tavily_api_key or not self.openai_api_key:
-            raise ValueError("❌ ERRORE: Chiavi API mancanti nel file .env")
+        # MODIFICA: Carichiamo Serper
+        self.serper_api_key = os.getenv("SERPER_API_KEY")
+        if not self.serper_api_key:
+            print("⚠️ ATTENZIONE: Manca SERPER_API_KEY nel file .env")
 
-        self.tavily = TavilyClient(api_key=self.tavily_api_key)
-        self.client = OpenAI(api_key=self.openai_api_key)
+        if not self.openai_api_key or not self.openrouter_api_key:
+            raise ValueError("❌ ERROR: API Keys missing")
 
-        # 2. Caricamento Knowledge Base
+        # 2. Initialize Clients
+        self.openai_client = OpenAI(api_key=self.openai_api_key)
+        self.openrouter_client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=self.openrouter_api_key,
+        )
+
+        # 3. Load Knowledge Bases
         self.sources_db = self._load_json_db(SOURCES_DB_PATH, "sources")
         self.keywords_db = self._load_json_db(KEYWORDS_DB_PATH, "keywords")
 
-        print("✅ Agente Inizializzato (HBC Logic + 18 Columns Layout).")
+        print("✅ Super Squad Agent Initialized (Engine: Google Serper Time-Machine).")
+
+    # =========================================================================
+    # 🗺️ ACLED FULL SOURCE MAP (180+ SOURCES)
+    # =========================================================================
+    ACLED_SOURCE_MAP = {
+        # --- 1. ISTITUZIONI MILITARI & GOVERNATIVE (UFFICIALI) ---
+        "Ministry of Defence of Ukraine": "mil.gov.ua",
+        "Ministry of Defence of Russia": "mil.ru",
+        "General Staff of the Armed Forces of Ukraine": "facebook.com/GeneralStaff.ua",
+        "National Guard of Ukraine": "ngu.gov.ua",
+        "State Border Guard Service of Ukraine": "dpsu.gov.ua",
+        "SBU": "ssu.gov.ua",
+        "Police Forces of Ukraine Press Service": "npu.gov.ua",
+        "State Emergency Service of Ukraine": "dsns.gov.ua",
+        "National Police of Ukraine": "npu.gov.ua",
+        "Prosecutor General's Office of Ukraine": "gp.gov.ua",
+        "Ministry of Reintegration of Temporarily Occupied Territories": "minre.gov.ua",
+        "Belgorod Governor": "belregion.ru",
+        "Kursk Governor": "rkursk.ru",
+        "Bryansk Governor": "bryanskobl.ru",
+        "Voronezh Governor": "govvrn.ru",
+
+        # --- 2. ENTI SEPARATISTI / OCCUPAZIONE (DPR/LPR) ---
+        "DPR Armed Forces Press Service": "dan-news.ru",  # Agenzia ufficiale DPR
+        "LPR People's Militia Press Service": "lug-info.com",  # Agenzia ufficiale LPR
+        "DPR Ministry of Emergency Situations": "dnmchs.ru",
+        "LPR Ministry of Emergency Situations": "mchs-lnr.su",
+        "DPR JCCC": "dnr-sckk.ru",
+        "LPR JCCC": "cxid.info",  # Spesso ripubblicato qui
+
+        # --- 3. AGENZIE DI STAMPA & TV UCRAINE (NAZIONALI) ---
+        "Suspilne Media": "suspilne.media",
+        "Suspilne": "suspilne.media",
+        "24 Channel": "24tv.ua",
+        "Ukrinform": "ukrinform.ua",
+        "Unian": "unian.net",
+        "RBC-Ukraine": "rbc.ua",
+        "Ukrainska Pravda": "pravda.com.ua",
+        "NV": "nv.ua",
+        "Novoye Vremya Ukraine": "nv.ua",
+        "Novoye Vremya": "nv.ua",
+        "Censor.NET": "censor.net",
+        "Espreso.TV": "espreso.tv",
+        "Hromadske": "hromadske.ua",
+        "TSN": "tsn.ua",
+        "LB.ua": "lb.ua",
+        "Focus": "focus.ua",
+        "Gordon": "gordonua.com",
+        "Zn.ua": "zn.ua",
+        "Liga.net": "liga.net",
+        "Interfax-Ukraine": "interfax.com.ua",
+        "Segodnya": "segodnya.ua",
+        "Fakty i Kommentarii": "fakty.ua",
+        "Obozrevatel": "obozrevatel.com",
+        "Strana.ua": "strana.today",  # Spesso bloccato, ma proviamo
+        "Telegraf": "telegraf.com.ua",
+        "Apostrophe": "apostrophe.ua",
+        "Gazeta.ua": "gazeta.ua",
+        "Glavcom": "glavcom.ua",
+        "Vikna": "vikna.tv",
+        "5 Kanal": "5.ua",
+        "Pryamiy": "prm.ua",
+        "Babel": "babel.ua",
+        "Rubryka": "rubryka.com",
+        "Texty": "texty.org.ua",
+        "Slidstvo.Info": "slidstvo.info",
+
+        # --- 4. MEDIA REGIONALI UCRAINI (CRUCIALI PER ACLED) ---
+        "061.ua": "061.ua",  # Zaporizhzhia
+        "Inform.zp.ua": "inform.zp.ua",  # Zaporizhzhia
+        "Zaxid": "zaxid.net",  # Lviv/Ovest
+        "Dumskaya": "dumskaya.net",  # Odesa
+        "Odesa Journal": "odessa-journal.com",
+        "Most": "most.ks.ua",  # Kherson
+        "Kherson News": "khersonline.net",
+        "Novosti N": "novosti-n.org",  # Mykolaiv
+        "News of Donbas": "novosti.dn.ua",
+        "Donbas News": "novosti.dn.ua",
+        "Ostrov": "ostro.org",  # Donbas
+        "Krym Realii": "ru.krymr.com",  # Crimea
+        "Black Sea News": "blackseanews.net",
+        "Voice of Crimea": "voicecrimea.com.ua",
+        "Qirim News": "qirim.news",
+
+        # --- 5. MEDIA RUSSI (UFFICIALI & INDIPENDENTI) ---
+        "TASS": "tass.ru",
+        "ITAR-TASS": "tass.ru",
+        "RIA Novosti": "ria.ru",
+        "Kommersant": "kommersant.ru",
+        "Interfax": "interfax.ru",
+        "Lenta.ru": "lenta.ru",
+        "Izvestia": "iz.ru",
+        "Komsomolskaya Pravda": "kp.ru",
+        "Moskovskij Komsomolets": "mk.ru",
+        "Argumenty I Fakty": "aif.ru",
+        "Rossiyskaya Gazeta": "rg.ru",
+        "Vedomosti": "vedomosti.ru",
+        "Regnum": "regnum.ru",
+        "Gazeta.ru": "gazeta.ru",
+        "Fontanka": "fontanka.ru",
+        "Meduza": "meduza.io",  # Indipendente (Riga)
+        "Mediazona": "zona.media",
+        "MediaZone": "zona.media",
+        "Novaya Gazeta": "novayagazeta.ru",
+        "The Moscow Times": "themoscowtimes.com",
+        "TV Rain": "tvrain.tv",
+        "Dozhd": "tvrain.tv",
+        "OVD Info": "ovd.info",
+        "The Insider": "theins.ru",
+        "Istories": "istories.media",
+        "Proekt": "proekt.media",
+        "Holod": "holod.media",
+        "Sota": "sotaproject.com",
+        "Activatica": "activatica.org",
+        "Rosbalt": "rosbalt.ru",
+        "Caucasian Knot": "kavkaz-uzel.eu",
+        "7x7": "7x7-journal.ru",
+
+        # --- 6. OSINT, ONG & ANALISTI ---
+        "Institute for the Study of War": "understandingwar.org",
+        "ISW": "understandingwar.org",
+        # Difficile da cercare testualmente, ma proviamo
+        "Deep State": "deepstatemap.live",
+        "Centre for Information Resilience": "info-res.org",
+        "Bellingcat": "bellingcat.com",
+        "Conflict Intelligence Team": "citeam.org",
+        "InformNapalm": "informnapalm.org",
+        "Militarnyi": "mil.in.ua",
+        "Defense Express": "defence-ua.com",
+        "Sprotyv": "sprotyv.mod.gov.ua",  # National Resistance Center
+        "Kharkiv Human Rights Protection Group": "khpg.org",
+        "ZMINA": "zmina.info",
+        "Human Rights Watch": "hrw.org",
+        "HRW": "hrw.org",
+        "Amnesty International": "amnesty.org",
+        "OSCE": "osce.org",
+        "UN Human Rights Monitoring Mission": "ukraine.un.org",
+        "Insecurity Insight": "insecurityinsight.org",
+        "Crew Against Torture": "pytkam.net",
+        "SOVA": "sova-center.ru",
+        "DIGNITY": "dignity.dk",
+
+        # --- 7. MEDIA INTERNAZIONALI (Copertura Ucraina) ---
+        "Radio Liberty": "radiosvoboda.org",  # UA Service
+        "RFE/RL": "rferl.org",
+        "BBC News": "bbc.com",
+        "BBC Ukrainian": "bbc.com/ukrainian",
+        "CNN": "cnn.com",
+        "Reuters": "reuters.com",
+        "AFP": "afp.com",
+        "Associated Press": "apnews.com",
+        "New York Times": "nytimes.com",
+        "NYT": "nytimes.com",
+        "Washington Post": "washingtonpost.com",
+        "The Guardian": "theguardian.com",
+        "Al Jazeera": "aljazeera.com",
+        "Deutsche Welle": "dw.com",
+        "Voice of America": "ukrainian.voanews.com",
+
+        # --- 8. TELEGRAM CHANNELS (SOLO QUELLI CON SITI MIRROR/WEB) ---
+        # Nota: La maggior parte dei TG puri sarà gestita dal fallback "Name Search"
+        "WarGonzo": "t.me/wargonzo",  # Non indicizzabile bene, ma lo lasciamo per reference
+        "Rybar": "rybar.ru",  # Ha un sito!
+        "Kotsnews": "kp.ru",  # Reporter di KP
+
+        # --- AGGREGATORI CHE NON CANCELLANO MAI ---
+        "Liveuamap": "liveuamap.com",
+        "Ukr.net": "ukr.net",         # Storico news feed ucraino
+        "DeepState": "deepstatemap.live",
+        "Understanding War": "understandingwar.org",
+
+        # --- 9. MEDIA BIELORUSSI ---
+        "Belsat": "belsat.eu",
+        "Charter-97": "charter97.org",
+        "Nashaniva": "nashaniva.com",
+        "Zerkalo": "zerkalo.io",
+        "Nexta": "t.me/nexta_live",  # Principalmente TG
+        "Hajun": "motolko.help",  # Belarus Hajun project
+
+    }
+
+    # =========================================================================
+    # 🗂️ TAXONOMY
+    # =========================================================================
+    # (Drone, Missile, ecc.)
+    EVENT_TYPES = [
+        "Missile Strike",        # Iskander, Kinzhal, Kalibr, S-300
+        "Drone Strike",          # Shahed, FPV, Lancet
+        "Airstrike",             # KAB, FAB, Su-34, Bombing
+        "Artillery Shelling",    # Grad, Mortar, Howitzer
+        "Ground Clash",          # Battle, Assault, Skirmish, Shooting
+        "Naval Engagement",      # Sea Drone, Ship hit
+        "IED / Explosion",       # Mines, Car bombs, Partisan sabotage
+        "Political / Unrest",    # Arrests, Protests
+        "Civil / Accident",      # Fires, Train crash, Infrastructure failure
+        "Strategic Development"  # Troop movement, Commander changes
+    ]
+    # =========================================================================
+    # 🧠 CORE INTELLIGENCE LOGIC (Event Context & Fingerprints)
+    # =========================================================================
+
+    def _init_event_context(self, row, acled_source):
+        """Crea l'oggetto 'Dossier' per tracciare l'indagine su questo evento."""
+        return {
+            "title": row.get('Title') or row.get('notes'),
+            "date": row.get('Date'),
+            "location": row.get('Location'),
+            "acled_source_raw": acled_source,
+
+            # Evidence Buckets (Dove accumuliamo le prove)
+            "sniper_results": [],     # Risultati da site:dominio
+            "fallback_results": [],   # Risultati da ricerca generica
+
+            # Decision Finale
+            "status": "PENDING",      # FOUND_ORIGINAL / CORROBORATED / NOT_FOUND
+            "verification_method": None,
+            "best_link": None,
+            "confidence_score": 0.0,
+            "ai_summary": ""
+        }
 
     def _load_json_db(self, path, key_name):
         try:
             if os.path.exists(path):
                 with open(path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-
-                    # Gestiamo sia il formato lista (tua repo) che dict
                     content = data.get(key_name, [])
 
-                    # Se è una lista (come nel sources.json standard), la convertiamo in dict per ricerca veloce
+                    # Normalize list to dict for fast lookup
                     if isinstance(content, list):
                         db_dict = {}
                         for item in content:
-                            # Chiave primaria: dominio o keyword
                             key = item.get('domain') or item.get('word')
                             if key:
                                 db_dict[key.lower().replace('www.', '')] = item
                         return db_dict
-
                     return content if isinstance(content, dict) else {}
             else:
-                print(f"⚠️ File non trovato: {path}")
+                print(f"⚠️ DB File not found: {path}")
                 return {}
         except Exception as e:
-            print(f"❌ Errore caricamento DB {path}: {e}")
+            print(f"❌ Error loading DB {path}: {e}")
             return {}
 
     # =========================================================================
-    # 🧠 CORE LOGIC: FORMULA HBC (Hybrid Bias Calculation)
+    # 🧠 STEP 1: THE BRAIN (DeepSeek V3 via OpenRouter)
     # =========================================================================
-    def calculate_hybrid_bias(self, source_url, text, ai_score):
+    def _step_1_the_brain(self, text, metadata):
         """
-        Applica la formula 'Reliability-Gated Weighting'.
-        Score = (B_base * 2 * 0.4) + (S_ai * 0.4) + (S_sem * M_rel)
+        Role: Strategy & Context.
+        Analysis of raw clusters to determine relevance, actors, and bias.
         """
-        # A. Estrazione Dominio (MIGLIORAMENTO NECESSARIO)
-        domain = source_url.lower()
-        try:
-            from urllib.parse import urlparse
-            if source_url and source_url.startswith('http'):
-                domain = urlparse(
-                    source_url).netloc.lower().replace('www.', '')
-        except:
-            pass
-
-        # 1. Recupera metriche Fonte (TUA LOGICA)
-        # Cerca corrispondenza esatta o parziale nel dizionario caricato
-        source_data = self.sources_db.get(domain, {})
-
-        # Fallback: Fuzzy match se non trova chiave esatta
-        if not source_data:
-            for db_key, db_val in self.sources_db.items():
-                if db_key in domain:  # Es. trova 'tass.com' dentro 'subdomain.tass.com'
-                    source_data = db_val
-                    break
-
-        R = source_data.get('reliability', 50)      # R (Default 50)
-        B_base = source_data.get('bias', 0)         # B_base
-
-        # 2. Calcolo Score Semantico (S_sem) (TUA LOGICA)
-        S_sem = 0
-        text_lower = text.lower()
-
-        # Itera sul dizionario keywords caricato dal JSON
-        for keyword, item in self.keywords_db.items():
-            # Supporto per struttura complessa (item = {'score': -5}) o semplice (item = -5)
-            score_val = item.get('score', 0) if isinstance(
-                item, dict) else item
-
-            if keyword in text_lower:
-                S_sem += score_val
-                # print(f"   ⚠️ Trigger Semantic: {keyword} ({score_val})") # Debug opzionale
-
-        # 3. Calcolo Moltiplicatore di Affidabilità (M_rel) (TUA FORMULA)
-        # Se la fonte è affidabile (R alto), M_rel è basso -> le parole contano meno.
-        # Se la fonte è inaffidabile (R basso), M_rel è alto -> le parole contano di più.
-        M_rel = max(0.2, 1.2 - (R / 100.0))
-
-        # 4. Applicazione Formula Matematica (TUA FORMULA)
-        W_base = 0.4
-        W_ai = 0.4
-
-        # Nota: B_base * 2 serve a portarlo sulla scala -10/+10 se nel JSON è -5/+5
-        # Se nel JSON è già -10/+10, togli il * 2. Assumo sia -5/+5 come standard.
-        raw_score = (B_base * 2 * W_base) + (ai_score * W_ai) + (S_sem * M_rel)
-
-        # 5. Clamping (-10 a +10)
-        final_score = max(-10, min(10, raw_score))
-
-        # 6. Safety Check
-        # Se AI e Semantica divergono troppo (>5 punti), riduciamo la fiducia.
-        if abs(ai_score - S_sem) > 5 and S_sem != 0:
-            final_score = final_score * 0.8
-            R = int(R * 0.8)
-
-        return round(final_score, 1), R
-
-    def get_bias_label(self, score):
-        """Converte lo score HBC in etichetta (Stile Intelligence - Opzione A)"""
-        # Range Estremi (Propaganda di Stato / Narrazione imposta)
-        if score <= -7:
-            return "RUS STATE NARRATIVE"
-        if score >= 7:
-            return "UKR STATE NARRATIVE"
-
-        # Range Intermedi (Bias editoriale / Opinione forte)
-        if score <= -3:
-            return "PRO-RUSSIA BIAS"
-        if score >= 3:
-            return "PRO-UKRAINE BIAS"
-
-        # Zona Centrale (Fatti puri o bilanciati)
-        return "NEUTRAL / FACTUAL"
-
-    # =========================================================================
-    # 🕵️ AGENT ACTIONS (DOUBLE HAT)
-    # =========================================================================
-
-    def perform_search(self, query):
-        try:
-            print(f"   🔎 Ricerca: '{query}'...")
-            response = self.tavily.search(
-                query=query, search_depth="basic", max_results=5)
-
-            context_text = "\n\n".join(
-                [f"SRC: {r['url']}\nTXT: {r['content']}" for r in response['results']])
-            urls = [r['url'] for r in response['results']]
-
-            primary_source = "unknown"
-            if urls:
-                try:
-                    from urllib.parse import urlparse
-                    primary_source = urlparse(
-                        urls[0]).netloc.replace('www.', '')
-                except:
-                    pass
-
-            return context_text, primary_source, urls
-        except Exception as e:
-            print(f"   ❌ Errore Tavily: {e}")
-            return "", "unknown", []
-
-    def run_analyst_hat(self, raw_text, current_row):
-        """
-        Agente Intelligence v3.5 (Balanced Courage):
-        Coordinate, Bias, Fonti, Impatto Strategico e Affidabilità.
-        Sensibile ai bias editoriali, ma accetta la neutralità se reale.
-        """
-        if not raw_text:
-            return None
-
-        # Recupera dati esistenti per il contesto dell'AI
-        evt_title = current_row.get('Title', 'N/D')
-        evt_loc = current_row.get('Location', 'N/D')
-        evt_date = current_row.get('Date', 'N/D')
-        evt_lat = current_row.get('Latitude', '0')
-        evt_lon = current_row.get('Longitude', '0')
-
-        # Tronca il testo mantenendo contesto sufficiente
-        context_text = raw_text[:5000]
+        print("   🧠 Step 1: The Brain (DeepSeek V3) analyzing strategy...")
 
         prompt = f"""
-        Sei un SENIOR INTELLIGENCE ANALYST specializzato in GUERRA IBRIDA e SEMANTICA (Conflitto UKR-RUS).
-        Il tuo compito è analizzare la fonte per estrarre intelligence tecnica e valutare l'orientamento politico (Bias).
+### SYSTEM INSTRUCTIONS: INTELLIGENCE JUDGE & CORRECTOR
 
-        DATI ESISTENTI:
-        - Titolo: {evt_title}
-        - Luogo: {evt_loc}
-        - Data: {evt_date}
-        - Coord attuali: {evt_lat}, {evt_lon}
+**ROLE**
+You are a Senior Intelligence Officer. Your task is to VALIDATE and CORRECT the raw extraction performed by a subordinate unit ("The Soldier") against raw Telegram intercepts.
 
-        NEWS CONTEXT:
-        {context_text}
+**INPUT DATA**
+1. **RAW SOURCE (Cluster):** "{text[:15000]}"
+2. **SOLDIER'S EXTRACTION (To Verify):** {json.dumps(metadata)}
 
-        --- TASK ---
-        1. GEOLOCALIZZAZIONE E TIPO TARGET (CRITICO):
-           - Cerca coordinate nel testo. Se mancano, stima le coordinate dell'edificio specifico se identificabile.
-           - Assegna "location_precision" scegliendo OBBLIGATORIAMENTE una di queste categorie:
-             * "REFINERY": Depositi carburante, raffinerie.
-             * "ELECTRICAL SUBSTATION": Sottostazioni, trasformatori (no grandi centrali).
-             * "INFRASTRUCTURE": Ponti, ferrovie, porti, logistica.
-             * "MILITARY BASE": Aeroporti, caserme, depositi.
-             * "CIVILIAN FACILITY": Edifici civili specifici (scuole, hotel, centri comm.).
-             * "CITY": Target generico sulla città.
-             * "REGION": Area vasta/indefinita.
-           - Restituisci lat/lon 0.0 se non trovi nulla di meglio di quanto già presente.
+**PROTOCOL 1: SPAM & RELEVANCE FILTER (THE GATEKEEPER)**
+   - **EVENT TYPE:** Focus ONLY on KINETIC events (Explosions, Strikes, Movements, Battles).
+   - **DISCARD:** Fundraisers ("Donate", "Cards", "Monobank"), abstract politics, recruiting spam, advertisements.
+   - **IF SPAM:** Set `verification_status: false` and `rejection_reason: "Fundraising/Spam"`. Discard everything.
 
-        2. INTELLIGENCE & BIAS (Sensibilità Alta):
-           - "actor": Chi ha attaccato? (RUS, UKR, UNK).
-           - "ai_score": Punteggio da -10 (Max RUS) a +10 (Max UKR).
-             
-           GUIDA ALLA SCALA BIAS:
-           - 0 (NEUTRAL): SOLO per bollettini puramente tecnici o asettici. Se sono tendenti ma hai dubbi usa numeri bassi, es. +/-0,6.
-           - +/- 3-5 (EDITORIAL BIAS): La fonte è fattuale ma usa aggettivi orientati.
-           - +/- 7-10 (PROPAGANDA): Linguaggio emotivo, "Regime", "Nazisti", "Orchi", "Terroristi".
-           
-           REGOLA D'ORO: Se sei indeciso tra 0 e un bias leggero (es. 1 o 2 o 1,4), SCEGLI IL BIAS. Lo 0 è solo per l'assenza totale di opinione. Puoi anche assegnare un valore decimale (es. 2.5 o 1,6). Non esagerare con i Bias e non vederli dove non ci sono.
+**PROTOCOL 2: DATE & LOGIC VALIDATION (FLEXIBLE)**
+   - Check the `Target Date` provided in metadata against the text.
+   - **ALLOW:** +/- 7 days flexibility to account for delayed reporting, weekly summaries, or confirmation delays.
+   - **REJECT:** Events clearly from a different month (unless month-end transition), previous years, "Anniversaries", "Recaps of the year".
+   - *Logic:* If date mismatch > 7 days -> `verification_status: false`.
 
-        3. INTENSITÀ (SCALA RIGIDA 0.0-1.0):
-           - 0.1-0.3 (TACTICAL): Danni lievi, schermaglie, droni abbattuti.
-           - 0.4-0.6 (OPERATIONAL): Danni infrastrutture, conquiste villaggi, blackout locali.
-           - 0.7-0.8 (STRATEGIC): Colpi strategici, città prese, stragi (>10 civili).
-           - 0.9-1.0 (CRITICAL): Evento storico/nucleare/catastrofico (es. Diga Kakhovka).
+**PROTOCOL 3: VALIDATION & CORRECTION (THE FALLBACK)**
+   - Compare `SOLDIER'S EXTRACTION` with `RAW SOURCE`.
+   - **Location Check:** Does the location found by the Soldier match the text? If Soldier says "Odessa" but text says "Kyiv" -> **CORRECT IT**.
+   - **Hallucination Check:** Did the Soldier invent coordinates (e.g. 0.0, 0.0) or numbers not in text? -> **CORRECT THEM** (set to null if not found).
+   - **Missed Info:** If Soldier missed key details -> **ADD THEM**.
 
-        4. FATTORI DI AFFIDABILITÀ (PER ALGORITMO INTERNO):
-           - "has_visual": true SE c'è menzione esplicita di VIDEO, FOTO o GEOLOCALIZZAZIONE confermata.
-           - "is_uncertain": true SE il testo usa parole come "rumors", "unconfirmed", "allegedly", "possible".
-           - "num_sources": Stima intera del numero di fonti diverse citate nel contesto.
+**PROTOCOL 4: ENRICHMENT & CLASSIFICATION**
+   - **ACTOR ATTRIBUTION:** Identify who initiated the action.
+     * `RUS`: Russian Forces, Wagner, DPR/LPR.
+     * `UKR`: AFU, ZSU, SBU, Partisans.
+     * `UNK`: Accident, Unclear.
+     * *Constraint:* NEVER use "Russian Forces" or "AFU". Use ONLY the 3-letter codes.
+
+   - **TARGET CLASSIFICATION:** Map target to exactly ONE category:
+     * `REFINERY` (Fuel, Oil depots)
+     * `ELECTRICAL_SUBSTATION` (Transformers, Grid - NOT Nuclear)
+     * `INFRASTRUCTURE` (Bridges, Ports, Railways)
+     * `MILITARY_BASE` (Airfields, Barracks, Ammo)
+     * `CIVILIAN_FACILITY` (Schools, Hotels, Residential)
+     * `CITY` (Generic city strike)
+     * `REGION` (Wide area/Unknown)
+
+   - **BIAS & SIGNAL:**
+     * `BIAS SCORE`: Estimate political lean (-10 Pro-RU to +10 Pro-UA).
+     * `IMPLICIT SIGNAL`: What is the tactical goal? (e.g. "Terror bombing", "Logistics").
+
+**OUTPUT SCHEMA (JSON ONLY)**
+{{
+    "verification_status": boolean,
+    "rejection_reason": "null or string (e.g. 'Fundraising')",
+    "correction_notes": "String explaining corrections (e.g. 'Fixed wrong Actor from UKR to RUS')",
+    "verified_data": {{
+        "actor": "RUS | UKR | UNK",
+        "ai_bias_estimate": int,
+        "implicit_signal": "Tactical summary",
+        "location_precision_category": "ENUM from Protocol 4",
+        "corrected_coordinates": {{ "lat": float, "lon": float }} // Only if you found better ones
+    }}
+}}
+"""
+
+        try:
+            # 1. Chiamata API
+            response = self.openrouter_client.chat.completions.create(
+                model="deepseek/deepseek-chat",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1,  # Abbassato a 0.1 per maggiore rigore logico
+            )
+
+            # 2. Parsing Sicuro
+            result_text = response.choices[0].message.content
+            parsed_data = self._clean_and_parse_json(result_text)
+
+            # 3. Gestione Fallimento e Auto-Repair
+            if not parsed_data:
+                print("   ⚠️ Brain JSON Error. Attempting repair...")
+                parsed_data = self._repair_json_with_ai(
+                    result_text, "Brain JSON Malformed")
+
+            if not parsed_data:
+                return {"is_relevant": False, "reason": "JSON Critical Failure"}
+
+            return parsed_data
+
+        except Exception as e:
+            print(f"   ❌ Brain Critical Error: {e}")
+            return {"is_relevant": False, "reason": "API Error"}
+
+    # =========================================================================
+    # 🔧 AI MECHANIC: JSON REPAIR (GPT-4o-mini)
+    # =========================================================================
+    def _repair_json_with_ai(self, broken_text, error_context):
+        """
+        Chiama un modello veloce (GPT-4o-mini) per correggere errori di sintassi JSON.
+        """
+        print(f"   🔧 Activating JSON Mechanic (Error: {error_context})...")
+
+        repair_prompt = f"""
+        TASK: Fix the malformed JSON string below.
+        ERROR: {error_context}
+
+        RULES:
+        1. Return ONLY the valid JSON object.
+        2. Do not add markdown backticks.
+        3. Fix syntax errors (missing brackets, quotes, trailing commas).
+        4. Maintain all data fields exactly as they are.
+
+        BROKEN JSON:
+        {broken_text}
+        """
+
+        try:
+            response = self.openai_client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": repair_prompt}],
+                temperature=0.0
+            )
+            fixed_text = response.choices[0].message.content.strip()
+
+            # Rimuoviamo eventuali backticks residui
+            if "```" in fixed_text:
+                fixed_text = fixed_text.replace(
+                    "```json", "").replace("```", "").strip()
+
+            return json.loads(fixed_text)
+
+        except Exception as e:
+            print(f"   ❌ JSON Mechanic Failed: {e}")
+            return None
+
+    # =========================================================================
+    # 🤖 STEP 2: THE SOLDIER v2.1 (With Auto-Repair)
+    # =========================================================================
+
+    def _step_2_the_soldier(self, cluster_data):
+        """
+        Role: Strict Extraction from Cluster with Fallback Repair.
+        """
+        print("   🤖 Step 2: The Soldier analyzing cluster...")
+
+        messages_list = cluster_data.get('raw_messages', [])
+        if not messages_list:
+            return None
+
+        combined_text = "\n--- NEW SOURCE MESSAGE ---\n".join(messages_list)
+        ref_time = cluster_data.get(
+            'reference_timestamp') or datetime.now().isoformat()
+
+        user_content = f"""
+        REFERENCE TIMESTAMP: {ref_time}
+        CLUSTER DATA:
+        {combined_text[:25000]}
+        """
+
+        raw_response_text = ""
+
+        try:
+            # 1. Chiamata Principale (Qwen/DeepSeek)
+            response = self.openrouter_client.chat.completions.create(
+                model="qwen/qwen-2.5-72b-instruct",
+                messages=[
+                    {"role": "system", "content": SOLDIER_SYSTEM_PROMPT},
+                    {"role": "user", "content": user_content}
+                ],
+                temperature=0.0,
+                response_format={"type": "json_object"}
+            )
+            raw_response_text = response.choices[0].message.content
+
+            # 2. Parsing Standard
+            parsed_data = self._clean_and_parse_json(raw_response_text)
+
+            # 3. AUTO-REPAIR CHECK
+            # Se _clean_and_parse_json ritorna None, significa che il JSON è rotto.
+            if not parsed_data:
+                print("   ⚠️ JSON Syntax Error detected. Calling Mechanic...")
+                parsed_data = self._repair_json_with_ai(
+                    raw_response_text, "Invalid JSON format")
+
+            # Se anche il meccanico fallisce, ci arrendiamo
+            if not parsed_data:
+                print("   ❌ Soldier Failed (Unfixable JSON).")
+                return None
+
+            # 4. SAFETY LAYER (Validazione Coordinate)
+            geo = parsed_data.get("geo_location", {})
+            explicit = geo.get("explicit")
+            if explicit:
+                lat = explicit.get('lat')
+                lon = explicit.get('lon')
+                is_invalid_lat = lat in [0, 0.0, "0", None, "null"]
+                is_invalid_lon = lon in [0, 0.0, "0", None, "null"]
+
+                if is_invalid_lat or is_invalid_lon:
+                    parsed_data["geo_location"]["explicit"] = None
+
+            return parsed_data
+
+        except Exception as e:
+            print(f"   ⚠️ Soldier Exception: {e}")
+            # Tentativo disperato di riparazione se l'errore è avvenuto durante il parsing iniziale
+            if raw_response_text:
+                print("   🔧 Attempting emergency repair on raw text...")
+                return self._repair_json_with_ai(raw_response_text, str(e))
+            return None
+
+    # 🧮 STEP 3: THE CALCULATOR (Python Deterministic Engine)
+
+    def _clean_and_parse_json(self, raw_text):
+        """
+        Pulisce l'output dell'AI cercando il primo '{' e l'ultimo '}'
+        per ignorare testo introduttivo o conclusivo.
+        """
+        try:
+            # 1. Pulizia base
+            text = raw_text.strip()
+
+            # 2. Rimuove i backticks del markdown (es. ```json ... ```)
+            if "```" in text:
+                text = text.split("```")[1]
+                if text.startswith("json"):
+                    text = text[4:]
+
+            # 3. Estrazione Chirurgica: Cerca la prima { e l'ultima }
+            start = text.find('{')
+            end = text.rfind('}')
+
+            if start != -1 and end != -1:
+                text = text[start: end + 1]
+
+            # 4. Parsing
+            return json.loads(text)
+
+        except json.JSONDecodeError as e:
+            print(f"   ⚠️ JSON Parsing Error: {e}")
+            # Debug per vedere cosa ha scritto
+            print(f"   RAW OUTPUT: {raw_text[:100]}...")
+            return None
+
+    def _step_3_the_calculator(self, soldier_data, brain_data, source_name, text):
+        """
+        Role: Pure Math & Multi-Source Aggregation.
+        Calculates Intensity, Reliability (with Cluster Bonus), and Bias (Weighted Average).
+        """
+        print("   🧮 Step 3: The Calculator running physics & multi-source bias engine...")
+
+        # 1. INTENSITY CALCULATION (INVARIATO)
+        t_cat = soldier_data.get("target_category", "UNKNOWN")
+        d_cat = soldier_data.get("infrastructure_damage", "NONE")
+
+        v_target = INTENSITY_DB.get(t_cat, 0.0)
+        m_damage = DAMAGE_MODIFIERS.get(d_cat, 0.1)
+
+        intensity_score = round(v_target * m_damage, 2)
+
+        # 2. SOURCE LOOKUP & AGGREGATION (FIX CHIRURGICO PER LISTE)
+        # Gestisce sia stringa singola (vecchio metodo) che lista (nuovo metodo cluster)
+        if isinstance(source_name, list):
+            sources_to_check = source_name
+        else:
+            sources_to_check = [str(source_name)] if source_name else []
+
+        total_reliability = 0
+        total_bias = 0
+        valid_sources_count = 0
+
+        # Ciclo su tutte le fonti per fare la media
+        for src in sources_to_check:
+            # Normalize source name for DB lookup
+            src_clean = src.lower().strip().replace(
+                'www.', '').replace('https://', '').split('/')[0]
+
+            source_data = self.sources_db.get(src_clean)
+
+            if not source_data:
+                # Fuzzy fallback
+                for k, v in self.sources_db.items():
+                    if k in src_clean:
+                        source_data = v
+                        break
+
+            # Se ancora non trovata, valori default
+            if not source_data:
+                current_rel = 40  # Default Tier D
+                current_bias = 0
+            else:
+                current_rel = source_data.get("reliability", 40)
+                current_bias = source_data.get("bias", 0)
+
+            total_reliability += current_rel
+            total_bias += current_bias
+            valid_sources_count += 1
+
+        # Calcolo Medie (Base Score)
+        if valid_sources_count > 0:
+            avg_base_reliability = total_reliability / valid_sources_count
+            avg_base_bias = total_bias / valid_sources_count
+        else:
+            avg_base_reliability = 40
+            avg_base_bias = 0
+
+        # 3. RELIABILITY CALCULATION (4 Factors)
+        # Factor A: Base Score (Ora usiamo la media calcolata sopra)
+        r_base = avg_base_reliability
+
+        # Factor B: Visual Evidence (+20%) (INVARIATO)
+        r_visual = 20 if soldier_data.get("visual_evidence") else 0
+
+        # Factor C: Semantic Penalty (-25%) (INVARIATO)
+        speculative_words = ["rumor", "unconfirmed",
+                             "allegedly", "possibly", "claimed"]
+        text_lower = text.lower()
+        r_semantic = - \
+            25 if any(w in text_lower for w in speculative_words) else 0
+
+        # Factor D: Corroboration (FIX: Cluster Bonus)
+        # Se c'è più di 1 fonte, diamo un bonus (+10 per ogni fonte extra, max 20)
+        r_corroboration = 0
+        if valid_sources_count > 1:
+            r_corroboration = min(20, (valid_sources_count - 1) * 10)
+
+        final_reliability = max(
+            0, min(100, int(r_base + r_visual + r_semantic + r_corroboration)))
+
+        # 4. BIAS CALCULATION (HBC Formula)
+        # B_base: Source Bias (Ora usiamo la media calcolata sopra)
+        b_base = avg_base_bias
+
+        # S_ai: Brain Estimate (-10 to +10) (INVARIATO)
+        s_ai = brain_data.get("ai_bias_estimate", 0)
+
+        # S_sem: Semantic Keyword Scoring (INVARIATO)
+        s_sem_raw = 0
+        for keyword, score in self.keywords_db.items():
+            val = score.get('score', 0) if isinstance(score, dict) else score
+            if keyword.lower() in text_lower:
+                s_sem_raw += val
+
+        # Clamp S_sem between -10 and 10 for safety
+        s_sem = max(-10, min(10, s_sem_raw))
+
+        # M_rel: Reliability Multiplier (INVARIATO)
+        m_rel = max(0.2, 1.2 - (final_reliability / 100.0))
+
+        # Final Formula (INVARIATO - usa le nuove variabili medie)
+        raw_bias_score = (b_base * 2 * 0.4) + (s_ai * 0.4) + (s_sem * m_rel)
+        final_bias_score = round(max(-10, min(10, raw_bias_score)), 1)
+
+        # Labeling (INVARIATO)
+        if final_bias_score <= -3:
+            dom_bias = "Pro-Russia"
+        elif final_bias_score >= 3:
+            dom_bias = "Pro-Ukraine"
+        else:
+            dom_bias = "Neutral"
+
+        return {
+            "intensity": intensity_score,
+            "reliability": final_reliability,
+            "bias_score": final_bias_score,
+            "dominant_bias": dom_bias
+        }
+
+    # =========================================================================
+    # 📰 STEP 4: THE JOURNALIST (GPT-4o-mini via OpenAI)
+    # =========================================================================
+    def _step_4_the_journalist(self, text, brain_data, soldier_data):
+        """
+        Role: Description & Title.
+        Generates Master English content and translates to Italian.
+        """
+        print("   📰 Step 4: The Journalist (4o-mini) writing bilingual summary...")
+
+        prompt = f"""
+        TASK: You are an OSINT News Editor.
+        1. Write a neutral, concise Title and Description in **ENGLISH** (Master Version).
+        2. Translate them faithfully into **ITALIAN**.
+
+        CONSTRAINTS:
+        - Titles: Max 10 words. Military style (Subject + Action + Location).
+        - Descriptions: Max 100 words. Focus on Facts (Who, What, Where, Damage). No sensationalism.
+        - Translation: Must match the English meaning exactly. Do not add new info in Italian.
+
+        EVENT DATA:
+        - Type: {soldier_data.get('target_category')}
+        - Damage: {soldier_data.get('infrastructure_damage')}
+        - Signal: {brain_data.get('implicit_signal')}
+        - Context: {text[:800]}
 
         OUTPUT JSON:
         {{
-            "new_title": "Titolo Tecnico Militare in Italiano",
-            "description_it": "Riassunto dettagliato e asettico in italiano",
-            "intensity": 0.5,
-            "ai_score": 0, 
-            "actor": "UNK",
-            "location_precision": "CITY",
-            "lat": 0.0,
-            "lon": 0.0,
-            "sources_list": ["url1", "url2"],
-            "has_visual": false,
-            "is_uncertain": false,
-            "num_sources": 1
+            "title_en": "Title in English",
+            "description_en": "Description in English...",
+            "title_it": "Translated Title",
+            "description_it": "Translated Description..."
         }}
         """
         try:
-            response = self.client.chat.completions.create(
+            # 1. Chiamata API
+            response = self.openai_client.chat.completions.create(
                 model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": "Sei un analista esperto. Rilevi sfumature che altri ignorano."},
-                    {"role": "user", "content": prompt}
-                ],
-                response_format={"type": "json_object"},
-                temperature=0.1  # Bassa per rimanere ancorato al testo
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.2
             )
-            return json.loads(response.choices[0].message.content)
+
+            # 2. Parsing Sicuro
+            result_text = response.choices[0].message.content
+            parsed_data = self._clean_and_parse_json(result_text)
+
+            if not parsed_data:
+                print("   ⚠️ Journalist Error: Parsing fallito")
+                return {
+                    "title_en": "Error Processing", "description_en": "N/A",
+                    "title_it": "Errore Elaborazione", "description_it": "N/A"
+                }
+
+            return parsed_data
+
         except Exception as e:
-            print(f"   ❌ Errore Analyst Hat: {e}")
+            print(f"   ❌ Journalist Critical Error: {e}")
+            return {
+                "title_en": "Error Processing", "description_en": "N/A",
+                "title_it": "Errore Elaborazione", "description_it": "N/A"
+            }
+
+    # =========================================================================
+    # 🔄 MAIN PROCESS FLOW
+    # =========================================================================
+    def perform_search(self, query, event_date_str=None):
+        """
+        Motore Google (Serper) con TIME MACHINE BLINDATA.
+        Se la data non è leggibile, ABORTISCE la ricerca per sicurezza.
+        """
+        if not self.serper_api_key:
+            print("   ❌ Errore: SERPER_API_KEY mancante.")
+            return "", "unknown", []
+
+        url = "https://google.serper.dev/search"
+        date_filter = ""
+
+        # --- LOGICA DI SICUREZZA TEMPORALE ---
+        if event_date_str:
+            # 1. Pulizia preliminare della data
+            clean_date = str(event_date_str).strip().replace(
+                '.', '/').replace('-', '/')
+            dt = None
+
+            # 2. Lista estesa di formati per non fallire
+            formats = [
+                '%d/%m/%Y',  # 25/12/2023
+                '%Y/%m/%d',  # 2023/12/25
+                '%d-%m-%Y',  # 25-12-2023
+                '%d/%m/%y',  # 25/12/23
+                '%Y%m%d',    # 20231225
+                '%m/%d/%Y',  # 12/25/2023 (US style)
+                '%d %b %Y'   # 25 Dec 2023
+            ]
+
+            for fmt in formats:
+                try:
+                    dt = datetime.strptime(clean_date, fmt)
+                    break  # Trovato!
+                except ValueError:
+                    continue
+
+            if dt:
+                # DATA VALIDA -> Attivo Time Machine
+                start_date = (dt - timedelta(days=30)).strftime('%Y-%m-%d')
+                end_date = (dt + timedelta(days=30)).strftime('%Y-%m-%d')
+                date_filter = f" after:{start_date} before:{end_date}"
+            else:
+                # DATA INVALIDA -> SAFETY STOP!
+                # Questo impedisce di cercare "a caso" e trovare news sbagliate
+                print(
+                    f"   🛑 DATA ILLEGIBILE: '{event_date_str}' -> BLOCCO RICERCA.")
+                return "", "skipped_bad_date", []
+
+        # Se non c'è proprio la data nel DB (None), è rischioso cercare.
+        # Decommenta le due righe sotto se vuoi bloccare anche questi casi:
+        # else:
+        #     return "", "skipped_no_date", []
+
+        final_query = f"{query}{date_filter}"
+        print(f"   🗓️ Time Machine: '{final_query}'")
+
+        payload = json.dumps({
+            "q": final_query,
+            "num": 10,
+            "gl": "us",      # US per indice globale
+            "hl": "en"       # Inglese per max compatibilità
+        })
+
+        headers = {
+            'X-API-KEY': self.serper_api_key,
+            'Content-Type': 'application/json'
+        }
+
+        try:
+            response = requests.request(
+                "POST", url, headers=headers, data=payload)
+            results = response.json()
+
+            candidates = results.get("news", []) + results.get("organic", [])
+
+            if not candidates:
+                return "", "unknown", []
+
+            text_snippets = []
+            urls = []
+
+            for item in candidates[:5]:
+                link = item.get('link')
+                snippet_date = item.get('date', 'Unknown Date')
+                title = item.get('title', '')
+                body = item.get('snippet', '')
+
+                entry = f"SOURCE: {link}\nGOOGLE_DATE: {snippet_date}\nTITLE: {title}\nTEXT: {body}\n---"
+                text_snippets.append(entry)
+                urls.append(link)
+
+            return "\n".join(text_snippets), (urls[0] if urls else "unknown"), urls
+
+        except Exception as e:
+            print(f"   ❌ Serper Error: {e}")
+            return "", "unknown", []
+
+    # ... (questo è l'ultimo metodo corretto della classe)
+    def parse_date_strict(self, date_str):
+        """
+        Tenta di interpretare la data con ogni formato umanamente possibile.
+        Se fallisce, restituisce None (segnale di STOP).
+        """
+        if not date_str:
             return None
 
-    # =========================================================================
-    # 🔄 PROCESS FLOW
-    # =========================================================================
+        date_str = str(date_str).strip().replace('.', '/').replace('-', '/')
+
+        # Lista estesa dei formati accettati
+        formats = [
+            '%d/%m/%Y',  # 25/12/2023
+            '%Y/%m/%d',  # 2023/12/25
+            '%d/%m/%y',  # 25/12/23
+            '%m/%d/%Y',  # 12/25/2023 (US)
+            '%Y%m%d',    # 20231225
+            '%d %b %Y',  # 25 Dec 2023
+            '%d %B %Y'   # 25 December 2023
+        ]
+
+        for fmt in formats:
+            try:
+                return datetime.strptime(date_str, fmt)
+            except ValueError:
+                continue
+
+        return None
 
     def fetch_url_text(self, url):
-        """Scarica il testo direttamente da un URL esistente."""
+        """Scrape specific URL"""
         try:
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+            headers = {'User-Agent': 'Mozilla/5.0'}
             response = requests.get(url, headers=headers, timeout=10)
             if response.status_code == 200:
                 soup = BeautifulSoup(response.text, 'html.parser')
-                # Prende paragrafi e titoli
-                text = ' '.join([p.get_text()
-                                for p in soup.find_all(['p', 'h1', 'h2', 'h3'])])
-                return text[:5000]  # Limitiamo a 5000 caratteri
-        except Exception as e:
-            print(f"   ⚠️ Impossibile leggere URL fornito: {e}")
+                return ' '.join([p.get_text() for p in soup.find_all(['p', 'h1', 'h2'])])[:6000]
+        except Exception:
+            pass
         return None
 
-    def process_row(self, row):
-        query = row.get('Title') or row.get('Event')
-        if not query:
-            return None
+    # =========================================================================
+    # 🎯 HELPER: CLASSIFICAZIONE TIPO ATTACCO (Priorità Cinetica)
+    # =========================================================================
+    # NOTA: Ho aggiunto l'indentazione qui sotto per farlo rientrare nella classe
+    def _classify_event_type(self, text):
+        """
+        Determina il "Type" basandosi su regex keywords (Priorità Utente).
+        """
+        if not text:
+            return "Unknown"
+        t = text.lower()
 
-        existing_source = str(row.get('Source', '')).strip()
-        raw_text = ""
-        urls = []
-        prim_src = ""
+        # --- PRIORITÀ 1: EVENTI MILITARI CINETICI ---
+        if re.search(r"naval|sea|ship|boat|maritime|vessel", t):
+            return "Naval Engagement"
+        if re.search(r"drone|uav|loitering|kamikaze|quadcopter|unmanned", t):
+            return "Drone Strike"
+        if re.search(r"missile|rocket|ballistic|cruise|himars|mlrs", t):
+            return "Missile Strike"
+        if re.search(r"air|jet|plane|bombing|airstrike|su-", t):
+            return "Airstrike"
+        if re.search(r"artillery|shelling|mortar|howitzer|grad|cannon", t):
+            return "Artillery Shelling"
+        if re.search(r"ied|mine|landmine|vbied|explosion|trap", t):
+            return "IED / Explosion"
+        if re.search(r"clash|firefight|skirmish|ambush|raid|attack|ground|shooting|sniper", t):
+            return "Ground Clash"
 
-        # --- A. BIVIO: FONTE ESISTENTE vs NUOVA RICERCA ---
-        if existing_source and existing_source.startswith('http'):
-            print(f"   🔗 Fonte trovata nel Sheet. Analizzo quella...")
-            # Scarichiamo il contenuto di QUELLA fonte specifica
-            raw_text = self.fetch_url_text(existing_source)
-            if not raw_text:
-                # Se fallisce lo scraping diretto, usiamo il titolo per contesto ma manteniamo la fonte
-                raw_text = f"Evento: {query}. Fonte dichiarata: {existing_source}"
+        # --- PRIORITÀ 2: CONTESTO CIVILE E POLITICO ---
+        if re.search(r"politic|protest|riot|demonstration|diploma|unrest|arrest", t):
+            return "Political / Unrest"
 
-            urls = [existing_source]
-            prim_src = existing_source
-        else:
-            # Nessuna fonte: Cerchiamo sul web
-            raw_text, prim_src, urls = self.perform_search(query)
+        # --- PRIORITÀ 3: CIVIL / ACCIDENT ---
+        if re.search(r"civil|accident|crash|fire|infrastructure|logistics|humanitarian", t):
+            return "Civil / Accident"
 
-        if not raw_text:
-            return None
+        return "Others"
 
-        # --- B. ANALISI AI ---
-        ai_data = self.run_analyst_hat(raw_text, row)
-        if not ai_data:
-            return None
+    # ---------------------------------------------------------
+    # 1. SMART QUERY (La funzione che hai appena modificato)
+    # ---------------------------------------------------------
+    def _generate_event_fingerprints(self, title, location, date_str):
+        """
+        Analizza l'evento per estrarre 'Impronte Digitali' uniche (Fingerprints)
+        invece di keyword generiche.
+        """
+        system_prompt = """
+        You are an elite OSINT Analyst specializing in the Ukraine War (2022-2025).
+        Your goal is to extract SEARCH FINGERPRINTS to find a specific historical event.
 
-        # Estrazione Dati AI
-        ai_score = int(ai_data.get('ai_score', 0))
-        intensity = float(ai_data.get('intensity', 0.5))
-        precision = ai_data.get('location_precision', 'REGION')
-        actor = ai_data.get('actor', 'UNK').upper()
-        desc = ai_data.get('description_it', '')
-        new_title = ai_data.get('new_title', query)
+        DEFINITION:
+        Search fingerprints are highly specific, low-noise elements that uniquely identify an event and survive reposting.
+        They are NOT generic words like "battle", "shelling", or "attack".
+        Focus on:
+        - Units (e.g., "72nd Brigade", "DPR Battalion")
+        - NO: "Battle", "Attack", "War" (Too generic)
+        - YES: "72nd Brigade", "Tochka-U", "Pontoon bridge", "School No. 3", "Mayor Fedorov"
 
-        # Gestione Coordinate (Solo se AI ne trova di nuove E quelle vecchie sono 0)
-        new_lat = ai_data.get('lat', 0)
-        new_lon = ai_data.get('lon', 0)
+        INSTRUCTIONS:
+        1. Extract 5–8 fingerprints maximum.
+        2. Provide them in Ukrainian, Russian, and English.
+        3. Prefer noun phrases over sentences.
+        4. Avoid generic military terminology.
 
-        # --- C. CALCOLO FINALE (HBC) ---
-        final_score, base_reliability = self.calculate_hybrid_bias(
-            prim_src, raw_text, ai_score)
 
-        final_reliability = base_reliability
-        if ai_data.get('has_visual'):
-            final_reliability = min(100, int(final_reliability * 1.15))
-        if ai_data.get('is_uncertain'):
-            final_reliability = int(final_reliability * 0.75)
+        INPUT DATA:
+        Event: {title}
+        Location: {location}
+        Date: {date}
 
-        bias_label = self.get_bias_label(final_score)
-
-        # --- D. OUTPUT CON PROTEZIONE SOVRASCRITTURA ---
-        # La logica è: row.get('Campo') or nuovo_valore
-        # Se row.get('Campo') ha testo, vince lui. Se è vuoto, vince l'AI.
-
-        return {
-            # Se hai già un titolo, tieni il tuo.
-            "Title": row.get('Title') or new_title,
-
-            # Se hai già una fonte, tieni la tua.
-            "Source": row.get('Source') or (urls[0] if urls else ""),
-
-            # Se hai già una descrizione, tieni la tua.
-            "Description": row.get('Description') or desc,
-
-            # Questi spesso li vuoi ricalcolati, ma se li hai messi a mano, li tiene
-            "Intensity": row.get('Intensity') or intensity,
-            "Actor": row.get('Actor') or actor,
-            "Bias dominante": row.get('Bias dominante') or bias_label,
-            "Location Precision": row.get('Location Precision') or precision,
-
-            # Coordinate: Qui è delicato. Se hai 0, usa AI. Se hai valori, usa i tuoi.
-            "Latitude": row.get('Latitude') or (new_lat if new_lat != 0 else 0),
-            "Longitude": row.get('Longitude') or (new_lon if new_lon != 0 else 0),
-
-            # Fonti aggregate: se ne avevi già, le tiene
-            "Aggregated Sources": row.get('Aggregated Sources') or " | ".join(urls[:5]),
-
-            # Reliability e Bias Score: Se sono 0 o vuoti, li calcola l'AI.
-            # (Usiamo 'safe_int' logic implicita: se c'è un valore > 0 nel foglio, lo tiene)
-            "Reliability": row.get('Reliability') or final_reliability,
-            "Bias Score": row.get('Bias Score') or final_score,
-
-            "Verification": "Verified"
+        OUTPUT JSON FORMAT:
+        {
+            "ua": [...],
+            "ru": [...],
+            "en": [...]
         }
-# =============================================================================
-# 🚀 MAIN LOOP (18 COLONNE)
-# =============================================================================
+        """
 
+        user_content = f"Event: {title}\nLocation: {location}\nDate: {date_str}"
 
-# =============================================================================
-# 🚀 MAIN LOOP (LOGICA DI SELEZIONE E AGGIORNAMENTO)
-# =============================================================================
-def main():
-    print("🤖 Avvio AI LDO MORO...")
-
-    # 1. Connessione Google Sheets
-    scope = ['https://www.googleapis.com/auth/spreadsheets',
-             'https://www.googleapis.com/auth/drive']
-    try:
-        creds_path = os.path.join(BASE_DIR, 'service_account.json')
-        if not os.path.exists(creds_path):
-            creds_path = os.path.join(BASE_DIR, '../service_account.json')
-
-        client = gspread.authorize(
-            Credentials.from_service_account_file(creds_path, scopes=scope))
-        sheet = client.open_by_url(SHEET_URL).get_worksheet(0)
-    except Exception as e:
-        print(f"❌ Errore GSheet: {e}")
-        return
-
-    agent = OSINTAgent()
-
-    # 2. Lettura Headers e Mappatura Dinamica
-    headers = sheet.row_values(1)
-
-    def get_col_index(name):
         try:
-            return headers.index(name) + 1
-        except ValueError:
+            response = self.openai_client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_content}
+                ],
+                temperature=0.2,
+                response_format={"type": "json_object"}  # Forza output JSON
+            )
+            return json.loads(response.choices[0].message.content)
+        except Exception as e:
+            print(f"   ⚠️ Fingerprint Error: {e}")
+            # Fallback di emergenza
+            return {"ua": [location], "ru": [location], "en": [location]}
+
+    def build_sniper_query(self, fingerprints_list, date, domain):
+        """
+        Costruisce una query Google Dork precisa: site:domain + "keyword" + "data"
+        """
+        try:
+            # Converte YYYY-MM-DD in "DD Month YYYY" (es. "24 February 2022")
+            # Questo formato è molto più efficace per la ricerca di news
+            date_obj = datetime.strptime(date, "%Y-%m-%d")
+            date_str = date_obj.strftime("%d %B %Y")
+        except Exception as e:
+            # Fallback se la data non è parseabile
+            date_str = date
+
+        # Prende solo le prime 3 keyword per non confondere Google
+        terms = fingerprints_list[:3]
+
+        # Le mette tra virgolette per forzare la corrispondenza esatta
+        quoted = " ".join([f'"{t}"' for t in terms])
+
+        return f'site:{domain} {quoted} "{date_str}"'
+
+    # ---------------------------------------------------------
+    # 2. PROCESS ROW (La funzione principale corretta)
+    # ---------------------------------------------------------
+
+    def process_row(self, row):
+        """ Orchestrates the Super Squad Pipeline with Quality-First Cross-Referencing."""
+
+        # 1. Estrazione Dati Iniziali
+        # Cerchiamo il titolo ovunque, dando priorità alle note ACLED (che sono più descrittive)
+        title = row.get('Title') or row.get('notes') or row.get('Event')
+        if not title:
             return None
 
-    col_map = {
-        'Title': get_col_index('Title'),
-        'Source': get_col_index('Source'),
-        'Verification': get_col_index('Verification'),             # Col 9
-        'Description': get_col_index('Description'),
-        'Intensity': get_col_index('Intensity'),
-        'Actor': get_col_index('Actor'),
-        'Bias dominante': get_col_index('Bias dominante'),
-        'Location Precision': get_col_index('Location Precision'),
-        'Aggregated Sources': get_col_index('Aggregated Sources'),
-        'Reliability': get_col_index('Reliability'),
-        'Bias Score': get_col_index('Bias Score'),                 # Col 19
-        'Latitude': get_col_index('Latitude'),
-        'Longitude': get_col_index('Longitude')
-    }
+        # --- Helper Fallback (Copia questo blocco così com'è) ---
+        def create_fallback_entry(reason):
+            print(f"   ⚠️ Fallback Triggered: {reason}")
+            return {
+                "Title": title,
+                "Date": row.get("Date"),
+                "Type": row.get("Type", "Unknown"),
+                "Location": row.get("Location") or "Unknown",
+                "Latitude": row.get("Latitude", 0.0),
+                "Longitude": row.get("Longitude", 0.0),
+                "Source": row.get("Source") or "Search Failed",
+                "Archived": "No",
+                "Verification": "Unconfirmed",
+                "Description": "",
+                "Notes": f"AUTO-SKIPPED: {reason}",
+                "Video": "No",
+                "Intensity": 0.0,
+                "Actor": row.get("Actor", "Unknown"),
+                "Bias dominante": "Neutral",
+                "Location Precision": "UNKNOWN",
+                "Aggregated Sources": "",
+                "Reliability": 0,
+                "Bias Score": 0
+            }
 
-    if not col_map['Verification']:
-        print("⚠️ ERRORE: Colonna 'Verification' non trovata! Impossibile tracciare il progresso.")
+        print(f"\n🚀 Processing Event: {title[:50]}...")
+
+        # A. SMART QUERY (Generazione Keyword)
+        smart_query_text = self._generate_event_fingerprints(
+            title, row.get('Location', ''), row.get('Date', ''))
+
+        # =====================================================================
+        # NUOVA LOGICA IBRIDA: FINGERPRINTS + SNIPER + ARCHEOLOGO (FIXED)
+        # =====================================================================
+
+        # 1. SETUP DOSSIER & FINGERPRINTS
+        acled_source = row.get('ACLED_Original_Source') or row.get('source')
+        event_ctx = self._init_event_context(row, acled_source)
+
+        # Inizializziamo subito per sicurezza (evita "undefined variable")
+        event_ctx["source_name"] = "Unknown"
+
+        print(f"\n🚀 Investigating: {event_ctx['title'][:50]}...")
+
+        # Generazione Impronte Digitali
+        fingerprints = self._generate_event_fingerprints(
+            event_ctx['title'], event_ctx['location'], event_ctx['date'])
+        print(f"   🔍 Fingerprints (UA): {fingerprints.get('ua', [])}")
+
+        # ---------------------------------------------------------------------
+        # 2. FASE SNIPER (Target: Fonte Originale)
+        # ---------------------------------------------------------------------
+        target_domain = None
+        if acled_source:
+            for name, domain in self.ACLED_SOURCE_MAP.items():
+                if name.lower() in str(acled_source).lower():
+                    target_domain = domain
+                    break
+
+        if target_domain:
+            sniper_query = self.build_sniper_query(
+                fingerprints.get('ua', []),
+                event_ctx['date'],
+                target_domain
+            )
+            print(f"   🎯 Sniper Attempt: {sniper_query}")
+
+            s_text, s_source, s_urls = self.perform_search(
+                sniper_query, event_ctx['date'])
+
+            if s_urls:
+                event_ctx["status"] = "ORIGINAL_FOUND"
+                event_ctx["verification_method"] = "SNIPER"
+                event_ctx["best_link"] = s_urls[0]
+                # Salviamo la fonte trovata!
+                event_ctx["source_name"] = s_source
+                event_ctx["confidence_score"] = 0.95
+                event_ctx["sniper_results"] = s_text
+                print("   ✅ Sniper Hit! Original source confirmed.")
+
+                # ---------------------------------------------------------------------
+        # 3. FASE ARCHEOLOGO (MODIFICATA: Corroborazione FORZATA)
+        # ---------------------------------------------------------------------
+        # ORA ESEGUIAMO SEMPRE QUESTA FASE per popolare "Aggregated Sources",
+        # anche se lo Sniper ha già trovato il link Telegram originale.
+
+        print("   🌍 Activating Archeologist Protocol (Broad Search)...")
+
+        # Assicuriamoci che la lista URL esista
+        if "all_urls" not in event_ctx:
+            event_ctx["all_urls"] = []
+
+        # Costruzione Query
+        ua_keys = " OR ".join(
+            [f'"{k}"' for k in fingerprints.get('ua', [])[:4]])
+        ru_keys = " OR ".join(
+            [f'"{k}"' for k in fingerprints.get('ru', [])[:4]])
+
+        arch_query = f"({ua_keys} OR {ru_keys}) {event_ctx['location']}"
+        arch_query += " (news OR report OR новини OR новости)"
+
+        # Eseguiamo la ricerca
+        a_text, a_source, a_urls = self.perform_search(
+            arch_query, event_ctx['date'])
+
+        # LOGICA DI UNIONE RISULTATI
+        if a_urls:
+            # Aggiungiamo i nuovi URL alla lista esistente
+            event_ctx["all_urls"].extend(a_urls)
+
+            # CASO A: Avevamo già trovato la fonte originale (Sniper Success)
+            if event_ctx["status"] == "ORIGINAL_FOUND":
+                # Upgrade dello status!
+                event_ctx["status"] = "CONFIRMED_MULTI_SOURCE"
+                event_ctx["confidence_score"] = 0.99
+                # Salviamo il testo dell'articolo come fallback se necessario
+                if not event_ctx.get("sniper_results"):
+                    event_ctx["fallback_results"] = a_text
+                print(
+                    f"   ✅ News Corroboration! Added {len(a_urls)} external sources.")
+
+            # CASO B: Non avevamo trovato nulla prima
+            elif event_ctx["status"] == "PENDING":
+                event_ctx["status"] = "CORROBORATED"
+                event_ctx["verification_method"] = "ARCHEOLOGIST"
+                event_ctx["best_link"] = a_urls[0]
+                event_ctx["source_name"] = a_source
+                event_ctx["confidence_score"] = 0.70
+                event_ctx["fallback_results"] = a_text
+                print(f"   ✅ Event Corroborated. Found {len(a_urls)} sources.")
+
+        else:
+            # Se l'archeologo non trova nulla...
+            if event_ctx["status"] == "PENDING":
+                # ...e non avevamo trovato nulla nemmeno prima: ALLORA è perso.
+                event_ctx["status"] = "NOT_FOUND"
+                event_ctx["confidence_score"] = 0.1
+                print("   ❌ Event Lost in Digital Rot.")
+
+        # ---------------------------------------------------------------------
+        # 4. PONTE DI COMPATIBILITÀ & FILTRO INTELLIGENTE FONTI
+        # ---------------------------------------------------------------------
+        if event_ctx["status"] == "NOT_FOUND":
+            return create_fallback_entry("Acled Only (Digital Rot - No web verification)")
+
+        # Assegnazione variabili principali
+        primary_link = event_ctx["best_link"]
+        primary_source = event_ctx["source_name"]
+
+        # --- LOGICA DI FILTRAGGIO AVANZATO PER "AGGREGATED SOURCES" ---
+        raw_urls = event_ctx.get("all_urls", [])
+        final_aggregated_urls = []
+        seen_domains = set()
+
+        # 1. Aggiungiamo sempre il Primary Link (se esiste)
+        if primary_link:
+            final_aggregated_urls.append(primary_link)
+            # Estraiamo il dominio per evitare duplicati dello stesso sito
+            try:
+                from urllib.parse import urlparse
+                domain = urlparse(primary_link).netloc.replace("www.", "")
+                seen_domains.add(domain)
+            except:
+                pass
+
+        # 2. Analizziamo gli altri candidati
+        for url in raw_urls:
+            # Ci fermiamo se abbiamo già 5 fonti valide
+            if len(final_aggregated_urls) >= 5:
+                break
+
+            # Saltiamo se è lo stesso link del primario
+            if url == primary_link:
+                continue
+
+            try:
+                domain = urlparse(url).netloc.replace("www.", "")
+
+                # A. FILTRO DUPLICATI DI DOMINIO
+                # Se abbiamo già una fonte da "pravda.com.ua", magari evitiamo di metterne
+                # altre 3 dello stesso sito per dare varietà.
+                # (Se preferisci averne più dello stesso sito, commenta queste due righe sotto)
+                if domain in seen_domains:
+                    continue
+
+                # B. FILTRO SPAM / IRRILEVANTI (Blacklist al volo)
+                # Scartiamo domini che sappiamo non contenere notizie utili
+                junk_domains = ["facebook.com", "twitter.com",
+                                "instagram.com", "youtube.com", "google.com", "t.me"]
+                if any(junk in domain for junk in junk_domains):
+                    # Eccezione: accettiamo link diretti a post specifici, non home page
+                    if len(url) < 40:  # Link troppo corto = probabilmente homepage inutile
+                        continue
+
+                # C. PROMOZIONE FONTI AFFIDABILI
+                # Se il dominio è nella nostra mappa, è oro colato.
+                is_trusted = False
+                for trusted_name, trusted_domain in self.ACLED_SOURCE_MAP.items():
+                    if trusted_domain in domain:
+                        is_trusted = True
+                        break
+
+                # Se è fidato lo prendiamo subito, altrimenti lo prendiamo ma teniamo d'occhio il limite
+                final_aggregated_urls.append(url)
+                seen_domains.add(domain)
+
+            except Exception:
+                continue  # Se l'URL è malformato, ignoralo
+
+        # Assegnamo la lista pulita alla variabile 'urls'
+        urls = final_aggregated_urls
+
+        # Log di verifica per te
+        if len(urls) > 1:
+            print(
+                f"   📚 Aggregated Sources: {len(urls)} links selected (Filtered from {len(raw_urls)})")
+
+        # Recuperiamo il testo per il Deep Verify (snippet di ricerca)
+        search_text = event_ctx.get("sniper_results") or event_ctx.get(
+            "fallback_results") or ""
+
+        # Scarichiamo contenuto SOLO del link migliore (Primary)
+        # Nota: Non facciamo scraping degli altri 4 per non rallentare l'agente del 500%
+        deep_content = ""
+        if primary_link:
+            print(f"   🕵️ Deep Verifying Best Source: {primary_link}...")
+            deep_content = self.fetch_url_text(primary_link)
+            if deep_content:
+                deep_content = f"=== VERIFIED CONTENT ({event_ctx['verification_method']}) ===\n{deep_content[:15000]}"
+
+        # D. COSTRUZIONE CONTESTO
+        combined_text = f"""
+        === ACLED SOURCE NOTES ===
+        {title}
+
+        {deep_content}
+
+        === WEB SEARCH CONTEXT (SNIPPETS) ===
+        {search_text[:3000]}
+        """
+
+        # 2. RUN PIPELINE
+        # Step 1: Brain (Now analyzes the hybrid context)
+        brain_out = self._step_1_the_brain(
+            combined_text, {"Title": title, "Date": row.get("Date")})
+
+        # --- MODIFICA 3: Sostituisci i controlli su brain_out ---
+        if not brain_out:
+            return create_fallback_entry("AI Analysis Failed (Brain Error)")
+
+        if not brain_out.get("is_relevant", True):
+            return create_fallback_entry("Deemed Irrelevant by AI")
+
+        # Step 2: Soldier v2.0 (New Protocol)
+        # Adattiamo i dati della singola riga al formato "Cluster" richiesto dal nuovo prompt
+        soldier_input_packet = {
+            "reference_timestamp": row.get("Date"),
+            # Passiamo il testo combinato come unico messaggio del "cluster"
+            "raw_messages": [combined_text]
+        }
+
+        soldier_out = self._step_2_the_soldier(soldier_input_packet)
+
+        if not soldier_out:
+            return create_fallback_entry("Data Extraction Failed (Soldier Error)")
+
+        # Step 3: Calculator (Passiamo la LISTA delle fonti se disponibile, altrimenti stringa singola)
+        sources_for_calc = row.get("sources_list_for_bias") or primary_source
+
+        calc_out = self._step_3_the_calculator(
+            soldier_out, brain_out, sources_for_calc, combined_text)
+
+        # Step 4: Journalist
+        journo_out = self._step_4_the_journalist(
+            combined_text, brain_out, soldier_out)
+
+        # 3. FORMAT FINAL OUTPUT
+        # Unisce tutte le URL trovate
+        all_sources_list = list(set([u for u in urls if u]))
+        aggregated_sources_str = " | ".join(all_sources_list)
+
+        # --- CALCOLO TIPO EVENTO ---
+        computed_event_type = self._classify_event_type(combined_text)
+
+        # --- FUNZIONE HELPER ANTI-SOVRASCRITTURA ---
+        def keep_or_update(key, new_val):
+            current = str(row.get(key, '')).strip()
+            if current and current not in ['0', '0.0', 'None', '']:
+                return row.get(key)
+            return new_val
+
+        # --- CORREZIONE VARIABILI ---
+        # 1. Recuperiamo il tipo dall'AI (soldier_out ha target_category)
+        # Nota: soldier_out viene da Qwen, journo_out da GPT.
+
+        # Usiamo soldier_out per i dati tecnici
+        ai_type = soldier_out.get("target_category", "Unknown")
+
+        # Se Qwen fallisce, fallback alla regex
+        if ai_type == "Unknown" or ai_type not in self.EVENT_TYPES:
+            # Usa combined_text, non raw_text_full
+            ai_type = self._classify_event_type(combined_text)
+
+        # 2. Status Finale
+        final_verif = "Unconfirmed"
+        if event_ctx["status"] == "CONFIRMED_MULTI_SOURCE":
+            final_verif = "Confirmed"
+        elif event_ctx["status"] == "ORIGINAL_FOUND":
+            final_verif = "Verified (Source Linked)"
+        elif event_ctx["status"] == "CORROBORATED":
+            final_verif = "Corroborated"
+
+        # 3. Costruzione output usando i dizionari corretti (journo_out, soldier_out, calc_out)
+        return {
+            # Usa journo_out, fallback al titolo originale
+            "Title": journo_out.get("title", title),
+            "Type": ai_type,
+            "Date": row.get("Date"),
+            "Location": row.get("Location"),
+            "Latitude": soldier_out.get("lat") if soldier_out.get("lat") not in [0, 0.0, None] else row.get("Latitude", 0.0),
+            "Longitude": soldier_out.get("lon") if soldier_out.get("lon") not in [0, 0.0, None] else row.get("Longitude", 0.0),
+            "Source": event_ctx.get("best_link") or row.get("Source"),
+            "Archived": "No",
+            "Verification": final_verif,
+            "Description": journo_out.get("description", ""),
+            "Notes": f"Strategy: {event_ctx['verification_method']} | Bias: {calc_out['bias_score']}",
+            "Video": "Yes" if soldier_out.get("visual_evidence") else "No",
+            "Intensity": str(calc_out.get("intensity", 0.0)),
+            "Actor": brain_out.get("actor", "Unknown"),  # Preso dal Brain
+            "Bias dominante": calc_out.get("dominant_bias", "Neutral"),
+            "Location Precision": soldier_out.get("location_precision", "UNKNOWN"),
+            "Aggregated Sources": row.get("aggregated_log") or aggregated_sources_str,
+            "Reliability": str(calc_out.get("reliability", 0)),
+            "Bias Score": str(calc_out.get("bias_score", 0))
+        }
+
+
+# =============================================================================
+# 🚀 NEW MAIN LOOP: SQLITE ENGINE (Fase 4 Ready)
+# =============================================================================
+
+DB_PATH = os.path.join(BASE_DIR, '../war_tracker_v2/data/raw_events.db')
+
+
+def main():
+    print("🤖 STARTING SUPER SQUAD AGENT (SQLite Mode)...")
+
+    # 1. Connessione al DB
+    if not os.path.exists(DB_PATH):
+        print(f"❌ Database non trovato: {DB_PATH}")
+        print("   Esegui prima 'scripts/refiner.py' per popolare il DB!")
         return
 
-    # 3. Selezione Righe da Processare
-    data = sheet.get_all_records()
-    rows_to_process = []
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    # [MODIFICA 1] Controllo/Creazione colonna per salvare il report AI
+    try:
+        cursor.execute("ALTER TABLE events ADD COLUMN ai_report_json TEXT")
+        conn.commit()
+        print("✅ Colonna 'ai_report_json' aggiunta al DB.")
+    except sqlite3.OperationalError:
+        pass  # La colonna esiste già, tutto ok.
 
-    print("🔍 Cerco le righe non ancora verificate...")
+    agent = SuperSquadAgent()
 
-    for i, row in enumerate(data):
-        # Normalizziamo il valore di Verification (toglie spazi e mette minuscolo)
-        verification_status = str(row.get('Verification', '')).strip().lower()
+    # 2. Recupero Cluster Pendenti
+    print("🔍 Lettura cluster pendenti da SQLite...")
 
-        # LOGICA DI SALTO:
-        # Se c'è scritto "verified", SALTALA.
-        # Se è vuota o c'è scritto altro (es. "pending"), PROCESSALA.
-        if verification_status == 'verified':
-            continue
+    try:
+        print("🔍 Lettura cluster pendenti da SQLite...")
 
-        # Se manca il titolo, saltiamo a prescindere (riga vuota)
-        if not row.get('Title') and not row.get('Event'):
-            continue
+        # --- QUERY DI SELEZIONE (Test Mode: 100 eventi) ---
+        cursor.execute("""
+            SELECT event_id, full_text_dossier, last_seen_date
+            FROM unique_events
+            WHERE ai_analysis_status = 'PENDING'
+            ORDER BY last_seen_date DESC
+            LIMIT 100
+        """)
 
-        # Aggiungiamo alla lista delle cose da fare
-        rows_to_process.append((i + 2, row))
+        clusters_to_process = cursor.fetchall()
 
-    BATCH_SIZE = 1400
-    print(f"📋 Trovate {len(rows_to_process)} righe da fare. Inizio...")
+    except Exception as e:
+        print(f"⚠️ Errore SQL: {e}")
+        return
 
-    # 4. Elaborazione Batch
-    for row_idx, row_data in rows_to_process[:BATCH_SIZE]:
+    if not clusters_to_process:
+        print("✅ Nessun nuovo cluster da processare (Tutto aggiornato).")
+        conn.close()
+        return
+
+    print(f"🚀 Trovati {len(clusters_to_process)} cluster da analizzare.")
+
+    # 3. Elaborazione Sequenziale (Architecture: Soldier First -> Brain Verify)
+    for row in clusters_to_process:
+        cluster_id = row['event_id']
+        ref_date = row['last_seen_date']
+
+        text_content = row['full_text_dossier'] if row['full_text_dossier'] else ""
+
+        all_msgs_raw = text_content.split(' ||| ')
+
+        # --- ✂️ HYBRID SMART SLICER (Telegram + GDELT) ---
+        # Ottimizza costi e attenzione: taglia articoli lunghi, rimuove duplicati, limita quantità.
+
+        selected_msgs = []
+        current_total_chars = 0
+
+        # PARAMETRI DI SICUREZZA
+        MAX_ITEMS = 12              # Max numero di fonti (Telegram o Articoli)
+        # Tronca singolo articolo GDELT (prendiamo solo l'inizio)
+        MAX_CHARS_PER_ITEM = 3000
+        MAX_TOTAL_CHARS = 25000     # Tetto massimo totale input (~6000 token)
+
+        seen_hashes = set()  # Per deduplicazione esatta
+
+        for msg in all_msgs_raw:
+            msg = msg.strip()
+            if not msg:
+                continue
+
+            # Deduplicazione (evita di pagare 2 volte per lo stesso testo identico)
+            msg_hash = hash(msg)
+            if msg_hash in seen_hashes:
+                continue
+            seen_hashes.add(msg_hash)
+
+            # Troncamento Intelligente (Per articoli GDELT infiniti)
+            # Se supera il limite, prendiamo solo la testa (dove c'è la notizia)
+            if len(msg) > MAX_CHARS_PER_ITEM:
+                msg = msg[:MAX_CHARS_PER_ITEM] + "... [TRUNCATED]"
+
+            # Controllo Budget Totale (Se il secchio è pieno, ci fermiamo)
+            if current_total_chars + len(msg) > MAX_TOTAL_CHARS:
+                break
+
+            selected_msgs.append(msg)
+            current_total_chars += len(msg)
+
+            # Stop se abbiamo raggiunto il numero massimo di fonti
+            if len(selected_msgs) >= MAX_ITEMS:
+                break
+
+        # Aggiorniamo la variabile per il log
+        raw_msgs = selected_msgs
+
+        print(f"\n⚡ Processing Cluster ID: {cluster_id}")
         print(
-            f"\n⚙️ Riga #{row_idx}: {row_data.get('Title') or 'No Title'}...")
+            f"   📉 Optimization: {len(all_msgs_raw)} sources -> {len(raw_msgs)} selected (Len: {current_total_chars} chars)")
+
+        # Creazione testo unico per l'AI
+        combined_text = "\n".join(raw_msgs)
+
+        # --- STEP 1: THE SOLDIER (Extraction) ---
+        # Qwen legge tutto e prova a estrarre.
+        cluster_data = {
+            "reference_timestamp": ref_date,
+            "raw_messages": raw_msgs
+        }
+
+        soldier_result = None
+        try:
+            soldier_result = agent._step_2_the_soldier(cluster_data)
+        except Exception as e:
+            print(f"   ⚠️ Soldier Stumbled: {e}")
+
+        # LOGICA FALLBACK: Se il soldato fallisce o non trova nulla,
+        # NON saltiamo. Passiamo un pacchetto vuoto al Brain così può provare a "salvare" la notizia.
+        if not soldier_result:
+            print("   ⏩ Soldier empty/failed. Escalating to Brain for recovery...")
+            soldier_result = {"status": "FAILED_EXTRACTION"}
+
+        # --- STEP 2: THE BRAIN (Verification & Recovery) ---
+        metadata_for_judge = {
+            "Target Date": ref_date,
+            "Soldier_Extraction": soldier_result
+        }
 
         try:
-            result = agent.process_row(row_data)
+            brain_review = agent._step_1_the_brain(
+                combined_text, metadata_for_judge)
 
-            if result:
-                print(f"   💾 Scrivo dati e timbro 'Verified'...")
+            # IL FILTRO VERO: Se il Brain dice che è spam/irrelevante, buttiamo tutto.
+            if not brain_review.get('verification_status', False):
+                reason = brain_review.get('rejection_reason', 'Unknown')
+                print(f"   ⛔ Brain Invalidated Event: {reason}")
+                # TODO: Segnare come processato (scartato)
+                # cursor.execute("UPDATE events SET processed = -1 WHERE cluster_id = ?", (cluster_id,))
+                # conn.commit()
+                continue
 
-                # Scrittura Cella per Cella (inclusa Verification)
-                for key, value in result.items():
-                    if key in col_map and col_map[key] is not None:
-                        col_idx = col_map[key]
-                        if isinstance(value, list):
-                            value = str(value)
+            print(
+                f"   🧠 Brain Verified. Signal: {brain_review['verified_data'].get('implicit_signal')}")
+            if brain_review.get("correction_notes"):
+                print(
+                    f"   🔧 Correction Applied: {brain_review.get('correction_notes')}")
 
-                        safe_update(sheet, row_idx, col_idx, value)
+            # --- STEP 3: CALCULATOR ---
+            # Usiamo i dati validati. Se il soldato aveva fallito, usiamo soldier_result (che è dummy)
+            # ma il Calculator lavora sul testo, quindi funzionerà comunque per il bias/intensity.
+            calc_result = agent._step_3_the_calculator(
+                soldier_data=soldier_result if soldier_result.get(
+                    "status") != "FAILED_EXTRACTION" else {},
+                brain_data=brain_review['verified_data'],
+                source_name="Cluster Aggregated",
+                text=combined_text
+            )
 
-                print(f"   ✅ Riga {row_idx} completata e verificata.")
+            # --- STEP 4: JOURNALIST ---
+            journo_result = agent._step_4_the_journalist(
+                text=combined_text,
+                brain_data=brain_review['verified_data'],
+                soldier_data=soldier_result
+            )
+
+            # --- E. GOLDEN RECORD ---
+            final_report = {
+                "cluster_id": cluster_id,
+                "timestamp_generated": datetime.now().isoformat(),
+                "status": "VERIFIED",
+                # Contiene i dati corretti dal Brain
+                "strategy": brain_review['verified_data'],
+                # Dati grezzi del soldato (potrebbero essere null o errati)
+                "tactics": soldier_result,
+                "scores": calc_result,
+                "editorial": journo_result
+            }
+
+            print("   ✅ Intelligence Extracted & Verified:")
+            # print(json.dumps(final_report, indent=2, ensure_ascii=False)) # Commentiamo per pulire il log
+
+            # [MODIFICA 2] SALVATAGGIO PERSISTENTE
+            try:
+                # Serializziamo il dizionario in una stringa JSON
+                report_text = json.dumps(final_report, ensure_ascii=False)
+
+                # Scriviamo nel DB
+                cursor.execute("""
+                    UPDATE unique_events 
+                    SET ai_report_json = ?, 
+                    ai_analysis_status = 'COMPLETED'
+                    WHERE event_id = ?
+                    """, (json.dumps(final_report), cluster_id))
+
+                conn.commit()
+                print("   💾 Salvataggio nel DB completato (Golden Record Saved).")
+
+            except Exception as save_err:
+                print(f"   ❌ ERRORE SALVATAGGIO DB: {save_err}")
 
         except Exception as e:
-            print(f"   ⚠️ Errore riga {row_idx}: {e}")
+            print(f"   ⚠️ Error processing cluster {cluster_id}: {e}")
 
-    print("\n🏁 Batch completato.")
+    conn.close()
+    print("\n🏁 Sessione conclusa.")
 
 
 if __name__ == "__main__":

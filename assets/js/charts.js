@@ -84,6 +84,8 @@ function executeFilter() {
     }
 
     const filtered = ORIGINAL_DATA.filter(e => {
+        const norm = getNormalizedType(e.type);
+        if (norm !== type) return false;
         if (startTs && e.timestamp < startTs) return false;
         if (endTs && e.timestamp > endTs) return false;
         if (type && e.type !== type) return false;
@@ -254,27 +256,38 @@ function showIntelDetail(e) {
     `;
 }
 
-// --- HELPER: NORMALIZZAZIONE CATEGORIE MILITARI ---
+// --- HELPER: NORMALIZZAZIONE CATEGORIE (Militari + Civili) ---
 function getNormalizedType(rawType) {
     if (!rawType) return null;
     const t = rawType.toLowerCase();
 
-    // 1. NAVAL ENGAGEMENT
-    if (t.match(/naval|sea|ship|boat|maritime|vessel/)) return "NAVAL ENGAGEMENT";
-    // 2. DRONE STRIKE
-    if (t.match(/drone|uav|loitering|kamikaze|quadcopter|unmanned/)) return "DRONE STRIKE";
-    // 3. MISSILE STRIKE
-    if (t.match(/missile|rocket|ballistic|cruise|himars|mlrs/)) return "MISSILE STRIKE";
-    // 4. AIRSTRIKE
-    if (t.match(/air|jet|plane|bombing|airstrike|su-/)) return "AIRSTRIKE";
-    // 5. ARTILLERY SHELLING
-    if (t.match(/artillery|shelling|mortar|howitzer|grad|cannon/)) return "ARTILLERY SHELLING";
-    // 6. IED / EXPLOSION
-    if (t.match(/ied|mine|landmine|vbied|explosion|trap/)) return "IED / EXPLOSION";
-    // 7. GROUND CLASH
-    if (t.match(/clash|firefight|skirmish|ambush|raid|attack|ground|shooting|sniper/)) return "GROUND CLASH";
+    // --- PRIORITÀ 1: EVENTI MILITARI CINETICI ---
 
-    return null; // Scarta tutto il resto (Politica, Proteste, etc.)
+    // 1. NAVAL ENGAGEMENT
+    if (t.match(/naval|sea|ship|boat|maritime|vessel/)) return "Naval Engagement";
+    // 2. DRONE STRIKE
+    if (t.match(/drone|uav|loitering|kamikaze|quadcopter|unmanned/)) return "Drone Strike";
+    // 3. MISSILE STRIKE
+    if (t.match(/missile|rocket|ballistic|cruise|himars|mlrs/)) return "Missile Strike";
+    // 4. AIRSTRIKE
+    if (t.match(/air|jet|plane|bombing|airstrike|su-/)) return "Airstrike";
+    // 5. ARTILLERY SHELLING
+    if (t.match(/artillery|shelling|mortar|howitzer|grad|cannon/)) return "Artillery Shelling";
+    // 6. IED / EXPLOSION
+    if (t.match(/ied|mine|landmine|vbied|explosion|trap/)) return "IED / Explosion";
+    // 7. GROUND CLASH (Include 'firefight')
+    if (t.match(/clash|firefight|skirmish|ambush|raid|attack|ground|shooting|sniper/)) return "Ground Clash";
+
+    // --- PRIORITÀ 2: CONTESTO CIVILE E POLITICO ---
+
+    // 8. POLITICAL / UNREST (Proteste, Politica, Diplomazia)
+    if (t.match(/politic|protest|riot|demonstration|diploma|unrest|arrest/)) return "Political / Unrest";
+
+    // 9. CIVIL / ACCIDENT (Incidenti, Incendi generici, Infrastrutture)
+    // Nota: Messo per ultimo per evitare che 'fire' (incendio) catturi 'firefight' (combattimento)
+    if (t.match(/civil|accident|crash|fire|infrastructure|logistics|humanitarian/)) return "Civil / Accident";
+
+    return null; // Scarta tutto il resto
 }
 
 
@@ -286,11 +299,14 @@ function renderTypeChart(data) {
     if (!ctx) return;
 
     const counts = {};
+
+    // Definiamo cosa ESCLUDERE dai grafici statistici
+    const EXCLUDED_FROM_CHARTS = ['POLITICAL / UNREST', 'CIVIL / ACCIDENT'];
+
     data.forEach(e => {
-        // Usa la normalizzazione
         const cleanType = getNormalizedType(e.type);
-        // Se è una categoria militare valida, contala
-        if (cleanType) {
+        // Conta solo se è valido E se non è nella lista nera
+        if (cleanType && !EXCLUDED_FROM_CHARTS.includes(cleanType)) {
             counts[cleanType] = (counts[cleanType] || 0) + 1;
         }
     });
@@ -320,21 +336,23 @@ function renderTypeChart(data) {
         }
     });
 }
+
 function renderRadarChart(data) {
     const ctx = document.getElementById('intensityRadarChart');
     if (!ctx) return;
 
-    // Se non ci sono dati, resetta
     if (data.length === 0) {
         if (charts.radar) charts.radar.destroy();
         return;
     }
 
     const stats = {};
+    const EXCLUDED_FROM_CHARTS = ['POLITICAL / UNREST', 'CIVIL / ACCIDENT'];
+
     data.forEach(e => {
         const cleanType = getNormalizedType(e.type);
-        // Considera solo categorie militari valide
-        if (cleanType) {
+        // Filtra via categorie non militari per il calcolo intensità
+        if (cleanType && !EXCLUDED_FROM_CHARTS.includes(cleanType)) {
             if (!stats[cleanType]) stats[cleanType] = { sum: 0, count: 0 };
             stats[cleanType].sum += e._intensityNorm;
             stats[cleanType].count++;
@@ -377,15 +395,26 @@ function renderRadarChart(data) {
 function populateFilters(data) {
     const select = document.getElementById('chartTypeFilter');
     if (!select) return;
+
     const currentVal = select.value;
     select.innerHTML = '<option value="">Tutte le categorie</option>';
 
-    // Nota: qui continuiamo a mostrare i tipi originali per il filtro, come da logica originale
-    const types = [...new Set(data.map(e => e.type))].filter(t => t).sort();
-    types.forEach(t => {
+    const uniqueTypes = new Set();
+
+    data.forEach(e => {
+        const norm = getNormalizedType(e.type);
+        // Qui accettiamo TUTTO ciò che è normalizzato (quindi anche Civil e Political)
+        // perché nel filtro vogliamo poterli selezionare
+        if (norm) {
+            uniqueTypes.add(norm);
+        }
+    });
+
+    // Ordina e crea le opzioni
+    const sortedTypes = [...uniqueTypes].sort();
+    sortedTypes.forEach(t => {
         select.innerHTML += `<option value="${t}">${t}</option>`;
     });
+
     select.value = currentVal;
 }
-
-function populateFilters(data) { const select = document.getElementById('chartTypeFilter'); if (!select) return; const currentVal = select.value; select.innerHTML = '<option value="">Tutte le categorie</option>'; const types = [...new Set(data.map(e => e.type))].filter(t => t).sort(); types.forEach(t => { select.innerHTML += `<option value="${t}">${t}</option>`; }); select.value = currentVal; }

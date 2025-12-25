@@ -443,7 +443,18 @@
             // Normalizziamo la data per la visualizzazione
             date: m.isValid() ? m.format("DD/MM/YYYY") : props.date
           };
-        }).sort((a, b) => b.timestamp - a.timestamp); // Ordine decrescente
+        })
+          // MODIFICA: Filtro "Spazzatura" Frontend
+          .filter(e => {
+            // Esclude se coordinate sono 0
+            if (!e.lat || !e.lon || e.lat === 0 || e.lon === 0) return false;
+
+            // Esclude se Intensity è 0 (o null)
+            if (!e.intensity || parseFloat(e.intensity) === 0) return false;
+
+            return true;
+          })
+          .sort((a, b) => b.timestamp - a.timestamp); // Ordine decrescente
 
         console.log(`✅ Events processed: ${window.globalEvents.length}`);
 
