@@ -437,10 +437,13 @@
 
           return {
             ...props,
+            // --- FIX CRITICO: UNIFICAZIONE ID ---
+            // Se esiste cluster_id, usalo come event_id. Questo ripara il tasto Dossier.
+            event_id: props.event_id || props.cluster_id || props.id,
+            // ------------------------------------
             lat: f.geometry ? f.geometry.coordinates[1] : props.lat,
             lon: f.geometry ? f.geometry.coordinates[0] : props.lon,
             timestamp: ts,
-            // Normalizziamo la data per la visualizzazione
             date: m.isValid() ? m.format("DD/MM/YYYY") : props.date
           };
         })
@@ -676,32 +679,17 @@
     console.log("Tentativo apertura dossier:", eventIdOrObj);
     let eventData = null;
 
-    // 1. Logica Ibrida per trovare l'evento
     if (typeof eventIdOrObj === 'string') {
-      // Caso A: Oggetto JSON codificato (usato nella Visual Grid)
       if (eventIdOrObj.startsWith('%7B') || eventIdOrObj.startsWith('{')) {
-        try {
-          eventData = JSON.parse(decodeURIComponent(eventIdOrObj));
-        } catch (err) {
-          console.error("Errore parsing JSON dossier:", err);
-        }
-      }
-      // Caso B: ID Stringa/Numero (usato nel Popup Mappa)
-      else {
+        try { eventData = JSON.parse(decodeURIComponent(eventIdOrObj)); } catch (err) { }
+      } else {
+        // FIX: Confronto robusto (converte tutto a stringa)
         if (window.globalEvents) {
-          // --- FIX CRITICO QUI ---
-          // 1. Convertiamo tutto a String per evitare errori "123" !== 123
-          // 2. Cerchiamo sia su 'event_id' che su 'id' per robustezza
           const searchId = String(eventIdOrObj);
-
-          eventData = window.globalEvents.find(evt =>
-            String(evt.event_id) === searchId ||
-            String(evt.id) === searchId
-          );
+          eventData = window.globalEvents.find(evt => String(evt.event_id) === searchId);
         }
       }
     } else {
-      // Caso C: Passato direttamente come oggetto
       eventData = eventIdOrObj;
     }
 
