@@ -29,35 +29,61 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SOURCES_DB_PATH = os.path.join(BASE_DIR, '../assets/data/sources_db.json')
 KEYWORDS_DB_PATH = os.path.join(BASE_DIR, '../assets/data/keywords_db.json')
 
-# --- PROTOCOL CONSTANTS (HARDCODED) ---
+# --- PROTOCOL CONSTANTS (ELASTIC MODE) ---
+# LOGICA: Il valore base è l'importanza STRATEGICA.
+# Per arrivare a 1.0 (Massimo), serve un danno CRITICAL (x1.5).
+# Esempio: Airbase (0.7) * Critical (1.5) = 1.05 -> 1.0
+# Esempio: Airbase (0.7) * Light (0.5) = 0.35 (Corretto per scaramucce)
+
 INTENSITY_DB = {
-    # TIER A (1.0) - Existential
-    "CRITICAL_NUCLEAR": 1.0, "CRITICAL_DAM": 1.0,
-    # TIER B (0.75 - 0.9) - Strategic
-    "IND_DEFENSE_PLANT": 0.9, "MIL_AIRBASE": 0.9,
-    "MIL_AIR_DEFENSE_LONG": 0.85, "MIL_SHIP": 0.85, "INFRA_STRATEGIC_BRIDGE": 0.85,
-    "INFRA_REFINERY": 0.8, "MIL_EW_RADAR": 0.8, "INFRA_GENERATION": 0.8,
-    "MIL_AMMO_DEPOT": 0.75, "MIL_MLRS_STRATEGIC": 0.75,
-    # TIER C (0.45 - 0.55) - Operational
-    "MIL_HQ": 0.55, "MIL_AIR_DEFENSE_SHORT": 0.55,
-    "MIL_ARTILLERY": 0.5, "MIL_APC_TANK": 0.5, "MIL_MLRS_TACTICAL": 0.5,
-    "INFRA_FUEL_DEPOT": 0.45, "IND_FACTORY": 0.45,
-    # TIER D (0.3 - 0.35) - Tactical/Logistics
-    "INFRA_LOGISTICS": 0.35, "INFRA_GRID_LOCAL": 0.35,
-    "MIL_TRENCH": 0.3, "MIL_VEHICLE_LIGHT": 0.3, "MIL_PERSONNEL_OPEN": 0.3,
-    # TIER E (0.05 - 0.2) - Civilian/Low
-    "CIV_PUBLIC": 0.2, "CIV_COMMERCIAL": 0.2, "CIV_RESIDENTIAL": 0.2,
-    "OPEN_FIELD": 0.1, "UNKNOWN": 0.2
+    # TIER A (0.8 - 1.0) - Esistenziali (Solo questi partono altissimi)
+    "CRITICAL_NUCLEAR": 1.0,  # Se succede, è la fine. Base 1.0.
+    "CRITICAL_DAM": 0.9,      # Disastro ambientale immediato.
+
+    # TIER B (0.6 - 0.75) - Strategici (Richiedono danno serio per diventare Rossi)
+    "MIL_AIRBASE": 0.7,             # Era 1.0 -> Ora serve distruggerla per avere 1.0
+    "IND_DEFENSE_PLANT": 0.7,
+    "INFRA_STRATEGIC_BRIDGE": 0.7,  # Es. Ponte di Crimea
+    "MIL_SHIP": 0.7,                # Incrociatore
+    "INFRA_REFINERY": 0.65,
+    "MIL_EW_RADAR": 0.65,
+    "INFRA_GENERATION": 0.65,       # Centrali elettriche
+
+    # TIER C (0.4 - 0.55) - Operativi (Importanti ma rimpiazzabili)
+    "MIL_AMMO_DEPOT": 0.55,
+    "MIL_MLRS_STRATEGIC": 0.55,     # HIMARS / Patriot
+    "MIL_HQ": 0.5,
+    "MIL_AIR_DEFENSE_LONG": 0.5,    # S-300/400
+    "INFRA_FUEL_DEPOT": 0.45,
+
+    # TIER D (0.25 - 0.35) - Tattici (Il grosso della guerra)
+    "MIL_ARTILLERY": 0.35,
+    "MIL_APC_TANK": 0.35,
+    "MIL_MLRS_TACTICAL": 0.35,      # Grad
+    "IND_FACTORY": 0.3,
+    "MIL_AIR_DEFENSE_SHORT": 0.3,   # Strela / Manpads
+    "INFRA_LOGISTICS": 0.25,        # Magazzini generici
+
+    # TIER E (0.05 - 0.2) - Minori / Civili
+    "INFRA_GRID_LOCAL": 0.2,        # Cabina elettrica di quartiere
+    "MIL_VEHICLE_LIGHT": 0.15,      # Jeep / Camion
+    "MIL_TRENCH": 0.1,              # Posizione di fanteria
+    "MIL_PERSONNEL_OPEN": 0.1,      # Fanteria allo scoperto
+    "CIV_PUBLIC": 0.1,
+    "CIV_COMMERCIAL": 0.1,
+    "CIV_RESIDENTIAL": 0.1,
+    "OPEN_FIELD": 0.05,
+    "UNKNOWN": 0.0
 }
 
 DAMAGE_MODIFIERS = {
-    "CRITICAL": 1.5,  # Distruzione totale -> Aumenta il valore del 50%
-    "HEAVY": 1.2,     # Danni gravi -> Aumenta il valore del 20%
-    "LIGHT": 0.8,     # Danni lievi -> Riduce il valore del 20%
-    "NONE": 0.1,      # Intercettato/Nessun danno -> Riduce del 90%
-    "UNKNOWN": 1.0    # Nessuna info -> Lascia il valore base intatto
+    "CRITICAL": 1.5,  # DISTRUTTO: Boost per raggiungere 1.0
+    "HEAVY": 1.2,     # DANNI SERI: Boost moderato
+    # DANNI LIEVI: Dimezza il valore (Cruciale per le scaramucce!)
+    "LIGHT": 0.5,
+    "NONE": 0.0,      # NESSUN DANNO
+    "UNKNOWN": 0.5    # INCERTO: Dimezza (Meglio sottostimare che allarmare)
 }
-
 # --- SYSTEM PROMPTS ---
 
 SOLDIER_SYSTEM_PROMPT = """
@@ -1764,8 +1790,8 @@ def main():
 
                 # Scriviamo nel DB
                 cursor.execute("""
-                    UPDATE unique_events 
-                    SET ai_report_json = ?, 
+                    UPDATE unique_events
+                    SET ai_report_json = ?,
                     ai_analysis_status = 'COMPLETED'
                     WHERE event_id = ?
                     """, (json.dumps(final_report), cluster_id))

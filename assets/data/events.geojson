@@ -48,7 +48,7 @@
         "type": "Defending Ukrainian positions during breakthrough at Azovstal",
         "actor": "UKR",
         "reliability": 40,
-        "intensity": 0.83,
+        "intensity": 0.3,
         "sources": [
           {
             "name": "MAKS23_NAFO",
@@ -216,7 +216,7 @@
         "type": "Decapitation strike against high-ranking military official to disrupt operational planning.",
         "actor": "RUS",
         "reliability": 40,
-        "intensity": 0.83,
+        "intensity": 0.7,
         "sources": [
           {
             "name": "MAKS23_NAFO",
@@ -300,7 +300,7 @@
         "type": "Targeting high-value military equipment to degrade enemy capabilities",
         "actor": "RUS",
         "reliability": 40,
-        "intensity": 1.0,
+        "intensity": 0.6,
         "sources": [
           {
             "name": "rybar",
@@ -328,7 +328,7 @@
         "type": "Advancing towards Grafskoye and Pechenezhskoye Reservoir to disrupt Ukrainian supply lines.",
         "actor": "RUS",
         "reliability": 40,
-        "intensity": 1.0,
+        "intensity": 0.6,
         "sources": [
           {
             "name": "rybar",
@@ -356,7 +356,7 @@
         "type": "Logistics disruption through wide-area strikes",
         "actor": "RUS",
         "reliability": 40,
-        "intensity": 0.85,
+        "intensity": 0.7,
         "sources": [
           {
             "name": "lost_armour",
@@ -384,7 +384,7 @@
         "type": "Disrupting logistics or infrastructure in the region.",
         "actor": "UKR",
         "reliability": 40,
-        "intensity": 0.85,
+        "intensity": 0.7,
         "sources": [
           {
             "name": "voenkorKotenok",
@@ -468,7 +468,7 @@
         "type": "Logistics disruption",
         "actor": "RUS",
         "reliability": 40,
-        "intensity": 1.0,
+        "intensity": 0.5,
         "sources": [
           {
             "name": "voenkorKotenok",
@@ -496,7 +496,7 @@
         "type": "Logistics disruption",
         "actor": "RUS",
         "reliability": 40,
-        "intensity": 1.0,
+        "intensity": 0.5,
         "sources": [
           {
             "name": "voenkorKotenok",
@@ -580,7 +580,7 @@
         "type": "Preemptive strike to neutralize enemy artillery before it could launch an attack.",
         "actor": "UKR",
         "reliability": 40,
-        "intensity": 0.75,
+        "intensity": 0.7,
         "sources": [
           {
             "name": "noel_reports",
@@ -664,7 +664,7 @@
         "type": "Sabotage",
         "actor": "UKR",
         "reliability": 15,
-        "intensity": 1.0,
+        "intensity": 0.7,
         "sources": [
           {
             "name": "noel_reports",
@@ -748,7 +748,7 @@
         "type": "Logistics disruption and infrastructure degradation",
         "actor": "UKR",
         "reliability": 40,
-        "intensity": 1.0,
+        "intensity": 0.6,
         "sources": [
           {
             "name": "noel_reports",
@@ -776,7 +776,7 @@
         "type": "Disrupt logistics by targeting key oil export hub.",
         "actor": "UA",
         "reliability": 40,
-        "intensity": 0.96,
+        "intensity": 0.7,
         "sources": [
           {
             "name": "noel_reports",
@@ -804,7 +804,7 @@
         "type": "Disruption of enemy fortifications and surveillance capabilities",
         "actor": "UKR",
         "reliability": 40,
-        "intensity": 0.9,
+        "intensity": 0.6,
         "sources": [
           {
             "name": "parabellumcommunity",
@@ -888,7 +888,7 @@
         "type": "Logistics disruption",
         "actor": "RUS",
         "reliability": 40,
-        "intensity": 0.9,
+        "intensity": 0.6,
         "sources": [
           {
             "name": "parabellumcommunity",
@@ -1000,7 +1000,7 @@
         "type": "Logistics disruption",
         "actor": "RUS",
         "reliability": 40,
-        "intensity": 0.96,
+        "intensity": 0.7,
         "sources": [
           {
             "name": "parabellumcommunity",

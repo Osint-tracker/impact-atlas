@@ -668,31 +668,49 @@
     window.currentFilteredEvents = filtered;
     if (typeof renderInternal === 'function') renderInternal(filtered);
   };
+  // ============================================
   // 10. MODAL FUNCTIONS (FIXED & LINKED)
   // ============================================
 
-  // Funzione chiamata dal pulsante sulla mappa
   window.openModal = function (eventIdOrObj) {
     console.log("Tentativo apertura dossier:", eventIdOrObj);
     let eventData = null;
 
     // 1. Logica Ibrida per trovare l'evento
     if (typeof eventIdOrObj === 'string') {
+      // Caso A: Oggetto JSON codificato (usato nella Visual Grid)
       if (eventIdOrObj.startsWith('%7B') || eventIdOrObj.startsWith('{')) {
-        try { eventData = JSON.parse(decodeURIComponent(eventIdOrObj)); } catch (err) { }
-      } else {
-        // Cerca nell'array globale usando l'ID
+        try {
+          eventData = JSON.parse(decodeURIComponent(eventIdOrObj));
+        } catch (err) {
+          console.error("Errore parsing JSON dossier:", err);
+        }
+      }
+      // Caso B: ID Stringa/Numero (usato nel Popup Mappa)
+      else {
         if (window.globalEvents) {
-          eventData = window.globalEvents.find(evt => evt.event_id === eventIdOrObj);
+          // --- FIX CRITICO QUI ---
+          // 1. Convertiamo tutto a String per evitare errori "123" !== 123
+          // 2. Cerchiamo sia su 'event_id' che su 'id' per robustezza
+          const searchId = String(eventIdOrObj);
+
+          eventData = window.globalEvents.find(evt =>
+            String(evt.event_id) === searchId ||
+            String(evt.id) === searchId
+          );
         }
       }
     } else {
+      // Caso C: Passato direttamente come oggetto
       eventData = eventIdOrObj;
     }
 
-    if (!eventData) return console.error("❌ Evento non trovato per il Dossier");
+    if (!eventData) {
+      console.error(`❌ Evento non trovato per il Dossier. ID ricercato: ${eventIdOrObj}`);
+      return; // Interrompe l'esecuzione se non trova dati
+    }
 
-    // 2. Passa i dati alla tua funzione di grafica avanzata
+    // 2. Passa i dati alla funzione di rendering
     window.openIntelDossier(eventData);
   };
 
