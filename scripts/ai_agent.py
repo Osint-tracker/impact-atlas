@@ -10,6 +10,11 @@ import logging
 from datetime import datetime, timedelta
 from openai import OpenAI
 from dotenv import load_dotenv
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderTimedOut
+import time
+
+geolocator = Nominatim(user_agent="ai_agent_fixer_v2")
 
 # --- SETUP LOGGING ---
 logging.basicConfig(level=logging.INFO,
@@ -27,9 +32,9 @@ KEYWORDS_DB_PATH = os.path.join(BASE_DIR, '../assets/data/keywords_db.json')
 # --- PROTOCOL CONSTANTS (HARDCODED) ---
 INTENSITY_DB = {
     # TIER A (1.0) - Existential
-    "CRITICAL_NUCLEAR": 1.0, "CRITICAL_DAM": 1.0, "MIL_AIRBASE": 1.0,
+    "CRITICAL_NUCLEAR": 1.0, "CRITICAL_DAM": 1.0,
     # TIER B (0.75 - 0.9) - Strategic
-    "IND_DEFENSE_PLANT": 0.9,
+    "IND_DEFENSE_PLANT": 0.9, "MIL_AIRBASE": 0.9,
     "MIL_AIR_DEFENSE_LONG": 0.85, "MIL_SHIP": 0.85, "INFRA_STRATEGIC_BRIDGE": 0.85,
     "INFRA_REFINERY": 0.8, "MIL_EW_RADAR": 0.8, "INFRA_GENERATION": 0.8,
     "MIL_AMMO_DEPOT": 0.75, "MIL_MLRS_STRATEGIC": 0.75,
@@ -41,15 +46,16 @@ INTENSITY_DB = {
     "INFRA_LOGISTICS": 0.35, "INFRA_GRID_LOCAL": 0.35,
     "MIL_TRENCH": 0.3, "MIL_VEHICLE_LIGHT": 0.3, "MIL_PERSONNEL_OPEN": 0.3,
     # TIER E (0.05 - 0.2) - Civilian/Low
-    "CIV_PUBLIC": 0.2, "CIV_COMMERCIAL": 0.2, "CIV_RESIDENTIAL": 0.15,
-    "OPEN_FIELD": 0.05, "UNKNOWN": 0.0
+    "CIV_PUBLIC": 0.2, "CIV_COMMERCIAL": 0.2, "CIV_RESIDENTIAL": 0.2,
+    "OPEN_FIELD": 0.1, "UNKNOWN": 0.2
 }
 
 DAMAGE_MODIFIERS = {
-    "CRITICAL": 1.0,  # Destroyed / Sunk / Collapsed
-    "HEAVY": 0.8,     # Fire / Halted Traffic / Mission Kill
-    "LIGHT": 0.5,     # Repairable / Broken Windows
-    "NONE": 0.1       # Intercepted / No Damage
+    "CRITICAL": 1.5,  # Distruzione totale -> Aumenta il valore del 50%
+    "HEAVY": 1.2,     # Danni gravi -> Aumenta il valore del 20%
+    "LIGHT": 0.8,     # Danni lievi -> Riduce il valore del 20%
+    "NONE": 0.1,      # Intercettato/Nessun danno -> Riduce del 90%
+    "UNKNOWN": 1.0    # Nessuna info -> Lascia il valore base intatto
 }
 
 # --- SYSTEM PROMPTS ---
@@ -119,8 +125,8 @@ Return ONLY a valid JSON object matching this structure:
     },
     "target": {
       "side": "RU | UA | CIVILIAN",
-      "type": "INFRASTRUCTURE | MILITARY_UNIT | LOGISTICS | RESIDENTIAL",
-      "status_after_event": "DESTROYED | DAMAGED | INTACT | UNKNOWN"
+      "type": "ENUM: CRITICAL_NUCLEAR | CRITICAL_DAM | MIL_AIRBASE | IND_DEFENSE_PLANT | MIL_AIR_DEFENSE_LONG | MIL_SHIP | INFRA_STRATEGIC_BRIDGE | INFRA_REFINERY | MIL_EW_RADAR | INFRA_GENERATION | MIL_AMMO_DEPOT | MIL_MLRS_STRATEGIC | MIL_HQ | MIL_AIR_DEFENSE_SHORT | MIL_ARTILLERY | MIL_APC_TANK | MIL_MLRS_TACTICAL | INFRA_FUEL_DEPOT | IND_FACTORY | INFRA_LOGISTICS | INFRA_GRID_LOCAL | MIL_TRENCH | MIL_VEHICLE_LIGHT | MIL_PERSONNEL_OPEN | CIV_PUBLIC | CIV_COMMERCIAL | CIV_RESIDENTIAL | OPEN_FIELD",
+      "status_after_event": "CRITICAL | HEAVY | LIGHT | NONE | UNKNOWN"
     }
   },
   "casualties": {
@@ -656,21 +662,47 @@ You are a Senior Intelligence Officer. Your task is to VALIDATE and CORRECT the 
     def _step_3_the_calculator(self, soldier_data, brain_data, source_name, text):
         """
         Role: Pure Math & Multi-Source Aggregation.
-        Calculates Intensity, Reliability (with Cluster Bonus), and Bias (Weighted Average).
+        Uses DIRECT LOOKUP + AMPLIFIED MODIFIERS with HARD CAP at 1.0.
         """
-        print("   🧮 Step 3: The Calculator running physics & multi-source bias engine...")
+        print("   🧮 Step 3: The Calculator (Amplified Physics Engine)...")
 
-        # 1. INTENSITY CALCULATION (INVARIATO)
-        t_cat = soldier_data.get("target_category", "UNKNOWN")
-        d_cat = soldier_data.get("infrastructure_damage", "NONE")
+        # --- 1. INTENSITY CALCULATION ---
+        target_data = soldier_data.get("actors", {}).get("target", {})
 
-        v_target = INTENSITY_DB.get(t_cat, 0.0)
-        m_damage = DAMAGE_MODIFIERS.get(d_cat, 0.1)
+        # Le chiavi arrivano dirette dal Soldato (es. "MIL_AMMO_DEPOT")
+        raw_type = target_data.get("type", "UNKNOWN")
+        raw_damage = target_data.get("status_after_event", "UNKNOWN")
 
-        intensity_score = round(v_target * m_damage, 2)
+        # Fallback intelligente: Se il soldato sbaglia e inventa una chiave non nel DB
+        if raw_type not in INTENSITY_DB:
+            # Mappiamo le categorie del Brain sulle tue chiavi DB come salvagente
+            brain_cat = brain_data.get("location_precision_category")
+            brain_map = {
+                "REFINERY": "INFRA_REFINERY",
+                "MILITARY_BASE": "MIL_AIRBASE",
+                "ELECTRICAL_SUBSTATION": "INFRA_GRID_LOCAL",
+                "INFRASTRUCTURE": "INFRA_LOGISTICS"
+            }
+            # Se nemmeno il brain aiuta, usiamo UNKNOWN (che ora vale 0.2 se hai aggiornato il DB, o 0.0)
+            raw_type = brain_map.get(brain_cat, "UNKNOWN")
+
+        # A. PRELIEVO VALORI
+        # Usa 0.2 come default se la chiave non esiste, per non avere zeri brutti
+        v_target = INTENSITY_DB.get(raw_type, 0.2)
+        m_damage = DAMAGE_MODIFIERS.get(
+            raw_damage, 1.0)  # Default 1.0 (neutro)
+
+        # B. CALCOLO CON CAP A 1.0
+        # Esempio: Deposito (0.75) * Critical (1.5) = 1.125 -> Diventa 1.0
+        # Esempio: Deposito (0.75) * Heavy (1.2) = 0.9 -> Resta 0.9
+        raw_intensity = v_target * m_damage
+        intensity_score = round(min(1.0, raw_intensity), 2)
+
+        # Debug per verifica
+        print(
+            f"      🔧 CALC: {raw_type}({v_target}) x {raw_damage}({m_damage}) = {raw_intensity:.2f} -> Capped: {intensity_score}")
 
         # 2. SOURCE LOOKUP & AGGREGATION (FIX CHIRURGICO PER LISTE)
-        # Gestisce sia stringa singola (vecchio metodo) che lista (nuovo metodo cluster)
         if isinstance(source_name, list):
             sources_to_check = source_name
         else:
@@ -1515,6 +1547,46 @@ def main():
 
         all_msgs_raw = text_content.split(' ||| ')
 
+        # ==============================================================================
+        #  JUNK FILTER: scarta spam e notizie civili irrilevanti
+        # ==============================================================================
+        # Lista di parole che indicano al 100% che NON è un evento di guerra
+        junk_keywords = [
+            # Spam & Crypto
+            "bitcoin", "crypto", "ethereum", "nft ",
+            "casino", "slot ", "betting",
+
+            # Pubblicità
+            # Attenzione agli spazi per evitare falsi positivi
+            "sconto", "promo ", "offert", "liquidazione",
+
+            # Civile / Immobiliare (Il tuo caso specifico)
+            "immobiliare", "affitto", "vendesi", "agenzia immobiliare",
+            "рієлтор",  # 'Realtor' in ucraino
+            "kvartira",  # 'Appartamento' traslitterato spesso usato negli url
+
+            # Intrattenimento
+            "oroscopo", "serie a", "champions league", "calciomercato"
+        ]
+
+        # Convertiamo in minuscolo per il controllo
+        text_lower = text_content.lower()
+
+        is_junk = False
+        for word in junk_keywords:
+            if word in text_lower:
+                print(
+                    f"🗑️ SKIP: Evento scartato per keyword spazzatura: '{word}'")
+                is_junk = True
+                break
+
+        if is_junk:
+            # Marcalo come SKIPPED così non lo ripeschiamo, ma non lo cancelliamo
+            cursor.execute(
+                "UPDATE unique_events SET ai_analysis_status='SKIPPED_JUNK' WHERE event_id=?", (cluster_id,))
+            conn.commit()
+            continue
+
         # --- ✂️ HYBRID SMART SLICER (Telegram + GDELT) ---
         # Ottimizza costi e attenzione: taglia articoli lunghi, rimuove duplicati, limita quantità.
 
@@ -1642,7 +1714,48 @@ def main():
             }
 
             print("   ✅ Intelligence Extracted & Verified:")
-            # print(json.dumps(final_report, indent=2, ensure_ascii=False)) # Commentiamo per pulire il log
+
+            # ==================================================================================
+            # GEO-FIXER BLOCK: Aggiusta coordinate mancanti con geocoding
+            # ==================================================================================
+            try:
+                # 1. Recupera i dati attuali
+                tactics = final_report.get('tactics', {})
+                geo = tactics.get('geo_location', {})
+
+                # Assicura che 'explicit' esista
+                if geo.get('explicit') is None:
+                    geo['explicit'] = {}
+
+                lat = geo['explicit'].get('lat')
+                location_name = geo.get('inferred', {}).get('toponym_raw')
+
+                # 2. Se mancano coordinate e abbiamo un nome, CERCA!
+                if (not lat or lat == 0) and location_name and location_name != "Unknown":
+                    print(
+                        f"   🌍 Coordinate mancanti per '{location_name}'. Geocoding forzato...")
+                    try:
+                        location = geolocator.geocode(
+                            location_name, timeout=10)
+                        if location:
+                            # 3. MODIFICA IL REPORT FINALE "AL VOLO"
+                            final_report['tactics']['geo_location']['explicit']['lat'] = location.latitude
+                            final_report['tactics']['geo_location']['explicit']['lon'] = location.longitude
+                            print(
+                                f"      ✅ Trovato e Inserito: {location.latitude}, {location.longitude}")
+                            time.sleep(1)  # Pausa cortesia
+                        else:
+                            print("      ⚠️ Luogo non trovato sulle mappe.")
+                    except Exception as e:
+                        print(f"      ❌ Errore connessione mappe: {e}")
+            except Exception as e:
+                print(f"   ⚠️ Warning Geo-Fixer: {e}")
+            # ==================================================================================
+            # FINE BLOCCO GEO-FIXER
+            # ==================================================================================
+
+            # Commentiamo per pulire il log
+            print(json.dumps(final_report, indent=2, ensure_ascii=False))
 
             # [MODIFICA 2] SALVATAGGIO PERSISTENTE
             try:
