@@ -175,7 +175,7 @@ def main():
                         "actor": actor,
                         "reliability": scores.get('reliability', 0),
                         "intensity": scores.get('intensity', 0),
-                        "sources": structured_sources  # <--- ECCO I LINK PER LA DASHBOARD!
+                        "references": structured_sources  # <--- ECCO I LINK PER LA DASHBOARD!
                     }
                 }
                 geojson_features.append(feature)
