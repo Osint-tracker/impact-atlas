@@ -244,7 +244,7 @@
         "type": "Logistics",
         "actor": "RUS",
         "reliability": 40,
-        "intensity": 0.5,
+        "intensity": 0.84,
         "references": [
           {
             "name": "MAKS23_NAFO",
@@ -271,7 +271,7 @@
         "date": "2025-12-22 07:25:31",
         "type": "Targeted assassination of high-ranking Russian military officials through car bombings in Moscow",
         "actor": "UNK",
-        "reliability": 40,
+        "reliability": 70,
         "intensity": 0.75,
         "references": [
           {
@@ -302,29 +302,149 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          39.1122664,
-          52.6935178
+          39.0261044,
+          45.7684014
         ]
       },
       "properties": {
-        "cluster_id": "7c12a533-4d5f-4233-bfbc-8bc45ff11622",
-        "title": "Le Forze Ucraine Distruggono Caccia Russi Vicino a Lipetsk",
-        "description": "Il 21 dicembre, l'intelligence militare ucraina, in collaborazione con la resistenza locale, ha condotto un attacco di precisione in un aeroporto russo vicino a Lipetsk. L'operazione ha portato alla distruzione di due caccia russi, un Su-30 e un Su-27, rendendoli inoperabili. Il danno stimato agli asset militari russi è di circa 100 milioni di dollari.",
-        "title_en": "Ukrainian Forces Destroy Russian Fighters Near Lipetsk",
-        "description_en": "On December 21, Ukrainian military intelligence, in collaboration with local resistance, conducted a precision strike at a Russian airfield near Lipetsk. The operation resulted in the destruction of two Russian fighter jets, a Su-30 and a Su-27, rendering them inoperable. The estimated damage to Russian military assets is around $100 million.",
-        "date": "2025-12-22 07:18:42",
-        "type": "Degrade Russian air power through precision strike on high-value military assets",
+        "cluster_id": "5391ba34-a758-4a9e-a89f-6e3900b2127d",
+        "title": "Il Portogallo Destina Fondi per le Forniture di Difesa Ucraina",
+        "description": "Il Portogallo destinerà 50 milioni di euro per l'acquisto di armi americane per l'Ucraina. Il sistema 'ATESH' ha interrotto un importante snodo ferroviario di rifornimento vicino a Rostov sul Don. La Romania diventerà un hub logistico strategico per fornire armi all'Ucraina. La Banca Mondiale stima che la Russia abbia causato danni per circa 600 miliardi di dollari. Il Primo Ministro ungherese Orban sottolinea la necessità di un accordo significativo per prevenire la caduta dell'Ucraina.",
+        "title_en": "Portugal Allocates Funds for Ukraine Defense Supplies",
+        "description_en": "Portugal will allocate €50 million to purchase American weapons for Ukraine. The 'ATESH' system has disrupted a key railway supply hub near Rostov-on-Don. Romania is set to become a strategic logistics hub for supplying weapons to Ukraine. The World Bank estimates that Russia has caused approximately $600 billion in damage. Hungarian Prime Minister Orban emphasizes the need for a significant agreement to prevent Ukraine's fall.",
+        "date": "2025-12-21 21:23:09",
+        "type": "Logistics disruption through energy infrastructure targeting",
         "actor": "UKR",
         "reliability": 40,
         "intensity": 0.84,
         "references": [
           {
             "name": "MAKS23_NAFO",
-            "url": "https://t.me/noel_reports/38853"
+            "url": "https://t.me/MAKS23_NAFO/77387"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.3319078,
+          58.7523778
+        ]
+      },
+      "properties": {
+        "cluster_id": "333f07ee-c481-4b87-8794-0b62451ee5b6",
+        "title": "Gli esperti valutano scenari di attacco russo all'Estonia",
+        "description": "Un rapporto dell'ECFR delinea due potenziali scenari per un attacco russo all'Estonia. Il primo scenario prevede un'invasione rapida di Narva, con possibile avanzamento verso Tallinn. Le forze russe vicino agli stati baltici ammontano a 40.000, mentre l'Estonia ha 43.000 forze armate. Gli esperti suggeriscono che l'Estonia avrebbe un vantaggio numerico e i rinforzi della NATO potrebbero arrivare entro due giorni, garantendo la superiorità aerea attraverso l'aviazione alleata e la difesa aerea.",
+        "title_en": "Experts Assess Russian Attack Scenarios on Estonia",
+        "description_en": "A report by ECFR outlines two potential scenarios for a Russian attack on Estonia. The first scenario involves a rapid invasion of Narva, potentially advancing towards Tallinn. Russian forces near the Baltic states number 40,000, while Estonia has 43,000 armed forces. Experts suggest Estonia would have a numerical advantage, and NATO reinforcements could arrive within two days, ensuring air superiority through allied aviation and air defense.",
+        "date": "2025-12-21 19:08:01",
+        "type": "Strategic deterrence messaging - highlighting NATO's defensive capabilities and potential Russian vulnerabilities in Baltic scenario planning.",
+        "actor": "RUS",
+        "reliability": 45,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "MAKS23_NAFO",
+            "url": "https://t.me/MAKS23_NAFO/77364"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          39.7198736,
+          47.2222596
+        ]
+      },
+      "properties": {
+        "cluster_id": "0d4cd6bf-7fd7-4c89-98e3-29424c1e96af",
+        "title": "Attacco Interrompe il Trasporto di Carburante Vicino a Rostov",
+        "description": "Il 18 dicembre, il tanker 'Valery Gorchakov' è stato colpito vicino a Rostov, causando danni al ponte e alla sala macchine, con un incendio segnalato. Due membri dell'equipaggio sono morti, tra cui un cuoco e un terzo ingegnere, mentre un primo ufficiale e due marinai hanno subito ferite. Inoltre, un importante hub ferroviario di rifornimento vicino a Rostov è stato paralizzato, influenzando la logistica per l'Ucraina.",
+        "title_en": "Attack Disrupts Fuel Transport Near Rostov",
+        "description_en": "On December 18, the tanker 'Valery Gorchakov' was struck near Rostov, causing damage to the bridge and engine room, with a fire reported. Two crew members were killed, including a cook and a third engineer, while a senior mate and two sailors sustained injuries. Additionally, a key railway supply hub near Rostov was paralyzed, impacting logistics for Ukraine.",
+        "date": "2025-12-21 17:26:27",
+        "type": "Logistics disruption through targeting of fuel transport vessels",
+        "actor": "UKR",
+        "reliability": 90,
+        "intensity": 0.54,
+        "references": [
+          {
+            "name": "MAKS23_NAFO",
+            "url": "https://t.me/MAKS23_NAFO/77354"
           },
           {
             "name": "noel_reports",
-            "url": "https://t.me/MAKS23_NAFO/77403"
+            "url": "https://t.me/MAKS23_NAFO/77358"
+          },
+          {
+            "name": "Unknown Source",
+            "url": "https://t.me/noel_reports/38830"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.0185685,
+          51.6175126
+        ]
+      },
+      "properties": {
+        "cluster_id": "21136db4-53a1-48dc-b830-7a76bd05a557",
+        "title": "Drone Sconosciuto Trovato nella Foresta Rumena",
+        "description": "Un misterioso drone con un paracadute e un dispositivo esplosivo sospetto è stato scoperto da cacciatori in una foresta rumena. Il drone, con un'apertura alare di due metri, ha un'origine sconosciuta. Le autorità hanno dichiarato che non è collegato a una base NATO vicina e non hanno confermato alcun legame con la guerra in corso in Ucraina.",
+        "title_en": "Unknown Drone Found in Romanian Forest",
+        "description_en": "A mysterious drone with a parachute and suspected explosive device was discovered by hunters in a Romanian forest. The drone, measuring two meters in wingspan, has an unknown origin. Authorities have stated it is not linked to a nearby NATO base and have not confirmed any connection to the ongoing war in Ukraine.",
+        "date": "2025-12-21 16:56:41",
+        "type": "Unknown origin drone discovery with possible explosive device, no confirmed tactical goal",
+        "actor": "UNK",
+        "reliability": 50,
+        "intensity": 0.03,
+        "references": [
+          {
+            "name": "noel_reports",
+            "url": "https://t.me/noel_reports/38828"
+          },
+          {
+            "name": "MAKS23_NAFO",
+            "url": "https://t.me/MAKS23_NAFO/77348"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.460427,
+          50.6914311
+        ]
+      },
+      "properties": {
+        "cluster_id": "15f76635-3a78-4856-83f8-764d22d1e4dd",
+        "title": "Le Forze Ucraine Eseguono Operazioni nella Regione di Sumy",
+        "description": "Le Forze di Difesa ucraine stanno eseguendo operazioni di controffensiva nella regione di Sumy, specificamente prendendo di mira le posizioni russe nel villaggio di Hrabovske. Entrambi i lati stanno contestando un terreno chiave per vantaggi nella guerra dei droni. I russi mirano a catturare una collina strategica vicino al villaggio abbandonato di Prosyky, mentre l'area intorno a Riasne rimane sotto il pieno controllo delle forze ucraine.",
+        "title_en": "Ukrainian Forces Conduct Operations in Sumy Oblast",
+        "description_en": "Ukrainian Defense Forces are executing counter-offensive operations in Sumy Oblast, specifically targeting Russian positions in the village of Hrabovske. Both sides are contesting key terrain for advantages in drone warfare. The Russians aim to capture a strategic hill near the abandoned village of Prosyky, while the area around Riasne remains under full control of Ukrainian forces.",
+        "date": "2025-12-21 20:56:46",
+        "type": "Ukrainian counter-offensive operations targeting Russian positions in Sumy Oblast, with both sides contesting key terrain for drone warfare advantages",
+        "actor": "UKR",
+        "reliability": 40,
+        "intensity": 0.12,
+        "references": [
+          {
+            "name": "ukrliberation",
+            "url": "https://t.me/ukrliberation/15268"
           }
         ]
       }
@@ -347,7 +467,7 @@
         "date": "2025-12-22 17:40:01",
         "type": "Urban advancement and positional consolidation",
         "actor": "RUS",
-        "reliability": 40,
+        "reliability": 30,
         "intensity": 0.05,
         "references": [
           {
@@ -515,12 +635,96 @@
         "date": "2025-12-22 07:06:53",
         "type": "Destruction of enemy artillery to degrade UA fire support capabilities",
         "actor": "RUS",
-        "reliability": 40,
+        "reliability": 45,
         "intensity": 0.52,
         "references": [
           {
             "name": "lost_armour",
             "url": "https://t.me/lost_armour/7510"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.93775,
+          50.247
+        ]
+      },
+      "properties": {
+        "cluster_id": "2f7c5761-3d0e-4da7-812f-a2a782271b1f",
+        "title": "I Combattenti del Nord Liberano Vilcha nella Regione di Kharkiv",
+        "description": "I Combattenti del Nord hanno liberato il comune di tipo urbano di Vilcha nella regione di Kharkiv. Vilcha ha una storia unica in quanto è stata fondata per i residenti sfollati dalla città di Vilcha nella regione di Kyiv, che si trova all'interno della Zona di Esclusione di Chernobyl. Fondata nel 1993, Vilcha è il comune di tipo urbano più giovane in Ucraina.",
+        "title_en": "Northern Fighters Liberate Vilcha in Kharkiv Region",
+        "description_en": "The Northern Fighters have liberated the urban-type settlement of Vilcha in the Kharkiv region. Vilcha has a unique history as it was established for residents displaced from the town of Vilcha in the Kyiv region, which is located within the Chernobyl Exclusion Zone. Founded in 1993, Vilcha is the youngest urban-type settlement in Ukraine.",
+        "date": "2025-12-22 06:22:39",
+        "type": "Territorial control and population center seizure",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "lost_armour",
+            "url": "https://t.me/lost_armour/7509"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.9824347,
+          50.2790531
+        ]
+      },
+      "properties": {
+        "cluster_id": "056dd075-0b26-4efa-bbbe-e5c7efdc7489",
+        "title": "Colpi Coordinati Colpiscono l'Ucraina in Diverse Regioni",
+        "description": "Dal 21 al 22 dicembre 2025, sono stati condotti attacchi coordinati da forze aeree e missilistiche in Ucraina, colpendo posizioni militari e infrastrutture nelle regioni di Donbas, Sumy, Kharkiv, Zaporizhzhia, Dnipropetrovsk e Kherson. Sono stati impiegati vari sistemi d'arma, tra cui RSZO, UMPK, Iskander-M e Geran/Gerbera, per degradare le capacità difensive e la logistica ucraine.",
+        "title_en": "Coordinated Strikes Target Ukraine Across Multiple Regions",
+        "description_en": "On December 21-22, 2025, coordinated strikes were conducted by air and missile forces across Ukraine, targeting military positions and infrastructure in Donbas, Sumy, Kharkiv, Zaporizhzhia, Dnipropetrovsk, and Kherson regions. Various weapon systems, including RSZO, UMPK, Iskander-M, and Geran/Gerbera, were employed to degrade Ukrainian defensive capabilities and logistics.",
+        "date": "2025-12-22 03:54:04",
+        "type": "Coordinated multi-front strikes across Ukraine using various weapon systems (RSZO, UMPK, Iskander-M, Geran/Gerbera) targeting both military positions and infrastructure, likely aimed at degrading Ukrainian defensive capabilities and logistics across multiple fronts",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "lost_armour",
+            "url": "https://t.me/lost_armour/7508"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.2371794,
+          50.0006966
+        ]
+      },
+      "properties": {
+        "cluster_id": "c0f9bfef-c435-4303-9b63-cc589af996bc",
+        "title": "Militare ucraino inseguito e veicolo distrutto a Kharkiv",
+        "description": "Il trasporto militare ucraino è stato preso di mira nella regione di Kharkiv. Un inseguimento di un pickup ha portato a una collisione frontale, causando la distruzione del veicolo. L'operazione è stata condotta dal gruppo noto come 'Antagonista' con il nome in codice 'Giorno del Giudizio'.",
+        "title_en": "Ukrainian Military Pursued and Vehicle Destroyed in Kharkiv",
+        "description_en": "Ukrainian military transport was targeted in Kharkiv Oblast. A pursuit of a pickup truck led to a head-on collision, resulting in the destruction of the vehicle. The operation was conducted by the group known as 'Antagonist' under the codename 'Judgment Day'.",
+        "date": "2025-12-21 18:04:06",
+        "type": "Disruption of Ukrainian military mobility through pursuit and vehicle destruction",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.22,
+        "references": [
+          {
+            "name": "lost_armour",
+            "url": "https://t.me/lost_armour/7507"
           }
         ]
       }
@@ -543,7 +747,7 @@
         "date": "2025-12-22 18:58:57",
         "type": "Propaganda aimed at demoralizing Ukrainian forces and sympathizing with Russian-aligned residents.",
         "actor": "RUS",
-        "reliability": 40,
+        "reliability": 60,
         "intensity": 0.05,
         "references": [
           {
@@ -571,7 +775,7 @@
         "date": "2025-12-22 17:37:47",
         "type": "Disrupting logistics and infrastructure",
         "actor": "UKR",
-        "reliability": 40,
+        "reliability": 45,
         "intensity": 0.35,
         "references": [
           {
@@ -600,7 +804,7 @@
         "type": "Destruction of Western-supplied military equipment to degrade Ukrainian capabilities",
         "actor": "RUS",
         "reliability": 40,
-        "intensity": 0.7,
+        "intensity": 1.0,
         "references": [
           {
             "name": "voenkorKotenok",
@@ -655,7 +859,7 @@
         "date": "2025-12-22 12:09:00",
         "type": "Logistics disruption through railway infrastructure targeting to hinder Ukrainian military supply lines",
         "actor": "RUS",
-        "reliability": 40,
+        "reliability": 60,
         "intensity": 0.6,
         "references": [
           {
@@ -687,7 +891,7 @@
         "date": "2025-12-22 10:01:24",
         "type": "Territorial control and logistics disruption - Russian forces capturing Vilcha settlement to secure Kharkiv border area, disrupt Ukrainian supply lines to Volchansk, and enable further advance toward Grafskoye and Pechenezh Reservoir",
         "actor": "RUS",
-        "reliability": 40,
+        "reliability": 60,
         "intensity": 0.84,
         "references": [
           {
@@ -697,6 +901,62 @@
           {
             "name": "rybar",
             "url": "https://t.me/voenkorKotenok/69585"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.1182867,
+          47.8507859
+        ]
+      },
+      "properties": {
+        "cluster_id": "082b855f-02a2-4cd2-a30d-34f5d03a1537",
+        "title": "Le Forze Russe Avanzano nella Regione di Zaporizhzhia",
+        "description": "Le unità russe stanno conducendo un'offensiva a più fronti nella direzione di Zaporizhzhia, concentrandosi su manovre di fiancheggiamento e combattimenti urbani. Si segnalano intensi scontri vicino a Hulyaipole, con tentativi delle forze ucraine di contrattaccare. Le truppe russe avanzano da piazzeforti, consolidando le posizioni e ampliando il loro fronte nell'area di Ternovate, Gerasimivka e Pyschane verso Novopole e Khrystoforivka.",
+        "title_en": "Russian Forces Advance in Zaporizhzhia Region",
+        "description_en": "Russian units are conducting a multi-pronged offensive in the Zaporizhzhia direction, focusing on flanking maneuvers and urban combat. Intense fighting is reported near Hulyaipole, with attempts by Ukrainian forces to counterattack. Russian troops are advancing from bridgeheads, consolidating positions, and expanding their front in the area of Ternovate, Gerasimivka, and Pyschane towards Novopole and Khrystoforivka.",
+        "date": "2025-12-21 20:04:03",
+        "type": "Russian forces conducting coordinated multi-pronged offensive with focus on flanking maneuvers, bridgehead consolidation, and urban combat to degrade Ukrainian defensive positions and advance territorial control.",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "voenkorKotenok",
+            "url": "https://t.me/voenkorKotenok/69568"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.7322878,
+          46.4843023
+        ]
+      },
+      "properties": {
+        "cluster_id": "06eff917-2700-4bdd-94e5-b3d3c8ce2b1e",
+        "title": "Missili Colpiscono Serbatoi di Olio a Odesa, Ucraina",
+        "description": "Il 21 dicembre 2025, missili hanno colpito serbatoi di olio presso il terminal Allseeds Black Sea a Odesa. Esplosioni sono state segnalate in città e nelle aree circostanti, con fonti locali che indicano l'uso di missili balistici e droni. Questo incidente fa parte di una guerra economica in corso mirata a interrompere le esportazioni alimentari e agricole dell'Ucraina.",
+        "title_en": "Missiles Target Oil Tanks in Odesa, Ukraine",
+        "description_en": "On December 21, 2025, missiles struck oil storage tanks at the Allseeds Black Sea terminal in Odesa. Explosions were reported in the city and surrounding areas, with local sources indicating the use of ballistic missiles and drones. This incident is part of ongoing economic warfare aimed at disrupting Ukraine's food and agricultural exports.",
+        "date": "2025-12-21 15:30:39",
+        "type": "Economic warfare targeting food/agricultural infrastructure to disrupt Ukrainian exports and logistics",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.98,
+        "references": [
+          {
+            "name": "voenkorKotenok",
+            "url": "https://t.me/voenkorKotenok/69565"
           }
         ]
       }
@@ -790,34 +1050,6 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          35.460427,
-          50.6914311
-        ]
-      },
-      "properties": {
-        "cluster_id": "1b10d04d-09ad-4db7-9770-77f889189545",
-        "title": "Le truppe russe rapiscono civili a Hrabovske, Ucraina",
-        "description": "Le truppe russe hanno rapito circa 50 civili, principalmente anziani, dal villaggio di Hrabovske nella regione di Sumy. I rapimenti sono avvenuti dopo che i residenti, che avevano rifiutato l'evacuazione, sono stati radunati all'interno di una chiesa locale. Il Garante dei diritti umani ucraino ha confermato le detenzioni, affermando che i civili sono stati trattenuti senza comunicazione o condizioni di base prima di essere deportati il 20 dicembre. Il Ministro degli Esteri ucraino Andrii Sybiha ha definito l'atto terrorismo.",
-        "title_en": "Russian Troops Abduct Civilians in Hrabovske, Ukraine",
-        "description_en": "Russian troops abducted approximately 50 civilians, mainly elderly, from Hrabovske village in the Sumy region. The abductions occurred after the residents, who had refused evacuation, were gathered inside a local church. Ukraine's Ombudsman confirmed the detentions, stating that the civilians were held without communication or basic conditions before being deported on December 20. Ukrainian Foreign Minister Andrii Sybiha labeled the act as terrorism.",
-        "date": "2025-12-22 14:23:15",
-        "type": "Terrorism",
-        "actor": "RUS",
-        "reliability": 40,
-        "intensity": 0.15,
-        "references": [
-          {
-            "name": "noel_reports",
-            "url": "https://t.me/noel_reports/38879"
-          }
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
           39.7532365,
           52.6622765
         ]
@@ -831,7 +1063,7 @@
         "date": "2025-12-22 14:11:58",
         "type": "Sabotage and disruption of Russian military capabilities",
         "actor": "UKR",
-        "reliability": 15,
+        "reliability": 60,
         "intensity": 0.84,
         "references": [
           {
@@ -859,7 +1091,7 @@
         "date": "2025-12-22 14:07:20",
         "type": "Russian mechanized assault attempting to break through Ukrainian defensive lines on Dobropillia axis, likely probing for weaknesses or attempting to gain tactical advantage in the region",
         "actor": "RUS",
-        "reliability": 40,
+        "reliability": 95,
         "intensity": 0.0,
         "references": [
           {
@@ -899,7 +1131,7 @@
         "date": "2025-12-22 11:13:58",
         "type": "Repelling assault and positional advancement",
         "actor": "RUS",
-        "reliability": 40,
+        "reliability": 35,
         "intensity": 0.0,
         "references": [
           {
@@ -927,8 +1159,8 @@
         "date": "2025-12-22 08:16:01",
         "type": "Logistics disruption targeting critical energy export infrastructure to degrade Russian economic and military capabilities",
         "actor": "UKR",
-        "reliability": 40,
-        "intensity": 0.7,
+        "reliability": 50,
+        "intensity": 0.98,
         "references": [
           {
             "name": "noel_reports",
@@ -987,7 +1219,7 @@
         "date": "2025-12-22 08:04:41",
         "type": "Logistics disruption and terror bombing",
         "actor": "RUS",
-        "reliability": 40,
+        "reliability": 50,
         "intensity": 0.36,
         "references": [
           {
@@ -997,6 +1229,94 @@
           {
             "name": "noel_reports",
             "url": "https://t.me/noel_reports/38806"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.4660955,
+          50.7092098
+        ]
+      },
+      "properties": {
+        "cluster_id": "baab629b-2be3-4608-a082-6f7a8ee0aaae",
+        "title": "La Russia rapisce civili a Hrabovske, Ucraina",
+        "description": "Circa 50 civili, principalmente donne anziane, sono stati rapiti dalle truppe russe a Hrabovske, un villaggio di confine nella regione di Sumy. Il Ministro degli Esteri ucraino Andrii Sybiha ha condannato l'atto, paragonandolo a tattiche utilizzate da ISIS o Hamas. Ha chiesto pressioni globali per garantire il loro rilascio e ha sottolineato la necessità di una pace duratura e di forti garanzie di sicurezza in mezzo alla prosecuzione dei crimini di guerra.",
+        "title_en": "Russia Abducts Civilians in Hrabovske, Ukraine",
+        "description_en": "Approximately 50 civilians, primarily elderly women, were abducted by Russian troops from Hrabovske, a border village in the Sumy region. Ukraine's Foreign Minister Andrii Sybiha condemned the act, likening it to tactics used by ISIS or Hamas. He called for global pressure to secure their release and emphasized the need for lasting peace and strong security guarantees amid ongoing war crimes prosecution.",
+        "date": "2025-12-21 21:18:18",
+        "type": "Civilian intimidation/forced displacement to depopulate border areas and create demographic changes",
+        "actor": "RUS",
+        "reliability": 60,
+        "intensity": 0.15,
+        "references": [
+          {
+            "name": "noel_reports",
+            "url": "https://t.me/noel_reports/38879"
+          },
+          {
+            "name": "Unknown Source",
+            "url": "https://t.me/noel_reports/38839"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -96.7468384,
+          50.3379865
+        ]
+      },
+      "properties": {
+        "cluster_id": "6b662b77-0838-419e-9599-fa65900215fb",
+        "title": "Le autorità svedesi fermano la nave cargo russa Adler",
+        "description": "Le autorità svedesi hanno fermato la nave cargo russa Adler, di proprietà di un individuo soggetto a sanzioni dell'UE e degli Stati Uniti per presunti trasporti di armi in Ucraina. La nave ha ancorato nelle acque svedesi a causa di un guasto al motore. Gli ufficiali doganali sono saliti a bordo dopo che l'equipaggio non ha presentato le dichiarazioni necessarie. L'ispezione è attualmente in corso.",
+        "title_en": "Swedish Authorities Detain Russian Cargo Ship Adler",
+        "description_en": "Swedish authorities have detained the Russian cargo ship Adler, owned by an individual under EU and US sanctions for allegedly transporting weapons to Ukraine. The ship anchored in Swedish waters due to engine failure. Customs officials boarded the vessel after the crew failed to present necessary declarations. The inspection is currently ongoing.",
+        "date": "2025-12-21 14:15:21",
+        "type": "Sanctions enforcement and maritime interdiction operations",
+        "actor": "UNK",
+        "reliability": 40,
+        "intensity": 0.35,
+        "references": [
+          {
+            "name": "noel_reports",
+            "url": "https://t.me/noel_reports/38824"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          129.1540617,
+          61.48327
+        ]
+      },
+      "properties": {
+        "cluster_id": "30616d4d-5be5-4c03-af46-8f5f534c4f3b",
+        "title": "Le forze ucraine conducono contrattacchi vicino a Pokrovsk",
+        "description": "Il 21 dicembre 2025, nel fronte di Pokrovsk, l'area a nord di Pokrovsk ha visto un'espansione di posizioni miste russe e ucraine. I droni stanno interrompendo la logistica mentre allo stesso tempo riforniscono le truppe, consentendo combattimenti fluidi in prima linea con attacchi e contrattacchi, incluso un'offensiva ucraina nella zona industriale a ovest.",
+        "title_en": "Ukrainian Forces Conduct Counterattacks Near Pokrovsk",
+        "description_en": "On December 21, 2025, in the Pokrovsk front, the area north of Pokrovsk has seen an expansion of mixed Russian and Ukrainian positions. Drones are disrupting logistics while simultaneously supplying troops, enabling fluid frontline combat with assaults and counterattacks, including a Ukrainian offensive in the industrial zone to the west.",
+        "date": "2025-12-21 22:30:37",
+        "type": "Logistics disruption and drone warfare enabling fluid frontline combat with counterattacks",
+        "actor": "UNK",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "Majakovsk73",
+            "url": "https://t.me/Majakovsk73/4907"
           }
         ]
       }
@@ -1019,7 +1339,7 @@
         "date": "2025-12-23 02:53:59",
         "type": "Disrupt enemy fortifications near the front line using improvised drone technology.",
         "actor": "UKR",
-        "reliability": 40,
+        "reliability": 60,
         "intensity": 0.25,
         "references": [
           {
@@ -1103,7 +1423,7 @@
         "date": "2025-12-22 16:39:28",
         "type": "Military operations in contested territory",
         "actor": "UKR",
-        "reliability": 40,
+        "reliability": 45,
         "intensity": 0.0,
         "references": [
           {
@@ -1131,7 +1451,7 @@
         "date": "2025-12-22 12:55:32",
         "type": "Logistics disruption - targeting Russian oil export infrastructure to reduce revenue and fuel supplies",
         "actor": "UKR",
-        "reliability": 40,
+        "reliability": 70,
         "intensity": 0.78,
         "references": [
           {
@@ -1167,12 +1487,160 @@
         "date": "2025-12-22 11:10:54",
         "type": "Disabling military assets",
         "actor": "RUS",
-        "reliability": 40,
+        "reliability": 60,
         "intensity": 0.12,
         "references": [
           {
             "name": "parabellumcommunity",
             "url": "https://t.me/parabellumcommunity/335708"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          39.1122664,
+          52.6935178
+        ]
+      },
+      "properties": {
+        "cluster_id": "86ab106a-a8f5-4c69-879a-bf01b27b1b2d",
+        "title": "Il sabotaggio ucraino distrugge i caccia russi vicino a Lipetsk",
+        "description": "L'intelligence militare ucraina riporta che due caccia russi, Su-30 e Su-27, sono stati disattivati in un'operazione di sabotaggio presso una base aerea militare vicino a Lipetsk. Gli aerei sono stati incendiati all'interno di un hangar dopo settimane di pianificazione, con perdite stimate fino a 100 milioni di dollari.",
+        "title_en": "Ukrainian Sabotage Destroys Russian Fighters Near Lipetsk",
+        "description_en": "Ukrainian military intelligence reports that two Russian fighters, Su-30 and Su-27, were disabled in a sabotage operation at a military airbase near Lipetsk. The aircraft were set ablaze inside a hangar after weeks of planning, with estimated losses reaching up to $100 million.",
+        "date": "2025-12-22 06:42:12",
+        "type": "Deep penetration sabotage to degrade Russian air superiority capabilities and demonstrate Ukrainian intelligence reach",
+        "actor": "UKR",
+        "reliability": 70,
+        "intensity": 0.84,
+        "references": [
+          {
+            "name": "MAKS23_NAFO",
+            "url": "https://t.me/parabellumcommunity/335680"
+          },
+          {
+            "name": "noel_reports",
+            "url": "https://t.me/noel_reports/38853"
+          },
+          {
+            "name": "parabellumcommunity",
+            "url": "https://t.me/MAKS23_NAFO/77403"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.6141992,
+          49.7132963
+        ]
+      },
+      "properties": {
+        "cluster_id": "4f04f220-08cf-4654-a785-94cdddd5e67a",
+        "title": "L'infanteria russa affronta problemi di comando vicino a Kupyansk",
+        "description": "All'inizio di dicembre, il 272° reggimento di fanteria della 47ª divisione di fanteria ha subito notevoli interruzioni a causa di un cambio di comando avviato da Mosca. Ufficialmente, ciò è avvenuto a causa di progressi offensivi insoddisfacenti, ma i rapporti indicano gravi problemi, inclusi maltrattamenti dei soldati. Dopo il cambio di leadership, il reggimento ha ricevuto nuovi compiti operativi in mezzo a sfide logistiche continue.",
+        "title_en": "Russian Infantry Faces Command Issues Near Kupyansk",
+        "description_en": "In early December, the 272nd Infantry Regiment of the 47th Infantry Division experienced significant disruptions due to a command change initiated by Moscow. Officially, this was due to unsatisfactory offensive progress, but reports indicate severe issues, including mistreatment of soldiers. Following the leadership shift, the regiment was assigned new operational tasks amid ongoing logistical challenges.",
+        "date": "2025-12-21 23:43:38",
+        "type": "Logistics disruption and positional advancement through infantry assaults despite severe equipment and command deficiencies",
+        "actor": "RUS",
+        "reliability": 45,
+        "intensity": 0.12,
+        "references": [
+          {
+            "name": "parabellumcommunity",
+            "url": "https://t.me/parabellumcommunity/335671"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.90151,
+          50.43609
+        ]
+      },
+      "properties": {
+        "cluster_id": "6be27dbd-9990-4aa6-827f-1d5d0d627f99",
+        "title": "La Fanteria Russa Ingaggia le Guardie di Confine Ucraine a Kharkiv",
+        "description": "Un plotone di fanteria russa ha attraversato il confine di Kharkiv ed è stato pesantemente ingaggiato dalle guardie di confine ucraine. L'incidente è avvenuto alle coordinate 50.43609, 35.90151, come riportato dal canale ucraino Strix_kh_ua.",
+        "title_en": "Russian Infantry Engages Ukrainian Border Guards in Kharkiv",
+        "description_en": "A Russian infantry platoon crossed the Kharkiv border and was heavily engaged by Ukrainian border guards. The incident occurred at coordinates 50.43609, 35.90151, as reported by the Ukrainian channel Strix_kh_ua.",
+        "date": "2025-12-21 18:57:50",
+        "type": "Border defense and deterrence of incursion attempts",
+        "actor": "RUS",
+        "reliability": 45,
+        "intensity": 0.12,
+        "references": [
+          {
+            "name": "parabellumcommunity",
+            "url": "https://t.me/parabellumcommunity/335661"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.7311535,
+          43.984923
+        ]
+      },
+      "properties": {
+        "cluster_id": "9293d3eb-a71b-4efd-992c-ee35bd80b8d6",
+        "title": "Le Forze ucraine disturbano l'infanteria russa vicino a Liman",
+        "description": "Le Forze Speciali ucraine, conosciute come 'WHISKEY SQUAD', hanno condotto un'imboscata a un gruppo di tre soldati russi vicino a Liman. L'operazione è stata documentata da una prospettiva in prima persona dai combattenti ucraini. Nessun danno significativo segnalato.",
+        "title_en": "Ukrainian Forces Disrupt Russian Infantry Near Liman",
+        "description_en": "Ukrainian Special Forces, known as 'WHISKEY SQUAD', conducted an ambush on a group of three Russian soldiers near Liman. The operation was documented from a first-person perspective by the Ukrainian fighters. No significant damage reported.",
+        "date": "2025-12-21 14:52:29",
+        "type": "Tactical disruption of Russian infantry movements near Liman",
+        "actor": "UKR",
+        "reliability": 40,
+        "intensity": 0.05,
+        "references": [
+          {
+            "name": "parabellumcommunity",
+            "url": "https://t.me/parabellumcommunity/335651"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.9370028,
+          50.2928843
+        ]
+      },
+      "properties": {
+        "cluster_id": "0bbbaa51-e3b4-4792-9180-ac0195a992bd",
+        "title": "La riorganizzazione militare colpisce le unità di volontari stranieri",
+        "description": "L'esercito ucraino sta subendo una riorganizzazione interna, con piani per sciogliere le Legioni Straniere e integrare i loro combattenti nelle truppe d'assalto. Questa decisione, presa dal comandante Syrskiy, potrebbe indebolire le unità di volontari stranieri specializzati istituite nel 2022. La mossa ha suscitato preoccupazioni tra i volontari che apprezzavano la loro autonomia all'interno delle forze armate.",
+        "title_en": "Military Reorganization Affects Foreign Volunteer Units",
+        "description_en": "The Ukrainian military is undergoing internal reorganization, with plans to disband Foreign Legions and integrate their fighters into assault troops. This decision, made by Commander Syrskiy, may weaken specialized foreign volunteer units that were established in 2022. The move has raised concerns among volunteers who valued their autonomy within the armed forces.",
+        "date": "2025-12-22 22:06:14",
+        "type": "Internal military reorganization and consolidation of command authority, potentially weakening specialized foreign volunteer units",
+        "actor": "UKR",
+        "reliability": 45,
+        "intensity": 0.15,
+        "references": [
+          {
+            "name": "myro_shnykov",
+            "url": "https://t.me/myro_shnykov/9564"
           }
         ]
       }

@@ -10,7 +10,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 # =============================================================================
-# 🛠️ CONFIGURAZIONE CLUSTERING ENGINE (DEEPSEEK V3.2 SPECIALE)
+# 🛠️ CONFIGURAZIONE CLUSTERING ENGINE (SMART CACHE V2)
 # =============================================================================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, '../war_tracker_v2/data/raw_events.db')
@@ -31,6 +31,40 @@ MAX_DISTANCE_KM = 30.0
 MAX_TIME_DIFF_HOURS = 48
 TEXT_SIM_THRESHOLD_GEO = 0.15
 TEXT_SIM_THRESHOLD_BLIND = 0.25
+
+
+def init_history_table(conn):
+    """Crea la tabella per ricordare i confronti già fatti ed evitare costi inutili"""
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS comparison_history (
+            event_a TEXT,
+            event_b TEXT,
+            verdict TEXT, -- 'MATCH' o 'DIFF'
+            timestamp TEXT,
+            PRIMARY KEY (event_a, event_b)
+        )
+    """)
+    conn.commit()
+
+
+def check_history(cursor, id_a, id_b):
+    """Controlla se abbiamo già confrontato questi due eventi (in qualsiasi ordine)"""
+    # Ordiniamo gli ID per garantire unicità (A-B è uguale a B-A)
+    first, second = sorted([id_a, id_b])
+    cursor.execute(
+        "SELECT verdict FROM comparison_history WHERE event_a = ? AND event_b = ?", (first, second))
+    result = cursor.fetchone()
+    return result[0] if result else None
+
+
+def save_history(cursor, id_a, id_b, verdict):
+    """Salva il risultato del confronto"""
+    first, second = sorted([id_a, id_b])
+    cursor.execute("""
+        INSERT OR REPLACE INTO comparison_history (event_a, event_b, verdict, timestamp)
+        VALUES (?, ?, ?, ?)
+    """, (first, second, verdict, datetime.now().isoformat()))
 
 
 def tokenize(text):
@@ -74,11 +108,11 @@ def ask_the_judge(event_a, event_b):
 
     --- REPORT A ({event_a['date']}) ---
     Title: "{event_a['title']}"
-    Details: "{event_a['text_compare']}"
+    Details: "{event_a['text_compare'][:1000]}"
 
     --- REPORT B ({event_b['date']}) ---
     Title: "{event_b['title']}"
-    Details: "{event_b['text_compare']}"
+    Details: "{event_b['text_compare'][:1000]}"
 
     RULES:
     - Same location + same time (<48h) + compatible details = TRUE.
@@ -89,7 +123,7 @@ def ask_the_judge(event_a, event_b):
     """
     try:
         response = client.chat.completions.create(
-            model="deepseek/deepseek-v3.2-speciale",
+            model="meta-llama/llama-3.3-70b-instruct",
             messages=[
                 {"role": "system", "content": "Output JSON only."},
                 {"role": "user", "content": prompt}
@@ -105,7 +139,7 @@ def ask_the_judge(event_a, event_b):
         return json.loads(content)
     except Exception as e:
         print(f"      ❌ Errore API: {e}")
-        return {"is_same_event": False}
+        return None  # Ritorna None per NON salvare in cache (riproveremo)
 
 # --- LOGICA DI CLUSTERING (GRAPH THEORY) ---
 
@@ -138,24 +172,28 @@ def find_connected_components(nodes, edges):
 
 
 def main():
-    print("🕸️  AVVIO CLUSTERING ENGINE (DeepSeek V3.2 Speciale)...")
+    print("🕸️  AVVIO CLUSTERING ENGINE (SMART CACHE)...")
 
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
+    init_history_table(conn)  # Inizializza tabella cache
     cursor = conn.cursor()
 
-    # 1. CARICAMENTO EVENTI
+    # 1. CARICAMENTO EVENTI (Escludiamo i MERGED!)
     cursor.execute("""
         SELECT event_id, ai_report_json, last_seen_date, full_text_dossier, urls_list, sources_list
         FROM unique_events 
-        WHERE ai_analysis_status IN ('COMPLETED', 'VERIFIED') AND ai_report_json IS NOT NULL
+        WHERE ai_analysis_status IN ('COMPLETED', 'VERIFIED', 'PENDING') 
+        AND ai_analysis_status != 'MERGED' 
+        AND ai_report_json IS NOT NULL
     """)
     rows = cursor.fetchall()
 
-    events_map = {}  # Mappa ID -> Oggetto Evento
+    events_map = {}
     event_ids = []
 
-    print("   📂 Indicizzazione eventi...")
+    print(
+        f"   📂 Indicizzazione di {len(rows)} eventi attivi (ignorati i MERGED)...")
     for r in rows:
         try:
             data = json.loads(r['ai_report_json'])
@@ -186,14 +224,13 @@ def main():
         except:
             continue
 
-    print(f"   🔍 Analisi incrociata su {len(event_ids)} eventi...")
-
     # 2. RICERCA CONNESSIONI (PHASE 1)
-    confirmed_links = []  # Lista di tuple (id_A, id_B)
-
-    # Ordiniamo per data per ottimizzare i confronti
+    confirmed_links = []
     sorted_ids = sorted(
         event_ids, key=lambda eid: events_map[eid]['date'] if events_map[eid]['date'] else datetime.min)
+
+    api_calls = 0
+    cache_hits = 0
 
     for i in range(len(sorted_ids)):
         id_a = sorted_ids[i]
@@ -203,14 +240,13 @@ def main():
             id_b = sorted_ids[j]
             evt_b = events_map[id_b]
 
-            # FILTRO TEMPO
+            # PRE-FILTRI VELOCI (Gratis)
             if evt_a['date'] and evt_b['date']:
                 delta = abs((evt_a['date'] - evt_b['date']
                              ).total_seconds()) / 3600
                 if delta > MAX_TIME_DIFF_HOURS:
-                    continue
+                    continue  # Troppo distanti nel tempo
 
-            # FILTRO GEOGRAFIA
             is_near = False
             if evt_a['lat'] and evt_b['lat']:
                 try:
@@ -222,28 +258,53 @@ def main():
                     pass
 
             if (evt_a['lat'] and evt_b['lat']) and not is_near:
-                continue
+                continue  # Troppo distanti nello spazio
 
-            # FILTRO TESTO
+            # FILTRO TESTO (Gratis)
             threshold = TEXT_SIM_THRESHOLD_GEO if is_near else TEXT_SIM_THRESHOLD_BLIND
             sim = get_combined_similarity(
                 evt_a['text_compare'], evt_b['text_compare'])
 
             if sim > threshold:
-                print(
-                    f"\n   🔗 Sospetto Link: {evt_a['title'][:30]}... <--> {evt_b['title'][:30]}... (Sim: {sim:.2f})")
+                # 🛑 CHECK CACHE PRIMA DI CHIAMARE L'AI
+                history = check_history(cursor, id_a, id_b)
 
-                # CHIEDI ALL'AI
+                if history == 'MATCH':
+                    print(
+                        f"      ⚡ CACHE: Link già confermato ({evt_a['title'][:15]}... <-> {evt_b['title'][:15]}...)")
+                    confirmed_links.append((id_a, id_b))
+                    cache_hits += 1
+                    continue
+                elif history == 'DIFF':
+                    # Già controllato e scartato
+                    cache_hits += 1
+                    continue
+
+                # SE NON IN CACHE -> CHIAMA AI
+                print(
+                    f"\n   🔗 Sospetto Link (Sim: {sim:.2f}): {evt_a['title'][:30]}... <--> {evt_b['title'][:30]}...")
                 verdict = ask_the_judge(evt_a, evt_b)
+                api_calls += 1
+
+                if verdict is None:
+                    continue  # Errore API, riprova la prossima volta
 
                 if verdict.get('is_same_event'):
                     print(f"      ✅ LINK CONFERMATO!")
+                    save_history(cursor, id_a, id_b, 'MATCH')  # Salva Match
                     confirmed_links.append((id_a, id_b))
                 else:
                     print(f"      ❌ Nessun link.")
+                    # Salva Differenza
+                    save_history(cursor, id_a, id_b, 'DIFF')
+
+            # Commit intermedio ogni 10 chiamate per sicurezza
+            if api_calls % 10 == 0:
+                conn.commit()
 
     # 3. CREAZIONE CLUSTER (PHASE 2)
-    print(f"\n   🧩 Costruzione Cluster (Analisi Grafo)...")
+    print(
+        f"\n   🧩 Analisi Grafo (Calls: {api_calls}, Cache Hits: {cache_hits})...")
     clusters = find_connected_components(event_ids, confirmed_links)
 
     print(f"   📊 Trovati {len(clusters)} Super-Eventi (Cluster).")
@@ -252,41 +313,36 @@ def main():
     fusions_count = 0
 
     for cluster in clusters:
-        # Cluster è una lista di ID, es: ['evt1', 'evt2', 'evt3']
-        print(f"\n   🔥 FUSIONE CLUSTER DI {len(cluster)} EVENTI:")
-
-        # Scegliamo il Master (quello con più testo o il più vecchio? Andiamo col primo della lista ordinata)
-        # Riordiniamo il cluster per data
+        # Ordiniamo per data
         cluster_sorted = sorted(
             cluster, key=lambda eid: events_map[eid]['date'] if events_map[eid]['date'] else datetime.min)
 
         master_id = cluster_sorted[0]
         master_evt = events_map[master_id]
 
+        # Se il master è già stato arricchito (contiene [MERGED]), partiamo da quello
         merged_full_text = master_evt['full_text']
         merged_urls = set(master_evt['urls'])
         merged_sources = set(master_evt['sources'])
 
-        titles_combined = [master_evt['title']]
+        print(
+            f"\n   🔥 FUSIONE CLUSTER ({len(cluster)} eventi) -> MASTER: {master_id[:8]}...")
 
         for victim_id in cluster_sorted[1:]:
             victim_evt = events_map[victim_id]
-            print(f"      -> Ingerisco: {victim_evt['title']}")
 
-            # Unione Testo
+            # Unione Testo solo se non già presente (evita duplicati in merge ripetuti)
             if victim_evt['full_text'] not in merged_full_text:
                 merged_full_text += f" ||| [MERGED {victim_id[:6]}]: {victim_evt['full_text']}"
 
-            # Unione Link
             merged_urls.update(victim_evt['urls'])
             merged_sources.update(victim_evt['sources'])
-            titles_combined.append(victim_evt['title'])
 
             # Segna VICTIM come MERGED
             cursor.execute(
                 "UPDATE unique_events SET ai_analysis_status = 'MERGED' WHERE event_id = ?", (victim_id,))
 
-        # Aggiorna MASTER -> PENDING
+        # Aggiorna MASTER -> PENDING (per ri-analisi AI Agent)
         cursor.execute("""
             UPDATE unique_events 
             SET full_text_dossier = ?, urls_list = ?, sources_list = ?,
@@ -300,7 +356,8 @@ def main():
     conn.close()
 
     print(f"\n✅ CLUSTERING COMPLETATO.")
-    print(f"   🔄 Creati {fusions_count} Super-Eventi pronti per l'AI Agent.")
+    print(
+        f"   🔄 Creati {fusions_count} Super-Eventi. Ora lancia 'ai_agent.py'.")
 
 
 if __name__ == "__main__":

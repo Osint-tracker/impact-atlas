@@ -193,6 +193,14 @@ class SuperSquadAgent:
                 "X-Title": "OSINT Tracker"
             }
         )
+        self.router_client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+            default_headers={
+                "HTTP-Referer": "https://github.com/Osint-tracker/impact-atlas",
+                "X-Title": "OSINT Tracker"
+            }
+        )
 
         # 3. Load Knowledge Bases
         self.sources_db = self._load_json_db(SOURCES_DB_PATH, "sources")
@@ -444,6 +452,89 @@ class SuperSquadAgent:
             return {}
 
     # =========================================================================
+    # 🛡️ STEP 0: THE BOUNCER (Qwen 2.5 32B Instruct via OpenRouter)
+    # =========================================================================
+    def _step_0_the_bouncer(self, text):
+        print("   🛡️ Step 0: The Bouncer sta analizzando...")
+
+        # 1. Inizializziamo il default per sicurezza (così 'data' esiste sempre)
+        default_result = {"is_relevant": True, "reason": "Fallback/Error"}
+        data = None
+
+        preview_text = text[:2000]
+
+        prompt = f"""
+        TASK: AGGRESSIVE COST-SAVING FILTER.
+        CONTEXT: Filtering raw data. We ONLY want KINETIC EVENTS (Explosions, Battles, Strikes) or useful OSINT analysis for Russia-Ukraine war.
+        
+        INPUT TEXT: "{preview_text}"
+        
+        RULES:
+        - REJECT (is_relevant: false) IF: Crypto, Casino, Dating, Broken HTML, Unrelated Sports.
+        - KEEP (is_relevant: true) IF: War, Military, Politics, Ukraine, Russia, Explosions (even vague).
+
+        INSTRUCTIONS:
+        You are a budget controller. Your goal is to REJECT anything that costs money to analyze but provides no intel.
+
+        ⛔ CRITICAL REJECT CRITERIA (Output is_relevant: false):
+        1. **FUNDRAISING / DONATIONS**: Any mention of "Sborka", "Zbir", "Donat", "Monobank", "PayPal", "Revolut", "Card", "Karta", "Binance", "Wallet". Even if for drones/army -> REJECT.
+        2. **COMMERCIAL / ADS**: Real estate ("Kvartira", "Rent"), Crypto, Casino, Job offers, recruiting spam, advertisements.
+        3. **GENERIC / POLITICAL**: Abstract statements ("Zelensky said", "Putin signed") without a physical military event on the ground.
+        4. **OPINION / RANT**: Just text complaining without facts.
+        5. **SPAM**: Fundraisers ("Donate", "Cards", "Monobank"), abstract politics, recruiting spam, advertisements.
+
+        ✅ KEEP ONLY IF (is_relevant: true):
+        - Concrete Military Action: "Explosion in Kyiv", "Drone shot down", "Tank destroyed", "Advance near Robotyne".
+        - Specific Movement: "Column of equipment moving towards...".
+        - Describes a PHYSICAL EVENT (Explosion, Strike, Battle, Movement, Fire, Death).
+        - Mentions specific equipment losses or tactical changes.
+        - EVENT TYPE: Focus ONLY on KINETIC events (Explosions, Strikes, Movements, Battles).
+        
+        OUTPUT JSON ONLY: {{ "is_relevant": boolean, "reason": "short string" }}
+        """
+
+        try:
+            # Verifica che il client esista
+            if not hasattr(self, 'router_client'):
+                print(
+                    "      ⚠️ ERRORE: 'router_client' non definito in __init__. Uso default.")
+                return default_result
+
+            response = self.router_client.chat.completions.create(
+                model="qwen/qwen2.5-vl-32b-instruct",
+                messages=[
+                    {"role": "system", "content": "Output valid JSON only."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.0,
+                response_format={"type": "json_object"}
+            )
+
+            content = response.choices[0].message.content.strip()
+
+            # Pulizia markdown
+            if "```json" in content:
+                content = content.split("```json")[1].split("```")[0].strip()
+            elif "```" in content:
+                content = content.split("```")[1].split("```")[0].strip()
+
+            # Assegnazione di data
+            data = json.loads(content)
+
+            # Debug Print
+            if data.get('is_relevant') is False:
+                print(f"      ⛔ BOUNCER BLOCK: {data.get('reason')}")
+            else:
+                print(f"      ✅ Bouncer OK. ({data.get('reason')})")
+
+            return data
+
+        except Exception as e:
+            print(f"      ⚠️ BOUNCER EXCEPTION: {e}")
+            # Se siamo qui, 'data' potrebbe non esistere, quindi ritorniamo il default
+            return default_result
+
+    # =========================================================================
     # 🧠 STEP 1: THE BRAIN (DeepSeek V3 via OpenRouter)
     # =========================================================================
     def _step_1_the_brain(self, text, metadata):
@@ -457,7 +548,7 @@ class SuperSquadAgent:
 ### SYSTEM INSTRUCTIONS: INTELLIGENCE JUDGE & CORRECTOR
 
 **ROLE**
-You are a Senior Intelligence Officer. Your task is to VALIDATE and CORRECT the raw extraction performed by a subordinate unit ("The Soldier") against raw Telegram intercepts.
+You are a Senior Intelligence Officer. Your task is to VALIDATE and CORRECT the raw extraction performed by a subordinate unit ("The Soldier") against raw intercepts.
 
 **INPUT DATA**
 1. **RAW SOURCE (Cluster):** "{text[:15000]}"
@@ -466,24 +557,19 @@ You are a Senior Intelligence Officer. Your task is to VALIDATE and CORRECT the 
 RAW TEXT:
 "{text[:5000]}"
 
-**PROTOCOL 1: SPAM & RELEVANCE FILTER (THE GATEKEEPER)**
-   - **EVENT TYPE:** Focus ONLY on KINETIC events (Explosions, Strikes, Movements, Battles).
-   - **DISCARD:** Fundraisers ("Donate", "Cards", "Monobank"), abstract politics, recruiting spam, advertisements.
-   - **IF SPAM:** Set `verification_status: false` and `rejection_reason: "Fundraising/Spam"`. Discard everything.
-
-**PROTOCOL 2: DATE & LOGIC VALIDATION (FLEXIBLE)**
+**PROTOCOL 1: DATE & LOGIC VALIDATION (FLEXIBLE)**
    - Check the `Target Date` provided in metadata against the text.
    - **ALLOW:** +/- 7 days flexibility to account for delayed reporting, weekly summaries, or confirmation delays.
    - **REJECT:** Events clearly from a different month (unless month-end transition), previous years, "Anniversaries", "Recaps of the year".
    - *Logic:* If date mismatch > 7 days -> `verification_status: false`.
 
-**PROTOCOL 3: VALIDATION & CORRECTION (THE FALLBACK)**
+**PROTOCOL 2: VALIDATION & CORRECTION (THE FALLBACK)**
    - Compare `SOLDIER'S EXTRACTION` with `RAW SOURCE`.
    - **Location Check:** Does the location found by the Soldier match the text? If Soldier says "Odessa" but text says "Kyiv" -> **CORRECT IT**.
    - **Hallucination Check:** Did the Soldier invent coordinates (e.g. 0.0, 0.0) or numbers not in text? -> **CORRECT THEM** (set to null if not found).
    - **Missed Info:** If Soldier missed key details -> **ADD THEM**.
 
-**PROTOCOL 4: ENRICHMENT & CLASSIFICATION**
+**PROTOCOL 3: ENRICHMENT & CLASSIFICATION**
    - **ACTOR ATTRIBUTION:** Identify who initiated the action.
      * `RUS`: Russian Forces, Wagner, DPR/LPR.
      * `UKR`: AFU, ZSU, SBU, Partisans.
@@ -502,6 +588,32 @@ RAW TEXT:
    - **BIAS & SIGNAL:**
      * `BIAS SCORE`: Estimate political lean (-10 Pro-RU to +10 Pro-UA).
      * `IMPLICIT SIGNAL`: What is the tactical goal? (e.g. "Terror bombing", "Logistics").
+     
+     === 🧮 RELIABILITY SCORING ALGORITHM (STRICT) ===
+        Start with BASE SCORE: 30
+        Then ADD points for each condition met (Max 95):
+        
+        1. **CORROBORATION (+20):** - IF text contains "[MERGED" OR lists >1 distinct source URL -> ADD 20.
+           - IF >3 distinct sources -> ADD 10 more.
+           
+        2. **VISUAL EVIDENCE (+20):**
+           - IF text describes specific video/photo footage (e.g., "geolocated footage shows", "drone video captures") -> ADD 20.
+           
+        3. **CROSS-VERIFICATION (+30):**
+           - IF sources include BOTH Pro-RU (e.g. Rybar, Two Majors) AND Pro-UA (e.g. DeepState, Sternenko) channels -> ADD 30.
+           - IF confirmed by Neutral/Official source (e.g. ISW, MoD) -> ADD 30.
+           
+        4. **SPECIFICITY (+10):**
+           - IF specific coordinates, unit names (e.g. "47th Brigade"), or exact equipment counts are provided -> ADD 10.
+
+        *PENALTIES:*
+        - IF tone is highly emotional/propagandistic -> SUBTRACT 10.
+        - IF "unconfirmed" or "rumors" is explicitly stated -> SET SCORE TO MAX 30.
+
+        OBJECTIVES:
+        1. Calculate Reliability based exclusively on the algorithm above.
+        2. Hallucination Check & Strategic Analysis.
+        3. Bias Estimation (-10 to +10).
 
 **OUTPUT SCHEMA (JSON ONLY)**
 {{
@@ -510,7 +622,14 @@ RAW TEXT:
     "correction_notes": "String explaining corrections (e.g. 'Fixed wrong Actor from UKR to RUS')",
     "verified_data": {{
         "actor": "RUS | UKR | UNK",
-        "ai_bias_estimate": int,
+        "reliability_score": int (0-100, based on calculation),
+            "reliability_reasoning": "string (Explain the math: 'Base 30 + 20 Visual + 10 Specificity')",
+            "is_hallucination": boolean,
+            "correction_notes": "string",
+            "ai_bias_estimate": int (-10 to 10),
+            "location_precision_category": "string (EXACT_COORDINATES, CITY_LEVEL, REGION_LEVEL)",
+            "strategic_value_assessment": "string",
+            "event_category": "string"
         "implicit_signal": "Tactical summary",
         "location_precision_category": "ENUM from Protocol 4",
         "corrected_coordinates": {{ "lat": float, "lon": float }} // Only if you found better ones
@@ -551,6 +670,22 @@ RAW TEXT:
                 content = content.split("```")[1].split("```")[0].strip()
 
             brain_json = json.loads(content)
+
+            # MAPPING INTELLIGENTE PER IL DB
+            # DeepSeek ora calcola 'reliability_score', ma il DB potrebbe aspettarsi 'reliability' dentro 'scores'
+            final_reliability = brain_json.get('reliability_score', 40)
+
+            # (Opzionale) Stampa di debug per vedere se funziona
+            print(
+                f"      📊 Reliability Calcolata: {final_reliability}% ({brain_json.get('reliability_reasoning', '')})")
+
+            # Assicurati che questo valore finisca nel JSON finale salvato nel DB
+            # Se la tua struttura è complessa, potresti doverlo iniettare manualmente nel posto giusto
+            brain_json['scores'] = {
+                'reliability': final_reliability,
+                # Assumi che il Brain calcoli anche questo o usa logica separata
+                'intensity': brain_json.get('intensity', 0)
+            }
 
             # --- SALVATAGGIO DEL "PENSIERO NASCOSTO" (AMNESIA FIX) ---
             try:
@@ -1594,7 +1729,7 @@ def main():
                     ELSE 1 
                 END ASC,
                 last_seen_date DESC
-            LIMIT 10
+            LIMIT 100
         """)
 
         clusters_to_process = cursor.fetchall()
@@ -1657,6 +1792,22 @@ def main():
             cursor.execute(
                 "UPDATE unique_events SET ai_analysis_status='SKIPPED_JUNK' WHERE event_id=?", (cluster_id,))
             conn.commit()
+            continue
+        # =========================================================
+        # 🛡️ STEP 0: THE BOUNCER (AI SPAM FILTER - Qwen 32B)
+        # =========================================================
+        # Filtro intelligente per quello che è sfuggito alle keyword
+        bouncer_result = agent._step_0_the_bouncer(text_content)
+
+        if bouncer_result.get('is_relevant') is False:
+            print(
+                f"      🗑️ REJECTED by Bouncer: {bouncer_result.get('reason')}")
+
+            # Salvataggio nel DB come REJECTED
+            cursor.execute(
+                "UPDATE unique_events SET ai_analysis_status = 'REJECTED' WHERE event_id = ?", (cluster_id,))
+            conn.commit()
+
             continue
 
         # --- ✂️ HYBRID SMART SLICER (Telegram + GDELT) ---
