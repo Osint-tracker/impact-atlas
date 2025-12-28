@@ -452,9 +452,6 @@
             // Esclude se coordinate sono 0
             if (!e.lat || !e.lon || e.lat === 0 || e.lon === 0) return false;
 
-            // Esclude se Intensity è 0 (o null)
-            if (!e.intensity || parseFloat(e.intensity) === 0) return false;
-
             return true;
           })
           .sort((a, b) => b.timestamp - a.timestamp); // Ordine decrescente

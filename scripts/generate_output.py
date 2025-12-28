@@ -70,7 +70,8 @@ def main():
             SELECT event_id, ai_report_json, urls_list, sources_list, last_seen_date
             FROM unique_events 
             WHERE ai_report_json IS NOT NULL 
-            AND (ai_analysis_status = 'COMPLETED' OR ai_analysis_status = 'VERIFIED')
+            AND ai_analysis_status IN ('COMPLETED', 'VERIFIED')
+            AND ai_analysis_status != 'MERGED'
         """)
         rows = cursor.fetchall()
     except sqlite3.OperationalError as e:

@@ -244,7 +244,7 @@
         "type": "Logistics",
         "actor": "RUS",
         "reliability": 40,
-        "intensity": 0.84,
+        "intensity": 0.5,
         "references": [
           {
             "name": "MAKS23_NAFO",
@@ -600,7 +600,7 @@
         "type": "Destruction of Western-supplied military equipment to degrade Ukrainian capabilities",
         "actor": "RUS",
         "reliability": 40,
-        "intensity": 1.0,
+        "intensity": 0.7,
         "references": [
           {
             "name": "voenkorKotenok",
@@ -928,7 +928,7 @@
         "type": "Logistics disruption targeting critical energy export infrastructure to degrade Russian economic and military capabilities",
         "actor": "UKR",
         "reliability": 40,
-        "intensity": 0.98,
+        "intensity": 0.7,
         "references": [
           {
             "name": "noel_reports",
