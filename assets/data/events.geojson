@@ -34,34 +34,6 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          39.0261044,
-          45.7684014
-        ]
-      },
-      "properties": {
-        "cluster_id": "07f9161e-72d2-4432-a61e-331fde36b3ea",
-        "title": "Operazione GUR Distrugge Su-30 Russi Vicino a Lipetsk",
-        "description": "Due caccia russi Su-30 sono stati distrutti durante un'operazione GUR in un aeroporto vicino a Lipetsk. Inoltre, il generale russo Fanil Sarvarov è stato ucciso in un'esplosione di una bomba su un'auto a Mosca. Il Giappone ha annunciato 6 miliardi di dollari di assistenza finanziaria all'Ucraina per il 2026, mentre l'UE ha esteso le sanzioni economiche contro la Russia fino a metà 2026. I droni GUR hanno anche preso di mira il terminal marittimo 'Tamanneftegaz' nel Krai di Krasnodar.",
-        "title_en": "GUR Operation Destroys Russian Su-30s Near Lipetsk",
-        "description_en": "Two Russian Su-30 fighter jets were destroyed during a GUR operation at an airfield near Lipetsk. Additionally, Russian Lieutenant General Fanil Sarvarov was killed in a car bomb explosion in Moscow. Japan announced $6 billion in financial assistance to Ukraine for 2026, while the EU extended economic sanctions against Russia until mid-2026. GUR drones also targeted the marine oil terminal 'Tamanneftegaz' in Krasnodar Krai.",
-        "date": "2025-12-22 21:56:23",
-        "type": "Disruption of Russian logistics and military infrastructure",
-        "actor": "UKR",
-        "reliability": 40,
-        "intensity": 0.78,
-        "references": [
-          {
-            "name": "MAKS23_NAFO",
-            "url": "https://t.me/MAKS23_NAFO/77524"
-          }
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
           37.5991312,
           47.106171
         ]
@@ -230,34 +202,6 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          37.6063916,
-          55.625578
-        ]
-      },
-      "properties": {
-        "cluster_id": "8a19e7be-3e2f-47cf-87b4-b726aa703ccf",
-        "title": "Generale Sarvarov Ucciso a Mosca",
-        "description": "Il generale Sarvarov, capo della formazione operativa delle Forze Armate russe, è stato ucciso oggi a Mosca. Era responsabile della valutazione della prontezza dei comandanti e delle truppe per le operazioni future. Il suo ruolo includeva la supervisione dell'attuazione dei piani operativi e l'assicurazione che le risorse fossero allocate in modo efficace. L'eliminazione di Sarvarov si prevede che interromperà la pianificazione militare e i controlli di prontezza.",
-        "title_en": "General Sarvarov Killed in Moscow",
-        "description_en": "General Sarvarov, head of operational training for the Russian Armed Forces, was killed in Moscow today. He was responsible for assessing the readiness of commanders and troops for upcoming operations. His role included overseeing the implementation of operational plans and ensuring that resources were allocated effectively. The elimination of Sarvarov is expected to disrupt military planning and readiness checks.",
-        "date": "2025-12-22 14:57:58",
-        "type": "Elimination of a key military official to disrupt operational planning and readiness checks.",
-        "actor": "UNK",
-        "reliability": 40,
-        "intensity": 0.75,
-        "references": [
-          {
-            "name": "MAKS23_NAFO",
-            "url": "https://t.me/MAKS23_NAFO/77475"
-          }
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
           37.8102754,
           48.0157047
         ]
@@ -320,18 +264,34 @@
       },
       "properties": {
         "cluster_id": "b8ab112f-aed0-44d0-a612-a47b70c67f8f",
-        "title": "Esplosione Colpisce Generale Russo a Mosca",
-        "description": "Un'auto appartenente al tenente generale russo Fanil Sarvarov è esplosa a Mosca. Sarvarov è il capo del dipartimento di addestramento operativo dello Stato Maggiore russo. L'incidente è oggetto di indagine come un'assassinio mirato o sabotaggio.",
-        "title_en": "Explosion Targets Russian General in Moscow",
-        "description_en": "A car belonging to Russian Lieutenant General Fanil Sarvarov exploded in Moscow. Sarvarov is the head of the operational training department of the Russian General Staff. The incident is being investigated as a targeted assassination or sabotage.",
+        "title": "Auto bomba colpisce generale russo a Mosca",
+        "description": "Il 22 dicembre 2025, un'auto bomba è esplosa a Mosca, prendendo di mira il tenente generale Fanil Sarvarov, che guidava il dipartimento di addestramento operativo dello Stato Maggiore russo. L'incidente solleva sospetti di coinvolgimento di attori esterni, in particolare Kiev. Non sono state confermate segnalazioni immediate di ulteriori danni o vittime.",
+        "title_en": "Car Bomb Targets Russian General in Moscow",
+        "description_en": "On December 22, 2025, a car bomb exploded in Moscow, targeting Lieutenant General Fanil Sarvarov, who led the operational training department of the Russian General Staff. The incident raises suspicions of involvement from external actors, particularly Kiev. No immediate reports of additional damage or casualties have been confirmed.",
         "date": "2025-12-22 07:25:31",
-        "type": "Targeted assassination or sabotage",
+        "type": "Targeted assassination of high-ranking Russian military officials through car bombings in Moscow",
         "actor": "UNK",
         "reliability": 40,
-        "intensity": 0.15,
+        "intensity": 0.75,
         "references": [
           {
             "name": "MAKS23_NAFO",
+            "url": "https://t.me/noel_reports/38875"
+          },
+          {
+            "name": "noel_reports",
+            "url": "https://t.me/MAKS23_NAFO/77475"
+          },
+          {
+            "name": "parabellumcommunity",
+            "url": "https://t.me/parabellumcommunity/335723"
+          },
+          {
+            "name": "Unknown Source",
+            "url": "https://t.me/parabellumcommunity/335705"
+          },
+          {
+            "name": "Unknown Source",
             "url": "https://t.me/MAKS23_NAFO/77405"
           }
         ]
@@ -348,18 +308,22 @@
       },
       "properties": {
         "cluster_id": "7c12a533-4d5f-4233-bfbc-8bc45ff11622",
-        "title": "Incendio Distrugge Caccia Russi all'Aviosuperficie di Lipetsk",
-        "description": "Un incendio è scoppiato in un aviosuperficie militare russa vicino a Lipetsk, danneggiando due caccia Su-30 e Su-27. Entrambi gli aerei sono stati resi inoperabili, con un costo totale stimato fino a 100 milioni di dollari. L'incidente evidenzia gli sforzi in corso per degradare la superiorità aerea russa.",
-        "title_en": "Fire Destroys Russian Fighters at Lipetsk Airfield",
-        "description_en": "A fire erupted at a Russian military airfield near Lipetsk, damaging two Su-30 and Su-27 fighter jets. Both aircraft were rendered inoperable, with an estimated total cost of up to $100 million. The incident highlights ongoing efforts to degrade Russian air superiority.",
+        "title": "Le Forze Ucraine Distruggono Caccia Russi Vicino a Lipetsk",
+        "description": "Il 21 dicembre, l'intelligence militare ucraina, in collaborazione con la resistenza locale, ha condotto un attacco di precisione in un aeroporto russo vicino a Lipetsk. L'operazione ha portato alla distruzione di due caccia russi, un Su-30 e un Su-27, rendendoli inoperabili. Il danno stimato agli asset militari russi è di circa 100 milioni di dollari.",
+        "title_en": "Ukrainian Forces Destroy Russian Fighters Near Lipetsk",
+        "description_en": "On December 21, Ukrainian military intelligence, in collaboration with local resistance, conducted a precision strike at a Russian airfield near Lipetsk. The operation resulted in the destruction of two Russian fighter jets, a Su-30 and a Su-27, rendering them inoperable. The estimated damage to Russian military assets is around $100 million.",
         "date": "2025-12-22 07:18:42",
-        "type": "Degrade Russian air superiority by targeting high-value aircraft.",
+        "type": "Degrade Russian air power through precision strike on high-value military assets",
         "actor": "UKR",
         "reliability": 40,
-        "intensity": 1.0,
+        "intensity": 0.84,
         "references": [
           {
             "name": "MAKS23_NAFO",
+            "url": "https://t.me/noel_reports/38853"
+          },
+          {
+            "name": "noel_reports",
             "url": "https://t.me/MAKS23_NAFO/77403"
           }
         ]
@@ -417,34 +381,6 @@
           {
             "name": "rybar",
             "url": "https://t.me/rybar/76178"
-          }
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          36.93775,
-          50.247
-        ]
-      },
-      "properties": {
-        "cluster_id": "1377aa10-8ec2-4475-9c7d-4682cf3c7876",
-        "title": "Le Forze Russe Avanzano il Controllo nella Regione di Kharkiv",
-        "description": "Le unità militari russe hanno acquisito il controllo su Volnaya Vilcha nell'area di confine di Kharkiv, interrompendo le linee di rifornimento ucraine. Dopo la liberazione di Liman, il Ministero della Difesa russo ha riferito che le truppe del gruppo 'Nord' hanno respinto le forze ucraine da Vilcha. Questa località era precedentemente significativa per la difesa ucraina nell'area di Volchansk, ospitando depositi di rifornimento per le formazioni ucraine. I raid aerei russi hanno preso di mira sistematicamente le infrastrutture ucraine a Vilcha durante il conflitto.",
-        "title_en": "Russian Forces Advance Control in Kharkiv Region",
-        "description_en": "Russian military units have gained control over Volnaya Vilcha in the Kharkiv border area, disrupting Ukrainian supply lines. Following the liberation of Liman, the Russian Defense Ministry reported that troops from the 'North' group pushed Ukrainian forces out of Vilcha. This location was previously significant for Ukrainian defense in the Volchansk area, housing supply depots for Ukrainian formations. Russian airstrikes systematically targeted Ukrainian infrastructure in Vilcha during the conflict.",
-        "date": "2025-12-22 12:02:01",
-        "type": "Advancing control over strategic locations to disrupt Ukrainian supply lines.",
-        "actor": "RUS",
-        "reliability": 40,
-        "intensity": 1.0,
-        "references": [
-          {
-            "name": "rybar",
-            "url": "https://t.me/rybar/76176"
           }
         ]
       }
@@ -706,52 +642,28 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          28.3867504,
-          50.9080532
-        ]
-      },
-      "properties": {
-        "cluster_id": "a611fdf3-fc97-4449-9b29-44108ffd76a7",
-        "title": "Interruzione Logistica sulla Rotta Kharkiv-Uzhhorod",
-        "description": "Il movimento sulla rotta Kharkiv-Uzhhorod è stato interrotto a causa di un attacco nella regione di Zhytomyr. I rapporti indicano una crescente preoccupazione tra le comunità locali riguardo a potenziali attacchi di droni nei prossimi giorni nelle aree controllate da Kyiv.",
-        "title_en": "Logistics Disruption on Kharkiv-Uzhhorod Route",
-        "description_en": "Movement on the Kharkiv-Uzhhorod route has been halted due to a strike in the Zhytomyr region. Reports indicate a growing concern among local communities about potential drone attacks in the coming days on areas controlled by Kyiv.",
-        "date": "2025-12-22 14:30:25",
-        "type": "Disruption of logistics and movement.",
-        "actor": "RUS",
-        "reliability": 40,
-        "intensity": 0.84,
-        "references": [
-          {
-            "name": "voenkorKotenok",
-            "url": "https://t.me/voenkorKotenok/69597"
-          }
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
           28.6417552,
           50.9491068
         ]
       },
       "properties": {
         "cluster_id": "267b3ca8-0f02-4b55-94e0-e16452bc2c93",
-        "title": "Colpo di droni colpisce treno merci a Korosten",
-        "description": "Il 22 dicembre 2025, un treno merci è stato colpito da droni nell'area di Korosten, nella regione di Zhytomyr. Il carico era presumibilmente destinato alle Forze Armate ucraine, con fonti che suggeriscono che contenesse sistemi di difesa aerea senza munizioni. Le Ferrovie ucraine hanno confermato che un locomotore e diversi vagoni sono deragliati a causa dell'attacco.",
-        "title_en": "Drone Strike Hits Cargo Train in Korosten",
-        "description_en": "On December 22, 2025, a cargo train was struck by drones in the Korosten area of Zhytomyr Oblast. The shipment was reportedly intended for the Ukrainian Armed Forces, with sources suggesting it contained air defense systems without ammunition. Ukrainian Railways confirmed that a locomotive and several cars derailed as a result of the strike.",
+        "title": "Interruzione Ferroviaria Colpisce le Linee di Rifornimento Ucraine a Zhytomyr",
+        "description": "Il 22 dicembre 2025, un treno merci che trasportava rifornimenti militari per le Forze Armate ucraine è stato colpito da un drone nella zona di Korosten, nell'Oblast di Zhytomyr. Le segnalazioni indicano che il carico includeva sistemi di difesa aerea senza munizioni. Le Ferrovie ucraine hanno confermato che un locomotore e diversi vagoni sono deragliati, fermando il movimento su questo segmento ferroviario.",
+        "title_en": "Railway Disruption Affects Ukrainian Supply Lines in Zhytomyr",
+        "description_en": "On December 22, 2025, a freight train transporting military supplies for the Ukrainian Armed Forces was struck by a drone in the Korosten area of Zhytomyr Oblast. Reports indicate that the cargo included air defense systems without ammunition. Ukrainian Railways confirmed that a locomotive and several cars derailed, halting movement on this railway segment.",
         "date": "2025-12-22 12:09:00",
-        "type": "Logistics disruption",
+        "type": "Logistics disruption through railway infrastructure targeting to hinder Ukrainian military supply lines",
         "actor": "RUS",
         "reliability": 40,
         "intensity": 0.6,
         "references": [
           {
             "name": "voenkorKotenok",
+            "url": "https://t.me/voenkorKotenok/69597"
+          },
+          {
+            "name": "Unknown Source",
             "url": "https://t.me/voenkorKotenok/69587"
           }
         ]
@@ -768,18 +680,22 @@
       },
       "properties": {
         "cluster_id": "e8791a45-9f01-4524-bc1e-ff200a32882f",
-        "title": "Le Forze Russe Liberano Vilcha nella Regione di Kharkiv",
-        "description": "I rapporti militari russi indicano che il comune di Vilcha nella regione di Kharkiv è stato liberato dall'occupazione ucraina. L'operazione segna un cambiamento significativo nel controllo territoriale nell'area.",
-        "title_en": "Russian Forces Liberate Vilcha in Kharkiv Region",
-        "description_en": "Russian military reports indicate that the settlement of Vilcha in the Kharkiv region has been liberated from Ukrainian occupation. The operation marks a significant shift in territorial control in the area.",
+        "title": "Le Forze Russe Catturano il Villaggio di Vilcha Vicino a Kharkiv",
+        "description": "Le unità militari russe hanno catturato il villaggio di Vilcha nella regione di Kharkiv, interrompendo le linee di rifornimento ucraine verso Volchansk. Questa mossa strategica mira a garantire l'area di confine e facilitare ulteriori avanzamenti verso Grafskoye e il bacino di Pechenezh. La cattura di Vilcha è significativa poiché in precedenza ha svolto un ruolo cruciale nel sistema di difesa delle forze ucraine nella regione.",
+        "title_en": "Russian Forces Capture Vilcha Settlement Near Kharkiv",
+        "description_en": "Russian military units have captured the Vilcha settlement in the Kharkiv region, disrupting Ukrainian supply lines to Volchansk. This strategic move aims to secure the border area and facilitate further advances toward Grafskoye and the Pechenezh Reservoir. The capture of Vilcha is significant as it previously played a crucial role in the defense system of Ukrainian forces in the region.",
         "date": "2025-12-22 10:01:24",
-        "type": "Territorial control",
+        "type": "Territorial control and logistics disruption - Russian forces capturing Vilcha settlement to secure Kharkiv border area, disrupt Ukrainian supply lines to Volchansk, and enable further advance toward Grafskoye and Pechenezh Reservoir",
         "actor": "RUS",
         "reliability": 40,
-        "intensity": 0.05,
+        "intensity": 0.84,
         "references": [
           {
             "name": "voenkorKotenok",
+            "url": "https://t.me/rybar/76176"
+          },
+          {
+            "name": "rybar",
             "url": "https://t.me/voenkorKotenok/69585"
           }
         ]
@@ -874,34 +790,6 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          37.31223,
-          48.36654
-        ]
-      },
-      "properties": {
-        "cluster_id": "b21b6210-f361-45eb-a832-7510770ddd7f",
-        "title": "La Russia Attacca le Posizioni Ucraine Vicino a Dobropillia",
-        "description": "Il 22 dicembre 2025, le forze russe hanno tentato un attacco alle posizioni ucraine all'asse di Dobropillia. Il 1° Corpo Azov e le unità di supporto ucraine hanno respinto con successo l'attacco in meno di due ore, distruggendo 24 veicoli blindati e vari mezzi di trasporto, tra cui biciclette, quad e cavalli vicino a Razine.",
-        "title_en": "Russia Assaults Ukrainian Positions Near Dobropillia",
-        "description_en": "On December 22, 2025, Russian forces attempted an assault on Ukrainian positions at the Dobropillia axis. The 1st Azov Corps and supporting units of Ukraine successfully repelled the attack in under two hours, destroying 24 armored vehicles and various transport means, including bikes, quads, and horses near Razine.",
-        "date": "2025-12-22 16:05:49",
-        "type": "Direct assault on Ukrainian positions aimed at territorial control.",
-        "actor": "RUS",
-        "reliability": 40,
-        "intensity": 0.0,
-        "references": [
-          {
-            "name": "noel_reports",
-            "url": "https://t.me/noel_reports/38885"
-          }
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
           35.460427,
           50.6914311
         ]
@@ -964,103 +852,31 @@
       },
       "properties": {
         "cluster_id": "859a17f0-e6be-477e-aef1-57b719d6fd22",
-        "title": "Le Forze Ucraine Distruggono Veicoli Russi a Dobropillia",
-        "description": "Il 22 dicembre 2025, il comandante dei sistemi senza pilota Robert Brovdi ha riportato un significativo successo difensivo sull'asse di Dobropillia. Le forze russe hanno lanciato un attacco utilizzando veicoli meccanizzati e leggeri. Tuttavia, il 1° Corpo Azov dell'Ucraina, insieme ad altre unità, ha distrutto con successo 24 veicoli blindati e numerosi motocicli e quad in circa 100 minuti. Inoltre, sono stati persi dei cavalli durante l'ingaggio.",
-        "title_en": "Ukrainian Forces Destroy Russian Vehicles in Dobropillia",
-        "description_en": "On December 22, 2025, Unmanned Systems Commander Robert Brovdi reported a significant defensive success on the Dobropillia axis. Russian forces launched an attack using mechanized and light vehicles. However, Ukraine’s 1st Azov Corps, along with other units, successfully destroyed 24 armored vehicles and numerous motorcycles and quads within approximately 100 minutes. Additionally, horses were lost during the engagement.",
+        "title": "Forze russe attaccano le linee ucraine a Dobropillia",
+        "description": "Il 22 dicembre 2025, le forze meccanizzate russe hanno tentato di sfondare le linee difensive ucraine nell'asse di Dobropillia. Il 1° Corpo Azov, supportato da altre unità, ha respinto con successo l'attacco, distruggendo 24 veicoli blindati e numerosi motocicli e quad in circa 100 minuti. L'ingaggio ha comportato perdite significative per gli aggressori.",
+        "title_en": "Russian Forces Assault Ukrainian Lines in Dobropillia",
+        "description_en": "On December 22, 2025, Russian mechanized forces attempted to breach Ukrainian defensive lines on the Dobropillia axis. The 1st Azov Corps, supported by other units, successfully repelled the attack, destroying 24 armored vehicles and numerous motorcycles and quads within approximately 100 minutes. The engagement resulted in significant losses for the attackers.",
         "date": "2025-12-22 14:07:20",
-        "type": "Logistics",
+        "type": "Russian mechanized assault attempting to break through Ukrainian defensive lines on Dobropillia axis, likely probing for weaknesses or attempting to gain tactical advantage in the region",
         "actor": "RUS",
         "reliability": 40,
-        "intensity": 0.42,
+        "intensity": 0.0,
         "references": [
           {
+            "name": "MAKS23_NAFO",
+            "url": "https://t.me/MAKS23_NAFO/77472"
+          },
+          {
             "name": "noel_reports",
+            "url": "https://t.me/noel_reports/38885"
+          },
+          {
+            "name": "parabellumcommunity",
             "url": "https://t.me/noel_reports/38877"
-          }
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          37.6063916,
-          55.625578
-        ]
-      },
-      "properties": {
-        "cluster_id": "1d7aad6f-df8b-4748-b44c-f05bb5de890b",
-        "title": "L'assassinio colpisce generali russi a Mosca",
-        "description": "Nel 2025, tre tenenti generali russi sono stati uccisi in attentati con autobombe a Mosca. Le vittime includevano Ihor Kyrylov, Yaroslav Moskalyk e Fanil Sarvarov, tutti strettamente legati al presidente Putin e da lui nominati personalmente. Gli incidenti si sono verificati nel dicembre 2024, aprile 2025 e dicembre 2025, sollevando preoccupazioni sulla sicurezza e stabilità politica nella regione.",
-        "title_en": "Assassination Targets Russian Generals in Moscow",
-        "description_en": "In 2025, three Russian lieutenant generals were killed in car bombings in Moscow. The victims included Ihor Kyrylov, Yaroslav Moskalyk, and Fanil Sarvarov, all closely associated with President Putin and personally appointed by him. The incidents occurred in December 2024, April 2025, and December 2025, raising concerns about security and political stability in the region.",
-        "date": "2025-12-22 14:01:10",
-        "type": "Targeted assassination of high-ranking military officials",
-        "actor": "UNK",
-        "reliability": 40,
-        "intensity": 0.75,
-        "references": [
+          },
           {
-            "name": "noel_reports",
-            "url": "https://t.me/noel_reports/38875"
-          }
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          112.675662,
-          -7.3631369
-        ]
-      },
-      "properties": {
-        "cluster_id": "d946cc40-0b0b-4d63-a4cb-29bfaf463039",
-        "title": "Attacchi Ucraini al Terminal Tamanneftegaz nel Krasnodar Krai",
-        "description": "L'intelligence militare ucraina ha colpito il terminal petrolifero Tamanneftegaz nel Krasnodar Krai in Russia utilizzando droni d'attacco a lungo raggio. L'attacco ha colpito infrastrutture critiche, inclusi attrezzature di carico e strutture portuali, causando un grande incendio. Taman è un importante hub petrolifero nella regione del Mar Nero, con una capacità di stoccaggio superiore a 1 milione di m³.",
-        "title_en": "Ukrainian Strikes Tamanneftegaz Terminal in Krasnodar Krai",
-        "description_en": "Ukrainian military intelligence targeted the Tamanneftegaz oil terminal in Russia’s Krasnodar Krai using long-range strike drones. The attack impacted critical infrastructure, including loading equipment and port facilities, resulting in a large-scale fire. Taman is a significant oil hub in the Black Sea region, with a storage capacity exceeding 1 million m³.",
-        "date": "2025-12-22 13:25:59",
-        "type": "Disrupt logistics and energy infrastructure",
-        "actor": "UA",
-        "reliability": 40,
-        "intensity": 0.98,
-        "references": [
-          {
-            "name": "noel_reports",
-            "url": "https://t.me/noel_reports/38873"
-          }
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          39.0261044,
-          45.7684014
-        ]
-      },
-      "properties": {
-        "cluster_id": "b95455fd-af77-4f45-9818-24e356509ce0",
-        "title": "L'Ucraina Colpisce il Polo Petrolifero Russo nel Krasnodar Krai",
-        "description": "Le Forze di Sistema Senza Equipaggio dell'Ucraina hanno confermato un attacco al polo petrolifero Tamanneftegaz nel Krasnodar Krai. L'attacco ha causato danni a un oleodotto, due banchine e due navi, accendendo anche incendi su un'area di 1.000 metri quadrati.",
-        "title_en": "Ukraine Strikes Russian Oil Hub in Krasnodar Krai",
-        "description_en": "Ukraine’s Unmanned System Forces confirmed a strike on the Tamanneftegaz oil export hub in Krasnodar Krai. The attack resulted in damage to a pipeline, two berths, and two ships, while also igniting fires over an area of 1,000 square meters.",
-        "date": "2025-12-22 13:12:02",
-        "type": "Disruption of Russian oil export infrastructure",
-        "actor": "UKR",
-        "reliability": 40,
-        "intensity": 0.78,
-        "references": [
-          {
-            "name": "noel_reports",
-            "url": "https://t.me/noel_reports/38871"
+            "name": "Unknown Source",
+            "url": "https://t.me/parabellumcommunity/335749"
           }
         ]
       }
@@ -1098,53 +914,29 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          112.675662,
-          -7.3631369
+          70.5129148,
+          54.48177
         ]
       },
       "properties": {
         "cluster_id": "bb20abe3-4169-4dd9-919d-e91c3fa774bf",
-        "title": "Colpo di UAV ucraino colpisce il porto di Taman",
-        "description": "Un colpo di UAV ucraino ha preso di mira il porto russo di Taman nel Krai di Krasnodar, causando almeno 10 esplosioni e un grande incendio. I residenti hanno segnalato lampi dal mare e fumi neri che si alzavano nell'area. L'attacco mirava a infrastrutture portuali e ad almeno due navi, con il fuoco che si è esteso su 1.500 metri quadrati.",
-        "title_en": "Ukrainian UAV Strike Hits Russian Port of Taman",
-        "description_en": "A Ukrainian UAV strike targeted the Russian port of Taman in Krasnodar Krai, resulting in at least 10 explosions and a large fire. Residents reported seeing flashes from the sea and black smoke rising over the area. The strike aimed at port infrastructure and at least two ships, with the fire spreading over 1,500 square meters.",
+        "title": "Colpo di UAV ucraino colpisce il porto di Taman, Russia",
+        "description": "Le forze ucraine hanno condotto un attacco con UAV sul porto russo di Taman, nella regione di Krasnodar. I rapporti indicano almeno 10 esplosioni e un incendio significativo che ha colpito le infrastrutture portuali e due navi. L'incendio si è esteso su 1.500 metri quadrati, con fumi neri visibili nell'area. Questo attacco ha preso di mira infrastrutture critiche per l'esportazione di energia per interrompere le capacità economiche e militari russe.",
+        "title_en": "Ukrainian UAV Strike Hits Taman Port, Russia",
+        "description_en": "Ukrainian forces conducted a UAV strike on the Russian port of Taman in Krasnodar Krai. Reports indicate at least 10 explosions and a significant fire affecting port infrastructure and two ships. The fire spread over 1,500 square meters, with black smoke visible in the area. This attack targeted critical energy export infrastructure to disrupt Russian economic and military capabilities.",
         "date": "2025-12-22 08:16:01",
-        "type": "Targeted strike on port infrastructure and ships to disrupt logistics",
+        "type": "Logistics disruption targeting critical energy export infrastructure to degrade Russian economic and military capabilities",
         "actor": "UKR",
         "reliability": 40,
-        "intensity": 0.84,
+        "intensity": 0.98,
         "references": [
           {
             "name": "noel_reports",
+            "url": "https://t.me/noel_reports/38873"
+          },
+          {
+            "name": "Unknown Source",
             "url": "https://t.me/noel_reports/38858"
-          }
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          39.1122664,
-          52.6935178
-        ]
-      },
-      "properties": {
-        "cluster_id": "7e22fe83-c680-44b4-9156-ca0ad3a4092b",
-        "title": "Ucraina Distrugge Caccia Russi Vicino a Lipetsk",
-        "description": "Il 21 dicembre, l'intelligence militare ucraina (HUR) e la resistenza locale hanno distrutto due caccia russi, un Su-30 e un Su-27, in un aeroporto vicino a Lipetsk. L'operazione, che ha richiesto due settimane di preparazione, ha comportato perdite russe stimate fino a 100 milioni di dollari.",
-        "title_en": "Ukraine Destroys Russian Fighter Jets Near Lipetsk",
-        "description_en": "On December 21, Ukraine’s military intelligence (HUR) and local resistance destroyed two Russian fighter jets, a Su-30 and Su-27, at an airfield near Lipetsk. The operation, which took two weeks to prepare, resulted in Russian losses estimated at up to $100 million.",
-        "date": "2025-12-22 08:08:31",
-        "type": "Strategic degradation of enemy air capabilities",
-        "actor": "UKR",
-        "reliability": 40,
-        "intensity": 1.0,
-        "references": [
-          {
-            "name": "noel_reports",
-            "url": "https://t.me/noel_reports/38853"
           }
         ]
       }
@@ -1298,34 +1090,6 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          37.0903243,
-          48.4683035
-        ]
-      },
-      "properties": {
-        "cluster_id": "9f7b8c04-2e0f-45e5-bee0-1729bfdbde61",
-        "title": "Le Forze Russe Lanciano un Assalto Meccanizzato a Dobropillia",
-        "description": "Questa mattina, le forze russe hanno avviato un importante assalto meccanizzato con quattro colonne corazzate a Dobropillia. Il 1° Corpo Azov dell'Ucraina, il Gruppo di Lasar e l'SBS hanno risposto decisivamente, distruggendo 6 carri armati, 9 veicoli da combattimento di fanteria, 5 veicoli blindati per il trasporto di truppe, 1 veicolo di recupero e 10 unità motorizzate. Le perdite nemiche in termini di personale sono ancora in fase di valutazione.",
-        "title_en": "Russian Forces Launch Mechanized Assault in Dobropillia",
-        "description_en": "This morning, Russian forces initiated a significant mechanized assault with four armored columns in Dobropillia. The Ukrainian 1st Azov Corps, Lasar Group, and SBS responded decisively, destroying 6 tanks, 9 infantry fighting vehicles, 5 armored personnel carriers, 1 recovery vehicle, and 10 motorized units. Enemy personnel losses are still being assessed.",
-        "date": "2025-12-22 18:58:58",
-        "type": "Mechanized assault to gain territorial control",
-        "actor": "RUS",
-        "reliability": 40,
-        "intensity": 0.05,
-        "references": [
-          {
-            "name": "parabellumcommunity",
-            "url": "https://t.me/parabellumcommunity/335749"
-          }
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
           37.203369,
           48.3539878
         ]
@@ -1354,52 +1118,32 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          37.6063916,
-          55.625578
-        ]
-      },
-      "properties": {
-        "cluster_id": "e4744c4f-4b56-4992-99c0-5e7237976aee",
-        "title": "Decapitazione Colpisce Alti Funzionari a Mosca",
-        "description": "A Mosca, tre tenenti generali sono stati eliminati in un anno. Il 17 dicembre 2024, il tenente generale Igor Kirilov è stato ucciso in un'esplosione di auto. Il tenente generale Jaroslav Moskalik è stato colpito il 25 aprile 2025, sempre in un'esplosione di auto. Questa mattina, il tenente generale Fanil Sarvarov è morto in un'esplosione di una Kia Sorento in via Yasenevskaya. Sarvarov era stato nominato capo del dipartimento di pianificazione operativa del Ministero della Difesa nel 2016.",
-        "title_en": "Decapitation Targets High-Ranking Officials in Moscow",
-        "description_en": "In Moscow, three lieutenant generals have been eliminated within a year. On December 17, 2024, Lieutenant General Igor Kirilov was killed in a car explosion. Lieutenant General Jaroslav Moskalik was targeted on April 25, 2025, also in a car blast. This morning, Lieutenant General Fanil Sarvarov died in a Kia Sorento explosion on Yasenevskaya Street. Sarvarov had been appointed head of the operational planning department of the Ministry of Defense in 2016.",
-        "date": "2025-12-22 13:57:44",
-        "type": "Decapitation (targeting high-ranking military officials)",
-        "actor": "UNK",
-        "reliability": 40,
-        "intensity": 0.75,
-        "references": [
-          {
-            "name": "parabellumcommunity",
-            "url": "https://t.me/parabellumcommunity/335723"
-          }
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
           39.0261044,
           45.7684014
         ]
       },
       "properties": {
         "cluster_id": "35eb8cb1-fa83-4efc-983a-b4da7e836b12",
-        "title": "I droni russi colpiscono il terminale Tamanneftegaz in Krasnodar",
-        "description": "I droni FP-1 russi hanno preso di mira il terminal petrolifero marittimo Tamanneftegaz nel Krasnodar Krai il 22 dicembre 2025. L'attacco ha causato danni alle attrezzature di carico del petrolio, al molo per i gas idrocarburici liquefatti e ad altre infrastrutture portuali.",
-        "title_en": "Russian Drones Strike Tamanneftegaz Terminal in Krasnodar",
-        "description_en": "Russian FP-1 drones targeted the Tamanneftegaz maritime oil terminal in Krasnodar Krai on December 22, 2025. The attack resulted in damage to oil loading equipment, the liquefied hydrocarbon gas dock, and other port infrastructure.",
+        "title": "Le Forze Ucraine Colpiscono il Terminal Petrolifero Russo a Krasnodar",
+        "description": "Le Forze Ucraine di Sistemi Senza Pilota hanno confermato un attacco al terminal petrolifero Tamanneftegaz nel Krasnodar Krai. L'attacco ha causato danni a un oleodotto, due banchine e due navi, e ha innescato incendi su oltre 1.000 metri quadrati.",
+        "title_en": "Ukrainian Forces Strike Russian Oil Terminal in Krasnodar",
+        "description_en": "Ukraine’s Unmanned System Forces confirmed a strike on the Tamanneftegaz oil export hub in Krasnodar Krai. The attack resulted in damage to a pipeline, two berths, and two ships, and ignited fires covering over 1,000 square meters.",
         "date": "2025-12-22 12:55:32",
-        "type": "Logistics disruption",
-        "actor": "RUS",
+        "type": "Logistics disruption - targeting Russian oil export infrastructure to reduce revenue and fuel supplies",
+        "actor": "UKR",
         "reliability": 40,
         "intensity": 0.78,
         "references": [
           {
+            "name": "MAKS23_NAFO",
+            "url": "https://t.me/noel_reports/38871"
+          },
+          {
             "name": "parabellumcommunity",
+            "url": "https://t.me/MAKS23_NAFO/77524"
+          },
+          {
+            "name": "noel_reports",
             "url": "https://t.me/parabellumcommunity/335719"
           }
         ]
@@ -1429,34 +1173,6 @@
           {
             "name": "parabellumcommunity",
             "url": "https://t.me/parabellumcommunity/335708"
-          }
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          37.6174782,
-          55.7505412
-        ]
-      },
-      "properties": {
-        "cluster_id": "449f0cc8-546d-4c50-a9dd-3f936123e1f0",
-        "title": "Generale assassinato a Mosca, sospettato da Kiev",
-        "description": "Il 22 dicembre 2025, un generale dello stato maggiore russo è stato assassinato a Mosca. Le autorità sospettano un coinvolgimento di Kiev in questo omicidio mirato. L'incidente aumenta le tensioni tra Russia e Ucraina nel contesto del conflitto in corso.",
-        "title_en": "General Assassinated in Moscow, Suspected by Kiev",
-        "description_en": "On December 22, 2025, a general of the Russian General Staff was assassinated in Moscow. Authorities suspect involvement from Kiev in this targeted assassination. The incident raises tensions between Russia and Ukraine amidst ongoing conflict.",
-        "date": "2025-12-22 09:08:58",
-        "type": "Targeted Assassination",
-        "actor": "UKR",
-        "reliability": 40,
-        "intensity": 0.75,
-        "references": [
-          {
-            "name": "parabellumcommunity",
-            "url": "https://t.me/parabellumcommunity/335705"
           }
         ]
       }

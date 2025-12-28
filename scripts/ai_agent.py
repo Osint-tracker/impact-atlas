@@ -185,6 +185,14 @@ class SuperSquadAgent:
             base_url="https://openrouter.ai/api/v1",
             api_key=self.openrouter_api_key,
         )
+        self.brain_client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+            default_headers={
+                "HTTP-Referer": "https://github.com/Osint-tracker/impact-atlas",
+                "X-Title": "OSINT Tracker"
+            }
+        )
 
         # 3. Load Knowledge Bases
         self.sources_db = self._load_json_db(SOURCES_DB_PATH, "sources")
@@ -445,7 +453,7 @@ class SuperSquadAgent:
         """
         print("   🧠 Step 1: The Brain (DeepSeek V3) analyzing strategy...")
 
-        prompt = f"""
+        brain_prompt = f"""
 ### SYSTEM INSTRUCTIONS: INTELLIGENCE JUDGE & CORRECTOR
 
 **ROLE**
@@ -454,6 +462,9 @@ You are a Senior Intelligence Officer. Your task is to VALIDATE and CORRECT the 
 **INPUT DATA**
 1. **RAW SOURCE (Cluster):** "{text[:15000]}"
 2. **SOLDIER'S EXTRACTION (To Verify):** {json.dumps(metadata)}
+3. **CONTEXT NOTE:** The RAW TEXT below may contain multiple reports merged together (separated by '|||'). Treat them as corroborating sources for a single event.
+RAW TEXT:
+"{text[:5000]}"
 
 **PROTOCOL 1: SPAM & RELEVANCE FILTER (THE GATEKEEPER)**
    - **EVENT TYPE:** Focus ONLY on KINETIC events (Explosions, Strikes, Movements, Battles).
@@ -508,31 +519,62 @@ You are a Senior Intelligence Officer. Your task is to VALIDATE and CORRECT the 
 """
 
         try:
-            # 1. Chiamata API
-            response = self.openrouter_client.chat.completions.create(
-                model="deepseek/deepseek-chat",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.1,  # Abbassato a 0.1 per maggiore rigore logico
+            # USIAMO IL MODELLO REASONER (V3.2 STANDARD)
+            # Questo modello supporta JSON mode E ha il "Thinking Process"
+            response = self.brain_client.chat.completions.create(
+                model="deepseek/deepseek-v3.2",
+
+                messages=[
+                    {"role": "system", "content": "You are a strategic reasoning engine. Output valid JSON only."},
+                    {"role": "user", "content": brain_prompt}
+                ],
+
+                # --- INTEGRAZIONE THINKING MODE ---
+                extra_body={
+                    "thinking": {
+                        "type": "enabled",
+                        "budget_tokens": 4096  # Limita il ragionamento per controllare i costi
+                    }
+                },
+
+                temperature=0.0,
+                response_format={"type": "json_object"}
             )
 
-            # 2. Parsing Sicuro
-            result_text = response.choices[0].message.content
-            parsed_data = self._clean_and_parse_json(result_text)
+            # Parsing della risposta
+            content = response.choices[0].message.content.strip()
 
-            # 3. Gestione Fallimento e Auto-Repair
-            if not parsed_data:
-                print("   ⚠️ Brain JSON Error. Attempting repair...")
-                parsed_data = self._repair_json_with_ai(
-                    result_text, "Brain JSON Malformed")
+            # Gestione markdown code blocks (DeepSeek a volte li mette anche in JSON mode)
+            if "```json" in content:
+                content = content.split("```json")[1].split("```")[0].strip()
+            elif "```" in content:
+                content = content.split("```")[1].split("```")[0].strip()
 
-            if not parsed_data:
-                return {"is_relevant": False, "reason": "JSON Critical Failure"}
+            brain_json = json.loads(content)
 
-            return parsed_data
+            # --- SALVATAGGIO DEL "PENSIERO NASCOSTO" (AMNESIA FIX) ---
+            try:
+                msg = response.choices[0].message
+                reasoning_trace = getattr(msg, 'reasoning_content', None)
+
+                if reasoning_trace:
+                    # Salviamo i primi 1500 caratteri per non appesantire troppo il DB
+                    brain_json['_hidden_reasoning_trace'] = reasoning_trace[:1500] + "..."
+            except Exception:
+                pass  # Se non c'è il trace, pazienza
+
+            return brain_json
 
         except Exception as e:
-            print(f"   ❌ Brain Critical Error: {e}")
-            return {"is_relevant": False, "reason": "API Error"}
+            print(f"      ❌ Brain Malfunction: {e}")
+            # Fallback sicuro in caso di crash
+            return {
+                "is_hallucination": False,
+                "ai_bias_estimate": 0,
+                "location_precision_category": "UNKNOWN",
+                "strategic_value_assessment": f"Error in Brain processing: {str(e)}",
+                "event_category": "UNCERTAIN"
+            }
 
     # =========================================================================
     # 🔧 AI MECHANIC: JSON REPAIR (GPT-4o-mini)
@@ -1540,15 +1582,19 @@ def main():
     print("🔍 Lettura cluster pendenti da SQLite...")
 
     try:
-        print("🔍 Lettura cluster pendenti da SQLite...")
+        print("   📥 Recupero eventi in attesa (Priorità ai Super-Cluster)...")
 
-        # --- QUERY DI SELEZIONE (Test Mode: 100 eventi) ---
+        # Questa query usa un CASE statement per dare priorità 0 (massima) agli eventi fusi
         cursor.execute("""
-            SELECT event_id, full_text_dossier, last_seen_date
-            FROM unique_events
+            SELECT * FROM unique_events 
             WHERE ai_analysis_status = 'PENDING'
-            ORDER BY last_seen_date DESC
-            LIMIT 100
+            ORDER BY 
+                CASE 
+                    WHEN full_text_dossier LIKE '%[MERGED%' THEN 0 
+                    ELSE 1 
+                END ASC,
+                last_seen_date DESC
+            LIMIT 10
         """)
 
         clusters_to_process = cursor.fetchall()
