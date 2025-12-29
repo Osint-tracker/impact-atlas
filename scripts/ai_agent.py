@@ -466,9 +466,9 @@ class SuperSquadAgent:
         prompt = f"""
         TASK: AGGRESSIVE COST-SAVING FILTER.
         CONTEXT: Filtering raw data. We ONLY want KINETIC EVENTS (Explosions, Battles, Strikes) or useful OSINT analysis for Russia-Ukraine war.
-        
+
         INPUT TEXT: "{preview_text}"
-        
+
         RULES:
         - REJECT (is_relevant: false) IF: Crypto, Casino, Dating, Broken HTML, Unrelated Sports.
         - KEEP (is_relevant: true) IF: War, Military, Politics, Ukraine, Russia, Explosions (even vague).
@@ -489,7 +489,7 @@ class SuperSquadAgent:
         - Describes a PHYSICAL EVENT (Explosion, Strike, Battle, Movement, Fire, Death).
         - Mentions specific equipment losses or tactical changes.
         - EVENT TYPE: Focus ONLY on KINETIC events (Explosions, Strikes, Movements, Battles).
-        
+
         OUTPUT JSON ONLY: {{ "is_relevant": boolean, "reason": "short string" }}
         """
 
@@ -569,14 +569,21 @@ RAW TEXT:
    - **Hallucination Check:** Did the Soldier invent coordinates (e.g. 0.0, 0.0) or numbers not in text? -> **CORRECT THEM** (set to null if not found).
    - **Missed Info:** If Soldier missed key details -> **ADD THEM**.
 
-**PROTOCOL 3: ENRICHMENT & CLASSIFICATION**
-   - **ACTOR ATTRIBUTION:** Identify who initiated the action.
-     * `RUS`: Russian Forces, Wagner, DPR/LPR.
-     * `UKR`: AFU, ZSU, SBU, Partisans.
-     * `UNK`: Accident, Unclear.
-     * *Constraint:* NEVER use "Russian Forces" or "AFU". Use ONLY the 3-letter codes.
+**PROTOCOL 3: VALIDATION & CORRECTION**
+    - **Location Check:** Does the location found by the Soldier match the text?
+    - **THE HEADQUARTERS TRAP:** If text says "Moscow reported..." or "Kyiv announced...", the event happened on the FRONT, NOT in the capital.
+    -> IF Soldier put [55.75, 37.61] (Moscow) for a tank battle -> CHANGE TO `null` (Region Level).
+    - **THE POLITICAL TRAP:** If event is about MONEY, AID, SANCTIONS, or DIPLOMACY (e.g., "Portugal sends funds"):
+    -> SET `geo_location.explicit` to `null`.
+    -> Political events DO NOT have precise coordinates.
 
-   - **TARGET CLASSIFICATION:** Map target to exactly ONE category:
+**PROTOCOL 4: LOGICAL SANITY CHECK (CRITICAL)**
+    - **Abrams/F-16 in Moscow?** IMPOSSIBLE. If a frontline weapon is destroyed in a capital city (far from front), it is a hallucination identifying the HQ instead of the battlefield. -> REMOVE COORDINATES.
+    - **Generals Killed:** Only accept explicit coordinates if verified. Otherwise use City/Region level.
+
+
+
+ **TARGET CLASSIFICATION:** Map target to exactly ONE category:
      * `REFINERY` (Fuel, Oil depots)
      * `ELECTRICAL_SUBSTATION` (Transformers, Grid - NOT Nuclear)
      * `INFRASTRUCTURE` (Bridges, Ports, Railways)
@@ -585,24 +592,24 @@ RAW TEXT:
      * `CITY` (Generic city strike)
      * `REGION` (Wide area/Unknown)
 
-   - **BIAS & SIGNAL:**
+ **BIAS & SIGNAL:**
      * `BIAS SCORE`: Estimate political lean (-10 Pro-RU to +10 Pro-UA).
      * `IMPLICIT SIGNAL`: What is the tactical goal? (e.g. "Terror bombing", "Logistics").
-     
+
      === 🧮 RELIABILITY SCORING ALGORITHM (STRICT) ===
         Start with BASE SCORE: 30
         Then ADD points for each condition met (Max 95):
-        
+
         1. **CORROBORATION (+20):** - IF text contains "[MERGED" OR lists >1 distinct source URL -> ADD 20.
            - IF >3 distinct sources -> ADD 10 more.
-           
+
         2. **VISUAL EVIDENCE (+20):**
            - IF text describes specific video/photo footage (e.g., "geolocated footage shows", "drone video captures") -> ADD 20.
-           
+
         3. **CROSS-VERIFICATION (+30):**
            - IF sources include BOTH Pro-RU (e.g. Rybar, Two Majors) AND Pro-UA (e.g. DeepState, Sternenko) channels -> ADD 30.
            - IF confirmed by Neutral/Official source (e.g. ISW, MoD) -> ADD 30.
-           
+
         4. **SPECIFICITY (+10):**
            - IF specific coordinates, unit names (e.g. "47th Brigade"), or exact equipment counts are provided -> ADD 10.
 
@@ -1721,12 +1728,12 @@ def main():
 
         # Questa query usa un CASE statement per dare priorità 0 (massima) agli eventi fusi
         cursor.execute("""
-            SELECT * FROM unique_events 
+            SELECT * FROM unique_events
             WHERE ai_analysis_status = 'PENDING'
-            ORDER BY 
-                CASE 
-                    WHEN full_text_dossier LIKE '%[MERGED%' THEN 0 
-                    ELSE 1 
+            ORDER BY
+                CASE
+                    WHEN full_text_dossier LIKE '%[MERGED%' THEN 0
+                    ELSE 1
                 END ASC,
                 last_seen_date DESC
             LIMIT 100
@@ -1955,22 +1962,52 @@ def main():
 
                 # 2. Se mancano coordinate e abbiamo un nome, CERCA!
                 if (not lat or lat == 0) and location_name and location_name != "Unknown":
+
+                    # Definiamo la lista PRIMA del controllo
+                    banned_locations = [
+                        "Ukraine", "Russia", "Europe", "NATO", "EU", "Border", "Frontline"]
+
+                    if location_name.strip() in banned_locations:
+                        print(
+                            f"      ⚠️ Skipped Geocoding for generic location: '{location_name}'")
+                    else:
+                        print(
+                            f"      🌍 Coordinate mancanti per '{location_name}'. Geocoding forzato...")
+                        try:
+                            # Questa riga deve rientrare di 4 spazi rispetto al 'try' sopra
+                            location = geolocator.geocode(
+                                location_name, timeout=10)
+
+                            if location:
+                                # 3. MODIFICA IL REPORT FINALE "AL VOLO"
+                                final_report['tactics']['geo_location']['explicit']['lat'] = location.latitude
+                                final_report['tactics']['geo_location']['explicit']['lon'] = location.longitude
+                                print(
+                                    f"       ✅ Trovato e Inserito: {location.latitude}, {location.longitude}")
+                                time.sleep(1)
+                            else:
+                                print("       ⚠️ Luogo non trovato sulle mappe.")
+                        except Exception as e:
+                            # Questo 'except' deve essere allineato verticalmente col 'try' sopra
+                            print(f"       ❌ Errore connessione mappe: {e}")
+
+            except Exception as e:
+                print(f"   ⚠️ Warning Geo-Fixer: {e}")
+
+            try:
+                location = geolocator.geocode(
+                    location_name, timeout=10)
+                if location:
+                    # 3. MODIFICA IL REPORT FINALE "AL VOLO"
+                    final_report['tactics']['geo_location']['explicit']['lat'] = location.latitude
+                    final_report['tactics']['geo_location']['explicit']['lon'] = location.longitude
                     print(
-                        f"   🌍 Coordinate mancanti per '{location_name}'. Geocoding forzato...")
-                    try:
-                        location = geolocator.geocode(
-                            location_name, timeout=10)
-                        if location:
-                            # 3. MODIFICA IL REPORT FINALE "AL VOLO"
-                            final_report['tactics']['geo_location']['explicit']['lat'] = location.latitude
-                            final_report['tactics']['geo_location']['explicit']['lon'] = location.longitude
-                            print(
-                                f"      ✅ Trovato e Inserito: {location.latitude}, {location.longitude}")
-                            time.sleep(1)  # Pausa cortesia
-                        else:
-                            print("      ⚠️ Luogo non trovato sulle mappe.")
-                    except Exception as e:
-                        print(f"      ❌ Errore connessione mappe: {e}")
+                        f"      ✅ Trovato e Inserito: {location.latitude}, {location.longitude}")
+                    time.sleep(1)  # Pausa cortesia
+                else:
+                    print("      ⚠️ Luogo non trovato sulle mappe.")
+            except Exception as e:
+                print(f"      ❌ Errore connessione mappe: {e}")
             except Exception as e:
                 print(f"   ⚠️ Warning Geo-Fixer: {e}")
             # ==================================================================================
