@@ -6,6 +6,34 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          30.7420742,
+          50.1537167
+        ]
+      },
+      "properties": {
+        "cluster_id": "920e7f1c-cf7b-4bc5-949b-05e6a51f6e84",
+        "title": "Patruglia di aerei Tu-160 e Tu-95MS nello spazio aereo",
+        "description": "Il 22 dicembre 2025, due aerei Tu-160 dall'aeroporto di Ukrainka e due aerei Tu-95MS dall'aeroporto di Belaya sono stati osservati in volo. Questa attività è probabilmente parte di operazioni di pattugliamento o addestramento di routine.",
+        "title_en": "Tu-160 and Tu-95MS Aircraft Patrol Over Airspace",
+        "description_en": "On December 22, 2025, two Tu-160 aircraft from Ukrainka airfield and two Tu-95MS aircraft from Belaya airfield were observed in the air. This activity is likely part of routine patrol or training operations.",
+        "date": "2025-12-22 22:39:33",
+        "type": "Strategic bomber activity, likely routine patrol or training.",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "MAKS23_NAFO",
+            "url": "https://t.me/MAKS23_NAFO/77533"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           8.6101375,
           45.815457
         ]
@@ -90,8 +118,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -66.1109318,
-          8.0018709
+          37.622791,
+          55.7754321
         ]
       },
       "properties": {
@@ -137,6 +165,34 @@
           {
             "name": "MAKS23_NAFO",
             "url": "https://t.me/MAKS23_NAFO/77495"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.6141992,
+          49.7132963
+        ]
+      },
+      "properties": {
+        "cluster_id": "d235242f-23c1-453d-a9cd-949630460a76",
+        "title": "Soldati Russi Mantengono Presenza a Kupyansk",
+        "description": "Circa 100 soldati russi sono attualmente schierati a Kupyansk, secondo il presidente ucraino Zelensky. La situazione rimane invariata a Pokrovsk e Huliaypole, mentre Myrnohrad affronta una significativa pressione da parte delle forze russe. Zelensky ha sottolineato che il sostegno alla Russia da parte di alcuni stati è motivato da interessi finanziari e dal desiderio di mantenere il potere anti-democratico. Nel frattempo, l'Ucraina continua a progredire verso l'adesione all'UE e ha mitigato con successo una potenziale crisi finanziaria.",
+        "title_en": "Russian Soldiers Maintain Presence in Kupyansk",
+        "description_en": "Approximately 100 Russian soldiers are currently stationed in Kupyansk, according to Ukrainian President Zelensky. The situation remains unchanged in Pokrovsk and Huliaypole, while Myrnohrad faces significant pressure from Russian forces. Zelensky emphasized that support for Russia from certain states is driven by financial interests and the desire to maintain anti-democratic power. Meanwhile, Ukraine continues to progress towards EU membership and has successfully mitigated a potential financial crisis.",
+        "date": "2025-12-22 16:43:07",
+        "type": "Strategic pressure and military buildup in key regions",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "MAKS23_NAFO",
+            "url": "https://t.me/MAKS23_NAFO/77490"
           }
         ]
       }
@@ -202,6 +258,34 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          39.7198736,
+          47.2222596
+        ]
+      },
+      "properties": {
+        "cluster_id": "1e3afff2-c871-40ee-a7d3-edd3f2acaed4",
+        "title": "Valutazione della Minaccia dei Droni in Diverse Regioni",
+        "description": "È stato emesso un avviso riguardo a potenziale attività di droni nelle regioni di Rostov, Lipetsk, Astrakhan, Tambov, Saratov, Volgograd, Belgorod, Voronezh, nel Territorio di Stavropol, nella Repubblica di Kalmykia, a Kuban, in Crimea e nella regione di Donetsk. Questa valutazione indica una minaccia di negazione dell'area e dello spazio aereo in queste località.",
+        "title_en": "Drone Threat Assessment Across Multiple Regions",
+        "description_en": "A warning has been issued regarding potential drone activity in the Rostov, Lipetsk, Astrakhan, Tambov, Saratov, Volgograd, Belgorod, Voronezh regions, Stavropol Territory, the Republic of Kalmykia, Kuban, Crimea, and Donetsk region. This assessment indicates an area denial and airspace threat across these locations.",
+        "date": "2025-12-21 20:32:11",
+        "type": "Area denial/airspace threat assessment - warning of potential drone activity across multiple regions rather than reporting specific attack",
+        "actor": "UNK",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "MAKS23_NAFO",
+            "url": "https://t.me/MAKS23_NAFO/77374"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           25.3319078,
           58.7523778
         ]
@@ -253,6 +337,34 @@
           {
             "name": "MAKS23_NAFO",
             "url": "https://t.me/MAKS23_NAFO/77348"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.2746326,
+          47.9863996
+        ]
+      },
+      "properties": {
+        "cluster_id": "aa55b387-66a0-473d-af96-b0ebc9303c10",
+        "title": "La Russia Ottiene Controllo Sulle Risorse Minerarie Ucraine",
+        "description": "L'occupazione russa dei territori ucraini, in particolare del Donbas, consente l'accesso a risorse vitali come litio, carbone e gas. Il Donbas è cruciale poiché detiene il 67% delle riserve di carbone ucraine. L'industria del carbone ucraina è notevolmente diminuita, passando da 180 milioni di tonnellate nel 1989 a 29 milioni di tonnellate nel 2021. Perdere il Donbas influisce non solo sull'economia ucraina, ma anche sulla sua identità nazionale, mentre la Russia si assicura risorse minerarie preziose, comprese significative riserve di litio per le batterie dei veicoli elettrici.",
+        "title_en": "Russia Gains Control Over Ukrainian Mineral Resources",
+        "description_en": "Russia's occupation of Ukrainian territories, particularly Donbas, allows access to vital resources like lithium, coal, and gas. Donbas is crucial as it holds 67% of Ukraine's coal reserves. The Ukrainian coal industry has significantly declined, from 180 million tons in 1989 to 29 million tons in 2021. Losing Donbas not only impacts Ukraine's economy but also its national identity, while Russia secures valuable mineral resources, including significant lithium reserves for electric vehicle batteries.",
+        "date": "2025-12-21 14:21:06",
+        "type": "Resource control and economic warfare through territorial occupation to gain strategic mineral advantages",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "MAKS23_NAFO",
+            "url": "https://t.me/MAKS23_NAFO/77340"
           }
         ]
       }
@@ -346,8 +458,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.8581638,
-          43.9176386
+          37.8168012,
+          48.9801314
         ]
       },
       "properties": {
@@ -421,6 +533,34 @@
           {
             "name": "MAKS23_NAFO",
             "url": "https://t.me/MAKS23_NAFO/77315"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.922718,
+          50.432705
+        ]
+      },
+      "properties": {
+        "cluster_id": "20356589-c08c-4bab-babb-8a2cc4e87021",
+        "title": "Attacco UAV Distrugge Colonna di Fanteria Russa a Sotnitsky",
+        "description": "Il 21 dicembre 2025, una grande colonna di fanteria russa è stata distrutta dagli operatori UAV della compagnia Strix mentre tentava di entrare nel villaggio di confine di Sotnitsky Kazachok.",
+        "title_en": "UAV Strike Destroys Russian Infantry Column at Sotnitsky",
+        "description_en": "On December 21, 2025, a large column of Russian infantry was destroyed by UAV operators from the Strix strike UAV company while attempting to enter the border village of Sotnitsky Kazachok.",
+        "date": "2025-12-21 10:41:15",
+        "type": "Defensive UAV strike against advancing infantry column at border village",
+        "actor": "UKR",
+        "reliability": 40,
+        "intensity": 0.15,
+        "references": [
+          {
+            "name": "MAKS23_NAFO",
+            "url": "https://t.me/MAKS23_NAFO/77314"
           }
         ]
       }
@@ -638,6 +778,90 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          37.3312,
+          48.43803
+        ]
+      },
+      "properties": {
+        "cluster_id": "f9b7dcfb-236e-4108-95ac-40fb749bfd80",
+        "title": "Forze ucraine conducono ricognizione vicino al confine russo",
+        "description": "Un video militare ucraino mostra un soldato che ingaggia un combattente nemico e un altro soldato che potrebbe commettere suicidio. Le riprese catturano fumi nei pressi di Pan'kiv, Russia, suggerendo attività militari. Se confermato, ciò indica operazioni ucraine a 1,5 km dal territorio russo nella direzione di Eastern Vovchansk. In attesa di conferma ufficiale.",
+        "title_en": "Ukrainian Forces Conduct Reconnaissance Near Russian Border",
+        "description_en": "Ukrainian military video shows a soldier engaging an enemy combatant and another soldier potentially committing suicide. Footage captures smoke in the vicinity of Pan'kiv, Russia, suggesting military activity. If confirmed, this indicates Ukrainian operations within 1.5 km of Russian territory in the Eastern Vovchansk direction. Awaiting official confirmation.",
+        "date": "2025-12-21 17:01:58",
+        "type": "Forward reconnaissance or probing attack to test Russian border defenses",
+        "actor": "UNK",
+        "reliability": 65,
+        "intensity": 0.15,
+        "references": [
+          {
+            "name": "ukrliberation",
+            "url": "https://t.me/ukrliberation/15261"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          38.6867952,
+          48.1473644
+        ]
+      },
+      "properties": {
+        "cluster_id": "83886bb9-d417-450a-bc7e-bebd168a424d",
+        "title": "Forze ucraine umiliate nella regione di Sumy",
+        "description": "I soldati ucraini della 119ª Brigata hanno subito tattiche di guerra psicologica nel villaggio di Hrabivske, Oblast di Sumy. Durante la ricognizione aerea russa, hanno mostrato sfida con gesti offensivi. Dopo un'operazione della 34ª Brigata, un gruppo di cinque soldati è stato catturato e costretto a scusarsi in ginocchio.",
+        "title_en": "Ukrainian Forces Humiliated in Sumy Region",
+        "description_en": "Ukrainian soldiers from the 119th Brigade experienced psychological warfare tactics in the village of Hrabivske, Sumy Oblast. During Russian aerial reconnaissance, they displayed defiance by gesturing offensively. Following an operation by the 34th Brigade, a group of five soldiers was captured and forced to apologize on their knees.",
+        "date": "2025-12-21 14:26:34",
+        "type": "Psychological warfare and humiliation tactics, suppression of Ukrainian military presence in village",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.15,
+        "references": [
+          {
+            "name": "ukrliberation",
+            "url": "https://t.me/ukrliberation/15246"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.922718,
+          50.432705
+        ]
+      },
+      "properties": {
+        "cluster_id": "02b0e1c0-a63b-4f33-99a8-d65e803f03a5",
+        "title": "Il nemico conduce un attacco diversivo nella regione di Kharkiv",
+        "description": "Il 20 dicembre 2025, le forze nemiche hanno aumentato la loro attività nell'area Dnipro-Kharkiv, tentando di catturare Sotnytskyi Kazachok nella regione di Kharkiv, ma hanno fallito. L'obiettivo del nemico è deviare le forze di difesa ucraine da fronti più critici. Le forze ucraine rimangono impegnate e hanno piani di emergenza in atto.",
+        "title_en": "Enemy Conducts Diversionary Attack in Kharkiv Region",
+        "description_en": "On December 20, 2025, enemy forces increased their activity in the Dnipro-Kharkiv area, attempting to capture Sotnytskyi Kazachok in the Kharkiv region but failed. The objective of the enemy is to divert Ukrainian Defense Forces from more critical fronts. Ukrainian forces remain committed and have contingency plans in place.",
+        "date": "2025-12-21 13:39:05",
+        "type": "Diversionary attack to draw forces from critical fronts",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "ukrliberation",
+            "url": "https://t.me/ukrliberation/15244"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           37.6141992,
           49.7132963
         ]
@@ -666,6 +890,34 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          38.0902435,
+          48.8676267
+        ]
+      },
+      "properties": {
+        "cluster_id": "d38f3b70-3d9c-4345-9337-802dcad9243a",
+        "title": "Le Forze Russo Occupano Siversk, Ucraina",
+        "description": "Siversk è stata completamente occupata dalle truppe russe. La disinformazione del comando ha portato alla perdita della città. A Dronivka, le posizioni ucraine rimangono, ma il villaggio non è occupato. I ritardi nel ritirare le truppe da Serebryanka le hanno lasciate circondate. La foresta di Serebryansk è completamente occupata.",
+        "title_en": "Russian Forces Occupy Siversk, Ukraine",
+        "description_en": "Siversk has been fully occupied by Russian troops. Misinformation from command led to the loss of the city. In Dronivka, Ukrainian positions remain, but the village is not occupied. Delays in withdrawing troops from Serebryanka left them surrounded. The Serebryansk forest is completely occupied.",
+        "date": "2025-12-20 20:21:48",
+        "type": "Unknown",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.15,
+        "references": [
+          {
+            "name": "ukrliberation",
+            "url": "https://t.me/ukrliberation/15234"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           37.644479,
           48.541032
         ]
@@ -685,6 +937,34 @@
           {
             "name": "ukrliberation",
             "url": "https://t.me/ukrliberation/15233"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.7322878,
+          46.4843023
+        ]
+      },
+      "properties": {
+        "cluster_id": "f1082bb9-6a97-4fe9-9143-5f4c5e2b0f7f",
+        "title": "Le Forze Russe Colpiscono le Posizioni Ucraine nella Regione di Odessa",
+        "description": "Il 22 dicembre 2025, le truppe russe hanno condotto una serie di attacchi contro obiettivi delle Forze Armate ucraine nella regione di Odessa e hanno colpito un convoglio ferroviario vicino a Korosten. Le forze ucraine hanno attaccato le infrastrutture di raffinazione del petrolio nel Krasnodar Krai utilizzando droni. Nella direzione di Burluk, le unità del Gruppo Settentrionale hanno respinto il nemico da Vylchyi e hanno continuato la loro avanzata nella foresta di Tatarsky. Nella direzione di Konstantynivka, i reparti d'assalto russi stanno gradualmente espandendo il loro controllo attorno alla città omonima.",
+        "title_en": "Russian Forces Strike Ukrainian Positions in Odessa Region",
+        "description_en": "On December 22, 2025, Russian troops conducted a series of strikes against Ukrainian Armed Forces targets in the Odessa region and hit a railway convoy near Korosten. Ukrainian forces attacked oil refining infrastructure in Krasnodar Krai using drones. In the Burluk direction, units of the Northern Group pushed the enemy out of Vylchyi and continued their advance in the Tatarsky forest. In the Konstantynivka direction, Russian stormtroopers are gradually expanding their control around the city of the same name.",
+        "date": "2025-12-22 20:10:58",
+        "type": "Logistics disruption",
+        "actor": "RUS, UKR",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "rybar",
+            "url": "https://t.me/rybar/76184"
           }
         ]
       }
@@ -750,6 +1030,94 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          36.2656849,
+          47.6655382
+        ]
+      },
+      "properties": {
+        "cluster_id": "4f7b90f3-b41b-420a-b9d8-7ee18c113b4b",
+        "title": "Forze russe conducono operazione di attraversamento del fiume in Ucraina",
+        "description": "Le forze russe stanno eseguendo un'operazione di attraversamento del fiume presso il fiume Gaičur per stabilire una testa di ponte tattica. Questa manovra mira a consentire un attacco di fianco contro le posizioni difensive ucraine lungo la linea del fiume. L'operazione segue recenti avanzamenti ucraini nella zona, dove hanno fatto pressione sulle truppe russe e hanno effettuato incursioni nelle loro difese.",
+        "title_en": "Russian Forces Conduct River Crossing Operation in Ukraine",
+        "description_en": "Russian forces are executing a river crossing operation at the Gaičur River to establish a tactical bridgehead. This maneuver aims to enable a flanking attack against Ukrainian defensive positions along the river line. The operation follows recent Ukrainian advances in the area, where they have pressured Russian troops and made incursions into their defenses.",
+        "date": "2025-12-22 05:00:32",
+        "type": "Russian forces conducting river crossing operation to establish tactical bridgehead, potentially enabling flanking maneuver against Ukrainian defensive positions along river line.",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "rybar",
+            "url": "https://t.me/rybar/76167"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.2750575,
+          46.416632
+        ]
+      },
+      "properties": {
+        "cluster_id": "da6827df-7902-48b4-a9bb-c36bb286ee92",
+        "title": "Le forze russe conducono operazioni offensive in Ucraina",
+        "description": "Il 21 dicembre 2025, le truppe russe hanno colpito un ponte nell'area di Mayaky nella regione di Odesa e hanno attaccato infrastrutture militari in varie località dell'Ucraina. Nella direzione di Slobozhansk, le unità di ricognizione della 34ª Brigata hanno catturato membri delle Forze Armate ucraine a Hrabovske. Nella direzione di Borivske, le truppe d'assalto sono entrate in combattimento tra Lozova e Zahryzovo e sono avanzate in un'area forestale vicino a Platonivka. Inoltre, nella direzione di Pokrovsk-Myrnograd, il 1435° reggimento ha issato la bandiera russa a Svitlyi.",
+        "title_en": "Russian Forces Conduct Offensive Operations in Ukraine",
+        "description_en": "On December 21, 2025, Russian troops targeted a bridge in the Mayaky area of Odesa region and struck military infrastructure in various locations across Ukraine. In the Slobozhansk direction, reconnaissance units of the 34th Brigade captured members of the Ukrainian Armed Forces in Hrabovske. In the Borivske direction, assault troops engaged in combat between Lozova and Zahryzovo and advanced into a forest area near Platonivka. Additionally, in the Pokrovsk-Myrnograd direction, the 1435th regiment raised the Russian flag in Svitlyi.",
+        "date": "2025-12-21 19:50:35",
+        "type": "Coordinated multi-front offensive operations with both kinetic strikes and territorial advances",
+        "actor": "RUS",
+        "reliability": 55,
+        "intensity": 0.35,
+        "references": [
+          {
+            "name": "rybar",
+            "url": "https://t.me/rybar/76161"
+          },
+          {
+            "name": "rybar",
+            "url": "https://t.me/rybar/76150"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.6141992,
+          49.7132963
+        ]
+      },
+      "properties": {
+        "cluster_id": "46d2b42e-f1df-4d18-86d2-113af51fb7bd",
+        "title": "La Russia Espande il Focalizzazione Militare sul Fronte Orientale",
+        "description": "Il 21 dicembre 2025, i rapporti indicano sforzi diplomatici intensificati riguardanti il conflitto in Ucraina. L'attenzione è rivolta al ritiro delle forze ucraine dal Donbas, con il presidente Zelensky che resiste a concessioni a causa di potenziali ripercussioni elettorali. I funzionari della difesa russa percepiscono la militarizzazione dell'UE come preparazione a un futuro conflitto con la Russia negli anni '30.",
+        "title_en": "Russia Expands Military Focus on Eastern Front",
+        "description_en": "On December 21, 2025, reports indicate intensified diplomatic efforts surrounding the conflict in Ukraine. The focus is on the withdrawal of Ukrainian forces from Donbas, with President Zelensky resisting concessions due to potential electoral repercussions. Russian defense officials perceive the EU's militarization as preparation for a future conflict with Russia in the 2030s.",
+        "date": "2025-12-21 17:26:02",
+        "type": "Retaliatory infrastructure degradation and eastern front expansion",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "rybar",
+            "url": "https://t.me/rybar/76158"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           82.9334092,
           55.0817543
         ]
@@ -778,8 +1146,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          35.2316631,
-          39.294076
+          30.5394926,
+          50.4339483
         ]
       },
       "properties": {
@@ -834,8 +1202,36 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -1.5894921,
-          47.2169416
+          30.7322878,
+          46.4843023
+        ]
+      },
+      "properties": {
+        "cluster_id": "c66cee8d-c70e-414f-8184-8d68f0a00558",
+        "title": "Le forze russe attaccano le infrastrutture nella regione di Odessa",
+        "description": "Il 20 dicembre 2025, le truppe russe hanno continuato la loro offensiva nella regione di Odessa, prendendo di mira un ponte e un traghetto a Mayaki. Nella regione di Nikolaev, si sono verificate ampie interruzioni di corrente. A Kiev, una bandiera russa è stata sollevata da un drone. Inoltre, le forze russe hanno avanzato su un nuovo settore nella direzione di Slobozhansk, mentre le unità della 34ª Brigata hanno liberato Vysokoye nella regione di Sumy e la 2ª Armata ha liberato il villaggio di Svetloe nella direzione di Pokrovsk-Mirnograd.",
+        "title_en": "Russian Forces Attack Infrastructure in Odessa Region",
+        "description_en": "On December 20, 2025, Russian troops continued their offensive in the Odessa region, targeting a bridge and ferry in Mayaki. In the Nikolaev region, widespread power outages occurred. In Kyiv, a Russian flag was raised by a drone. Additionally, Russian forces advanced on a new section in the Slobozhansk direction, while units from the 34th Brigade liberated Vysokoye in the Sumy region and the 2nd Army liberated the settlement of Svetloe in the Pokrovsk-Mirnograd direction.",
+        "date": "2025-12-20 19:15:37",
+        "type": "Coordinated multi-front pressure: attacking rear infrastructure (Odessa bridge, Nikolaev power), psychological operations (Kyiv flag drone), and ground advances on three fronts to stretch Ukrainian defenses.",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "rybar",
+            "url": "https://t.me/rybar/76138"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.4831471,
+          50.4254374
         ]
       },
       "properties": {
@@ -853,6 +1249,34 @@
           {
             "name": "lost_armour",
             "url": "https://t.me/lost_armour/7521"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.1182867,
+          47.8507859
+        ]
+      },
+      "properties": {
+        "cluster_id": "44640832-7c01-4f6b-ad58-8638f4c6fa4a",
+        "title": "Complesso ZALA Distrugge Howitzer Bogdana a Zaporizhzhia",
+        "description": "Nella regione di Zaporizhzhia, il complesso di ricognizione e attacco ZALA 'Lantset' ha eliminato un'autoarticolata Bogdana ucraina. L'unità di artiglieria stava prendendo di mira posizioni vicino a Huliaipole quando è stata rilevata dai droni ZALA Z-16 durante la ricognizione aerea. Dopo aver sparato, l'howitzer ha tentato di ritirarsi in copertura ma è stata monitorata continuamente. Le coordinate sono state rapidamente trasmesse alle munizioni in volo per l'ingaggio.",
+        "title_en": "ZALA Complex Destroys Bogdana Howitzer in Zaporizhzhia",
+        "description_en": "In Zaporizhzhia region, the ZALA 'Lantset' reconnaissance-strike complex eliminated a Ukrainian Bogdana self-propelled howitzer. The artillery unit was targeting positions near Huliaipole when it was detected by ZALA Z-16 drones during aerial reconnaissance. After firing, the howitzer attempted to retreat to cover but was continuously monitored. The coordinates were quickly relayed to loitering munitions for engagement.",
+        "date": "2025-12-22 11:27:50",
+        "type": "Counter-battery fire suppression",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.52,
+        "references": [
+          {
+            "name": "lost_armour",
+            "url": "https://t.me/lost_armour/7520"
           }
         ]
       }
@@ -965,6 +1389,34 @@
           {
             "name": "lost_armour",
             "url": "https://t.me/lost_armour/7507"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          27.9313692,
+          50.1476608
+        ]
+      },
+      "properties": {
+        "cluster_id": "b55f413d-a1e8-4fc9-9c86-7a76ccebab99",
+        "title": "La propaganda russa evidenzia la distruzione a Dzerzhinsk",
+        "description": "Un recente rapporto sottolinea la distruzione a Dzerzhinsk, nel Donbas, attribuita alle forze ucraine. La narrazione afferma che le truppe ucraine hanno trasformato la città in una fortezza mentre attaccavano Gorlovka per oltre un decennio. Il rapporto menziona anche l'annuncio del ritorno di Dzerzhinsk in Russia il 7 febbraio 2025 e sottolinea i pesanti costi associati ai guadagni territoriali nella regione.",
+        "title_en": "Russian Propaganda Highlights Destruction in Dzerzhinsk",
+        "description_en": "A recent report emphasizes the destruction in Dzerzhinsk, Donbas, attributed to Ukrainian forces. The narrative claims that Ukrainian troops have turned the city into a fortress while attacking Gorlovka for over a decade. The report also mentions the announcement of Dzerzhinsk's return to Russia on February 7, 2025, and underscores the heavy costs associated with territorial gains in the region.",
+        "date": "2025-12-22 19:11:37",
+        "type": "Propaganda emphasizing Ukrainian destruction and justifying Russian actions.",
+        "actor": "UKR",
+        "reliability": 40,
+        "intensity": 0.35,
+        "references": [
+          {
+            "name": "voenkorKotenok",
+            "url": "https://t.me/voenkorKotenok/69606"
           }
         ]
       }
@@ -1118,6 +1570,62 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          31.7417235,
+          51.272593
+        ]
+      },
+      "properties": {
+        "cluster_id": "4db16ade-0562-4e34-873d-bd74ea9dec88",
+        "title": "L'analisi del terreno influisce sulle operazioni dei droni a Chernihiv",
+        "description": "L'analisi del terreno indica che le foreste a Chernihiv ostacolano le operazioni dei droni nemici. L'area di Slavyansk-Kramatorsk funge da fortezza difensiva a supporto di più fronti. Inoltre, l'asse meridionale lungo il fiume Dnipro offre vantaggi operativi grazie allo spazio del terreno, migliorando la pianificazione strategica per azioni offensive.",
+        "title_en": "Terrain Analysis Affects Drone Operations in Chernihiv",
+        "description_en": "Terrain analysis indicates that forests in Chernihiv hinder enemy drone operations. The Slavyansk-Kramatorsk area serves as a defensive fortress supporting multiple fronts. Additionally, the southern axis along the Dnipro River offers operational advantages due to terrain spacing, enhancing strategic planning for offensive actions.",
+        "date": "2025-12-21 21:05:12",
+        "type": "Terrain analysis for offensive planning: forests in Chernihiv hinder enemy drones; Slavyansk-Kramatorsk functions as defensive fortress supporting multiple fronts; southern axis along Dnipro offers better operational advantages due to terrain spacing.",
+        "actor": "UNK",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "voenkorKotenok",
+            "url": "https://t.me/voenkorKotenok/69575"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.6521371,
+          48.8181752
+        ]
+      },
+      "properties": {
+        "cluster_id": "34e78420-5465-4703-99d0-d88eea280c88",
+        "title": "Le forze avanzano su Sloviansk da più direzioni",
+        "description": "Le forze ucraine stanno subendo interruzioni logistiche mentre le truppe russe conducono un'offensiva coordinata su più assi verso Sloviansk. L'avanzata è principalmente focalizzata dalle direzioni sud ed est, con movimenti significativi segnalati dalle 25ª e 6ª armate a ovest. L'area intorno a Severodonetsk, circondata da altezze, presenta sfide per la difesa, poiché la principale linea di difesa ucraina è stabilita lungo queste posizioni elevate. Vengono impiegate manovre tattiche per bypassare le difese fortificate.",
+        "title_en": "Forces Advance on Sloviansk from Multiple Directions",
+        "description_en": "Ukrainian forces are experiencing logistical disruptions as Russian troops conduct a coordinated multi-axis offensive towards Sloviansk. The advance is primarily focused from the southern and eastern directions, with significant movements reported from the 25th and 6th armies in the west. The area around Severodonetsk, surrounded by heights, poses challenges for defense, as the main line of Ukrainian defense is established along these elevated positions. Tactical maneuvers are being employed to bypass fortified defenses.",
+        "date": "2025-12-21 20:57:29",
+        "type": "Logistics disruption and territorial expansion through coordinated multi-axis offensive, employing height-based flanking tactics to bypass fortified defenses",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "voenkorKotenok",
+            "url": "https://t.me/voenkorKotenok/69574"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           35.1182867,
           47.8507859
         ]
@@ -1174,8 +1682,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -1.5894921,
-          47.2169416
+          35.4831471,
+          50.4254374
         ]
       },
       "properties": {
@@ -1326,6 +1834,34 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          37.6923754,
+          48.534905
+        ]
+      },
+      "properties": {
+        "cluster_id": "426b2177-d742-478f-b7a8-915c357f76da",
+        "title": "Le Forze Ucraine Fermano l'Assalto Russo a Kostyantynivka",
+        "description": "Il 22 dicembre 2025, la 93ª Brigata Meccanizzata dell'Ucraina e le Unità di Guardia di Frontiera Phoenix hanno utilizzato droni FPV per fermare un assalto meccanizzato russo sull'asse di Kostyantynivka. L'operazione ha portato alla distruzione di tre veicoli blindati, incluso un BTR.",
+        "title_en": "Ukrainian Forces Halt Russian Assault in Kostyantynivka",
+        "description_en": "On December 22, 2025, Ukraine’s 93rd Mechanized Brigade and Phoenix Border Guard Units utilized FPV drones to thwart a Russian mechanized assault on the Kostyantynivka axis. The operation resulted in the destruction of three armored vehicles, including one BTR.",
+        "date": "2025-12-22 15:24:29",
+        "type": "Defensive action to stop mechanized assault",
+        "actor": "UKR",
+        "reliability": 40,
+        "intensity": 0.42,
+        "references": [
+          {
+            "name": "noel_reports",
+            "url": "https://t.me/noel_reports/38881"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           129.1540617,
           61.48327
         ]
@@ -1354,8 +1890,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          45.0104807,
-          10.4327323
+          37.6672026,
+          55.77843
         ]
       },
       "properties": {
@@ -1526,6 +2062,34 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          35.922718,
+          50.432705
+        ]
+      },
+      "properties": {
+        "cluster_id": "8e3eefe9-1e31-4af3-8e30-430786992b32",
+        "title": "Tentativo di infiltrazione russo fallisce nella regione di Kharkiv",
+        "description": "Un gruppo di oltre 10 soldati russi ha tentato di infiltrarsi a Sotnytsky Kozachok sull'asse di Zolochiv nella regione di confine di Kharkiv. Il gruppo, in movimento in formazione serrata, è stato completamente eliminato dalle forze ucraine, portando a un totale fallimento dell'operazione.",
+        "title_en": "Russian Infiltration Attempt Fails in Kharkiv Region",
+        "description_en": "A group of over 10 Russian soldiers attempted to infiltrate Sotnytsky Kozachok on the Zolochiv axis in the Kharkiv border region. The group, moving in tight formation, was completely eliminated by Ukrainian forces, resulting in a total failure of the operation.",
+        "date": "2025-12-21 09:55:56",
+        "type": "Failed Russian infiltration attempt on Kharkiv border region, eliminated by Ukrainian forces",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.0,
+        "references": [
+          {
+            "name": "noel_reports",
+            "url": "https://t.me/noel_reports/38819"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           7.540121,
           44.933143
         ]
@@ -1573,6 +2137,62 @@
           {
             "name": "noel_reports",
             "url": "https://t.me/noel_reports/38814"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          39.861362,
+          47.268696
+        ]
+      },
+      "properties": {
+        "cluster_id": "66c5cee8-0f9b-4766-bc7b-b8e0d99155c9",
+        "title": "Le sottostazioni prendono fuoco ad Aksay e Kursk",
+        "description": "Una sottostazione ad Aksay, nella regione di Rostov, è andata in fiamme dopo un allerta droni e esplosioni, causando interruzioni di energia e riscaldamento in alcune parti della città. Poco dopo, anche un'altra sottostazione a Kursk è stata incendiata.",
+        "title_en": "Substations Catch Fire in Aksay and Kursk",
+        "description_en": "A substation in Aksay, Rostov region, caught fire after a drone alert and explosions, leading to power and heating outages in parts of the city. Shortly after, another substation in Kursk also ignited.",
+        "date": "2025-12-21 08:32:39",
+        "type": "Unknown",
+        "actor": "UNK",
+        "reliability": 40,
+        "intensity": 0.98,
+        "references": [
+          {
+            "name": "noel_reports",
+            "url": "https://t.me/noel_reports/38807"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          38.8481322,
+          48.3160483
+        ]
+      },
+      "properties": {
+        "cluster_id": "5617d90f-7ce9-4755-a922-a01f7f2b6df5",
+        "title": "Forze russe avanzano a Fedorivka, mettono in sicurezza Zvanivka",
+        "description": "Il 21 dicembre 2025, le forze russe hanno avanzato a Fedorivka e messo in sicurezza gli approcci a Pazeno, migliorando il loro vantaggio posizionale. Più a nord, Zvanivka è stata messa in sicurezza, con le truppe russe che avanzano a ovest del villaggio.",
+        "title_en": "Russian Forces Advance in Fedorivka, Secure Zvanivka",
+        "description_en": "On December 21, 2025, Russian forces advanced in Fedorivka and secured approaches in Pazeno, enhancing their positional advantage. Further north, Zvanivka was secured, with Russian troops advancing west of the village.",
+        "date": "2025-12-21 22:30:54",
+        "type": "Ground assault to secure villages and approaches for positional advantage",
+        "actor": "RUS",
+        "reliability": 40,
+        "intensity": 0.05,
+        "references": [
+          {
+            "name": "Majakovsk73",
+            "url": "https://t.me/Majakovsk73/4909"
           }
         ]
       }
@@ -1722,6 +2342,34 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          37.6063916,
+          55.625578
+        ]
+      },
+      "properties": {
+        "cluster_id": "14f4f38e-defd-40e9-8206-cf333fc1917d",
+        "title": "Interruzione Tecnica Colpisce Sistemi Automobilistici in Russia",
+        "description": "Da Mosca a Krasnodar, e da Ekaterinburg a Rostov, i sistemi telematici automobilistici civili hanno improvvisamente smesso di avviarsi. Questo blackout sincronizzato è iniziato il 28 novembre, senza comunicazioni ufficiali riguardo alla causa. Gli analisti OSINT suggeriscono possibili motivi, tra cui disturbi dello spettro, problemi con i server VTS europei, restrizioni di roaming o un kill switch deliberato. La situazione rimane incerta.",
+        "title_en": "Technical Disruption Affects Automotive Systems in Russia",
+        "description_en": "From Moscow to Krasnodar, and Ekaterinburg to Rostov, civilian automotive telematics systems have suddenly failed to start. This synchronized blackout began on November 28, with no official communications regarding the cause. OSINT analysts suggest possible reasons, including spectrum disturbances, issues with European VTS servers, roaming restrictions, or a deliberate kill switch. The situation remains uncertain.",
+        "date": "2025-12-22 01:26:56",
+        "type": "Technical disruption of civilian automotive telematics systems, potentially affecting transportation and logistics",
+        "actor": "UNK",
+        "reliability": 40,
+        "intensity": 0.38,
+        "references": [
+          {
+            "name": "parabellumcommunity",
+            "url": "https://t.me/parabellumcommunity/335679"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           37.6141992,
           49.7132963
         ]
@@ -1778,8 +2426,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          5.7311535,
-          43.984923
+          37.8168012,
+          48.9801314
         ]
       },
       "properties": {

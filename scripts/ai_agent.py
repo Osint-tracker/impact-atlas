@@ -100,10 +100,13 @@ You will receive a "Cluster Object" containing:
 
 **CORE DIRECTIVES (NON-NEGOTIABLE)**
 
-1.  **GEOLOCATION PROTOCOL (Critical):**
+1.  **GEOLOCATION PROTOCOL (CRITICAL - READ CAREFULLY):**
     * **EXPLICIT COORDS:** ONLY if the text contains numerical coordinates (e.g., "48.123, 37.456"), extract them into `geo_location.explicit`.
     * **INFERRED:** If no numbers are present, extract the Toponym (City/Village) and the specific landmark (e.g., "School No.3", "Industrial Zone") into `geo_location.inferred`.
     * **NEVER HALLUCINATE:** Do not convert a city name into coordinates yourself. If no coordinates are written in text, `geo_location.explicit` must be `null`.
+    * **SINGLE IMPACT POINT:** You must identify the ONE main location where the event physically happened.
+    * **NO LISTS:** NEVER output "Kyiv, Lviv, Odessa". Pick the most heavily impacted one.
+    * **SPECIFICITY:** If text says "Explosion in Odesa", output "Odesa". If it says "Odesa region", output "Odesa region".
 
 2.  **TIME RECONSTRUCTION:**
     * Analyze time references relative to `reference_timestamp`.
@@ -138,7 +141,7 @@ Return ONLY a valid JSON object matching this structure:
       "source_text_snippet": "extraction or null"
     },
     "inferred": {
-      "toponym_raw": "e.g. Bakhmut",
+      "toponym_raw": "SINGLE_CITY_NAME_ONLY (e.g. Bakhmut)",
       "landmark_description": "e.g. Near the train station",
       "spatial_relation": "e.g. 5km North of..."
     }
@@ -156,9 +159,9 @@ Return ONLY a valid JSON object matching this structure:
     }
   },
   "casualties": {
-    "killed_kia": 0,
-    "wounded_wia": 0,
-    "civilian_mentioned": false
+    "killed_kia": e.g. 0,
+    "wounded_wia": e.g. 0,
+    "civilian_mentioned": e.g. false
   }
 }
 """
@@ -825,6 +828,25 @@ RAW TEXT:
 
                 if is_invalid_lat or is_invalid_lon:
                     parsed_data["geo_location"]["explicit"] = None
+
+                    # 5. SANITY CHECK SUL NOME CITTÀ (Inferred)
+            # Se l'AI ha scritto "Kyiv, Ukraine" o "Kyiv, Lviv", teniamo solo la prima parte.
+            try:
+                raw_loc = parsed_data.get("geo_location", {}).get(
+                    "inferred", {}).get("toponym_raw")
+                if raw_loc and isinstance(raw_loc, str):
+                    # Pulisce liste (prende il primo elemento)
+                    if "," in raw_loc:
+                        clean_loc = raw_loc.split(",")[0].strip()
+                        parsed_data["geo_location"]["inferred"]["toponym_raw"] = clean_loc
+
+                    # Pulisce liste con 'and' (es. "Kyiv and Lviv")
+                    if " and " in raw_loc.lower():
+                        clean_loc = raw_loc.lower().split(
+                            " and ")[0].strip().title()  # Rimette maiuscola
+                        parsed_data["geo_location"]["inferred"]["toponym_raw"] = clean_loc
+            except:
+                pass
 
             return parsed_data
 
