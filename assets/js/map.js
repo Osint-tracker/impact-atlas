@@ -669,145 +669,192 @@
     if (typeof renderInternal === 'function') renderInternal(filtered);
   };
   // ============================================
-  // 10. MODAL FUNCTIONS (FIXED & LINKED)
+  // 10. MODAL FUNCTIONS (TRIDENT INTEL CARD)
   // ============================================
 
+  // Variabile globale per il grafico (per distruggerlo prima di ricrearlo)
+  let tieRadarInstance = null;
+
+  // Funzione Entry Point (chiamata dal bottone nel popup o dalla griglia)
   window.openModal = function (eventIdOrObj) {
     console.log("Tentativo apertura dossier:", eventIdOrObj);
     let eventData = null;
 
     if (typeof eventIdOrObj === 'string') {
+      // Caso 1: Stringa JSON (spesso dalla griglia visuale)
       if (eventIdOrObj.startsWith('%7B') || eventIdOrObj.startsWith('{')) {
-        try { eventData = JSON.parse(decodeURIComponent(eventIdOrObj)); } catch (err) { }
+        try { 
+            eventData = JSON.parse(decodeURIComponent(eventIdOrObj)); 
+        } catch (err) { console.error("Errore parsing JSON modale", err); }
       } else {
-        // FIX: Confronto robusto (converte tutto a stringa)
+        // Caso 2: ID Evento (dal marker sulla mappa)
         if (window.globalEvents) {
           const searchId = String(eventIdOrObj);
-          eventData = window.globalEvents.find(evt => String(evt.event_id) === searchId);
+          // Cerca per event_id, cluster_id o id
+          eventData = window.globalEvents.find(evt => 
+            String(evt.event_id) === searchId || 
+            String(evt.id) === searchId || 
+            String(evt.cluster_id) === searchId
+          );
         }
       }
     } else {
+      // Caso 3: Oggetto già passato
       eventData = eventIdOrObj;
     }
 
     if (!eventData) {
-      console.error(`❌ Evento non trovato per il Dossier. ID ricercato: ${eventIdOrObj}`);
-      return; // Interrompe l'esecuzione se non trova dati
+      console.error(`❌ Evento non trovato per il Dossier. ID:`, eventIdOrObj);
+      return; 
     }
 
-    // 2. Passa i dati alla funzione di rendering
-    window.openIntelDossier(eventData);
+    // Lancia la Intel Card
+    window.openIntelCard(eventData);
   };
 
-  // La tua funzione di grafica avanzata (Corretta e Ripristinata)
-  window.openIntelDossier = function (eventData) {
-    console.log("📂 Visualizzazione Dossier Intelligence per:", eventData.title);
+  // Funzione che popola e apre la Card
+  window.openIntelCard = function(event) {
+    console.log("📂 Opening Intel Card for:", event.title);
 
-    // 1. Popola i dati base
-    document.getElementById('modalTitle').innerText = eventData.title || "Titolo non disponibile";
+    // 1. Popola Header
+    document.getElementById('intelTitle').innerText = event.title || "Titolo non disponibile";
+    
+    // Gestione Categoria
+    const cat = event.category || event.event_category || 'EVENT';
+    const catEl = document.getElementById('intelCategory');
+    if(catEl) catEl.innerText = cat.toUpperCase().replace(/_/g, ' ');
+    
+    document.getElementById('intelDate').innerText = event.date || "";
+    document.getElementById('intelLocation').innerText = event.location || event.location_precision || 'Unknown Location';
 
-    // Supporto per entrambi gli ID della descrizione (sicurezza)
-    const descEl = document.getElementById('modalDesc') || document.getElementById('modalDescription');
-    if (descEl) descEl.innerText = eventData.description || "Nessuna descrizione.";
+    // 2. KPI Badge (Reliability & Bias)
+    const relEl = document.getElementById('intelReliability');
+    if(relEl) relEl.innerText = (event.reliability || 0) + '%';
+    
+    const biasEl = document.getElementById('intelBias');
+    if(biasEl) biasEl.innerText = event.bias_score || '0.0';
 
-    document.getElementById('modalDate').innerText = eventData.date || "";
+    // 3. T.I.E. Score Big Number
+    const tieTotal = event.tie_total || 0;
+    const tieEl = document.getElementById('intelTieScore');
+    if(tieEl) tieEl.innerText = tieTotal;
 
-    // 2. Popola i dati Intelligence (con controlli se mancano)
-    // --- GESTIONE DOMINANT BIAS (Con Tooltip Avanzato & Legenda) ---
-    const biasEl = document.getElementById('modal-dominant-bias');
-    if (biasEl) {
-      // 1. Recupero Dati (Supporto retrocompatibile)
-      const biasLabel = eventData.dominant_bias || eventData['Bias dominante'] || "NEUTRAL";
-      let score = parseFloat(eventData.bias_score || eventData['Bias Score'] || 0);
+    // 4. Tactical Bars (Recupero sicuro dei valori)
+    const k = parseFloat(event.vec_k || event.kinetic_score || 0);
+    const t = parseFloat(event.vec_t || event.target_score || 0);
+    const e = parseFloat(event.vec_e || event.effect_score || 0);
 
-      // Clamp score visivo tra -10 e +10 per sicurezza
-      score = Math.max(-10, Math.min(10, score));
+    // Aggiorna testi e larghezze barre
+    const elValK = document.getElementById('valK'); if(elValK) elValK.innerText = k.toFixed(1);
+    const elBarK = document.getElementById('barK'); if(elBarK) elBarK.style.width = (k * 10) + '%';
+    
+    const elValT = document.getElementById('valT'); if(elValT) elValT.innerText = t.toFixed(1);
+    const elBarT = document.getElementById('barT'); if(elBarT) elBarT.style.width = (t * 10) + '%';
+    
+    const elValE = document.getElementById('valE'); if(elValE) elValE.innerText = e.toFixed(1);
+    const elBarE = document.getElementById('barE'); if(elBarE) elBarE.style.width = (e * 10) + '%';
 
-      // 2. Logica Estetica (Colore + Descrizione Professionale)
-      let color = "#94a3b8"; // Default Grigio (Neutrale)
-      let explanation = "Il testo analizzato non presenta marcatori semantici significativi.";
-      let impactText = "Report Fattuale";
-
-      if (score <= -7) {
-        color = "#dc2626"; // Rosso Scuro (Propaganda RU)
-        impactText = "Propaganda di Stato (RUS)";
-        explanation = "Rilevata totale coincidenza con la dottrina informativa del Cremlino. Uso massiccio di terminologia disumanizzante e negazione della sovranità ucraina.";
-      } else if (score <= -3) {
-        color = "#f87171"; // Rosso Chiaro (Pro RU)
-        impactText = "Orientamento Filo-Russo";
-        explanation = "Orientamento narrativo filo-russo. Focus selettivo sui successi tattici di Mosca e scetticismo verso le fonti occidentali.";
-      } else if (score >= 7) {
-        color = "#1d4ed8"; // Blu Scuro (Propaganda UKR)
-        impactText = "Propaganda di Stato (UKR)";
-        explanation = "Narrazione nazionalista. Uso di linguaggio emotivo forte e possibile esagerazione delle perdite inflitte al nemico/omissione di dati critici per l'Ucraina.";
-      } else if (score >= 3) {
-        color = "#06b6d4"; // Ciano (Pro UKR)
-        impactText = "Orientamento Filo-Ucraino";
-        explanation = "Prospettiva atlantista. La narrazione supporta la legittimità della difesa ucraina ed evidenzia le responsabilità russe.";
-      } else {
-        // Neutrale (-2 a +2)
-        color = "#94a3b8"; // Grigio
-        impactText = "Neutrale / Fattuale";
-        explanation = "Reporting asettico. I dati sono presentati senza aggettivazione emotiva o giudizi di valore. Alta verifica fattuale.";
-      }
-
-      // 3. Render HTML (Badge + Tooltip "Intelligence Style")
-      // Nota: Il tooltip è largo 220px per ospitare la spiegazione
-      biasEl.innerHTML = `
-            <div class="intensity-badge-wrapper" style="cursor:help; position:relative; display:inline-block;">
-                
-                <span style="color:${color}; font-weight:700; letter-spacing:0.5px; border-bottom: 1px dashed ${color}44;">
-                    ${biasLabel.replace(/_/g, ' ')}
-                </span>
-                
-                <div class="info-icon" style="color:${color}; border-color:${color}; display:inline-flex; margin-left:6px; transform:scale(0.8);">i</div>
-
-                <div class="intensity-tooltip" style="
-                    width: 240px; 
-                    bottom: 130%; 
-                    left: 50%; 
-                    transform: translateX(-50%);
-                    background: rgba(15, 23, 42, 0.95);
-                    border: 1px solid ${color}44;
-                    padding: 12px;
-                    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-                    text-align: left;
-                ">
-                    <div style="border-bottom: 1px solid #334155; padding-bottom: 8px; margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.7rem; color:#64748b; text-transform:uppercase;">BIAS SCORE</span>
-                        <strong style="color:${color}; font-size:1.1rem;">${score > 0 ? '+' : ''}${score.toFixed(1)}</strong>
-                    </div>
-
-                    <div style="font-size:0.8rem; color:#e2e8f0; line-height:1.4; margin-bottom:8px;">
-                        <strong style="color:${color}; display:block; margin-bottom:4px;">${impactText}</strong>
-                        ${explanation}
-                    </div>
-
-                    <div style="font-size:0.65rem; color:#64748b; font-style:italic; border-top:1px solid #334155; padding-top:6px;">
-                        Valore calcolato su analisi semantica e affidabilità fonte.
-                    </div>
-                </div>
-            </div>
-        `;
+    // 5. Radar Chart (Chart.js)
+    const canvas = document.getElementById('tieRadarChart');
+    if (canvas && typeof Chart !== 'undefined') {
+        const ctx = canvas.getContext('2d');
+        
+        if (tieRadarInstance) {
+            tieRadarInstance.destroy();
+        }
+        
+        tieRadarInstance = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['KINETIC', 'TARGET', 'EFFECT'],
+                datasets: [{
+                    label: 'Event Profile',
+                    data: [k, t, e],
+                    backgroundColor: 'rgba(245, 158, 11, 0.2)', // var(--primary-dim)
+                    borderColor: '#f59e0b', // var(--primary)
+                    borderWidth: 2,
+                    pointBackgroundColor: '#1e293b', // var(--bg-surface)
+                    pointBorderColor: '#f59e0b',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#f59e0b'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: '#334155' }, 
+                        grid: { color: '#334155' },
+                        pointLabels: { 
+                            color: '#94a3b8', 
+                            font: { family: 'JetBrains Mono', size: 10, weight: '700' } 
+                        },
+                        ticks: { display: false, max: 10, min: 0 }
+                    }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    } else {
+        console.warn("Chart.js non caricato o canvas non trovato.");
     }
 
-    const locEl = document.getElementById('modal-location-precision');
-    if (locEl) {
-      locEl.innerText = (eventData.location_precision || "UNK").toUpperCase();
+    // 6. Testo Descrizione
+    const descEl = document.getElementById('intelDescription');
+    if(descEl) descEl.innerText = event.desc || event.description || "Nessuna descrizione disponibile.";
+    
+    // 7. AI Summary
+    const summary = event.ai_summary || "Analisi strategica dettagliata non disponibile per questo evento.";
+    const sumEl = document.getElementById('intelAiSummary');
+    if(sumEl) sumEl.innerText = summary;
 
-      // --- AGGIORNAMENTO CONTATORE FONTI (FIX BUG 0) ---
-      const sourceCountEl = document.getElementById('modal-source-count');
-      if (sourceCountEl) {
-        // Usa 'references' se c'è, altrimenti 0.
-        // eventData.references viene popolato da export_events.py
-        const count = (eventData.references && Array.isArray(eventData.references)) ? eventData.references.length : 0;
-        sourceCountEl.innerText = count;
+    // 8. Fonti (Lista)
+    const list = document.getElementById('intelSourcesList');
+    if(list) {
+        list.innerHTML = ''; // Pulisci
+        
+        // Adatta in base a come arrivano le fonti
+        let sources = event.sources_list || event.references || [];
+        if (typeof sources === 'string') {
+            try { sources = JSON.parse(sources); } catch(e) { sources = [sources]; }
+        }
+        
+        if (sources.length > 0) {
+            sources.forEach(src => {
+                // Se src è un oggetto {url: ...}, prendi url, altrimenti è stringa
+                const url = src.url || src;
+                let domain = "Fonte";
+                try { domain = new URL(url).hostname.replace('www.',''); } catch(e){ domain=url; }
 
-        // Opzionale: colora il numero se è alto (>1)
-        sourceCountEl.style.color = count > 1 ? '#22c55e' : (count === 1 ? '#f59e0b' : '#64748b');
-      }
-
+                const div = document.createElement('a');
+                div.className = 'source-item';
+                div.href = url.startsWith('http') ? url : '#';
+                div.target = "_blank";
+                div.innerHTML = `<span class="source-name">${domain}</span> <i class="fa-solid fa-external-link-alt" style="font-size:0.7rem"></i>`;
+                list.appendChild(div);
+            });
+        } else {
+            list.innerHTML = '<div style="font-size:0.8rem; color:#64748b; font-style:italic; padding:10px;">Fonti riservate o non pubbliche.</div>';
+        }
     }
+
+    // 9. Mostra la Modale
+    const modal = document.getElementById('intelModal');
+    if(modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('active'); // Per animazioni CSS se presenti
+    }
+  };
+
+  // Funzione chiusura
+  window.closeIntelCard = function(e) {
+    // Chiudi se clicchi sulla X o fuori dalla card
+    if (!e || e.target.id === 'intelModal' || e.target.classList.contains('close-modal')) {
+        const modal = document.getElementById('intelModal');
+        if(modal) modal.style.display = 'none';
+    }
+  };
 
     // ============================================================
     // A. GESTIONE INTENSITÀ (CIVILE vs MILITARE)
