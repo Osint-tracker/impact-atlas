@@ -1837,3 +1837,178 @@ header nav a:hover {
   font-style: italic;
 }
 .intel-ai-box i { color: var(--primary); font-size: 1.2rem; }
+
+/* =========================================================
+   INTEL CARD - STILE DEFINITIVO (IMPACT ATLAS)
+   ========================================================= */
+
+/* --- 1. TOOLTIP & BADGES (Il ritorno della (i)) --- */
+.kpi-interactive-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-body); /* Slate 900 */
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: help;
+    transition: all 0.2s ease;
+}
+
+.kpi-interactive-badge:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.1);
+}
+
+.kpi-label-small {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: #94a3b8; /* Text Muted */
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.kpi-value-large {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* L'icona (i) */
+.info-icon-circle {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: serif;
+    font-style: italic;
+    opacity: 0.6;
+}
+
+/* Il Tooltip (Nascosto di default) */
+.kpi-tooltip-content {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: 110%; /* Sopra il badge */
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    width: 260px;
+    background: #0f172a; /* Slate 900 solido */
+    border: 1px solid var(--border);
+    padding: 12px;
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    z-index: 9999;
+    transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+    pointer-events: none;
+    text-align: left;
+}
+
+.kpi-interactive-badge:hover .kpi-tooltip-content {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Freccetta del tooltip */
+.kpi-tooltip-content::after {
+    content: '';
+    position: absolute;
+    top: 100%; left: 50%;
+    margin-left: -6px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: var(--border) transparent transparent transparent;
+}
+
+/* Header e Testo dentro il Tooltip */
+.tt-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Rajdhani', sans-serif;
+    text-transform: uppercase;
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+.tt-body { font-size: 0.8rem; line-height: 1.4; color: #e2e8f0; margin-bottom: 8px; }
+.tt-footer { font-size: 0.7rem; color: #64748b; font-style: italic; border-top: 1px solid #334155; padding-top: 6px; }
+
+
+/* --- 2. TACTICAL BARS (Rese Visibili e Pulite) --- */
+.tactical-bars-container {
+    width: 100%;
+    margin-top: 20px;
+    background: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+
+.t-bar-row { margin-bottom: 12px; }
+.t-bar-row:last-child { margin-bottom: 0; }
+
+.t-bar-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: #94a3b8;
+    margin-bottom: 5px;
+}
+
+.t-bar-track {
+    height: 8px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Pattern a righe diagonali per dare stile militare */
+.t-bar-fill {
+    height: 100%;
+    width: 0; /* Animato via JS */
+    transition: width 1s ease-out;
+    background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
+    background-size: 1rem 1rem;
+}
+
+.bg-kinetic { background-color: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); } /* Red */
+.bg-target { background-color: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); } /* Amber */
+.bg-effect { background-color: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.4); } /* Blue */
+
+
+/* --- 3. FONTI (Lista pulita) --- */
+.source-link-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: #0f172a;
+    border: 1px solid var(--border);
+    margin-bottom: 6px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #94a3b8;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+}
+.source-link-item:hover {
+    border-color: var(--primary);
+    color: #f8fafc;
+    transform: translateX(5px);
+}
+.source-icon { color: var(--primary); margin-right: 10px; font-size: 0.8rem; }
