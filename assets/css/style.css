@@ -1635,3 +1635,205 @@ header nav a:hover {
   align-items: center;
   gap: 5px;
 }
+/* ============================================
+   INTEL CARD (TRIDENT SYSTEM) - NATIVE STYLE
+   ============================================ */
+
+/* Layout Griglia specifico per la modale Intel */
+.intel-card-layout {
+  display: flex;
+  flex-direction: column;
+  padding: 0; /* Reset del padding standard modal */
+  overflow: hidden; /* Importante per il bordo top colorato */
+  border-top: 4px solid var(--primary); /* Amber Top Bar */
+  max-width: 900px !important; /* Più largo per accomodare il grafico */
+  background: var(--bg-surface);
+}
+
+/* HEADER */
+.intel-header {
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.5); /* Slate 900 dim */
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.intel-title-group h3 {
+  font-family: 'Rajdhani', sans-serif; /* Font tecnico che usi nei Tab */
+  font-size: 1.5rem;
+  color: var(--text-main);
+  margin: 8px 0 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.intel-kpi-group {
+  display: flex;
+  gap: 12px;
+}
+
+.kpi-micro-card {
+  background: var(--bg-body);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  text-align: center;
+  min-width: 70px;
+}
+
+.kpi-micro-card .label {
+  display: block;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.kpi-micro-card .value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* BODY */
+.intel-body {
+  display: grid;
+  grid-template-columns: 320px 1fr; /* Colonna sinistra fissa per il grafico */
+  min-height: 400px;
+}
+
+@media (max-width: 768px) {
+  .intel-body { grid-template-columns: 1fr; } /* Stack su mobile */
+}
+
+/* Colonna Visual (Sinistra) */
+.intel-col-visual {
+  background: rgba(15, 23, 42, 0.3);
+  border-right: 1px solid var(--border);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tie-score-wrapper {
+  text-align: center;
+  margin-bottom: 20px;
+  width: 100%;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 15px;
+}
+
+.tie-big-number {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1;
+}
+
+.tie-label {
+  font-size: 0.75rem;
+  color: var(--primary);
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.chart-wrapper-radar {
+  width: 100%;
+  height: 220px;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+/* Tactical Bars */
+.tactical-bars { width: 100%; }
+.t-bar-row { margin-bottom: 10px; }
+.t-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.t-bar-track {
+  height: 6px;
+  background: var(--bg-body);
+  border-radius: 3px;
+  border: 1px solid var(--bg-element);
+  overflow: hidden;
+}
+.t-bar-fill { height: 100%; transition: width 1s ease-out; }
+
+/* Colori Specifici per T.I.E. */
+.fill-kinetic { background: linear-gradient(90deg, #f97316, #ef4444); } /* Orange -> Red */
+.fill-target { background: linear-gradient(90deg, #334155, #94a3b8); } /* Slate */
+.fill-effect { background: linear-gradient(90deg, #eab308, #f59e0b); } /* Amber */
+
+/* Colonna Testo (Destra) */
+.intel-col-text {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.intel-section h4 {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.intel-desc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+}
+
+.intel-sources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.source-item {
+  display: flex;
+  justify-content: space-between;
+  background: var(--bg-body);
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  color: var(--text-muted);
+}
+.source-item:hover {
+  border-color: var(--primary);
+  color: var(--text-main);
+  transform: translateX(4px);
+}
+
+.intel-ai-box {
+  margin-top: auto;
+  background: rgba(245, 158, 11, 0.05); /* Amber dim */
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  padding: 15px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-style: italic;
+}
+.intel-ai-box i { color: var(--primary); font-size: 1.2rem; }
