@@ -669,79 +669,57 @@
     if (typeof renderInternal === 'function') renderInternal(filtered);
   };
   // ============================================
-  // 10. MODAL FUNCTIONS (TRIDENT INTEL CARD)
+  // 10. MODAL FUNCTIONS (TRIDENT INTEL CARD - FINAL MERGE)
   // ============================================
 
-  // Variabile globale per il grafico (per distruggerlo prima di ricrearlo)
   let tieRadarInstance = null;
 
-  // Funzione Entry Point (chiamata dal bottone nel popup o dalla griglia)
+  // Entry point
   window.openModal = function (eventIdOrObj) {
-    console.log("Tentativo apertura dossier:", eventIdOrObj);
     let eventData = null;
-
     if (typeof eventIdOrObj === 'string') {
-      // Caso 1: Stringa JSON (spesso dalla griglia visuale)
-      if (eventIdOrObj.startsWith('%7B') || eventIdOrObj.startsWith('{')) {
-        try { 
-            eventData = JSON.parse(decodeURIComponent(eventIdOrObj)); 
-        } catch (err) { console.error("Errore parsing JSON modale", err); }
-      } else {
-        // Caso 2: ID Evento (dal marker sulla mappa)
-        if (window.globalEvents) {
-          const searchId = String(eventIdOrObj);
-          // Cerca per event_id, cluster_id o id
-          eventData = window.globalEvents.find(evt => 
-            String(evt.event_id) === searchId || 
-            String(evt.id) === searchId || 
-            String(evt.cluster_id) === searchId
-          );
-        }
+      if (eventIdOrObj.startsWith('{')) {
+        try { eventData = JSON.parse(decodeURIComponent(eventIdOrObj)); } catch (e) {}
+      } else if (window.globalEvents) {
+        // Cerca per event_id, id o cluster_id
+        eventData = window.globalEvents.find(e => 
+            String(e.event_id) === String(eventIdOrObj) || 
+            String(e.id) === String(eventIdOrObj) || 
+            String(e.cluster_id) === String(eventIdOrObj)
+        );
       }
     } else {
-      // Caso 3: Oggetto già passato
       eventData = eventIdOrObj;
     }
 
-    if (!eventData) {
-      console.error("❌ Evento non trovato per il Dossier. ID:", eventIdOrObj);
-      return; 
-    }
+    if (eventData) window.openIntelCard(eventData);
+    else console.error("❌ Evento non trovato:", eventIdOrObj);
+  };
 
-    // Lancia la Intel Card
-    window.openIntelCard = function(event) {
+  window.openIntelCard = function(event) {
     console.log("📂 Opening Intel Card:", event.title);
 
-    // 1. Dati Base
+    // --- 1. POPOLAMENTO DATI BASE ---
     document.getElementById('intelTitle').innerText = event.title || "Dati non disponibili";
     document.getElementById('intelDate').innerText = event.date || "";
     document.getElementById('intelLocation').innerText = event.location || event.location_precision || "Unknown";
     
     const catEl = document.getElementById('intelCategory');
-    if(catEl) catEl.innerText = (event.category || event.type || 'EVENT').toUpperCase();
+    if(catEl) catEl.innerText = (event.category || event.type || 'EVENT').toUpperCase().replace(/_/g, ' ');
 
-    // ---------------------------------------------------------
-    // 2. RELIABILITY BADGE (Con Tooltip e Colori)
-    // ---------------------------------------------------------
+    // --- 2. KPI BADGES (RELIABILITY & BIAS) ---
+    // Logica colori e testi per i Tooltip
     const relScore = parseInt(event.reliability || 0);
-    let relColor = "#64748b"; // Default Slate
-    let relLabel = "UNKNOWN";
+    let relColor = "#64748b"; 
+    let relLabel = "UNKNOWN"; 
     let relDesc = "Dati insufficienti.";
 
-    if (relScore >= 80) { relColor = "#22c55e"; relLabel = "VERIFIED"; relDesc = "Confermato da prove visive o multiple fonti indipendenti."; }
-    else if (relScore >= 60) { relColor = "#84cc16"; relLabel = "HIGH"; relDesc = "Alta confidenza basata su fonti storicamente affidabili."; }
-    else if (relScore >= 40) { relColor = "#f59e0b"; relLabel = "MEDIUM"; relDesc = "Riportato da fonti mainstream ma non verificato."; }
-    else { relColor = "#ef4444"; relLabel = "LOW"; relDesc = "Fonte singola o non verificata. Possibile disinformazione."; }
+    if (relScore >= 80) { relColor = "#22c55e"; relLabel = "VERIFIED"; relDesc = "Confermato da prove visive o multiple fonti."; }
+    else if (relScore >= 60) { relColor = "#84cc16"; relLabel = "HIGH"; relDesc = "Alta confidenza, fonti storicamente affidabili."; }
+    else if (relScore >= 40) { relColor = "#f59e0b"; relLabel = "MEDIUM"; relDesc = "Riportato da fonti mainstream, non verificato."; }
+    else { relColor = "#ef4444"; relLabel = "LOW"; relDesc = "Fonte singola o speculativa."; }
 
-    // Iniettiamo l'HTML del badge completo
-    const relContainer = document.getElementById('intelReliability').parentNode; 
-    // Nota: assumiamo che nell'HTML ci sia <div id="intelReliabilityContainer">...</div>
-    // Se stai usando l'HTML precedente, sostituisci il contenuto del div padre
-    
-    // PER SICUREZZA: Aggiorniamo direttamente i valori se la struttura esiste, o la ricreiamo
-    // Modifica rapida: Se usi l'HTML che ti ho dato, il contenitore è 'intel-kpi-group'.
-    // Ricostruiamo i due badge da zero per avere il controllo totale.
-    
+    // Ricostruzione HTML Badge (Ripristina lo stile che ti piaceva)
     const kpiGroup = document.querySelector('.intel-kpi-group');
     if(kpiGroup) {
         kpiGroup.innerHTML = `
@@ -751,55 +729,51 @@
                     <span class="kpi-value-large" style="color: ${relColor};">${relScore}%</span>
                 </div>
                 <div class="info-icon-circle" style="color:${relColor}">i</div>
-                
                 <div class="kpi-tooltip-content">
                     <div class="tt-header" style="color:${relColor}">${relLabel} CONFIDENCE</div>
                     <div class="tt-body">${relDesc}</div>
-                    <div class="tt-footer">Score calcolato su ${event.source_count || 1} fonti.</div>
                 </div>
             </div>
 
             <div class="kpi-interactive-badge">
                 <div>
-                    <span class="kpi-label-small">SOURCE BIAS</span>
+                    <span class="kpi-label-small">BIAS</span>
                     <span class="kpi-value-large" style="color: #cbd5e1;">${event.bias_score || 0}</span>
                 </div>
                 <div class="info-icon-circle">i</div>
-                
                 <div class="kpi-tooltip-content">
                     <div class="tt-header">ANALISI SEMANTICA</div>
-                    <div class="tt-body">Punteggio da -10 (Pro-RU) a +10 (Pro-UA). Lo 0 indica neutralità o reporting fattuale.</div>
+                    <div class="tt-body">Score da -10 (Pro-RU) a +10 (Pro-UA). Lo 0 indica neutralità.</div>
                 </div>
             </div>
         `;
     }
 
-    // ---------------------------------------------------------
-    // 3. T.I.E. SYSTEM (Radar + Bars)
-    // ---------------------------------------------------------
+    // --- 3. T.I.E. SYSTEM (Radar + Barre) ---
     const tieTotal = event.tie_total || 0;
     const k = parseFloat(event.vec_k || event.kinetic_score || 0);
     const t = parseFloat(event.vec_t || event.target_score || 0);
     const e = parseFloat(event.vec_e || event.effect_score || 0);
 
-    document.getElementById('intelTieScore').innerText = tieTotal;
+    const tieEl = document.getElementById('intelTieScore');
+    if(tieEl) tieEl.innerText = tieTotal;
 
-    // Aggiorna BARRE (Assicurati che gli ID esistano nell'HTML)
-    const updateBar = (idVal, idBar, val, max, bgClass) => {
+    // Helper aggiornamento barre
+    const updateBar = (idVal, idBar, val, bgClass) => {
         const elVal = document.getElementById(idVal);
         const elBar = document.getElementById(idBar);
         if(elVal) elVal.innerText = val.toFixed(1);
         if(elBar) {
             elBar.style.width = (val * 10) + '%';
-            elBar.className = `t-bar-fill ${bgClass}`; // Applica classi colore
+            elBar.className = `t-bar-fill ${bgClass}`;
         }
     };
 
-    updateBar('valK', 'barK', k, 10, 'bg-kinetic');
-    updateBar('valT', 'barT', t, 10, 'bg-target');
-    updateBar('valE', 'barE', e, 10, 'bg-effect');
+    updateBar('valK', 'barK', k, 'bg-kinetic');
+    updateBar('valT', 'barT', t, 'bg-target');
+    updateBar('valE', 'barE', e, 'bg-effect');
 
-    // Radar Chart
+    // Chart.js Radar
     const canvas = document.getElementById('tieRadarChart');
     if (canvas && typeof Chart !== 'undefined') {
         const ctx = canvas.getContext('2d');
@@ -825,7 +799,7 @@
                     r: {
                         angleLines: { color: '#334155' },
                         grid: { color: '#334155' },
-                        pointLabels: { color: '#94a3b8', font: { family: 'JetBrains Mono', weight: '700' } },
+                        pointLabels: { color: '#94a3b8', font: { family: 'JetBrains Mono', weight: '700', size: 10 } },
                         ticks: { display: false, max: 10, min: 0 }
                     }
                 },
@@ -834,61 +808,57 @@
         });
     }
 
-    // ---------------------------------------------------------
-    // 4. DESCRIZIONE & AI SUMMARY
-    // ---------------------------------------------------------
-    document.getElementById('intelDescription').innerText = event.desc || event.description || "Nessuna descrizione.";
-    document.getElementById('intelAiSummary').innerText = event.ai_summary || "Analisi strategica in corso...";
+    // --- 4. DESCRIZIONE & AI SUMMARY ---
+    const descEl = document.getElementById('intelDescription');
+    if(descEl) descEl.innerText = event.desc || event.description || "Nessuna descrizione.";
+    
+    const aiEl = document.getElementById('intelAiSummary');
+    if(aiEl) aiEl.innerText = event.ai_summary || "Analisi strategica non disponibile.";
 
-    // ---------------------------------------------------------
-    // 5. FIX LISTA FONTI
-    // ---------------------------------------------------------
+    // --- 5. LISTA FONTI (Fix visualizzazione) ---
     const list = document.getElementById('intelSourcesList');
     if(list) {
         list.innerHTML = '';
-        
-        // Parsing robusto
         let sources = [];
-        // Caso A: sources_list dal DB (stringa JSON)
+        
+        // Gestione robusta formati diversi (stringa JSON o array)
         if (event.sources_list) {
             try { 
                 sources = typeof event.sources_list === 'string' ? JSON.parse(event.sources_list) : event.sources_list;
             } catch(e) { console.warn("Err parse sources", e); }
-        } 
-        // Caso B: references (array di stringhe o oggetti)
-        else if (event.references) {
+        } else if (event.references) {
             sources = event.references;
         }
 
         if (sources && sources.length > 0) {
             sources.forEach(src => {
-                // Normalizza src in {name, url}
+                // Normalizza {name, url} o stringa
                 let url = src.url || (typeof src === 'string' ? src : '#');
-                let name = src.name || "Fonte";
+                let name = src.name || "Fonte Esterna";
                 
-                // Se è solo un URL stringa, estrai dominio come nome
-                if (typeof src === 'string') {
-                    try { name = new URL(src).hostname.replace('www.',''); } catch(e){}
+                // Estetica dominio
+                if (typeof src === 'string' || !src.name) {
+                    try { name = new URL(url.startsWith('http') ? url : 'https://'+url).hostname.replace('www.',''); } catch(e){}
                 }
 
                 const link = document.createElement('a');
-                link.className = 'source-link-item';
-                link.href = url;
+                link.className = 'source-link-item'; // Classe CSS che hai aggiunto
+                link.href = url.startsWith('http') ? url : '#';
                 link.target = "_blank";
                 link.innerHTML = `<i class="fa-solid fa-link source-icon"></i> ${name}`;
                 list.appendChild(link);
             });
         } else {
-            list.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Fonti non disponibili o riservate.</div>';
+            list.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px; font-size:0.8rem;">Fonti non disponibili o riservate.</div>';
         }
     }
 
-    // Mostra
+    // --- 6. MOSTRA MODALE ---
     const modal = document.getElementById('intelModal');
     if(modal) {
         modal.style.display = 'flex';
-        // Hack per forzare il rendering corretto di Chart.js appena la modale è visibile
-        setTimeout(() => { if(tieRadarInstance) tieRadarInstance.update(); }, 100);
+        // Hack per refresh grafico
+        setTimeout(() => { if(tieRadarInstance) tieRadarInstance.update(); }, 50);
     }
   };
 
