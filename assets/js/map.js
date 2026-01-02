@@ -709,78 +709,113 @@
     }
 
     // Lancia la Intel Card
-    window.openIntelCard(eventData);
-  };
+    window.openIntelCard = function(event) {
+    console.log("📂 Opening Intel Card:", event.title);
 
-  // Funzione che popola e apre la Card
-  window.openIntelCard = function(event) {
-    console.log("📂 Opening Intel Card for:", event.title);
-
-    // 1. Popola Header
-    const titleEl = document.getElementById('intelTitle');
-    if (titleEl) titleEl.innerText = event.title || "Titolo non disponibile";
+    // 1. Dati Base
+    document.getElementById('intelTitle').innerText = event.title || "Dati non disponibili";
+    document.getElementById('intelDate').innerText = event.date || "";
+    document.getElementById('intelLocation').innerText = event.location || event.location_precision || "Unknown";
     
-    // Gestione Categoria
-    const cat = event.category || event.event_category || 'EVENT';
     const catEl = document.getElementById('intelCategory');
-    if(catEl) catEl.innerText = cat.toUpperCase().replace(/_/g, ' ');
-    
-    const dateEl = document.getElementById('intelDate');
-    if (dateEl) dateEl.innerText = event.date || "";
-    
-    const locEl = document.getElementById('intelLocation');
-    if (locEl) locEl.innerText = event.location || event.location_precision || 'Unknown Location';
+    if(catEl) catEl.innerText = (event.category || event.type || 'EVENT').toUpperCase();
 
-    // 2. KPI Badge (Reliability & Bias)
-    const relEl = document.getElementById('intelReliability');
-    if(relEl) relEl.innerText = (event.reliability || 0) + '%';
-    
-    const biasEl = document.getElementById('intelBias');
-    if(biasEl) biasEl.innerText = event.bias_score || '0.0';
+    // ---------------------------------------------------------
+    // 2. RELIABILITY BADGE (Con Tooltip e Colori)
+    // ---------------------------------------------------------
+    const relScore = parseInt(event.reliability || 0);
+    let relColor = "#64748b"; // Default Slate
+    let relLabel = "UNKNOWN";
+    let relDesc = "Dati insufficienti.";
 
-    // 3. T.I.E. Score Big Number
+    if (relScore >= 80) { relColor = "#22c55e"; relLabel = "VERIFIED"; relDesc = "Confermato da prove visive o multiple fonti indipendenti."; }
+    else if (relScore >= 60) { relColor = "#84cc16"; relLabel = "HIGH"; relDesc = "Alta confidenza basata su fonti storicamente affidabili."; }
+    else if (relScore >= 40) { relColor = "#f59e0b"; relLabel = "MEDIUM"; relDesc = "Riportato da fonti mainstream ma non verificato."; }
+    else { relColor = "#ef4444"; relLabel = "LOW"; relDesc = "Fonte singola o non verificata. Possibile disinformazione."; }
+
+    // Iniettiamo l'HTML del badge completo
+    const relContainer = document.getElementById('intelReliability').parentNode; 
+    // Nota: assumiamo che nell'HTML ci sia <div id="intelReliabilityContainer">...</div>
+    // Se stai usando l'HTML precedente, sostituisci il contenuto del div padre
+    
+    // PER SICUREZZA: Aggiorniamo direttamente i valori se la struttura esiste, o la ricreiamo
+    // Modifica rapida: Se usi l'HTML che ti ho dato, il contenitore è 'intel-kpi-group'.
+    // Ricostruiamo i due badge da zero per avere il controllo totale.
+    
+    const kpiGroup = document.querySelector('.intel-kpi-group');
+    if(kpiGroup) {
+        kpiGroup.innerHTML = `
+            <div class="kpi-interactive-badge" style="border-color: ${relColor}44;">
+                <div>
+                    <span class="kpi-label-small">RELIABILITY</span>
+                    <span class="kpi-value-large" style="color: ${relColor};">${relScore}%</span>
+                </div>
+                <div class="info-icon-circle" style="color:${relColor}">i</div>
+                
+                <div class="kpi-tooltip-content">
+                    <div class="tt-header" style="color:${relColor}">${relLabel} CONFIDENCE</div>
+                    <div class="tt-body">${relDesc}</div>
+                    <div class="tt-footer">Score calcolato su ${event.source_count || 1} fonti.</div>
+                </div>
+            </div>
+
+            <div class="kpi-interactive-badge">
+                <div>
+                    <span class="kpi-label-small">SOURCE BIAS</span>
+                    <span class="kpi-value-large" style="color: #cbd5e1;">${event.bias_score || 0}</span>
+                </div>
+                <div class="info-icon-circle">i</div>
+                
+                <div class="kpi-tooltip-content">
+                    <div class="tt-header">ANALISI SEMANTICA</div>
+                    <div class="tt-body">Punteggio da -10 (Pro-RU) a +10 (Pro-UA). Lo 0 indica neutralità o reporting fattuale.</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // ---------------------------------------------------------
+    // 3. T.I.E. SYSTEM (Radar + Bars)
+    // ---------------------------------------------------------
     const tieTotal = event.tie_total || 0;
-    const tieEl = document.getElementById('intelTieScore');
-    if(tieEl) tieEl.innerText = tieTotal;
-
-    // 4. Tactical Bars (Recupero sicuro dei valori)
     const k = parseFloat(event.vec_k || event.kinetic_score || 0);
     const t = parseFloat(event.vec_t || event.target_score || 0);
     const e = parseFloat(event.vec_e || event.effect_score || 0);
 
-    // Aggiorna testi e larghezze barre
-    const elValK = document.getElementById('valK'); if(elValK) elValK.innerText = k.toFixed(1);
-    const elBarK = document.getElementById('barK'); if(elBarK) elBarK.style.width = (k * 10) + '%';
-    
-    const elValT = document.getElementById('valT'); if(elValT) elValT.innerText = t.toFixed(1);
-    const elBarT = document.getElementById('barT'); if(elBarT) elBarT.style.width = (t * 10) + '%';
-    
-    const elValE = document.getElementById('valE'); if(elValE) elValE.innerText = e.toFixed(1);
-    const elBarE = document.getElementById('barE'); if(elBarE) elBarE.style.width = (e * 10) + '%';
+    document.getElementById('intelTieScore').innerText = tieTotal;
 
-    // 5. Radar Chart (Chart.js)
+    // Aggiorna BARRE (Assicurati che gli ID esistano nell'HTML)
+    const updateBar = (idVal, idBar, val, max, bgClass) => {
+        const elVal = document.getElementById(idVal);
+        const elBar = document.getElementById(idBar);
+        if(elVal) elVal.innerText = val.toFixed(1);
+        if(elBar) {
+            elBar.style.width = (val * 10) + '%';
+            elBar.className = `t-bar-fill ${bgClass}`; // Applica classi colore
+        }
+    };
+
+    updateBar('valK', 'barK', k, 10, 'bg-kinetic');
+    updateBar('valT', 'barT', t, 10, 'bg-target');
+    updateBar('valE', 'barE', e, 10, 'bg-effect');
+
+    // Radar Chart
     const canvas = document.getElementById('tieRadarChart');
     if (canvas && typeof Chart !== 'undefined') {
         const ctx = canvas.getContext('2d');
-        
-        if (tieRadarInstance) {
-            tieRadarInstance.destroy();
-        }
+        if (tieRadarInstance) tieRadarInstance.destroy();
         
         tieRadarInstance = new Chart(ctx, {
             type: 'radar',
             data: {
                 labels: ['KINETIC', 'TARGET', 'EFFECT'],
                 datasets: [{
-                    label: 'Event Profile',
                     data: [k, t, e],
-                    backgroundColor: 'rgba(245, 158, 11, 0.2)', // var(--primary-dim)
-                    borderColor: '#f59e0b', // var(--primary)
+                    backgroundColor: 'rgba(245, 158, 11, 0.2)', // Amber
+                    borderColor: '#f59e0b',
                     borderWidth: 2,
-                    pointBackgroundColor: '#1e293b', // var(--bg-surface)
-                    pointBorderColor: '#f59e0b',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: '#f59e0b'
+                    pointBackgroundColor: '#1e293b',
+                    pointBorderColor: '#f59e0b'
                 }]
             },
             options: {
@@ -788,12 +823,9 @@
                 maintainAspectRatio: false,
                 scales: {
                     r: {
-                        angleLines: { color: '#334155' }, 
+                        angleLines: { color: '#334155' },
                         grid: { color: '#334155' },
-                        pointLabels: { 
-                            color: '#94a3b8', 
-                            font: { family: 'JetBrains Mono', size: 10, weight: '700' } 
-                        },
+                        pointLabels: { color: '#94a3b8', font: { family: 'JetBrains Mono', weight: '700' } },
                         ticks: { display: false, max: 10, min: 0 }
                     }
                 },
@@ -802,49 +834,61 @@
         });
     }
 
-    // 6. Testo Descrizione
-    const descEl = document.getElementById('intelDescription');
-    if(descEl) descEl.innerText = event.desc || event.description || "Nessuna descrizione disponibile.";
-    
-    // 7. AI Summary
-    const summary = event.ai_summary || "Analisi strategica dettagliata non disponibile per questo evento.";
-    const sumEl = document.getElementById('intelAiSummary');
-    if(sumEl) sumEl.innerText = summary;
+    // ---------------------------------------------------------
+    // 4. DESCRIZIONE & AI SUMMARY
+    // ---------------------------------------------------------
+    document.getElementById('intelDescription').innerText = event.desc || event.description || "Nessuna descrizione.";
+    document.getElementById('intelAiSummary').innerText = event.ai_summary || "Analisi strategica in corso...";
 
-    // 8. Fonti (Lista)
+    // ---------------------------------------------------------
+    // 5. FIX LISTA FONTI
+    // ---------------------------------------------------------
     const list = document.getElementById('intelSourcesList');
     if(list) {
-        list.innerHTML = ''; // Pulisci
+        list.innerHTML = '';
         
-        // Adatta in base a come arrivano le fonti
-        let sources = event.sources_list || event.references || [];
-        if (typeof sources === 'string') {
-            try { sources = JSON.parse(sources); } catch(e) { sources = [sources]; }
+        // Parsing robusto
+        let sources = [];
+        // Caso A: sources_list dal DB (stringa JSON)
+        if (event.sources_list) {
+            try { 
+                sources = typeof event.sources_list === 'string' ? JSON.parse(event.sources_list) : event.sources_list;
+            } catch(e) { console.warn("Err parse sources", e); }
+        } 
+        // Caso B: references (array di stringhe o oggetti)
+        else if (event.references) {
+            sources = event.references;
         }
-        
-        if (sources.length > 0) {
-            sources.forEach(src => {
-                const url = src.url || src;
-                let domain = "Fonte";
-                try { domain = new URL(url.startsWith('http') ? url : 'https://'+url).hostname.replace('www.',''); } catch(e){ domain=url; }
 
-                const div = document.createElement('a');
-                div.className = 'source-item';
-                div.href = url.startsWith('http') ? url : '#';
-                div.target = "_blank";
-                div.innerHTML = `<span class="source-name">${domain}</span> <i class="fa-solid fa-external-link-alt" style="font-size:0.7rem"></i>`;
-                list.appendChild(div);
+        if (sources && sources.length > 0) {
+            sources.forEach(src => {
+                // Normalizza src in {name, url}
+                let url = src.url || (typeof src === 'string' ? src : '#');
+                let name = src.name || "Fonte";
+                
+                // Se è solo un URL stringa, estrai dominio come nome
+                if (typeof src === 'string') {
+                    try { name = new URL(src).hostname.replace('www.',''); } catch(e){}
+                }
+
+                const link = document.createElement('a');
+                link.className = 'source-link-item';
+                link.href = url;
+                link.target = "_blank";
+                link.innerHTML = `<i class="fa-solid fa-link source-icon"></i> ${name}`;
+                list.appendChild(link);
             });
         } else {
-            list.innerHTML = '<div style="font-size:0.8rem; color:#64748b; font-style:italic; padding:10px;">Fonti riservate o non pubbliche.</div>';
+            list.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Fonti non disponibili o riservate.</div>';
         }
     }
 
-    // 9. Mostra la Modale
+    // Mostra
     const modal = document.getElementById('intelModal');
     if(modal) {
         modal.style.display = 'flex';
-        modal.classList.add('active');
+        // Hack per forzare il rendering corretto di Chart.js appena la modale è visibile
+        setTimeout(() => { if(tieRadarInstance) tieRadarInstance.update(); }, 100);
     }
   };
 
