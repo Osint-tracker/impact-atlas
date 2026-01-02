@@ -704,7 +704,7 @@
     }
 
     if (!eventData) {
-      console.error(`❌ Evento non trovato per il Dossier. ID:`, eventIdOrObj);
+      console.error("❌ Evento non trovato per il Dossier. ID:", eventIdOrObj);
       return; 
     }
 
@@ -717,15 +717,19 @@
     console.log("📂 Opening Intel Card for:", event.title);
 
     // 1. Popola Header
-    document.getElementById('intelTitle').innerText = event.title || "Titolo non disponibile";
+    const titleEl = document.getElementById('intelTitle');
+    if (titleEl) titleEl.innerText = event.title || "Titolo non disponibile";
     
     // Gestione Categoria
     const cat = event.category || event.event_category || 'EVENT';
     const catEl = document.getElementById('intelCategory');
     if(catEl) catEl.innerText = cat.toUpperCase().replace(/_/g, ' ');
     
-    document.getElementById('intelDate').innerText = event.date || "";
-    document.getElementById('intelLocation').innerText = event.location || event.location_precision || 'Unknown Location';
+    const dateEl = document.getElementById('intelDate');
+    if (dateEl) dateEl.innerText = event.date || "";
+    
+    const locEl = document.getElementById('intelLocation');
+    if (locEl) locEl.innerText = event.location || event.location_precision || 'Unknown Location';
 
     // 2. KPI Badge (Reliability & Bias)
     const relEl = document.getElementById('intelReliability');
@@ -796,8 +800,6 @@
                 plugins: { legend: { display: false } }
             }
         });
-    } else {
-        console.warn("Chart.js non caricato o canvas non trovato.");
     }
 
     // 6. Testo Descrizione
@@ -822,10 +824,9 @@
         
         if (sources.length > 0) {
             sources.forEach(src => {
-                // Se src è un oggetto {url: ...}, prendi url, altrimenti è stringa
                 const url = src.url || src;
                 let domain = "Fonte";
-                try { domain = new URL(url).hostname.replace('www.',''); } catch(e){ domain=url; }
+                try { domain = new URL(url.startsWith('http') ? url : 'https://'+url).hostname.replace('www.',''); } catch(e){ domain=url; }
 
                 const div = document.createElement('a');
                 div.className = 'source-item';
@@ -843,280 +844,18 @@
     const modal = document.getElementById('intelModal');
     if(modal) {
         modal.style.display = 'flex';
-        modal.classList.add('active'); // Per animazioni CSS se presenti
+        modal.classList.add('active');
     }
   };
 
   // Funzione chiusura
   window.closeIntelCard = function(e) {
-    // Chiudi se clicchi sulla X o fuori dalla card
     if (!e || e.target.id === 'intelModal' || e.target.classList.contains('close-modal')) {
         const modal = document.getElementById('intelModal');
         if(modal) modal.style.display = 'none';
     }
   };
-
-    // ============================================================
-    // A. GESTIONE INTENSITÀ (CIVILE vs MILITARE)
-    // ============================================================
-    const intEl = document.getElementById('modal-intensity');
-    if (intEl) {
-      // 1. Caso Evento Civile/Politico (Mostra N/D Grigio)
-      if (typeof isCivilianEvent === 'function' && isCivilianEvent(eventData)) {
-        intEl.innerHTML = `
-            <div class="intensity-badge-wrapper" style="opacity:0.8; cursor:default;">
-                <span style="color:#94a3b8; font-weight:700; font-size:1rem;">N/D <small style="font-size:0.65rem;">(NON-MILITARY)</small></span>
-                <div class="info-icon" style="color:#94a3b8; border-color:#94a3b8; transform: scale(0.8);">i</div>
-                <div class="intensity-tooltip" style="bottom:120%;">
-                    <strong style="color:#94a3b8">IMPATTO NON VALUTABILE</strong><br>
-                    L'evento è di natura politica, civile o diplomatica.
-                </div>
-            </div>`;
-      }
-      // 2. Caso Evento Militare (Calcolo Standard)
-      else {
-        const val = parseFloat(eventData.intensity || 0);
-        let label = "UNKNOWN"; let colorClass = "#64748b"; let desc = "Dati insufficienti.";
-
-        if (val <= 0.3) { label = "TACTICAL"; colorClass = "#22c55e"; desc = "Impatto limitato. Schermaglie o danni lievi."; }
-        else if (val <= 0.6) { label = "OPERATIONAL"; colorClass = "#f97316"; desc = "Impatto operativo. Danni infrastrutture."; }
-        else if (val <= 0.8) { label = "STRATEGIC"; colorClass = "#ef4444"; desc = "Alto impatto strategico."; }
-        else { label = "CRITICAL"; colorClass = "#000000"; desc = "Evento di portata storica."; }
-
-        const textShadow = colorClass === '#000000' ? 'text-shadow: 0 0 10px rgba(255,255,255,0.5);' : '';
-        const style = `color: ${colorClass}; font-weight: 800; font-size: 1.1rem; ${textShadow}`;
-
-        intEl.innerHTML = `
-            <div class="intensity-badge-wrapper">
-                <span style="${style}">${label} (${(val * 10).toFixed(1)})</span>
-                <div class="info-icon">i</div>
-                <div class="intensity-tooltip">
-                    <strong style="color:${colorClass}">${label} IMPACT</strong><br>${desc}
-                </div>
-            </div>`;
-      }
-    }
-
-    // ============================================================
-    // B. GESTIONE SCORE & GRAFICO (INSERITO ORA)
-    // ============================================================
-
-    // 1. Normalizza Score
-    const score = parseInt(eventData.reliability || eventData.Reliability || eventData.confidence || 0);
-
-    // 2. Definisci Colori e Testi (AGGIUNTO IL FOOTER EXECUTIVE)
-    let relData = {
-      label: "NON VERIFICATO",
-      color: "#64748b",
-      desc: "Dati insufficienti per valutare l'attendibilità.",
-      footer: "Dati insufficienti per il calcolo algoritmico."
-    };
-
-    if (score >= 80) {
-      relData = {
-        label: "CONFERMATA",
-        color: "#22c55e",
-        desc: "Confermato visivamente. L'evento è supportato da documentazione multimediale verificata o geolocalizzazione precisa.",
-        footer: "Score massimo garantito dalla presenza di prove visive (IMINT) o geolocalizzazione confermata."
-      };
-    } else if (score >= 60) {
-      relData = {
-        label: "ATTENDIBILE",
-        color: "#84cc16",
-        desc: "Molto probabile. Evento confermato da molteplici vettori indipendenti o da fonti istituzionali con alto grado di accuratezza.",
-        footer: "Score elevato grazie alla convergenza narrativa rilevata tra molteplici fonti non collegate."
-      };
-    } else if (score >= 40) {
-      relData = {
-        label: "INCERTA",
-        color: "#f59e0b",
-        desc: "In attesa di riscontro. Riportato da fonti mainstream o locali credibili, ma non ancora verificato sul campo.",
-        footer: "Score assegnato sulla base della reputazione storica della fonte, in attesa di evidenze materiali."
-      };
-    } else if (score < 40) {
-      relData = {
-        label: "DUBBIA",
-        color: "#ef4444",
-        desc: "Bassa Confidenza. Dati insufficienti per confermare l'evento. Rischio elevato di disinformazione o errore.",
-        footer: "Score limitato dall'assenza di riscontri indipendenti o dalla natura speculativa della fonte."
-      };
-    }
-
-    // 3. Disegna il Grafico (INVARIATO)
-    if (typeof renderConfidenceChart === 'function') {
-      renderConfidenceChart(score, relData.color);
-    }
-
-    // 4. Aggiorna il Badge HTML (AGGIORNATO CON STILE PROFESSIONALE E FOOTER)
-    const relContainer = document.getElementById('modal-reliability-badge');
-    if (relContainer) {
-      relContainer.innerHTML = `
-            <div class="intensity-badge-wrapper" style="
-                font-size:0.7rem; 
-                color:${relData.color}; 
-                font-weight:700; 
-                letter-spacing:1px; 
-                cursor:help; 
-                margin-top:5px; 
-                display:flex; 
-                align-items:center; 
-                justify-content:center; 
-                gap:4px;
-                position: relative;
-            ">
-                ${relData.label}
-                <div class="info-icon" style="
-                    width:12px; height:12px; font-size:0.6rem; 
-                    border-color:${relData.color}; color:${relData.color}; 
-                    display:flex;
-                ">i</div>
-                
-                <div class="intensity-tooltip" style="
-                    width: 240px; 
-                    bottom: 130%; 
-                    left: 50%; 
-                    transform: translateX(-50%);
-                    background: rgba(15, 23, 42, 0.95);
-                    border: 1px solid ${relData.color}44;
-                    padding: 12px;
-                    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-                    text-align: left;
-                    white-space: normal; /* Importante per il testo lungo */
-                    z-index: 100;
-                ">
-                    <div style="border-bottom: 1px solid #334155; padding-bottom: 8px; margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.7rem; color:#64748b; text-transform:uppercase;">CONFIDENCE SCORE</span>
-                        <strong style="color:${relData.color}; font-size:1.1rem;">${score}%</strong>
-                    </div>
-
-                    <div style="font-size:0.8rem; color:#e2e8f0; line-height:1.4; margin-bottom:8px; font-weight:400;">
-                        ${relData.desc}
-                    </div>
-
-                    <div style="font-size:0.65rem; color:#94a3b8; font-style:italic; border-top:1px solid #334155; padding-top:6px; line-height:1.3;">
-                        ${relData.footer}
-                    </div>
-                </div>
-            </div>`;
-    }
-
-    // 3. Renderizza Bibliografia (se la funzione helper esiste)
-    if (typeof renderBibliography === 'function') {
-      renderBibliography(eventData.references || []);
-    }
-
-    // 4. Mostra il Modal (Supporta entrambi gli ID comuni)
-    const modal = document.getElementById('videoModal') || document.getElementById('eventModal');
-    if (modal) modal.style.display = 'flex';
-  };
-
-  // --- DATI INTELLIGENCE AGGIUNTIVI ---
-  // Duplicate intelligence rendering logic removed because it is already handled inside openIntelDossier(eventData).
-  // The duplicate block referenced an undefined variable `e` and caused unmatched braces/syntax errors.
-
-  // Funzione per disegnare le fonti (Aggiornata per liste URL)
-  function renderBibliography(references) {
-    const container = document.getElementById('modal-bibliography');
-    if (!container) return;
-
-    container.innerHTML = '';
-
-    // Se non ci sono reference o è una lista vuota
-    if (!references || references.length === 0) {
-      container.innerHTML = '<div style="padding:10px; background:rgba(255,255,255,0.02); border-radius:4px; color:#64748b; font-style:italic; font-size:0.85rem; text-align:center;">Nessuna fonte aggregata disponibile per questo evento.</div>';
-      return;
-    }
-
-    let html = `<h5 style="color:#94a3b8; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:15px; border-bottom:1px solid #334155; padding-bottom:5px; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-link"></i> Fonti Correlate & Intelligence</h5>`;
-
-    references.forEach((ref, idx) => {
-      // Gestione robusta: supporta sia stringhe (URL) che oggetti vecchi
-      let url = (typeof ref === 'object' && ref.url) ? ref.url : ref;
-
-      // Se non è un link valido, lo mostriamo come testo, altrimenti creiamo il link
-      let isLink = typeof url === 'string' && (url.startsWith('http') || url.startsWith('www'));
-
-      // Estetica: Estrae il dominio per non mostrare URL chilometrici (es. "twitter.com")
-      let displayName = "Fonte Esterna";
-      if (isLink) {
-        try {
-          const urlObj = new URL(url.startsWith('http') ? url : 'https://' + url);
-          displayName = urlObj.hostname.replace('www.', '');
-        } catch (e) { displayName = url; }
-      } else {
-        displayName = "Riferimento d'archivio";
-      }
-
-      html += `
-            <div style="margin-bottom:8px; display:flex; align-items:center; background:rgba(15, 23, 42, 0.6); padding:8px 12px; border-radius:6px; border:1px solid #334155;">
-                <span style="color:#64748b; font-family:'JetBrains Mono', monospace; font-size:0.8rem; margin-right:10px; min-width:20px;">${idx + 1}.</span>
-                
-                ${isLink ?
-          `<a href="${url}" target="_blank" style="color:#38bdf8; text-decoration:none; font-size:0.9rem; font-weight:500; display:flex; align-items:center; gap:6px; flex-grow:1; transition: color 0.2s;">
-                        <i class="fa-solid fa-earth-europe" style="font-size:0.8em; opacity:0.7;"></i> ${displayName} 
-                        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.7em; margin-left:auto; opacity:0.5;"></i>
-                    </a>`
-          : `<span style="color:#cbd5e1; font-size:0.9rem;">${ref}</span>`
-        }
-            </div>`;
-    });
-
-    container.innerHTML = html;
-  }
-
-  window.updateSlider = function (e, wrapper) {
-    const rect = wrapper.getBoundingClientRect();
-    let pos = ((e.clientX - rect.left) / rect.width) * 100;
-    pos = Math.max(0, Math.min(100, pos));
-    wrapper.querySelector('.after').style.width = `${pos}%`;
-    wrapper.querySelector('.juxtapose-handle').style.left = `${pos}%`;
-  };
-
-  // Funzione Grafico Aggiornata con Colore Dinamico
-  let confChart = null;
-  function renderConfidenceChart(score, color = '#f59e0b') { // <--- Aggiunto parametro color
-    const ctxEl = document.getElementById('confidenceChart');
-    if (!ctxEl) return;
-
-    const ctx = ctxEl.getContext('2d');
-    if (confChart) confChart.destroy();
-
-    confChart = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        datasets: [{
-          data: [score, 100 - score],
-          backgroundColor: [color, '#1e293b'], // <--- Usa il colore dinamico qui
-          borderWidth: 0,
-          borderRadius: 20
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '75%',
-        animation: false,
-        plugins: { tooltip: { enabled: false } }
-      },
-      plugins: [{
-        id: 'text',
-        beforeDraw: function (chart) {
-          const width = chart.width, height = chart.height, ctx = chart.ctx;
-          ctx.restore();
-          const fontSize = (height / 100).toFixed(2);
-          ctx.font = "bold " + fontSize + "em Inter";
-          ctx.textBaseline = "middle";
-          ctx.fillStyle = color; // <--- E anche qui per il testo centrale
-          const text = score + "%";
-          const textX = Math.round((width - ctx.measureText(text).width) / 2);
-          const textY = height / 2;
-          ctx.fillText(text, textX, textY);
-          ctx.save();
-        }
-      }]
-    });
-  }
-
+  
   // ============================================
   // 11. VISUAL GRID RENDERER
   // ============================================
