@@ -16,30 +16,18 @@ from telethon.errors import (
 )
 from telethon.tl.types import MessageMediaPhoto, MessageMediaDocument
 
-# --- SETUP IMPORT ---
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
-if parent_dir not in sys.path:
-    sys.path.append(parent_dir)
+# IMPORT DATABASE MANAGER
+# Usiamo la funzione standard del progetto
+from ingestion.db_manager import save_raw_events
 
-try:
-    from war_tracker_v2.ingestion.db_manager import save_batch_signals
-    from dotenv import load_dotenv
-except ImportError:
-    sys.path.append(os.path.join(parent_dir, 'scripts'))
-    from war_tracker_v2.ingestion.db_manager import save_batch_signals
-    from dotenv import load_dotenv
-
-load_dotenv(os.path.join(parent_dir, '.env'))
+# --- CONFIGURAZIONE VARIABILI AMBIENTE ---
+# Carichiamo le variabili d'ambiente se non sono già caricate
+from dotenv import load_dotenv
+load_dotenv()
 
 API_ID = os.getenv('TELEGRAM_API_ID')
 API_HASH = os.getenv('TELEGRAM_API_HASH')
 PHONE = os.getenv('TELEGRAM_PHONE')
-
-# --- CONFIGURAZIONE AVANZATA ---
-
-# Data limite (Qui puoi impostare 2024 se vuoi scaricare meno roba)
-CUTOFF_DATE = datetime(2025, 12, 23, tzinfo=timezone.utc)
 
 # Configurazione Anti-Ban
 DB_BATCH_SIZE = 50
@@ -84,27 +72,16 @@ CHANNELS_METADATA = {
 
 
 def clean_text_content(text):
-    """
-    Rimuove emoji e spazi extra.
-    Esempio: "Attack on Kyiv! 🚀💥" -> "Attack on Kyiv!"
-    """
     if not text:
         return ""
-    # Rimuove le emoji
     text_no_emoji = emoji.replace_emoji(text, replace='')
-    # Rimuove spazi multipli e trimma
     return " ".join(text_no_emoji.split())
 
 
-def generate_hash(date_str, text, source):
-    """Crea hash univoco per il messaggio basandosi sul testo PULITO."""
-    # Nota: text qui è già pulito dalle emoji
-    clean_text = str(text).strip()[:100]
-    raw_str = f"{date_str}|{source}|{clean_text}"
-    return hashlib.md5(raw_str.encode('utf-8')).hexdigest()
-
-
-async def fetch_channel_history(client, channel_name):
+async def fetch_channel_history(client, channel_name, start_date, end_date=None):
+    """
+    Scarica lo storico di un canale rispettando i limiti di data.
+    """
     print(f"\n📡 [CONNECT] Analisi canale: {channel_name}...")
 
     signals_batch = []
@@ -117,6 +94,7 @@ async def fetch_channel_history(client, channel_name):
     try:
         entity = await client.get_entity(channel_name)
 
+        # Iteriamo i messaggi
         async for message in client.iter_messages(entity, wait_time=1):
 
             # --- PROTEZIONE FLOOD ---
@@ -126,105 +104,117 @@ async def fetch_channel_history(client, channel_name):
                 await asyncio.sleep(sleep_time)
                 msgs_since_sleep = 0
 
-            # 1. Controllo Data
+            # 1. Controllo Validità Messaggio
             if not message.date:
                 continue
 
-            if message.date < CUTOFF_DATE:
+            # Data del messaggio (Aware)
+            msg_date = message.date
+
+            # STOP se andiamo troppo indietro nel passato
+            if msg_date < start_date:
                 print(
-                    f"   🛑 Data limite ({CUTOFF_DATE.strftime('%Y-%m-%d')}) raggiunta. Stop canale.")
+                    f"   🛑 Raggiunta data limite ({start_date.date()}). Stop canale.")
                 break
 
-            # 2. PULIZIA TESTO (Rimuoviamo emoji PRIMA di controllare la lunghezza)
+            # SKIP se il messaggio è troppo recente (oltre la end_date richiesta)
+            if end_date and msg_date > end_date:
+                continue
+
+            # 2. PULIZIA TESTO
             raw_text = message.text or ""
             cleaned_text = clean_text_content(raw_text)
 
-            # 3. Controllo Contenuto (Sul testo pulito!)
-            # Se un messaggio era solo emoji, cleaned_text sarà vuoto e verrà scartato.
             if len(cleaned_text) < 20:
                 continue
 
-            # 4. Preparazione Dati
-            date_str = message.date.strftime("%Y%m%d%H%M%S")
+            # 3. Preparazione Dati per DB Manager
+            # Adattiamo il formato al 'save_raw_events' standard
+            # Nota: save_raw_events si aspetta {'text', 'source', 'type', 'date'}
 
-            # Generiamo l'hash sul testo pulito per consistenza futura
-            h = generate_hash(date_str, cleaned_text, channel_name)
+            # Formattiamo la data come stringa per il DB
+            date_str = msg_date.strftime("%Y-%m-%d %H:%M:%S")
 
-            has_media = 0
-            if isinstance(message.media, (MessageMediaPhoto, MessageMediaDocument)):
-                has_media = 1
-
-            signal = {
-                'hash': h,
-                'type': 'TELEGRAM',
-                'source': channel_name,
-                'date': date_str,
-                'text': cleaned_text,  # Salviamo il testo SENZA emoji
-                'url': f"https://t.me/{channel_name}/{message.id}",
-                'lat': None,
-                'lon': None,
-                'media_has_video': has_media
+            event_obj = {
+                'text': cleaned_text,       # Testo pulito
+                'source': channel_name,     # Nome canale
+                'type': 'TELEGRAM',         # Tipo fonte
+                'date': date_str,           # Data stringa
+                # I metadati extra li mettiamo nel testo o li ignoriamo per ora
+                # (Il DB raw_events.db attuale è semplice)
             }
 
-            signals_batch.append(signal)
+            signals_batch.append(event_obj)
 
-            # 5. Salvataggio Batch
+            # 4. Salvataggio Batch
             if len(signals_batch) >= DB_BATCH_SIZE:
-                saved = save_batch_signals(signals_batch)
+                # Usiamo la funzione importata
+                saved = save_raw_events(signals_batch)
                 total_channel_saved += saved
                 signals_batch = []
                 sys.stdout.write(
-                    f"\r   📥 {channel_name} ({bias}): Salvati {total_channel_saved} messaggi (No Emoji)...")
+                    f"\r   📥 {channel_name}: Salvati {total_channel_saved} msg...")
                 sys.stdout.flush()
 
+        # Salvataggio residui
         if signals_batch:
-            saved = save_batch_signals(signals_batch)
+            saved = save_raw_events(signals_batch)
             total_channel_saved += saved
             print(
-                f"\r   📥 {channel_name} ({bias}): Salvati {total_channel_saved} messaggi (No Emoji)...")
+                f"\r   📥 {channel_name}: Salvati {total_channel_saved} msg...")
 
     except FloodWaitError as e:
-        print(
-            f"\n   ⚠️ FLOOD WAIT RILEVATO: Telegram chiede di aspettare {e.seconds} secondi.")
-        print(f"   💤 Dormo per {e.seconds + 5} secondi per sicurezza...")
+        print(f"\n   ⚠️ FLOOD WAIT: Aspetto {e.seconds} secondi.")
         await asyncio.sleep(e.seconds + 5)
-
-    except (ValueError, ChannelPrivateError, UsernameInvalidError) as e:
-        print(
-            f"\n   ❌ Errore Canale '{channel_name}': Non trovato o Privato. Salto.")
     except Exception as e:
-        print(f"\n   ❌ Errore generico su {channel_name}: {e}")
+        print(f"\n   ❌ Errore su {channel_name}: {e}")
 
-    print(f"   ✅ Finito {channel_name}. Totale nel DB: {total_channel_saved}")
+    print(f"   ✅ Finito {channel_name}. Totale salvati: {total_channel_saved}")
 
 
-async def main():
+# --- ENTRY POINT PER GLI SCRIPT ESTERNI ---
+async def _run_scraper_async(start_date, end_date):
     if not API_ID or not API_HASH:
-        print("❌ ERRORE: Credenziali mancanti nel .env")
+        print("❌ ERRORE TELEGRAM: API_ID o API_HASH mancanti nel file .env")
         return
 
-    session_path = os.path.join(parent_dir, 'data', 'telegram_session')
+    # Percorso sessione
+    session_path = 'osint_session'
 
     async with TelegramClient(session_path, API_ID, API_HASH) as client:
-        print("🔐 Autenticazione Telegram...")
+        # Autenticazione (se serve)
         if not await client.is_user_authorized():
-            await client.send_code_request(PHONE)
-            code = input('Inserisci codice Telegram: ')
-            try:
-                await client.sign_in(PHONE, code)
-            except SessionPasswordNeededError:
-                pw = input('Inserisci password 2FA: ')
-                await client.sign_in(password=pw)
+            # Nota: Questo funziona male in script automatici se richiede input.
+            # La prima volta va lanciato a mano per creare il file .session
+            print("⚠️ RICHIESTA AUTENTICAZIONE UTENTE (Primo avvio)")
+            await client.start(phone=PHONE)
 
-        print(f"🚀 Inizio Ingestione da {len(CHANNELS_METADATA)} canali...")
-        print(f"🚫 Filtro Emoji: ATTIVO")
-        print(f"📅 Data Inizio: {CUTOFF_DATE.strftime('%Y-%m-%d')}")
+        print(
+            f"🚀 TELEGRAM SCRAPER: {start_date.date()} -> {end_date.date() if end_date else 'Oggi'}")
 
-        for channel_name in CHANNELS_METADATA.keys():
-            await fetch_channel_history(client, channel_name)
-            await asyncio.sleep(3)
+        for channel in CHANNELS_METADATA.keys():
+            await fetch_channel_history(client, channel, start_date, end_date)
+            await asyncio.sleep(2)  # Pausa tra canali
 
-        print("\n🏁 Ingestione Telegram Completata.")
+
+def run_telegram_scraper(start_date, end_date=None):
+    """
+    Funzione wrapper sincrona chiamata da run_backfill.py
+    """
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # Siamo già in un loop (raro qui, ma possibile)
+            asyncio.create_task(_run_scraper_async(start_date, end_date))
+        else:
+            loop.run_until_complete(_run_scraper_async(start_date, end_date))
+    except RuntimeError:
+        # Fallback per nuovi event loop
+        asyncio.run(_run_scraper_async(start_date, end_date))
+
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    # Test manuale se lanci il file direttamente
+    # Usa una data fittizia per test
+    test_start = datetime(2025, 12, 25, tzinfo=timezone.utc)
+    run_telegram_scraper(test_start)

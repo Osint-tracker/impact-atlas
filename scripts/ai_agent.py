@@ -12,7 +12,6 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
-import time
 
 geolocator = Nominatim(user_agent="ai_agent_fixer_v2")
 
@@ -90,8 +89,9 @@ SOLDIER_SYSTEM_PROMPT = """
 ### SYSTEM PROMPT: THE TACTICAL ANALYST
 
 **ROLE**
-You are a Senior Military Intelligence Analyst (OSINT) specializing in the Russo-Ukrainian conflict.
+You are a Military Intelligence Sensor. Your goal is NOT to write a story, but to EXTRACT structured data from raw reports.
 Your task is to convert a CLUSTER of raw, noisy, multi-lingual telegram messages (RU/UA/EN) into a single, rigorous JSON INTELLIGENCE REPORT.
+You must adhere to the **TITAN-10** scoring protocol for Kinetic, Target, and Effect assessment.
 
 **INPUT DATA**
 You will receive a "Cluster Object" containing:
@@ -105,7 +105,7 @@ You will receive a "Cluster Object" containing:
     * **INFERRED:** If no numbers are present, extract the Toponym (City/Village) and the specific landmark (e.g., "School No.3", "Industrial Zone") into `geo_location.inferred`.
     * **NEVER HALLUCINATE:** Do not convert a city name into coordinates yourself. If no coordinates are written in text, `geo_location.explicit` must be `null`.
     * **SINGLE IMPACT POINT:** You must identify the ONE main location where the event physically happened.
-    * **NO LISTS:** NEVER output "Kyiv, Lviv, Odessa". Pick the most heavily impacted one.
+    * **SINGLE LOCATION RULE:** If multiple locations are mentioned, choose the MOST SPECIFIC ONE where the kinetic event happened. Do NOT output a list like "Kyiv, Lviv, Odessa". Output ONLY "Kyiv".
     * **SPECIFICITY:** If text says "Explosion in Odesa", output "Odesa". If it says "Odesa region", output "Odesa region".
 
 2.  **TIME RECONSTRUCTION:**
@@ -120,48 +120,70 @@ You will receive a "Cluster Object" containing:
     * "200" -> KILLED / "300" -> WOUNDED.
     * "Cotton" (Bavovna) -> Explosion.
 
-**OUTPUT JSON SCHEMA**
-Return ONLY a valid JSON object matching this structure:
+**PROTOCOL "TITAN-10": INTENSITY SCORING STANDARDS**
+Assign scores (1-10) based STRICTLY on these definitions. Do not guess.
 
+**VECTOR K: KINETIC MAGNITUDE (The Physics)**
+- 1: Small Arms (Rifles), Sniper.
+- 2: Light Mortars (60-82mm), Grenade drops.
+- 3: Heavy Mortars (120mm), SPG-9, Single FPV drone.
+- 4: Tube Artillery (155mm) - Single/Platoon.
+- 5: MLRS (Grad) - Partial packet, Tank shelling.
+- 6: Precision Strike (GMLRS/HIMARS - Single).
+- 7: Heavy Strike (Iskander, Storm Shadow - Single), Glide Bomb (KAB-500).
+- 8: Massive Strike (Heavy MLRS Salvo, Missile Wave >3).
+- 9: Strategic Bombing (Tu-95 Salvo), Thermobaric (TOS-1A).
+- 10: WMD / Dam Breach / Massive Ammo Detonation (Secondaries > 1km).
+
+**VECTOR T: TARGET TIER (The Value)**
+- 1: Empty Terrain, Open Field, Abandoned structures.
+- 2: Civilian Residential (Low Value), Private Vehicles.
+- 3: Infantry Positions (Foxholes), Light Trucks.
+- 4: Tactical Logistics (Fuel trucks, Ammo crates), Mortar Pits.
+- 5: Heavy Armor (Tanks, IFVs), Artillery Positions.
+- 6: Advanced Systems (EW Stations, Radar, SAM Short-range).
+- 7: Operational HQ (Bn/Bde level), Key Bridges (Tactical).
+- 8: Strategic Air Defense (S-300/400, Patriot), Airfields, Substations.
+- 9: Strategic Industry (Refineries, Factories), High Command.
+- 10: National Leadership, Nuclear Silos, Capital Gov District.
+
+**VECTOR E: EFFECT / OUTCOME (The Reality)**
+- 1: FAILURE / INTERCEPTED / UNKNOWN EFFECT.
+- 2: NEGLIGIBLE. Missed by >50m, paint scratch.
+- 3: SUPPRESSION. Target forced to move/hide.
+- 4: LIGHT DAMAGE. Mobility kill (repairable), WIA.
+- 5: MODERATE DAMAGE. Mission kill (needs factory repair).
+- 6: SEVERE DAMAGE. Structural breach, fire ignited.
+- 7: DESTRUCTION (Single). Asset destroyed/burned out.
+- 8: DESTRUCTION (Group). Multiple assets destroyed.
+- 9: ANNIHILATION. Vaporized, catastrophic secondaries.
+- 10: TOTAL ERASE. Area uninhabitable.
+
+**OUTPUT JSON SCHEMA**
+Return ONLY valid JSON:
 {
   "event_analysis": {
     "is_kinetic_military_event": true,
     "confidence_level": "HIGH | MEDIUM | LOW",
     "summary_en": "Concise tactical summary (max 20 words)"
   },
-  "timing": {
-    "reference_timestamp_used": "ISO_STRING",
-    "estimated_event_timestamp": "ISO_STRING | null",
-    "time_precision": "EXACT_TIME | MORNING/EVENING | DAY_PRECISION | UNKNOWN"
-  },
+  "visual_evidence": boolean,
+  "timing": { "estimated_event_timestamp": "ISO_STRING | null" },
   "geo_location": {
-    "explicit": {
-      "lat": null,
-      "lon": null,
-      "source_text_snippet": "extraction or null"
-    },
-    "inferred": {
-      "toponym_raw": "SINGLE_CITY_NAME_ONLY (e.g. Bakhmut)",
-      "landmark_description": "e.g. Near the train station",
-      "spatial_relation": "e.g. 5km North of..."
-    }
+    "explicit": { "lat": null, "lon": null },
+    "inferred": { "toponym_raw": "SINGLE_CITY_NAME", "spatial_relation": "string" }
+  },
+  "titan_assessment": {
+     "kinetic_score": INTEGER (1-10),
+     "target_score": INTEGER (1-10),
+     "effect_score": INTEGER (1-10),
+     "target_type_category": "STRING (e.g. LOGISTICS, INFANTRY, ENERGY)",
+     "is_deep_strike": BOOLEAN (True if >30km behind front),
+     "new_tech_used": BOOLEAN
   },
   "actors": {
-    "aggressor": {
-      "side": "RU | UA | UNKNOWN",
-      "unit_mentioned": "e.g. 93rd Brigade or null",
-      "equipment_used": ["List identified equipment"]
-    },
-    "target": {
-      "side": "RU | UA | CIVILIAN",
-      "type": "ENUM: CRITICAL_NUCLEAR | CRITICAL_DAM | MIL_AIRBASE | IND_DEFENSE_PLANT | MIL_AIR_DEFENSE_LONG | MIL_SHIP | INFRA_STRATEGIC_BRIDGE | INFRA_REFINERY | MIL_EW_RADAR | INFRA_GENERATION | MIL_AMMO_DEPOT | MIL_MLRS_STRATEGIC | MIL_HQ | MIL_AIR_DEFENSE_SHORT | MIL_ARTILLERY | MIL_APC_TANK | MIL_MLRS_TACTICAL | INFRA_FUEL_DEPOT | IND_FACTORY | INFRA_LOGISTICS | INFRA_GRID_LOCAL | MIL_TRENCH | MIL_VEHICLE_LIGHT | MIL_PERSONNEL_OPEN | CIV_PUBLIC | CIV_COMMERCIAL | CIV_RESIDENTIAL | OPEN_FIELD",
-      "status_after_event": "CRITICAL | HEAVY | LIGHT | NONE | UNKNOWN"
-    }
-  },
-  "casualties": {
-    "killed_kia": e.g. 0,
-    "wounded_wia": e.g. 0,
-    "civilian_mentioned": e.g. false
+    "aggressor": { "side": "RU | UA | UNKNOWN" },
+    "target": { "side": "RU | UA | CIVILIAN" }
   }
 }
 """
@@ -594,6 +616,8 @@ RAW TEXT:
      * `CIVILIAN_FACILITY` (Schools, Hotels, Residential)
      * `CITY` (Generic city strike)
      * `REGION` (Wide area/Unknown)
+     * `POLITICAL_EVENT` (Dichiarazioni, Incontri, Sanzioni)
+     * `LOGISTICS_NON_KINETIC` (Sequestri, Blocchi doganali)
 
  **BIAS & SIGNAL:**
      * `BIAS SCORE`: Estimate political lean (-10 Pro-RU to +10 Pro-UA).
@@ -762,6 +786,63 @@ RAW TEXT:
         except Exception as e:
             print(f"   ❌ JSON Mechanic Failed: {e}")
             return None
+
+    # =========================================================================
+    # 🧮 LAYER 1 ENGINE: T.I.E. CALCULATOR
+    # =========================================================================
+    def _calculate_tie(self, titan_data, visual_confirmed):
+        """
+        Calculates the Target Impact Estimate (T.I.E.) based on TITAN-10 vectors.
+        Returns Dictionary with Value and Status.
+        """
+        # 1. Sanity Check & Clamping (1-10)
+        try:
+            k = max(1, min(10, int(titan_data.get('kinetic_score', 1))))
+            t = max(1, min(10, int(titan_data.get('target_score', 1))))
+            e = max(1, min(10, int(titan_data.get('effect_score', 1))))
+        except:
+            k, t, e = 1, 1, 1
+
+        # 2. PROTOCOL "DEFERRED" (Sospensione del Giudizio)
+        # Se l'effetto è basso/ignoto (<=2) E non c'è video, non diamo un voto alto.
+        # "Meglio un buco che una bugia".
+        if e <= 2 and not visual_confirmed:
+            return {
+                "value": 0,
+                "status": "DEFERRED",
+                "reason": "Low effect confidence & No visual evidence",
+                "vectors": {"k": k, "t": t, "e": e}
+            }
+
+        # 3. CALCOLO MATEMATICO T.I.E.
+        # Formula: (Target^1.6) * (Effect / 10) -> Il "COSA" pesa più del "COME".
+        # Esempio: Target 10 (S-400), Effect 10 -> 10^1.6 (39.8) * 1.0 = 39.8
+        # Esempio: Target 2 (Casa), Effect 10 -> 2^1.6 (3.0) * 1.0 = 3.0
+        strategic_weight = (pow(t, 1.6)) * (e / 10.0)
+
+        # Fattore Cinetico Logaritmico (Moltiplicatore di scala)
+        # K=1 -> 1.0 | K=10 -> 2.15
+        kinetic_mult = 1.0 + (math.log(k) / 2.0)
+
+        # Calcolo Raw (Fattore 2.5 per scalare verso 100)
+        raw_tie = strategic_weight * kinetic_mult * 2.5
+
+        # 4. BONUS CONTESTUALI
+        if titan_data.get('is_deep_strike'):
+            raw_tie *= 1.25  # Deep strike vale di più (logistica/rischio)
+
+        if visual_confirmed:
+            raw_tie *= 1.10  # Bonus affidabilità
+
+        # Cap a 100
+        final_value = int(min(100, raw_tie))
+
+        return {
+            "value": final_value,
+            "status": "VALID",
+            "reason": "Sufficient data points",
+            "vectors": {"k": k, "t": t, "e": e}
+        }
 
     # =========================================================================
     # 🤖 STEP 2: THE SOLDIER v2.1 (With Auto-Repair)
@@ -1044,64 +1125,124 @@ RAW TEXT:
     # =========================================================================
     # 📰 STEP 4: THE JOURNALIST (GPT-4o-mini via OpenAI)
     # =========================================================================
+# =========================================================================
+    # 📰 STEP 4: THE JOURNALIST (GPT-4o-mini via OpenAI)
+    # =========================================================================
     def _step_4_the_journalist(self, text, brain_data, soldier_data):
         """
         Role: Description & Title.
         Generates Master English content and translates to Italian.
+        Strictly enforces NEUTRAL, ASEPTIC, UN-BIASED terminology.
         """
-        print("   📰 Step 4: The Journalist (4o-mini) writing bilingual summary...")
+        print("   📰 Step 4: The Journalist (4o-mini) writing neutral summary...")
+
+        # Recuperiamo chi sono gli attori per aiutare l'AI a non confondersi
+        aggressor = soldier_data.get('actors', {}).get(
+            'aggressor', {}).get('side', 'Unknown')
+        target = soldier_data.get('actors', {}).get(
+            'target', {}).get('side', 'Unknown')
 
         prompt = f"""
-        TASK: You are an OSINT News Editor.
-        1. Write a neutral, concise Title and Description in **ENGLISH** (Master Version).
-        2. Translate them faithfully into **ITALIAN**.
+        ROLE: You are a historical archivist for the United Nations (UN).
+        Your job is to rewrite raw, biased war reports into NEUTRAL, FACTUAL database entries.
 
-        CONSTRAINTS:
-        - Titles: Max 10 words. Military style (Subject + Action + Location).
-        - Descriptions: Max 100 words. Focus on Facts (Who, What, Where, Damage). No sensationalism.
-        - Translation: Must match the English meaning exactly. Do not add new info in Italian.
+        INPUT CONTEXT (Raw Telegram Text):
+        {text[:2000]}
 
-        EVENT DATA:
-        - Type: {soldier_data.get('target_category')}
-        - Damage: {soldier_data.get('infrastructure_damage')}
-        - Signal: {brain_data.get('implicit_signal')}
-        - Context: {text[:800]}
+        DETECTED ACTORS:
+        - Aggressor Side: {aggressor}
+        - Target Side: {target}
+
+        ⚠️ "DE-BIASING" RULES (STRICT):
+        1. **SOURCE BIAS REMOVAL:** The source text is BIASED (e.g., Ukrainian sources call Russians "The Enemy", "Orcs", "Occupiers").
+           - YOU MUST REPLACE "The Enemy" with the specific army name (e.g., "Russian Forces").
+           - YOU MUST REPLACE "Our troops" with "Ukrainian Forces".
+
+        2. **FORBIDDEN WORDS (Blacklist):**
+           - NEVER use: "Enemy", "Foe", "Hero", "Terrorist", "Liberated", "Glorious", "Horde", "Criminals".
+           - USE INSTEAD: "Adversary forces", "Personnel", "Retook control", "Advanced", "Group", "Units".
+
+        3. **TONE:** Cold, clinical, robotic. No adjectives like "Brutal", "Massive", "Cynical". Just numbers and facts.
+
+        4. **TRANSLATION RULE (ITALIAN):**
+           - "Enemy" -> "Forze Russe" (o "Forze Ucraine" based on context). NEVER "Il nemico".
+           - "Our defenders" -> "Le forze di difesa ucraine".
+
+        OUTPUT REQUIREMENTS:
+        1. **Title (EN):** [Who] [Action] [Where]. (e.g. "Russian Infantry Attack Repelled near Sotnytskyi Kozachok").
+        2. **Description (EN):** Max 80 words. Focus on kinetics: movements, clashes, casualties.
+        3. **Italian Translation:** RIGOROUSLY NEUTRAL.
 
         OUTPUT JSON:
         {{
-            "title_en": "Title in English",
-            "description_en": "Description in English...",
-            "title_it": "Translated Title",
-            "description_it": "Translated Description..."
+            "title_en": "String",
+            "description_en": "String",
+            "title_it": "String",
+            "description_it": "String"
         }}
         """
+
         try:
-            # 1. Chiamata API
+            # 1. Chiamata API (Temperatura 0 = Robotico)
             response = self.openai_client.chat.completions.create(
                 model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.2
+                messages=[
+                    {"role": "system",
+                        "content": "You are a neutral database engine. JSON only."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.0
             )
 
-            # 2. Parsing Sicuro
+            # 2. Parsing
             result_text = response.choices[0].message.content
             parsed_data = self._clean_and_parse_json(result_text)
 
             if not parsed_data:
-                print("   ⚠️ Journalist Error: Parsing fallito")
-                return {
-                    "title_en": "Error Processing", "description_en": "N/A",
-                    "title_it": "Errore Elaborazione", "description_it": "N/A"
+                return self._get_error_journalist_response()
+
+            # 3. BARRIERA MECCANICA (Python Post-Processing)
+            # Funzione interna di pulizia
+            def sanitize_string(s):
+                if not s:
+                    return ""
+                replacements = {
+                    "il nemico": "le forze avversarie",
+                    "del nemico": "delle forze avversarie",
+                    "al nemico": "alle forze avversarie",
+                    "col nemico": "con le forze avversarie",
+                    "i nostri": "le truppe ucraine",
+                    "le nostre": "le truppe ucraine",
+                    "liberato": "preso il controllo di",
+                    "orchi": "soldati russi",
+                    "terroristi": "incursori"
                 }
+                s_lower = s.lower()
+                for bad, good in replacements.items():
+                    if bad in s_lower:
+                        pattern = re.compile(re.escape(bad), re.IGNORECASE)
+                        s = pattern.sub(good, s)
+                return s
+
+            # Applica sanitizzazione ai campi italiani
+            parsed_data['title_it'] = sanitize_string(
+                parsed_data.get('title_it', ''))
+            parsed_data['description_it'] = sanitize_string(
+                parsed_data.get('description_it', ''))
 
             return parsed_data
 
         except Exception as e:
             print(f"   ❌ Journalist Critical Error: {e}")
-            return {
-                "title_en": "Error Processing", "description_en": "N/A",
-                "title_it": "Errore Elaborazione", "description_it": "N/A"
-            }
+            return self._get_error_journalist_response()
+
+    def _get_error_journalist_response(self):
+        return {
+            "title_en": "Event Processing Error",
+            "description_en": "Data could not be summarized neutrally.",
+            "title_it": "Errore Elaborazione Evento",
+            "description_it": "Impossibile riassumere i dati in modo neutrale."
+        }
 
     # =========================================================================
     # 🔄 MAIN PROCESS FLOW
@@ -1629,18 +1770,30 @@ RAW TEXT:
         if not brain_out.get("is_relevant", True):
             return create_fallback_entry("Deemed Irrelevant by AI")
 
-        # Step 2: Soldier v2.0 (New Protocol)
         # Adattiamo i dati della singola riga al formato "Cluster" richiesto dal nuovo prompt
+        # --- INIZIO BLOCCO LAYER 1 ---
         soldier_input_packet = {
             "reference_timestamp": row.get("Date"),
-            # Passiamo il testo combinato come unico messaggio del "cluster"
             "raw_messages": [combined_text]
         }
 
+        # 1. Chiamata al Soldato
+        # Nota: Usiamo 'soldier_input_packet' perché è il formato richiesto dalla funzione.
         soldier_out = self._step_2_the_soldier(soldier_input_packet)
 
+        # 2. Controllo Fallimento Soldier
         if not soldier_out:
-            return create_fallback_entry("Data Extraction Failed (Soldier Error)")
+            print("   ⚠️ Soldier failed. Skipping.")
+            return create_fallback_entry("AI Analysis Failed (Soldier Error)")
+
+        # 3. Calcolo T.I.E. (Layer 1)
+        titan_data = soldier_out.get('titan_assessment', {})
+        visual_evidence = soldier_out.get('visual_evidence', False)
+
+        tie_result = self._calculate_tie(titan_data, visual_evidence)
+
+        print(f"      🎯 TIE: {tie_result['value']} [{tie_result['status']}] "
+              f"(K:{tie_result['vectors']['k']} T:{tie_result['vectors']['t']} E:{tie_result['vectors']['e']})")
 
         # Step 3: Calculator (Passiamo la LISTA delle fonti se disponibile, altrimenti stringa singola)
         sources_for_calc = row.get("sources_list_for_bias") or primary_source
@@ -1719,6 +1872,141 @@ RAW TEXT:
 
 DB_PATH = os.path.join(BASE_DIR, '../war_tracker_v2/data/raw_events.db')
 
+# --- 1. IL DIZIONARIO "GAZETTEER" (Whitelist Estesa) ---
+# Usiamo questo SOLO per luoghi FUORI dal rettangolo di guerra (UA/RU).
+# Tutto ciò che è in Ucraina o Russia viene gestito dinamicamente dall'API (Geocoding).
+KNOWN_LOCATIONS = {
+    # --- HUB LOGISTICI E MILITARI (I più importanti per la guerra) ---
+    "rzeszow": (50.0412, 21.9991),     # Hub principale aiuti (Polonia)
+    "jasionka": (50.1120, 22.0180),    # Aeroporto Rzeszow
+    "przemysl": (49.7818, 22.7675),    # Confine ferroviario
+    "lublin": (51.2465, 22.5684),      # Polonia
+    "constanta": (44.1792, 28.6383),   # Porto Romania (Grano/Aiuti)
+    "suceava": (47.6514, 26.2555),     # Hub Romania Nord
+    "tulcea": (45.1768, 28.8023),      # Romania (confine Danubio)
+    "galati": (45.4353, 28.0080),      # Romania
+    "satu mare": (47.7900, 22.8900),   # Romania
+    "kosice": (48.7164, 21.2611),      # Slovacchia (Riparazioni)
+    "michalovce": (48.7547, 21.9195),  # Slovacchia
+    "ramstein": (49.4447, 7.6033),     # Base USA Germania (Ramstein Format)
+    "wiesbaden": (50.0782, 8.2397),    # HQ US Army Europe
+
+    # --- ZONE "IBRIDE" / CONFINE ESTERNO ---
+    "transnistria": (46.8403, 29.6293),  # Moldova (Separatisti)
+    "tiraspol": (46.8361, 29.6105),
+    "kaliningrad": (54.7104, 20.4522),  # Exclave Russa (Strategica)
+    "baltiysk": (54.6558, 19.9126),     # Flotta Baltico
+    "suwalki gap": (54.1100, 23.3500),  # Corridoio Suwalki
+    "narva": (59.3797, 28.1791),        # Confine Estonia/Russia
+
+    # --- BIELORUSSIA (Spesso base di lancio, ma fuori dal 'recinto' stretto) ---
+    "belarus": (53.7098, 27.9534),
+    "minsk": (53.9006, 27.5590),
+    "gomel": (52.4345, 30.9754),       # Hub sud
+    "homel": (52.4345, 30.9754),
+    "brest": (52.0976, 23.7341),       # Confine Polonia
+    "luninets": (52.2475, 26.7972),    # Base aerea
+    "machulishchi": (53.7766, 27.5794),  # Base A-50
+    "zyabrovka": (52.3025, 31.1633),    # Base aerea
+
+    # --- CAPITALI ALLEATI (Decisioni Politiche/Sanzioni) ---
+    "washington": (38.8951, -77.0364),
+    "washington dc": (38.8951, -77.0364),
+    "dc": (38.8951, -77.0364),
+    "london": (51.5074, -0.1278),
+    "brussels": (50.8503, 4.3517),     # EU / NATO HQ
+    "paris": (48.8566, 2.3522),
+    "berlin": (52.5200, 13.4050),
+    "warsaw": (52.2297, 21.0122),
+    "warszawa": (52.2297, 21.0122),
+    "vilnius": (54.6872, 25.2797),
+    "riga": (56.9496, 24.1052),
+    "tallinn": (59.4370, 24.7536),
+    "helsinki": (60.1699, 24.9384),
+    "stockholm": (59.3293, 18.0686),
+    "oslo": (59.9139, 10.7522),
+    "copenhagen": (55.6761, 12.5683),
+    "prague": (50.0755, 14.4378),
+    "bratislava": (48.1486, 17.1077),
+    "budapest": (47.4979, 19.0402),
+    "bucharest": (44.4268, 26.1025),
+    "sofia": (42.6977, 23.3219),
+    "rome": (41.9028, 12.4964),
+    "madrid": (40.4168, -3.7038),
+    "the hague": (52.0705, 4.3007),    # CPI / Tribunali
+
+    # --- ASSE AVVERSARIO (Fornitori armi) ---
+    "tehran": (35.6892, 51.3890),      # Iran (Shahed)
+    "pyongyang": (39.0392, 125.7625),  # Nord Corea (Munizioni)
+    "beijing": (39.9042, 116.4074),    # Cina
+    "ankara": (39.9334, 32.8597),      # Turchia (Mediatore)
+    "istanbul": (41.0082, 28.9784),    # Accordi Grano
+
+    # --- MARI E STRETTI (Guerra Navale/Ibrida) ---
+    "black sea": (43.5, 34.0),           # Centro Mar Nero (Generico)
+    "mar nero": (43.5, 34.0),
+    "international waters": (43.5, 34.0),  # Spesso nel Mar Nero
+    # Centro Baltico (Sabotaggi Nord Stream)
+    "baltic sea": (56.5, 19.0),
+    "mar baltico": (56.5, 19.0),
+    "caspian sea": (42.0, 51.0),         # Lancio missili russi
+    "mar caspio": (42.0, 51.0),
+    "bosphorus": (41.1, 29.1),           # Stretto
+    "dardanelles": (40.2, 26.4),
+    "snake island": (45.2551, 30.2037),  # Isola dei Serpenti
+    "zmiinyi": (45.2551, 30.2037)
+}
+# --- FUNZIONE GEOCODING SICURO ---
+
+
+def safe_geocode(geolocator, query):
+    """
+    1. Cerca nella Whitelist (Hardcoded).
+    2. Se non trova, cerca via API ma SOLO nel rettangolo di guerra.
+    """
+    if not query:
+        return None, None
+
+    # Normalizza la query (minuscolo e pulizia spazi)
+    clean_query = str(query).lower().strip()
+
+    # --- STEP 1: CONTROLLO WHITELIST (Hardcoded) ---
+    # Controlla match esatto
+    if clean_query in KNOWN_LOCATIONS:
+        print(f"      📍 Whitelist Hit: '{query}' -> Hardcoded.")
+        return KNOWN_LOCATIONS[clean_query]
+
+    # --- STEP 2: GEOCODING CON RECINTO (API) ---
+    # Recinto: Ucraina + Russia Occidentale
+    MIN_LAT, MAX_LAT = 44.0, 60.0
+    MIN_LON, MAX_LON = 22.0, 55.0
+
+    try:
+        # Priorità a UA/RU
+        location = geolocator.geocode(
+            query, country_codes=['ua', 'ru'], timeout=5)
+
+        # Fallback globale (se il geocoder locale fallisce)
+        if not location:
+            location = geolocator.geocode(query, timeout=5)
+
+        if location:
+            lat, lon = location.latitude, location.longitude
+
+            # CHECK DEL RECINTO
+            if MIN_LAT <= lat <= MAX_LAT and MIN_LON <= lon <= MAX_LON:
+                return lat, lon
+            else:
+                print(
+                    f"      ⚠️ COORDINATE FUORI ZONA SCARTATE: {query} ({lat},{lon})")
+                return None, None
+
+        return None, None
+
+    except Exception as e:
+        print(f"      ❌ Geocoding Error: {e}")
+        return None, None
+
 
 def main():
     print("🤖 STARTING SUPER SQUAD AGENT (SQLite Mode)...")
@@ -1758,7 +2046,7 @@ def main():
                     ELSE 1
                 END ASC,
                 last_seen_date DESC
-            LIMIT 100
+            LIMIT 500
         """)
 
         clusters_to_process = cursor.fetchall()
@@ -1891,7 +2179,6 @@ def main():
         combined_text = "\n".join(raw_msgs)
 
         # --- STEP 1: THE SOLDIER (Extraction) ---
-        # Qwen legge tutto e prova a estrarre.
         cluster_data = {
             "reference_timestamp": ref_date,
             "raw_messages": raw_msgs
@@ -1899,15 +2186,29 @@ def main():
 
         soldier_result = None
         try:
+            # Usiamo soldier_result coerentemente
             soldier_result = agent._step_2_the_soldier(cluster_data)
         except Exception as e:
             print(f"   ⚠️ Soldier Stumbled: {e}")
 
-        # LOGICA FALLBACK: Se il soldato fallisce o non trova nulla,
-        # NON saltiamo. Passiamo un pacchetto vuoto al Brain così può provare a "salvare" la notizia.
+        # LOGICA FALLBACK (SENZA CONTINUE):
+        # Se fallisce, creiamo un oggetto vuoto così il codice dopo non si rompe,
+        # ma NON fermiamo il ciclo. Andiamo avanti verso il Brain.
         if not soldier_result:
             print("   ⏩ Soldier empty/failed. Escalating to Brain for recovery...")
             soldier_result = {"status": "FAILED_EXTRACTION"}
+
+        # =================================================================
+        # 🟢 LAYER 1: T.I.E. CALCULATOR (SAFETY VERSION)
+        # =================================================================
+        # 1. Estrazione sicura (Se soldier_result è il fallback, userà i default)
+        titan_data = soldier_result.get('titan_assessment', {})
+        visual_evidence = soldier_result.get('visual_evidence', False)
+
+        # 2. Calcolo T.I.E.
+        tie_result = agent._calculate_tie(titan_data, visual_evidence)
+
+        print(f"      🎯 TIE: {tie_result['value']} [{tie_result['status']}]")
 
         # --- STEP 2: THE BRAIN (Verification & Recovery) ---
         metadata_for_judge = {
@@ -1962,13 +2263,16 @@ def main():
                 # Dati grezzi del soldato (potrebbero essere null o errati)
                 "tactics": soldier_result,
                 "scores": calc_result,
-                "editorial": journo_result
+                "editorial": journo_result,
+                "tie_score": tie_result['value'],       # <--- AGGIUNGI QUESTO
+                "tie_status": tie_result['status'],     # <--- AGGIUNGI QUESTO
+                "titan_metrics": titan_data             # <--- AGGIUNGI QUESTO
             }
 
             print("   ✅ Intelligence Extracted & Verified:")
 
             # ==================================================================================
-            # GEO-FIXER BLOCK: Aggiusta coordinate mancanti con geocoding
+            # GEO-FIXER BLOCK (VERSIONE SICURA CON RECINTO)
             # ==================================================================================
             try:
                 # 1. Recupera i dati attuali
@@ -1985,51 +2289,34 @@ def main():
                 # 2. Se mancano coordinate e abbiamo un nome, CERCA!
                 if (not lat or lat == 0) and location_name and location_name != "Unknown":
 
-                    # Definiamo la lista PRIMA del controllo
-                    banned_locations = [
-                        "Ukraine", "Russia", "Europe", "NATO", "EU", "Border", "Frontline"]
+                    # Lista nera di parole generiche
+                    banned_locations = ["Ukraine", "Russia", "Europe",
+                                        "NATO", "EU", "Border", "Frontline", "Front", "Zone"]
 
                     if location_name.strip() in banned_locations:
                         print(
                             f"      ⚠️ Skipped Geocoding for generic location: '{location_name}'")
                     else:
                         print(
-                            f"      🌍 Coordinate mancanti per '{location_name}'. Geocoding forzato...")
-                        try:
-                            # Questa riga deve rientrare di 4 spazi rispetto al 'try' sopra
-                            location = geolocator.geocode(
-                                location_name, timeout=10)
+                            f"      🌍 Geocoding forzato per '{location_name}'...")
 
-                            if location:
-                                # 3. MODIFICA IL REPORT FINALE "AL VOLO"
-                                final_report['tactics']['geo_location']['explicit']['lat'] = location.latitude
-                                final_report['tactics']['geo_location']['explicit']['lon'] = location.longitude
-                                print(
-                                    f"       ✅ Trovato e Inserito: {location.latitude}, {location.longitude}")
-                                time.sleep(1)
-                            else:
-                                print("       ⚠️ Luogo non trovato sulle mappe.")
-                        except Exception as e:
-                            # Questo 'except' deve essere allineato verticalmente col 'try' sopra
-                            print(f"       ❌ Errore connessione mappe: {e}")
+                        # --- CHIAMATA ALLA FUNZIONE SICURA ---
+                        # Assicurati di aver definito 'geolocator' all'inizio del main
+                        # geolocator = Nominatim(user_agent="trident_tracker")
+                        new_lat, new_lon = safe_geocode(
+                            geolocator, location_name)
 
-            except Exception as e:
-                print(f"   ⚠️ Warning Geo-Fixer: {e}")
+                        if new_lat and new_lon:
+                            final_report['tactics']['geo_location']['explicit']['lat'] = new_lat
+                            final_report['tactics']['geo_location']['explicit']['lon'] = new_lon
+                            print(
+                                f"       ✅ Trovato e Inserito (Zona Sicura): {new_lat}, {new_lon}")
+                            import time
+                            time.sleep(1)
+                        else:
+                            print(
+                                "       ⚠️ Luogo non trovato o fuori dalla zona di guerra.")
 
-            try:
-                location = geolocator.geocode(
-                    location_name, timeout=10)
-                if location:
-                    # 3. MODIFICA IL REPORT FINALE "AL VOLO"
-                    final_report['tactics']['geo_location']['explicit']['lat'] = location.latitude
-                    final_report['tactics']['geo_location']['explicit']['lon'] = location.longitude
-                    print(
-                        f"      ✅ Trovato e Inserito: {location.latitude}, {location.longitude}")
-                    time.sleep(1)  # Pausa cortesia
-                else:
-                    print("      ⚠️ Luogo non trovato sulle mappe.")
-            except Exception as e:
-                print(f"      ❌ Errore connessione mappe: {e}")
             except Exception as e:
                 print(f"   ⚠️ Warning Geo-Fixer: {e}")
             # ==================================================================================

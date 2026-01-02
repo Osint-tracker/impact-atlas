@@ -34,9 +34,9 @@ MAX_TIME_DIFF_HOURS = 96
 # SOGLIE VETTORIALI
 VECTOR_SIM_THRESHOLD = 0.70
 
-# SOGLIE TESTUALI (LEGACY/FALLBACK) <--- FIX: Mancavano queste costanti
-TEXT_SIM_THRESHOLD_GEO = 0.05    # Soglia bassa se vicini geograficamente
-TEXT_SIM_THRESHOLD_BLIND = 0.05  # Soglia più alta se lontani o senza coordinate
+# SOGLIE TESTUALI (LEGACY/FALLBACK)
+TEXT_SIM_THRESHOLD_GEO = 0.05
+TEXT_SIM_THRESHOLD_BLIND = 0.05
 
 # =============================================================================
 # 🧮 FUNZIONI HELPER
@@ -252,6 +252,9 @@ def main():
             if r['last_seen_date']:
                 try:
                     dt = datetime.fromisoformat(r['last_seen_date'])
+                    # FIX: Rimuovi info timezone per uniformare tutto a "naive"
+                    if dt and dt.tzinfo is not None:
+                        dt = dt.replace(tzinfo=None)
                 except:
                     pass
 
