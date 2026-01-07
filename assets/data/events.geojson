@@ -6,141 +6,6 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          24.7536,
-          59.437
-        ]
-      },
-      "properties": {
-        "id": "435de6e4-a357-43a1-9834-d9b8e791158c",
-        "title": "Finnish Border Guard Seizes Vessel Fitburg near Helsinki",
-        "description": "The Finnish Border Guard conducted a boarding and seizure of the vessel Fitburg, which departed from St. Petersburg. The vessel is suspected of involvement in disruptions of communication cables between Tallinn and Helsinki. Fourteen crew members, including citizens from Russia, Georgia, Azerbaijan, and Kazakhstan, were questioned. Two crew members have been detained, and two others are prohibited from leaving Finland as part of the ongoing investigation.",
-        "date": "2026-01-03 23:38:38",
-        "tie_total": 2.0,
-        "vec_k": 1.0,
-        "vec_t": 2.0,
-        "vec_e": 3.0,
-        "reliability": 70,
-        "bias_score": 0.0,
-        "ai_reasoning": "[EN] The seizure of the Fitburg underscores Finland's heightened vigilance against maritime threats, particularly those linked to Russia, amid regional tensions over critical infrastructure security. Detaining crew members signals Finland's intent to disrupt potential sabotage operations targeting undersea communication cables, which are vital for NATO's Baltic Sea communications. This incident amplifies concerns over Russia's covert maritime activities in the region, aligning with broader NATO efforts to counter hybrid threats.\n\n[IT] La cattura della Fitburg evidenzia la maggiore",
-        "has_video": true,
-        "sources_list": "[]",
-        "marker_radius": 4.2,
-        "marker_color": "#eab308"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          36.2310146,
-          49.9923181
-        ]
-      },
-      "properties": {
-        "id": "3de9c249-16b4-4869-b995-d5afd4b70079",
-        "title": "Russian Strikes Result in Casualties in Kharkiv",
-        "description": "On January 3, 2026, Russian forces conducted strikes in Kharkiv, resulting in three confirmed fatalities and approximately 30 injuries. Fragments of a body were discovered at the site. Rescue and search operations are ongoing.",
-        "date": "2026-01-03 20:04:54",
-        "tie_total": 10.0,
-        "vec_k": 6.0,
-        "vec_t": 2.0,
-        "vec_e": 7.0,
-        "reliability": 50,
-        "bias_score": 0.0,
-        "ai_reasoning": "[EN] The strike demonstrates Russia's continued willingness to target urban centers, undermining Ukraine's morale and straining emergency services. The moderate kinetic score (6) suggests a deliberate but not overwhelming attack, likely aimed at maintaining pressure rather than achieving a decisive outcome. This fits Russia's broader strategy of attrition, weakening Ukraine's resilience over time.  \n\n[IT] L'attacco dimostra la continua volontà russa di colpire i centri urbani, minando il morale ucraino e",
-        "has_video": false,
-        "sources_list": "[]",
-        "marker_radius": 5.0,
-        "marker_color": "#f59e0b"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          39.0261044,
-          45.7684014
-        ]
-      },
-      "properties": {
-        "id": "0b92917b-bc8f-4064-a926-32b224124f67",
-        "title": "Ukrainian Forces Strike Tamanneftgaz Oil Terminal in Krasnodar Krai",
-        "description": "FP-2 drones targeted the Tamanneftgaz oil terminal in Krasnodar Krai, resulting in damage to marine oil infrastructure. Satellite imagery indicates burnt pipelines leading to the berths, which are confirmed to be out of service.",
-        "date": "2026-01-03 18:35:40",
-        "tie_total": 100.0,
-        "vec_k": 6.0,
-        "vec_t": 8.0,
-        "vec_e": 6.0,
-        "reliability": 70,
-        "bias_score": 0.8,
-        "ai_reasoning": "[EN] The strike disrupts Russian oil exports from the Black Sea, a critical revenue stream for Moscow's war effort, and signals Ukraine's expanding capability to target high-value infrastructure deep in Russian territory. This escalation risks provoking more aggressive Russian retaliation, including potential strikes on Ukrainian energy infrastructure. The attack aligns with Kyiv's strategy to degrade Russia's logistical and economic capacity, though long-term impact depends on Russia's ability to repair and defend such facilities.  \n\n[IT] L'attacco interrompe",
-        "has_video": true,
-        "sources_list": "[]",
-        "marker_radius": 14.0,
-        "marker_color": "#f59e0b"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          37.6063916,
-          55.625578
-        ]
-      },
-      "properties": {
-        "id": "87321445-535c-4ab4-8680-dee32c667a56",
-        "title": "Ukrainian Drones Engaged Over Russian Territory",
-        "description": "On January 4, 2026, a total of 132 Ukrainian drones were reported downed over various regions of Russia. The breakdown includes: 37 in Bryansk, 26 in Kursk, 12 each in Ryazan, Belgorod, and Kaluga, 11 in Moscow, 8 in Voronezh, 6 in Tula, 4 in Lipetsk, 2 in Oryol, and 1 each in Rostov and Tambov. Additionally, drone activity led to significant flight delays in Moscow.",
-        "date": "2026-01-04 06:47:16",
-        "tie_total": 71.0,
-        "vec_k": 8.0,
-        "vec_t": 8.0,
-        "vec_e": 4.0,
-        "reliability": 50,
-        "bias_score": -2.0,
-        "ai_reasoning": "[EN] The engagement of Ukrainian drones over Russian territory indicates a significant escalation in kinetic operations, targeting critical infrastructure and causing widespread disruption. The high T.I.E. scores suggest a strategic shift towards more aggressive and high-impact tactics, potentially aiming to destabilize key regions and undermine Russian air defense capabilities. This event underscores a broader strategy to exert pressure on Russian military and civilian systems, aiming to create operational chaos and degrade logistical networks.\n\n[IT] L'impiego di droni ucraini sul",
-        "has_video": false,
-        "sources_list": "[]",
-        "marker_radius": 11.1,
-        "marker_color": "#eab308"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          37.203369,
-          48.3539878
-        ]
-      },
-      "properties": {
-        "id": "97c65bfa-0caf-4b35-8968-7f3870079dfc",
-        "title": "Ukrainian Forces Maintain Control of Rodynske",
-        "description": "As of January 4, 2026, Ukrainian Forces, including the 1st Corps Azov, the 14th and 20th Operational Brigades, and the 132nd Recon Battalion, confirmed their control over Rodynske. This statement counters claims made by Russian Forces regarding the occupation of the area.",
-        "date": "2026-01-04 09:45:31",
-        "tie_total": 0.0,
-        "vec_k": 0.0,
-        "vec_t": 0.0,
-        "vec_e": 0.0,
-        "reliability": 45,
-        "bias_score": 0.0,
-        "ai_reasoning": "[EN] The Ukrainian Forces' confirmation of control over Rodynske serves as a strategic assertion of territorial integrity, countering Russian disinformation and reinforcing Ukraine's operational narrative in the broader conflict. This move is crucial for maintaining morale and legitimacy on the international stage.\n[IT] La conferma del controllo di Rodynske da parte delle forze ucraine rappresenta un'asserzione strategica dell'integrità territoriale, contrastando la disinformazione russa e raff",
-        "has_video": false,
-        "sources_list": "[]",
-        "marker_radius": 4.0,
-        "marker_color": "#64748b"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
           30.5241361,
           50.4500336
         ]
@@ -148,15 +13,15 @@
       "properties": {
         "id": "98c03784-2d87-4f3b-91ad-ffc6dae65f77",
         "title": "Car Explosion Reported in Kyiv",
-        "description": "A car explosion occurred in the Obolonsky district of Kyiv, resulting in shrapnel wounds to a serviceman. Emergency services, including police and bomb disposal units, responded to the scene. The incident is being investigated as a potential terrorist attack.",
+        "description": "A car explosion occurred in the Obolonsky district of Kyiv, resulting in shrapnel wounds to a serviceman. Local authorities are investigating the incident, which has been classified as a terrorist attack. Emergency services, including police and bomb disposal units, responded to the scene.",
         "date": "2026-01-04 11:06:24",
         "tie_total": 5.0,
         "vec_k": 1.0,
         "vec_t": 3.0,
         "vec_e": 4.0,
         "reliability": 50,
-        "bias_score": 0.0,
-        "ai_reasoning": "[EN] The car explosion in Kyiv indicates a low-intensity but targeted attack, likely aimed at instilling fear and disrupting military operations. The involvement of emergency services suggests a significant but contained threat, potentially signaling a shift in tactics by non-state actors to target military personnel directly.\n[IT] L'esplosione dell'auto a Kyïv indica un attacco a bassa intensità ma mirato, probabilmente finalizzato a instillare paura e interrompere le operazioni milit",
+        "bias_score": 0.8,
+        "ai_reasoning": "[EN] The car explosion in Kyiv signals potential escalation of asymmetric tactics in urban areas, likely aimed at destabilizing civilian morale. The involvement of emergency services and classification as terrorism suggests a deliberate psychological operation. This aligns with broader Russian efforts to sow chaos behind Ukrainian lines.  \n\n[IT] L'esplosione dell'auto a Kyiv indica un possibile aumento delle tattiche asimmetriche in aree urbane, probabilmente mirate a destabilizzare il morale civile. La classificazione",
         "has_video": false,
         "sources_list": "[]",
         "marker_radius": 4.5,

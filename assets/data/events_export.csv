@@ -1,7 +1,2 @@
 ID,Date,Title,Lat,Lon,TIE,K,T,E,Reliability,Bias,HasVideo,Sources
-435de6e4-a357-43a1-9834-d9b8e791158c,2026-01-03 23:38:38,Finnish Border Guard Seizes Vessel Fitburg near He,59.437,24.7536,2.0,1.0,2.0,3.0,70,0.0,1,0
-3de9c249-16b4-4869-b995-d5afd4b70079,2026-01-03 20:04:54,Russian Strikes Result in Casualties in Kharkiv,49.9923181,36.2310146,10.0,6.0,2.0,7.0,50,0.0,0,0
-0b92917b-bc8f-4064-a926-32b224124f67,2026-01-03 18:35:40,Ukrainian Forces Strike Tamanneftgaz Oil Terminal ,45.7684014,39.0261044,100.0,6.0,8.0,6.0,70,0.8,1,0
-87321445-535c-4ab4-8680-dee32c667a56,2026-01-04 06:47:16,Ukrainian Drones Engaged Over Russian Territory,55.625578,37.6063916,71.0,8.0,8.0,4.0,50,-2.0,0,0
-97c65bfa-0caf-4b35-8968-7f3870079dfc,2026-01-04 09:45:31,Ukrainian Forces Maintain Control of Rodynske,48.3539878,37.203369,0.0,0.0,0.0,0.0,45,0.0,0,0
-98c03784-2d87-4f3b-91ad-ffc6dae65f77,2026-01-04 11:06:24,Car Explosion Reported in Kyiv,50.4500336,30.5241361,5.0,1.0,3.0,4.0,50,0.0,0,0
+98c03784-2d87-4f3b-91ad-ffc6dae65f77,2026-01-04 11:06:24,Car Explosion Reported in Kyiv,50.4500336,30.5241361,5.0,1.0,3.0,4.0,50,0.8,0,0
