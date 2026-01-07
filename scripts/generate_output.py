@@ -107,6 +107,11 @@ def main():
             for i in range(max_len):
                 s_name = raw_sources[i] if i < len(raw_sources) else "Source"
                 s_url = raw_urls[i] if i < len(raw_urls) else ""
+                
+                # Pulizia URL spazzatura
+                if s_url and (str(s_url).lower() in ["[null]", "none", "null"] or len(str(s_url)) < 5):
+                    s_url = ""
+
                 if s_url or s_name != "Source":
                     structured_sources.append({"name": s_name, "url": s_url})
 
@@ -117,30 +122,43 @@ def main():
             scores = ai_data.get('scores', {})
 
             # --- ESTRAZIONE DATI T.I.E. ---
-            # Cerchiamo prima nella colonna dedicata, poi nel JSON
-            tie_val = row['tie_score'] or 0
+            try:
+                tie_val = float(row['tie_score'] or 0)
+            except:
+                tie_val = 0.0
 
             # Recupero vettori K, T, E (Gestione fallback robusta)
             # A volte è salvato come stringa nel DB, a volte dict
             metrics = row['titan_metrics']
+            k_score, t_score, e_score = 0, 0, 0
+            
             if isinstance(metrics, str):
                 try:
                     metrics = json.loads(metrics)
                 except:
                     metrics = {}
-            elif not isinstance(metrics, dict):
-                metrics = {}
-
-            # Se vuoto, cerca nel JSON report
+            
+            # FALLBACK: Se la colonna DB è vuota, usiamo il JSON report
             if not metrics:
-                metrics = ai_data.get('titan_metrics', {})
-
-            k_score = float(metrics.get('kinetic_score') or 0)
-            t_score = float(metrics.get('target_score') or 0)
-            e_score = float(metrics.get('effect_score') or 0)
-
+                metrics = ai_data.get('scores', {})  # A volte è in scores
+                if not metrics.get('kinetic_score'):
+                     metrics = ai_data.get('titan_metrics', {})
+            
+            if isinstance(metrics, dict):
+                 k_score = float(metrics.get('kinetic_score') or metrics.get('vec_k') or 0)
+                 t_score = float(metrics.get('target_score') or metrics.get('vec_t') or 0)
+                 e_score = float(metrics.get('effect_score') or metrics.get('vec_e') or 0)
+            else:
+                 k_score, t_score, e_score = 0, 0, 0
+            
             # Calcolo Stile Marker
             radius, color = get_marker_style(tie_val, e_score)
+
+            # PATCH: Se TIE Score è 0 ma abbiamo i vettori, calcoliamolo noi!
+            if tie_val == 0 and (k_score > 0 or t_score > 0 or e_score > 0):
+                tie_val = k_score + t_score + e_score
+                # Ricalcoliamo il raggio
+                radius, color = get_marker_style(tie_val, e_score)
 
             # 4. Geometria
             geo = tactics.get('geo_location', {}).get('explicit', {})
