@@ -1010,6 +1010,242 @@ RAW TEXT:
                 return self._repair_json_with_ai(raw_response_text, str(e))
             return None
 
+    # =========================================================================
+    # 🌍 STEP GEO-VERIFIER: Anti-Hallucination Geolocation Validator
+    # =========================================================================
+
+    # Liste di riferimento per il Sanity Check
+    SUSPICIOUS_CAPITALS = ["Moscow", "Kyiv", "Kiev", "Washington", "London", 
+                           "Brussels", "Beijing", "Ankara", "Tehran", "Minsk",
+                           "Kremlin", "White House", "Pentagon"]
+    
+    FRONTLINE_KEYWORDS = ["front", "frontline", "line of contact", "trench", 
+                          "mortar", "grad", "howitzer", "artillery", "dugout",
+                          "assault", "infantry", "mechanized", "trenchline",
+                          "фронт", "окоп", "передова", "лінія зіткнення"]
+
+    def _step_geo_verifier(self, location_name: str, context_text: str):
+        """
+        🌍 GEO-VERIFIER: Validates and corrects geolocation extracted by Soldier.
+        
+        Protects against:
+        1. Metonymy Errors ("Moscow says" != "Strike on Moscow")
+        2. Typos / OCR Errors
+        3. Ambiguous Places (Multiple cities with same name)
+        
+        Returns: dict with {'lat': float, 'lon': float} or None
+        """
+        from geopy.geocoders import Nominatim
+        import time
+        
+        if not location_name or not isinstance(location_name, str):
+            return None
+        
+        location_name = location_name.strip()
+        print(f"      🌍 Geo-Verifier: Validating '{location_name}'...")
+        
+        # =====================================================================
+        # STEP 1: SANITY CHECK (Local Python Logic - Zero API Cost)
+        # =====================================================================
+        clean_loc_lower = location_name.lower()
+        is_suspicious = any(cap.lower() in clean_loc_lower for cap in self.SUSPICIOUS_CAPITALS)
+        
+        if is_suspicious:
+            # Check if context implies frontline combat (metonymy detection)
+            context_lower = context_text.lower()
+            is_frontline_event = any(kw in context_lower for kw in self.FRONTLINE_KEYWORDS)
+            
+            if is_frontline_event:
+                print(f"      ⚠️ METONYMY DETECTED: '{location_name}' mentioned but context is frontline combat.")
+                print(f"         → Skipping capital city. Triggering AI correction...")
+                
+                # Trigger AI correction to find the REAL target
+                corrected_location = self._ai_correct_location(location_name, context_text)
+                if corrected_location:
+                    location_name = corrected_location
+                    print(f"      ✅ AI Corrected Location: '{corrected_location}'")
+                else:
+                    print(f"      ❌ AI could not determine real location. Returning None.")
+                    return None
+        
+        # =====================================================================
+        # STEP 2: GEOPY LOOKUP (Get Candidates)
+        # =====================================================================
+        geolocator = Nominatim(user_agent="osint-tracker-geo-verifier/1.0", timeout=10)
+        
+        try:
+            # Search with priority for UA/RU
+            candidates = geolocator.geocode(
+                location_name, 
+                exactly_one=False, 
+                limit=5,
+                country_codes=['ua', 'ru']
+            )
+            
+            # Fallback: global search if no results in UA/RU
+            if not candidates:
+                candidates = geolocator.geocode(
+                    location_name,
+                    exactly_one=False,
+                    limit=5
+                )
+                
+            if not candidates:
+                print(f"      ⚠️ Geopy: No results for '{location_name}'")
+                return None
+                
+            # Format candidates for AI
+            candidates_list = []
+            for i, loc in enumerate(candidates):
+                candidates_list.append({
+                    'id': i,
+                    'display_name': loc.address,
+                    'lat': loc.latitude,
+                    'lon': loc.longitude
+                })
+            
+            print(f"      📍 Geopy: Found {len(candidates_list)} candidates")
+            
+        except Exception as e:
+            print(f"      ❌ Geopy Error: {e}")
+            return None
+        
+        # =====================================================================
+        # STEP 3: AI RERANKING & VALIDATION (DeepSeek Call)
+        # =====================================================================
+        if len(candidates_list) == 1:
+            # Single result - verify it's within war zone
+            result = candidates_list[0]
+            if self._is_in_war_zone(result['lat'], result['lon']):
+                return {'lat': result['lat'], 'lon': result['lon']}
+            else:
+                print(f"      ⚠️ Single result outside war zone. Rejecting.")
+                return None
+        
+        # Multiple candidates - use AI to pick the best one
+        try:
+            rerank_result = self._ai_rerank_geo_candidates(
+                location_name, context_text, candidates_list
+            )
+            
+            if not rerank_result:
+                # Fallback: use first result in war zone
+                for c in candidates_list:
+                    if self._is_in_war_zone(c['lat'], c['lon']):
+                        print(f"      📍 Fallback: Using first war-zone candidate")
+                        return {'lat': c['lat'], 'lon': c['lon']}
+                return None
+            
+            # Handle WRONG_EXTRACTION response
+            if rerank_result.get('status') == 'WRONG_EXTRACTION':
+                corrected_name = rerank_result.get('correct_name')
+                if corrected_name and corrected_name != location_name:
+                    print(f"      🔄 AI says wrong target. Re-geocoding: '{corrected_name}'")
+                    time.sleep(0.5)  # Rate limiting
+                    return self._step_geo_verifier(corrected_name, context_text)
+                return None
+            
+            # Handle selected_id response
+            selected_id = rerank_result.get('selected_id')
+            if selected_id is not None and 0 <= selected_id < len(candidates_list):
+                chosen = candidates_list[selected_id]
+                print(f"      ✅ AI Selected: {chosen['display_name'][:50]}...")
+                return {'lat': chosen['lat'], 'lon': chosen['lon']}
+            
+        except Exception as e:
+            print(f"      ⚠️ AI Reranking Error: {e}")
+        
+        # Ultimate fallback
+        for c in candidates_list:
+            if self._is_in_war_zone(c['lat'], c['lon']):
+                return {'lat': c['lat'], 'lon': c['lon']}
+        
+        return None
+    
+    def _is_in_war_zone(self, lat: float, lon: float) -> bool:
+        """Check if coordinates are within the Ukraine/Russia war zone bounding box."""
+        MIN_LAT, MAX_LAT = 44.0, 60.0
+        MIN_LON, MAX_LON = 22.0, 55.0
+        return MIN_LAT <= lat <= MAX_LAT and MIN_LON <= lon <= MAX_LON
+    
+    def _ai_correct_location(self, wrong_location: str, context_text: str) -> str:
+        """
+        Uses DeepSeek to extract the REAL kinetic target from context
+        when a metonymy error is detected.
+        """
+        prompt = f"""
+CONTEXT: {context_text[:3000]}
+
+The extraction agent identified "{wrong_location}" as the target location.
+However, this appears to be a METONYMY ERROR (e.g., "Moscow reports..." != strike ON Moscow).
+
+TASK: Identify the ACTUAL kinetic target location mentioned in the text.
+Look for:
+- City/town names near the frontline
+- Oblast/region names
+- Specific facilities (airports, depots, bases)
+
+OUTPUT FORMAT (JSON only):
+{{"correct_location": "Actual City/Place Name"}}
+
+If you cannot determine the real location, output:
+{{"correct_location": null}}
+"""
+        try:
+            response = self.brain_client.chat.completions.create(
+                model="deepseek/deepseek-chat-v3-0324",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.0,
+                response_format={"type": "json_object"}
+            )
+            result = json.loads(response.choices[0].message.content)
+            return result.get('correct_location')
+        except Exception as e:
+            print(f"      ❌ AI Correction Error: {e}")
+            return None
+    
+    def _ai_rerank_geo_candidates(self, location_name: str, context_text: str, 
+                                   candidates: list) -> dict:
+        """
+        Uses DeepSeek to select the best geolocation candidate based on context.
+        """
+        candidates_json = json.dumps(candidates, ensure_ascii=False, indent=2)
+        
+        prompt = f"""
+CONTEXT: {context_text[:2500]}
+
+The extraction agent identified target: "{location_name}"
+Geopy found these candidates:
+{candidates_json}
+
+TASK:
+1. VERIFY: Is "{location_name}" the ACTUAL kinetic target in the text? 
+   Or is it just a government/source announcing something?
+2. IF WRONG TARGET: Output {{"status": "WRONG_EXTRACTION", "correct_name": "Actual Place Name"}}
+3. IF CORRECT TARGET: Pick the best Candidate ID from the list based on:
+   - Proximity to known frontline areas
+   - Match with context (oblast mentioned, nearby landmarks)
+   - Preference for Ukrainian/Russian locations over global matches
+
+OUTPUT (JSON only, no explanation):
+{{"selected_id": <0-4>}} 
+OR 
+{{"selected_id": null}} if none match
+OR 
+{{"status": "WRONG_EXTRACTION", "correct_name": "..."}}
+"""
+        try:
+            response = self.brain_client.chat.completions.create(
+                model="deepseek/deepseek-chat-v3-0324",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.0,
+                response_format={"type": "json_object"}
+            )
+            return json.loads(response.choices[0].message.content)
+        except Exception as e:
+            print(f"      ❌ AI Rerank Error: {e}")
+            return None
+
     # 🧮 STEP 3: THE CALCULATOR (Python Deterministic Engine)
 
     def _clean_and_parse_json(self, raw_text):
@@ -1949,6 +2185,49 @@ def process_row(self, row):
         print("   ⚠️ Soldier failed. Skipping.")
         return create_fallback_entry("AI Analysis Failed (Soldier Error)")
 
+    # =========================================================================
+    # 🌍 GEO-VERIFIER INTEGRATION: Validate/Correct Soldier's Location
+    # =========================================================================
+    # Extract location from Soldier output
+    geo_data = soldier_out.get('geo_location', {})
+    explicit_coords = geo_data.get('explicit')
+    inferred_loc = geo_data.get('inferred', {})
+    toponym_raw = inferred_loc.get('toponym_raw')
+    
+    verified_coords = None
+    
+    # Priority 1: Use explicit coordinates if valid
+    if explicit_coords:
+        ex_lat = explicit_coords.get('lat')
+        ex_lon = explicit_coords.get('lon')
+        if ex_lat and ex_lon and ex_lat not in [0, 0.0, "0", None] and ex_lon not in [0, 0.0, "0", None]:
+            # Validate explicit coords are in war zone
+            if self._is_in_war_zone(float(ex_lat), float(ex_lon)):
+                verified_coords = {'lat': float(ex_lat), 'lon': float(ex_lon)}
+                print(f"      📍 Using Soldier's explicit coords: ({ex_lat}, {ex_lon})")
+            else:
+                print(f"      ⚠️ Soldier's explicit coords outside war zone. Triggering Geo-Verifier...")
+    
+    # Priority 2: If no valid explicit coords, run Geo-Verifier on toponym
+    if not verified_coords and toponym_raw:
+        verified_coords = self._step_geo_verifier(toponym_raw, combined_text)
+        if verified_coords:
+            # Update soldier_out with verified coordinates
+            if 'geo_location' not in soldier_out:
+                soldier_out['geo_location'] = {}
+            soldier_out['geo_location']['verified'] = verified_coords
+            print(f"      📍 Geo-Verifier Success: ({verified_coords['lat']}, {verified_coords['lon']})")
+    
+    # Priority 3: Fallback to event_ctx location if available
+    if not verified_coords and event_ctx.get('location'):
+        fallback_loc = event_ctx.get('location')
+        verified_coords = self._step_geo_verifier(fallback_loc, combined_text)
+        if verified_coords:
+            print(f"      📍 Fallback Geo-Verifier: {fallback_loc} -> ({verified_coords['lat']}, {verified_coords['lon']})")
+    
+    # Store verified coordinates for later use
+    soldier_out['verified_coordinates'] = verified_coords
+
     # 3. Calcolo T.I.E. (Layer 1)
     titan_data = soldier_out.get('titan_assessment', {})
     visual_evidence = soldier_out.get('visual_evidence', False)
@@ -2010,9 +2289,14 @@ def process_row(self, row):
         "Title": journo_out.get("title", title),
         "Type": ai_type,
         "Date": row.get("Date"),
-        "Location": row.get("Location"),
-        "Latitude": soldier_out.get("lat") if soldier_out.get("lat") not in [0, 0.0, None] else row.get("Latitude", 0.0),
-        "Longitude": soldier_out.get("lon") if soldier_out.get("lon") not in [0, 0.0, None] else row.get("Longitude", 0.0),
+        "Location": toponym_raw or row.get("Location"),
+        # Use verified_coordinates from Geo-Verifier, fallback to row data
+        "Latitude": verified_coords.get('lat') if verified_coords else (
+            soldier_out.get("lat") if soldier_out.get("lat") not in [0, 0.0, None] else row.get("Latitude", 0.0)
+        ),
+        "Longitude": verified_coords.get('lon') if verified_coords else (
+            soldier_out.get("lon") if soldier_out.get("lon") not in [0, 0.0, None] else row.get("Longitude", 0.0)
+        ),
         "Source": event_ctx.get("best_link") or row.get("Source"),
         "Archived": "No",
         "Verification": final_verif,

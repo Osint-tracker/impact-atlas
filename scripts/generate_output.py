@@ -4,6 +4,7 @@ import os
 import csv
 import ast
 from datetime import datetime
+from urllib.parse import urlparse
 
 # =============================================================================
 # 🛠️ CONFIGURAZIONE PERCORSI
@@ -21,24 +22,36 @@ def parse_list_field(field_value):
     if isinstance(field_value, list):
         return field_value
     text = str(field_value).strip()
+    
+    # Caso JSON stringa
     if text.startswith('[') and text.endswith(']'):
         try:
             return ast.literal_eval(text)
         except:
             pass
+            
+    # Separatori comuni
     if ' ||| ' in text:
         return [x.strip() for x in text.split(' ||| ') if x.strip()]
+    if ' | ' in text:
+        return [x.strip() for x in text.split(' | ') if x.strip()]
     if ',' in text:
         return [x.strip() for x in text.split(',') if x.strip()]
+        
     return [text]
 
 
 def get_marker_style(tie_score, effect_score):
     """Calcola stile marker basato su T.I.E."""
-    # Radius (Dimensione): Base 4 + bonus TIE
+    try:
+        tie_score = float(tie_score)
+        effect_score = float(effect_score)
+    except:
+        tie_score = 0
+        effect_score = 0
+
     radius = 4 + (tie_score / 10)
 
-    # Color (Effetto): Rosso=Distruzione, Arancio=Danni, Grigio=Ignoto
     if effect_score >= 8:
         color = "#ef4444"  # Critical Red
     elif effect_score >= 5:
@@ -62,8 +75,8 @@ def main():
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
-    # Query completa
     try:
+        # FIX: Rimosse Latitude e Longitude dalla SELECT perché non esistono come colonne
         cursor.execute("""
             SELECT event_id, ai_report_json, urls_list, sources_list, last_seen_date,
                    tie_score, tie_status, titan_metrics
@@ -86,87 +99,95 @@ def main():
 
     csv_headers = [
         "Cluster_ID", "Date", "Title", "Type", "Lat", "Lon", "TIE_Score",
-        "Kinetic", "Target", "Effect", "Reliability", "Sources"
+        "Kinetic", "Target", "Effect", "Reliability", "Bias", "Sources"
     ]
 
-    for row in rows:
+    count = 0
+    for db_row in rows:
         try:
+            # Convertiamo sqlite3.Row in dizionario per usare .get() senza errori
+            row = dict(db_row) 
+            
             # 1. Parsing JSON Report
             json_content = row['ai_report_json']
             if not json_content:
                 continue
-            ai_data = json.loads(json_content)
-
-            # 2. Parsing Liste Link/Fonti
-            raw_urls = parse_list_field(row['urls_list'])
-            raw_sources = parse_list_field(row['sources_list'])
-            structured_sources = []
-
-            # Unione intelligente nomi + link
-            max_len = max(len(raw_urls), len(raw_sources))
-            for i in range(max_len):
-                s_name = raw_sources[i] if i < len(raw_sources) else "Source"
-                s_url = raw_urls[i] if i < len(raw_urls) else ""
-                
-                # Pulizia URL spazzatura
-                if s_url and (str(s_url).lower() in ["[null]", "none", "null"] or len(str(s_url)) < 5):
-                    s_url = ""
-
-                if s_url or s_name != "Source":
-                    structured_sources.append({"name": s_name, "url": s_url})
-
-            # 3. Estrazione Campi
-            editorial = ai_data.get('editorial', {})
-            strategy = ai_data.get('strategy', {})
-            tactics = ai_data.get('tactics', {})
-            scores = ai_data.get('scores', {})
-
-            # --- ESTRAZIONE DATI T.I.E. ---
+            
             try:
-                tie_val = float(row['tie_score'] or 0)
+                ai_data = json.loads(json_content)
+            except json.JSONDecodeError:
+                print(f"⚠️ JSON Corrotto per ID {row['event_id']}")
+                continue
+
+            # 2. Estrazione Fonti
+            final_urls = []
+            agg_src_str = ai_data.get("Aggregated Sources", "")
+            if agg_src_str:
+                final_urls = parse_list_field(agg_src_str)
+            
+            if not final_urls:
+                final_urls = parse_list_field(row.get('urls_list'))
+
+            structured_sources = []
+            for url in final_urls:
+                url = str(url).strip()
+                if len(url) < 5 or url.lower() in ['none', 'null', 'unknown']:
+                    continue
+                try:
+                    domain = urlparse(url).netloc.replace('www.', '')
+                    if not domain: domain = "Source"
+                except:
+                    domain = "Source"
+                structured_sources.append({"name": domain, "url": url})
+
+            # 3. Score
+            scores = ai_data.get('scores', {})
+            rel_score = scores.get('reliability') or ai_data.get('Reliability', 0)
+            bias_score = scores.get('bias_score') or ai_data.get('Bias Score', 0)
+
+            try:
+                tie_val = float(row.get('tie_score') or ai_data.get('TIE_Score') or 0)
             except:
                 tie_val = 0.0
 
-            # Recupero vettori K, T, E (Gestione fallback robusta)
-            # A volte è salvato come stringa nel DB, a volte dict
-            metrics = row['titan_metrics']
-            k_score, t_score, e_score = 0, 0, 0
-            
+            # 4. Metriche Titan
+            metrics = row.get('titan_metrics')
             if isinstance(metrics, str):
-                try:
-                    metrics = json.loads(metrics)
-                except:
-                    metrics = {}
-            
-            # FALLBACK: Se la colonna DB è vuota, usiamo il JSON report
+                try: metrics = json.loads(metrics)
+                except: metrics = {}
             if not metrics:
-                metrics = ai_data.get('scores', {})  # A volte è in scores
-                if not metrics.get('kinetic_score'):
-                     metrics = ai_data.get('titan_metrics', {})
-            
+                metrics = ai_data.get('titan_metrics', {})
+                if not metrics:
+                    metrics = ai_data.get('scores', {})
+
             if isinstance(metrics, dict):
-                 k_score = float(metrics.get('kinetic_score') or metrics.get('vec_k') or 0)
-                 t_score = float(metrics.get('target_score') or metrics.get('vec_t') or 0)
-                 e_score = float(metrics.get('effect_score') or metrics.get('vec_e') or 0)
+                k_score = float(metrics.get('kinetic_score') or metrics.get('vec_k') or 0)
+                t_score = float(metrics.get('target_score') or metrics.get('vec_t') or 0)
+                e_score = float(metrics.get('effect_score') or metrics.get('vec_e') or 0)
             else:
-                 k_score, t_score, e_score = 0, 0, 0
-            
-            # Calcolo Stile Marker
+                k_score, t_score, e_score = 0, 0, 0
+
+            # Recalc TIE visivo se necessario
+            if tie_val == 0 and (k_score + t_score + e_score) > 0:
+                tie_val = (t_score * 1.5 + k_score + e_score) * 2 
+                if tie_val > 100: tie_val = 100
+
             radius, color = get_marker_style(tie_val, e_score)
 
-            # PATCH: Se TIE Score è 0 ma abbiamo i vettori, calcoliamolo noi!
-            if tie_val == 0 and (k_score > 0 or t_score > 0 or e_score > 0):
-                tie_val = k_score + t_score + e_score
-                # Ricalcoliamo il raggio
-                radius, color = get_marker_style(tie_val, e_score)
-
-            # 4. Geometria
+            # 5. Geometria (Solo dal JSON ora)
+            tactics = ai_data.get('tactics', {})
             geo = tactics.get('geo_location', {}).get('explicit', {})
             lat = geo.get('lat')
             lon = geo.get('lon')
-            has_coords = lat and lon and lat != 0 and lon != 0
+            
+            # Nota: Non cerchiamo più row['Latitude'] perché non esiste.
+            # Ci fidiamo solo del JSON processato dall'AI.
 
-            # 5. Costruzione GeoJSON
+            has_coords = lat and lon and float(lat) != 0 and float(lon) != 0
+
+            editorial = ai_data.get('editorial', {})
+            strategy = ai_data.get('strategy', {})
+
             if has_coords:
                 feature = {
                     "type": "Feature",
@@ -177,38 +198,25 @@ def main():
                     "properties": {
                         "id": row['event_id'],
                         "title": editorial.get('title_it') or editorial.get('title', 'Evento'),
-                        "description": editorial.get('description_it') or editorial.get('description', ''),
+                        "description": editorial.get('description_it') or editorial.get('description_en') or editorial.get('description', ''),
                         "date": row['last_seen_date'] or ai_data.get('timestamp_generated'),
-
-                        # Categorie
-                        "category": strategy.get('event_category', 'UNKNOWN'),
-                        "actor": strategy.get('actor', 'UNK'),
-
-                        # Metriche T.I.E. (Fondamentali per la Intel Card)
-                        "tie_total": tie_val,
+                        "category": strategy.get('event_category', ai_data.get('Type', 'UNKNOWN')),
+                        "actor": strategy.get('actor', ai_data.get('Actor', 'UNK')),
+                        "tie_total": round(tie_val, 1),
                         "vec_k": k_score,
                         "vec_t": t_score,
                         "vec_e": e_score,
-
-                        # Metriche KPI
-                        "reliability": scores.get('reliability', 0),
-                        "bias_score": scores.get('bias_score', 0),
-                        
-                        # AI Strategist Comment
-                        "ai_reasoning": ai_data.get('ai_summary', ''),
-
-                        # Link
-                        # Serializzato per sicurezza JS
+                        "reliability": rel_score,
+                        "bias_score": bias_score,
                         "sources_list": json.dumps(structured_sources),
-
-                        # Stile pre-calcolato (Opzionale ma utile)
+                        "ai_reasoning": ai_data.get('ai_summary', ''),
                         "marker_radius": radius,
                         "marker_color": color
                     }
                 }
                 geojson_features.append(feature)
+                count += 1
 
-            # 6. Costruzione CSV (Semplificato)
             csv_rows.append({
                 "Cluster_ID": row['event_id'],
                 "Date": row['last_seen_date'],
@@ -216,16 +224,17 @@ def main():
                 "Type": strategy.get('event_category', ''),
                 "Lat": lat if has_coords else "",
                 "Lon": lon if has_coords else "",
-                "TIE_Score": tie_val,
+                "TIE_Score": round(tie_val, 1),
                 "Kinetic": k_score,
                 "Target": t_score,
                 "Effect": e_score,
-                "Reliability": scores.get('reliability', 0),
+                "Reliability": rel_score,
+                "Bias": bias_score,
                 "Sources": " | ".join([s['url'] for s in structured_sources])
             })
 
         except Exception as e:
-            # print(f"Skipping row: {e}")
+            # print(f"⚠️ Errore processamento riga {row.get('event_id')}: {e}")
             continue
 
     # Salvataggio
@@ -233,7 +242,7 @@ def main():
 
     with open(GEOJSON_PATH, 'w', encoding='utf-8') as f:
         json.dump({"type": "FeatureCollection",
-                  "features": geojson_features}, f, indent=2, ensure_ascii=False)
+                   "features": geojson_features}, f, indent=2, ensure_ascii=False)
 
     with open(CSV_PATH, 'w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=csv_headers)
@@ -241,7 +250,7 @@ def main():
         writer.writerows(csv_rows)
 
     print("\n✅ ESPORTAZIONE COMPLETATA")
-    print(f"   🗺️  GeoJSON: {len(geojson_features)} eventi (con dati T.I.E.)")
+    print(f"   🗺️  GeoJSON: {count} eventi esportati (con metadati completi)")
 
 
 if __name__ == "__main__":
