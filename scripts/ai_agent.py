@@ -2830,20 +2830,40 @@ def main():
                 # Serializziamo anche le metriche Titan separatamente
                 titan_metrics_json = json.dumps(titan_data, ensure_ascii=False) if titan_data else None
 
-                # Scriviamo nel DB - Salviamo sia nel JSON blob CHE nei campi legacy per compatibilità
+                # Scriviamo nel DB - Salviamo TUTTI i campi in colonne dedicate
                 cursor.execute("""
                     UPDATE unique_events
                     SET ai_report_json = ?,
                         ai_analysis_status = 'COMPLETED',
                         tie_score = ?,
                         tie_status = ?,
-                        titan_metrics = ?
+                        titan_metrics = ?,
+                        kinetic_score = ?,
+                        target_score = ?,
+                        effect_score = ?,
+                        reliability = ?,
+                        bias_score = ?,
+                        ai_summary = ?,
+                        has_video = ?,
+                        title = ?,
+                        description = ?,
+                        urls_list = ?
                     WHERE event_id = ?
                     """, (
                         json.dumps(final_report, ensure_ascii=False),
                         tie_result['value'],
                         tie_result['status'],
                         titan_metrics_json,
+                        titan_data.get('kinetic_score', 0),
+                        titan_data.get('target_score', 0),
+                        titan_data.get('effect_score', 0),
+                        calc_result.get('reliability', 0),
+                        calc_result.get('bias_score', 0),
+                        final_report.get('ai_summary', ''),
+                        1 if soldier_result.get('visual_evidence') else 0,
+                        journo_result.get('title_en', ''),
+                        journo_result.get('description_en', ''),
+                        ' | '.join(actual_urls_list) if actual_urls_list else '',
                         cluster_id
                     ))
 
