@@ -159,7 +159,7 @@ def main():
                     "properties": {
                         "id": row['event_id'],
                         "title": editorial.get('title_it') or editorial.get('title', 'Evento'),
-                        "desc": editorial.get('description_it') or editorial.get('description', ''),
+                        "description": editorial.get('description_it') or editorial.get('description', ''),
                         "date": row['last_seen_date'] or ai_data.get('timestamp_generated'),
 
                         # Categorie
