@@ -92,6 +92,7 @@
 }
 
 .metadata-card {
+    min-height: auto;
     /* Auto height based on content */
 }
 
@@ -296,9 +297,57 @@
 .reliability-bar-fill {
     height: 100%;
     border-radius: 4px;
-    background: linear-gradient(90deg, #ef4444 0%, #eab308 40%, #22c55e 80%);
+    background: linear-gradient(90deg, #ef4444 0%, #eab308 40%, #84cc16 70%, #22c55e 100%);
     transition: width 0.8s ease-out;
     width: 0%;
+}
+
+.reliability-marker {
+    position: absolute;
+    top: -3px;
+    bottom: -3px;
+    width: 4px;
+    background: white;
+    border: 1px solid #0f172a;
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+    transition: left 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    left: 0%;
+}
+
+.reliability-bar-track {
+    position: relative;
+}
+
+.reliability-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.rel-pole {
+    opacity: 0.8;
+    font-weight: 600;
+}
+
+.rel-pole.dubbia {
+    color: #ef4444;
+}
+
+.rel-pole.incerta {
+    color: #eab308;
+}
+
+.rel-pole.attendibile {
+    color: #84cc16;
+}
+
+.rel-pole.confermata {
+    color: #22c55e;
 }
 
 /* ============================================

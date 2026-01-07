@@ -851,22 +851,23 @@
     // --- 3b. RELIABILITY BAR ---
     const reliabilityValue = parseFloat(eventData.reliability || eventData.Reliability || 0);
     const reliabilityFill = document.getElementById('reliability-bar-fill');
+    const reliabilityMarker = document.getElementById('reliability-marker');
     const reliabilityText = document.getElementById('reliability-value');
-    const reliabilityTooltip = document.getElementById('reliability-tooltip');
+
+    // Calculate category label
+    let relCategory = "DUBBIA";
+    if (reliabilityValue >= 80) relCategory = "CONFERMATA";
+    else if (reliabilityValue >= 60) relCategory = "ATTENDIBILE";
+    else if (reliabilityValue >= 40) relCategory = "INCERTA";
 
     if (reliabilityFill) {
       reliabilityFill.style.width = `${Math.min(100, Math.max(0, reliabilityValue))}%`;
     }
-    if (reliabilityText) {
-      reliabilityText.textContent = `${Math.round(reliabilityValue)}%`;
+    if (reliabilityMarker) {
+      reliabilityMarker.style.left = `${Math.min(100, Math.max(0, reliabilityValue))}%`;
     }
-    if (reliabilityTooltip) {
-      let tooltipText = "Based on cross-verification and source quality";
-      if (reliabilityValue >= 80) tooltipText = "High confidence - Multiple independent sources";
-      else if (reliabilityValue >= 60) tooltipText = "Moderate confidence - Corroborated reports";
-      else if (reliabilityValue >= 40) tooltipText = "Low confidence - Limited verification";
-      else tooltipText = "Unverified - Requires additional sources";
-      reliabilityTooltip.textContent = tooltipText;
+    if (reliabilityText) {
+      reliabilityText.textContent = `${Math.round(reliabilityValue)}% (${relCategory})`;
     }
 
     // --- 3c. BIAS METER ---
