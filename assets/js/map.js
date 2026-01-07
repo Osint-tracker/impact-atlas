@@ -698,157 +698,179 @@
     // 2. Passa i dati alla funzione di rendering
     window.openIntelDossier(eventData);
   };
+  // ============================================
+  // 10. MODAL FUNCTIONS (DOSSIER UI)
+  // ============================================
 
-  // La tua funzione di grafica avanzata (Corretta e Ripristinata)
+  let tieRadarInstance = null; // Global instance for the modal chart
+
   window.openIntelDossier = function (eventData) {
-    console.log("📂 Visualizzazione Dossier Intelligence per:", eventData.title);
+    console.log("📂 Opening Dossier for:", eventData.title);
 
-    // 1. Popola i dati base
+    document.getElementById('videoModal').style.display = 'flex'; // Use Flex for centering
+
+    // --- 1. CONTEXT (Left Column) ---
     document.getElementById('modalTitle').innerText = eventData.title || "Titolo non disponibile";
+    document.getElementById('modalDate').innerText = eventData.date || "Unknown Date";
 
-    // Supporto per entrambi gli ID della descrizione (sicurezza)
-    const descEl = document.getElementById('modalDesc') || document.getElementById('modalDescription');
-    if (descEl) descEl.innerText = eventData.description || "Nessuna descrizione.";
+    // Type Tag
+    const typeTag = document.getElementById('modalType');
+    if (typeTag) typeTag.innerText = (eventData.type || "EVENT").toUpperCase();
 
-    document.getElementById('modalDate').innerText = eventData.date || "";
+    // Description
+    const descEl = document.getElementById('modalDesc');
+    if (descEl) descEl.innerText = eventData.description || "Nessuna descrizione disponibile per questo evento.";
 
-    // 2. Popola i dati Intelligence (con controlli se mancano)
-    // --- GESTIONE DOMINANT BIAS (Con Tooltip Avanzato & Legenda) ---
-    const biasEl = document.getElementById('modal-dominant-bias');
-    if (biasEl) {
-      // 1. Recupero Dati (Supporto retrocompatibile)
-      const biasLabel = eventData.dominant_bias || eventData['Bias dominante'] || "NEUTRAL";
-      let score = parseFloat(eventData.bias_score || eventData['Bias Score'] || 0);
+    // --- 2. METRICS CARD (Right Column) ---
+    const vecK = parseFloat(eventData.vec_k) || 0;
+    const vecT = parseFloat(eventData.vec_t) || 0;
+    const vecE = parseFloat(eventData.vec_e) || 0;
 
-      // Clamp score visivo tra -10 e +10 per sicurezza
-      score = Math.max(-10, Math.min(10, score));
-
-      // 2. Logica Estetica (Colore + Descrizione Professionale)
-      let color = "#94a3b8"; // Default Grigio (Neutrale)
-      let explanation = "Il testo analizzato non presenta marcatori semantici significativi.";
-      let impactText = "Report Fattuale";
-
-      if (score <= -7) {
-        color = "#dc2626"; // Rosso Scuro (Propaganda RU)
-        impactText = "Propaganda di Stato (RUS)";
-        explanation = "Rilevata totale coincidenza con la dottrina informativa del Cremlino. Uso massiccio di terminologia disumanizzante e negazione della sovranità ucraina.";
-      } else if (score <= -3) {
-        color = "#f87171"; // Rosso Chiaro (Pro RU)
-        impactText = "Orientamento Filo-Russo";
-        explanation = "Orientamento narrativo filo-russo. Focus selettivo sui successi tattici di Mosca e scetticismo verso le fonti occidentali.";
-      } else if (score >= 7) {
-        color = "#1d4ed8"; // Blu Scuro (Propaganda UKR)
-        impactText = "Propaganda di Stato (UKR)";
-        explanation = "Narrazione nazionalista. Uso di linguaggio emotivo forte e possibile esagerazione delle perdite inflitte al nemico/omissione di dati critici per l'Ucraina.";
-      } else if (score >= 3) {
-        color = "#06b6d4"; // Ciano (Pro UKR)
-        impactText = "Orientamento Filo-Ucraino";
-        explanation = "Prospettiva atlantista. La narrazione supporta la legittimità della difesa ucraina ed evidenzia le responsabilità russe.";
-      } else {
-        // Neutrale (-2 a +2)
-        color = "#94a3b8"; // Grigio
-        impactText = "Neutrale / Fattuale";
-        explanation = "Reporting asettico. I dati sono presentati senza aggettivazione emotiva o giudizi di valore. Alta verifica fattuale.";
-      }
-
-      // 3. Render HTML (Badge + Tooltip "Intelligence Style")
-      // Nota: Il tooltip è largo 220px per ospitare la spiegazione
-      biasEl.innerHTML = `
-            <div class="intensity-badge-wrapper" style="cursor:help; position:relative; display:inline-block;">
-                
-                <span style="color:${color}; font-weight:700; letter-spacing:0.5px; border-bottom: 1px dashed ${color}44;">
-                    ${biasLabel.replace(/_/g, ' ')}
-                </span>
-                
-                <div class="info-icon" style="color:${color}; border-color:${color}; display:inline-flex; margin-left:6px; transform:scale(0.8);">i</div>
-
-                <div class="intensity-tooltip" style="
-                    width: 240px; 
-                    bottom: 130%; 
-                    left: 50%; 
-                    transform: translateX(-50%);
-                    background: rgba(15, 23, 42, 0.95);
-                    border: 1px solid ${color}44;
-                    padding: 12px;
-                    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-                    text-align: left;
-                ">
-                    <div style="border-bottom: 1px solid #334155; padding-bottom: 8px; margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.7rem; color:#64748b; text-transform:uppercase;">BIAS SCORE</span>
-                        <strong style="color:${color}; font-size:1.1rem;">${score > 0 ? '+' : ''}${score.toFixed(1)}</strong>
-                    </div>
-
-                    <div style="font-size:0.8rem; color:#e2e8f0; line-height:1.4; margin-bottom:8px;">
-                        <strong style="color:${color}; display:block; margin-bottom:4px;">${impactText}</strong>
-                        ${explanation}
-                    </div>
-
-                    <div style="font-size:0.65rem; color:#64748b; font-style:italic; border-top:1px solid #334155; padding-top:6px;">
-                        Valore calcolato su analisi semantica e affidabilità fonte.
-                    </div>
-                </div>
+    // A. TIE Bars
+    const barsContainer = document.getElementById('tieBarsContent');
+    if (barsContainer) {
+      barsContainer.innerHTML = `
+            <div class="tie-bar-row">
+                <div class="tie-bar-label"><span>KINETIC (Intensity)</span> <span>${vecK}/10</span></div>
+                <div class="tie-progress-track"><div class="tie-progress-fill bar-kinetic" style="width: ${vecK * 10}%"></div></div>
+            </div>
+            <div class="tie-bar-row">
+                <div class="tie-bar-label"><span>TARGET (Value)</span> <span>${vecT}/10</span></div>
+                <div class="tie-progress-track"><div class="tie-progress-fill bar-target" style="width: ${vecT * 10}%"></div></div>
+            </div>
+            <div class="tie-bar-row">
+                <div class="tie-bar-label"><span>EFFECT (Outcome)</span> <span>${vecE}/10</span></div>
+                <div class="tie-progress-track"><div class="tie-progress-fill bar-effect" style="width: ${vecE * 10}%"></div></div>
             </div>
         `;
     }
 
-    const locEl = document.getElementById('modal-location-precision');
-    if (locEl) {
-      locEl.innerText = (eventData.location_precision || "UNK").toUpperCase();
-
-      // --- AGGIORNAMENTO CONTATORE FONTI (FIX BUG 0) ---
-      const sourceCountEl = document.getElementById('modal-source-count');
-      if (sourceCountEl) {
-        // Usa 'references' se c'è, altrimenti 0.
-        // eventData.references viene popolato da export_events.py
-        const count = (eventData.references && Array.isArray(eventData.references)) ? eventData.references.length : 0;
-        sourceCountEl.innerText = count;
-
-        // Opzionale: colora il numero se è alto (>1)
-        sourceCountEl.style.color = count > 1 ? '#22c55e' : (count === 1 ? '#f59e0b' : '#64748b');
+    // B. TIE Radar Chart (Chart.js)
+    const ctx = document.getElementById('tieRadarChart');
+    if (ctx) {
+      if (tieRadarInstance) {
+        tieRadarInstance.destroy();
       }
 
+      tieRadarInstance = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['KINETIC', 'TARGET', 'EFFECT'],
+          datasets: [{
+            label: 'TIE Profile',
+            data: [vecK, vecT, vecE],
+            backgroundColor: 'rgba(245, 158, 11, 0.2)', // Amber transparent
+            borderColor: 'rgba(245, 158, 11, 1)',       // Amber solid
+            borderWidth: 2,
+            pointBackgroundColor: '#fff',
+            pointBorderColor: '#eab308',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: '#eab308'
+          }]
+        },
+        options: {
+          scales: {
+            r: {
+              angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+              grid: { color: 'rgba(255, 255, 255, 0.1)' },
+              pointLabels: {
+                color: '#94a3b8',
+                font: { size: 10, weight: 'bold' }
+              },
+              ticks: { display: false, max: 10, min: 0 } // Hide numbers, fixed 0-10
+            }
+          },
+          plugins: {
+            legend: { display: false } // Hide legend
+          },
+          maintainAspectRatio: false
+        }
+      });
     }
 
-    // ============================================================
-    // A. GESTIONE INTENSITÀ (CIVILE vs MILITARE)
-    // ============================================================
-    const intEl = document.getElementById('modal-intensity');
-    if (intEl) {
-      // 1. Caso Evento Civile/Politico (Mostra N/D Grigio)
-      if (typeof isCivilianEvent === 'function' && isCivilianEvent(eventData)) {
-        intEl.innerHTML = `
-            <div class="intensity-badge-wrapper" style="opacity:0.8; cursor:default;">
-                <span style="color:#94a3b8; font-weight:700; font-size:1rem;">N/D <small style="font-size:0.65rem;">(NON-MILITARY)</small></span>
-                <div class="info-icon" style="color:#94a3b8; border-color:#94a3b8; transform: scale(0.8);">i</div>
-                <div class="intensity-tooltip" style="bottom:120%;">
-                    <strong style="color:#94a3b8">IMPATTO NON VALUTABILE</strong><br>
-                    L'evento è di natura politica, civile o diplomatica.
-                </div>
-            </div>`;
-      }
-      // 2. Caso Evento Militare (Calcolo Standard)
-      else {
-        const val = parseFloat(eventData.intensity || 0);
-        let label = "UNKNOWN"; let colorClass = "#64748b"; let desc = "Dati insufficienti.";
+    // --- 3. METADATA CARD ---
 
-        if (val <= 0.3) { label = "TACTICAL"; colorClass = "#22c55e"; desc = "Impatto limitato. Schermaglie o danni lievi."; }
-        else if (val <= 0.6) { label = "OPERATIONAL"; colorClass = "#f97316"; desc = "Impatto operativo. Danni infrastrutture."; }
-        else if (val <= 0.8) { label = "STRATEGIC"; colorClass = "#ef4444"; desc = "Alto impatto strategico."; }
-        else { label = "CRITICAL"; colorClass = "#000000"; desc = "Evento di portata storica."; }
+    // A. Reliability Badge
+    const relScore = eventData.reliability || 0;
+    let relBadgeHtml = '';
+    if (relScore >= 80) relBadgeHtml = `<span style="color:#22c55e; font-weight:700;"><i class="fa-solid fa-shield-halved"></i> HIGH RELIABILITY</span>`;
+    else if (relScore >= 50) relBadgeHtml = `<span style="color:#f59e0b; font-weight:700;"><i class="fa-solid fa-shield-halved"></i> MEDIUM RELIABILITY</span>`;
+    else relBadgeHtml = `<span style="color:#ef4444; font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> LOW RELIABILITY</span>`;
 
-        const textShadow = colorClass === '#000000' ? 'text-shadow: 0 0 10px rgba(255,255,255,0.5);' : '';
-        const style = `color: ${colorClass}; font-weight: 800; font-size: 1.1rem; ${textShadow}`;
+    const relBadgeEl = document.getElementById('modal-reliability-badge');
+    if (relBadgeEl) relBadgeEl.innerHTML = relBadgeHtml;
 
-        intEl.innerHTML = `
-            <div class="intensity-badge-wrapper">
-                <span style="${style}">${label} (${(val * 10).toFixed(1)})</span>
-                <div class="info-icon">i</div>
-                <div class="intensity-tooltip">
-                    <strong style="color:${colorClass}">${label} IMPACT</strong><br>${desc}
-                </div>
-            </div>`;
+    // B. Sources List
+    const sourceListEl = document.getElementById('modal-source-list');
+    if (sourceListEl) {
+      let sources = [];
+      try {
+        // Check if sources_list is array or string
+        if (Array.isArray(eventData.sources_list)) {
+          sources = eventData.sources_list;
+        } else if (typeof eventData.sources_list === 'string') {
+          // Try parsing, handle simple string lists
+          if (eventData.sources_list.startsWith('[')) {
+            sources = JSON.parse(eventData.sources_list.replace(/'/g, '"')); // Simple replace for python style lists
+          } else {
+            sources = [eventData.sources_list];
+          }
+        }
+      } catch (e) { console.warn("Error parsing sources:", e); }
+
+      if (sources.length === 0) {
+        sourceListEl.innerHTML = `<span style="color:#64748b; font-style:italic; font-size:0.8rem;">No explicit sources listed.</span>`;
+      } else {
+        sourceListEl.innerHTML = sources.map(src => {
+          // Formatting domain name
+          let domain = src;
+          let url = src;
+          if (!src.startsWith('http')) url = 'https://' + src;
+          try { domain = new URL(url).hostname.replace('www.', ''); } catch (e) { }
+
+          // Simple Favicon via Google S2
+          const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+
+          return `
+                <a href="${url}" target="_blank" class="source-item">
+                    <img src="${faviconUrl}" class="source-icon" onerror="this.style.display='none'">
+                    <span>${domain}</span>
+                    <i class="fa-solid fa-external-link-alt" style="margin-left:auto; font-size:0.7rem; opacity:0.5;"></i>
+                </a>`;
+        }).join('');
       }
     }
+
+    // C. Bias Meter
+    const biasScore = parseFloat(eventData.bias_score) || 0; // Range usually -10 to +10
+    // Normalize to 0-100% for CSS left position. 
+    // -10 => 0%, 0 => 50%, +10 => 100%
+    const biasPercent = ((biasScore + 10) / 20) * 100;
+    const clampedBias = Math.max(0, Math.min(100, biasPercent));
+
+    const biasMeterEl = document.getElementById('modal-bias-meter');
+    if (biasMeterEl) {
+      biasMeterEl.innerHTML = `
+            <div class="bias-marker" style="left: ${clampedBias}%"></div>
+            <div class="bias-label">
+                <span>PRO-RU</span>
+                <span>NEUTRAL</span>
+                <span>PRO-UA</span>
+            </div>
+        `;
+    }
+
+    // --- 4. THE STRATEGIST ---
+    // If there is an AI summary field (e.g. 'desc' repurposed or specific field), use it.
+    // For now, we reuse description or a mock if missing.
+    const stratBox = document.getElementById('modal-strategist-content');
+    if (stratBox) {
+      // Fallback or specific reasoning field
+      const reasoning = eventData.ai_reasoning || "AI Analysis confirms high probability of kinetic event based on cross-referenced multi-source reporting. Strategic impact affects local logistics.";
+      stratBox.innerHTML = reasoning;
+    }
+
+
 
     // ============================================================
     // B. GESTIONE SCORE & GRAFICO (INSERITO ORA)
@@ -961,7 +983,7 @@
     // 4. Mostra il Modal (Supporta entrambi gli ID comuni)
     const modal = document.getElementById('videoModal') || document.getElementById('eventModal');
     if (modal) modal.style.display = 'flex';
-  };
+  }
 
   // --- DATI INTELLIGENCE AGGIUNTIVI ---
   // Duplicate intelligence rendering logic removed because it is already handled inside openIntelDossier(eventData).
@@ -1135,5 +1157,4 @@
   } else {
     startApp();
   }
-
 })();

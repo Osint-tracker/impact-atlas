@@ -1,0 +1,56 @@
+name: OSINT Intelligence Pipeline
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # Esegui ogni mattina alle 06:00 UTC
+  workflow_dispatch:      # Permette l'avvio manuale dal sito GitHub
+
+permissions:
+  contents: write         # CRITICO: Serve per salvare il PDF nel repo
+
+jobs:
+  build-and-process:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'pip' # Velocizza le installazioni future
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # 1. Fase di Elaborazione Dati (Già esistente)
+    - name: Run Super Squad AI Pipeline
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        # Aggiungi qui altre chiavi se usi OpenRouter/DeepSeek
+      run: |
+        # Assicurati che il tuo script principale si chiami così o modificalo
+        if [ -f "ai_agent.py" ]; then python ai_agent.py; fi
+
+    # 2. Fase Generazione Report (NUOVA)
+    - name: Generate Classified PDF Dossier
+      run: |
+        # Crea la cartella reports se non esiste
+        mkdir -p reports
+        python generate_report.py
+
+    # 3. Salvataggio e Deploy (GitOps)
+    - name: Commit and Push Intel Artifacts
+      run: |
+        git config --global user.name 'OSINT Bot'
+        git config --global user.email 'bot@impact-atlas.com'
+        
+        # Aggiunge i dati processati e il nuovo report PDF
+        git add data/* reports/*.pdf
+        
+        # Commit solo se ci sono cambiamenti
+        git diff --quiet && git diff --staged --quiet || (git commit -m "BIO: Update Intel Dossier & Data [$(date +'%Y-%m-%d')]" && git push)

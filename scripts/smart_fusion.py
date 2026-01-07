@@ -1,437 +1,240 @@
 import sqlite3
 import json
 import os
-import ast
-import re
 import numpy as np
 from datetime import datetime
-from difflib import SequenceMatcher  # <--- FIX: Mancava questo import
-from geopy.distance import geodesic
 from openai import OpenAI
 from dotenv import load_dotenv
+import time
 
 # =============================================================================
-# 🛠️ CONFIGURAZIONE E SETUP
+# ⚙️ CONFIGURAZIONE PER ALTE PRESTAZIONI
 # =============================================================================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, '../war_tracker_v2/data/raw_events.db')
 load_dotenv()
 
-# 1. SETUP CLIENT OPENAI (Usa la tua chiave esistente per embeddings)
-client_openai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-# 2. SETUP CLIENT JUDGE (DeepSeek via OpenRouter)
+# Client per il Giudice (DeepSeek/Llama)
 client_judge = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=os.getenv("OPENROUTER_API_KEY"),
     default_headers={"X-Title": "OSINT Tracker"}
 )
 
-# --- PARAMETRI ---
-MAX_DISTANCE_KM = 150.0
-MAX_TIME_DIFF_HOURS = 96
-
-# SOGLIE VETTORIALI
-VECTOR_SIM_THRESHOLD = 0.70
-
-# SOGLIE TESTUALI (LEGACY/FALLBACK)
-TEXT_SIM_THRESHOLD_GEO = 0.05
-TEXT_SIM_THRESHOLD_BLIND = 0.05
-
-# =============================================================================
-# 🧮 FUNZIONI HELPER
-# =============================================================================
+# PARAMETRI DI SCALABILITÀ
+WINDOW_SIZE = 3000        # Quanti eventi caricare in RAM per volta
+WINDOW_OVERLAP = 200      # Sovrapposizione per non perdere bordi
+VECTOR_THRESHOLD = 0.45   # Soglia minima per disturbare l'AI
+MAX_TIME_DIFF_HOURS = 48  # Se distano più di 48h, non sono lo stesso evento tattico
 
 
-def get_embedding(text):
-    """Trasforma il testo in un vettore di numeri usando OpenAI."""
-    try:
-        # Taglia a 8k caratteri per sicurezza
-        safe_text = text.replace("\n", " ")[:8000]
-        response = client_openai.embeddings.create(
-            input=[safe_text],
-            model="text-embedding-3-small"
-        )
-        return response.data[0].embedding
-    except Exception as e:
-        print(f"      ⚠️ Embedding Error: {e}")
-        return None
-
-
-def cosine_similarity(v1, v2):
-    """Calcola quanto sono simili due vettori (0 = diversi, 1 = identici)."""
-    if v1 is None or v2 is None:
-        return 0.0
-
-    if isinstance(v1, list):
-        v1 = np.array(v1)
-    if isinstance(v2, list):
-        v2 = np.array(v2)
-
-    dot_product = np.dot(v1, v2)
-    norm_a = np.linalg.norm(v1)
-    norm_b = np.linalg.norm(v2)
-
-    if norm_a == 0 or norm_b == 0:
-        return 0.0
-
-    return dot_product / (norm_a * norm_b)
-
-
-def parse_list_field(field_value):
-    """Helper per leggere le liste dal DB"""
-    if not field_value:
-        return []
-    try:
-        if isinstance(field_value, list):
-            return field_value
-        text = str(field_value).strip()
-        if text.startswith('[') and text.endswith(']'):
-            return ast.literal_eval(text)
-        if ' ||| ' in text:
-            return text.split(' ||| ')
-        return [text]
-    except:
-        return []
-
-
-def init_history_table(conn):
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS comparison_history (
-            event_a TEXT,
-            event_b TEXT,
-            verdict TEXT,
-            timestamp TEXT,
-            PRIMARY KEY (event_a, event_b)
-        )
-    """)
-    conn.commit()
-
-
-def check_history(cursor, id_a, id_b):
-    first, second = sorted([id_a, id_b])
-    cursor.execute(
-        "SELECT verdict FROM comparison_history WHERE event_a = ? AND event_b = ?", (first, second))
-    result = cursor.fetchone()
-    return result[0] if result else None
-
-
-def save_history(cursor, id_a, id_b, verdict):
-    first, second = sorted([id_a, id_b])
-    cursor.execute("INSERT OR REPLACE INTO comparison_history VALUES (?, ?, ?, ?)",
-                   (first, second, verdict, datetime.now().isoformat()))
-
-
-def tokenize(text):
-    words = re.findall(r'\w+', text.lower())
-    return set(w for w in words if len(w) > 3)
-
-
-def get_combined_similarity(text_a, text_b):
-    """Calcola similarità testuale classica (Jaccard + SequenceMatcher)"""
-    seq_score = SequenceMatcher(None, text_a, text_b).ratio()
-    tokens_a = tokenize(text_a)
-    tokens_b = tokenize(text_b)
-    if not tokens_a or not tokens_b:
-        jaccard_score = 0.0
-    else:
-        intersection = tokens_a.intersection(tokens_b)
-        union = tokens_a.union(tokens_b)
-        jaccard_score = len(intersection) / len(union)
-    return max(seq_score, jaccard_score)
-
-
-def ask_the_judge(event_a, event_b):
-    """DeepSeek V3 Judge"""
+def ask_the_judge(evt_a, evt_b):
+    """Chiede all'AI se sono lo stesso evento (Solo per i candidati forti)"""
     prompt = f"""
-    OBJECTIVE: Entity Resolution. Do these reports refer to the EXACT SAME PHYSICAL EVENT?
-
-    --- REPORT A ({event_a['date']}) ---
-    Title: "{event_a['title']}"
-    Details: "{event_a['text_compare'][:1000]}"
-
-    --- REPORT B ({event_b['date']}) ---
-    Title: "{event_b['title']}"
-    Details: "{event_b['text_compare'][:1000]}"
-
+    Are these the SAME physical event?
+    
+    A: "{evt_a['title']}" ({evt_a['date']})
+    Details A: {evt_a['text'][:400]}...
+    
+    B: "{evt_b['title']}" ({evt_b['date']})
+    Details B: {evt_b['text'][:400]}...
+    
     RULES:
-    - Same location + same time (<48h) + compatible details = TRUE.
-    - One specific, one generic about same strike = TRUE.
-    - Different locations or distinct strikes >4h apart = FALSE.
-
-    OUTPUT JSON ONLY: {{ "is_same_event": boolean, "confidence": float, "reason": "string" }}
+    - Same location + similar time + same action = TRUE.
+    - Updates/Follow-ups to the same event = TRUE.
+    - Distinct attacks in different places = FALSE.
+    
+    OUTPUT JSON ONLY: {{ "is_same_event": boolean, "confidence": float }}
     """
     try:
-        # FIX: Usa client_judge, non client
-        response = client_judge.chat.completions.create(
-            model="meta-llama/llama-3.3-70b-instruct",
-            messages=[
-                {"role": "system", "content": "Output JSON only."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.0,
-            response_format={"type": "json_object"}
+        res = client_judge.chat.completions.create(
+            model="meta-llama/llama-3.3-70b-instruct",  # O deepseek-v3
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.0, response_format={"type": "json_object"}
         )
-        content = response.choices[0].message.content.strip()
-        if "```json" in content:
-            content = content.split("```json")[1].split("```")[0].strip()
-        elif "```" in content:
-            content = content.split("```")[1].split("```")[0].strip()
-        return json.loads(content)
-    except Exception as e:
-        print(f"      ❌ Errore API Judge: {e}")
+        return json.loads(res.choices[0].message.content)
+    except:
         return None
-
-
-def find_connected_components(nodes, edges):
-    """Graph Theory: Trova gruppi connessi"""
-    adj = {node: [] for node in nodes}
-    for u, v in edges:
-        adj[u].append(v)
-        adj[v].append(u)
-
-    visited = set()
-    components = []
-
-    for node in nodes:
-        if node not in visited:
-            component = []
-            stack = [node]
-            visited.add(node)
-            while stack:
-                curr = stack.pop()
-                component.append(curr)
-                for neighbor in adj[curr]:
-                    if neighbor not in visited:
-                        visited.add(neighbor)
-                        stack.append(neighbor)
-            if len(component) > 1:
-                components.append(component)
-    return components
-
-# =============================================================================
-# 🚀 MAIN LOOP
-# =============================================================================
 
 
 def main():
-    print("🕸️  AVVIO CLUSTERING ENGINE (VECTOR + DYNAMIC DISTANCE)...")
+    print(f"🚀 AVVIO SMART FUSION: ROLLING WINDOW MODE")
+    print(f"   Window Size: {WINDOW_SIZE} | Overlap: {WINDOW_OVERLAP}")
 
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
-    init_history_table(conn)
     cursor = conn.cursor()
 
-    # 1. CARICAMENTO DATI
+    # 1. Indicizzazione Leggera (Carichiamo solo ID e DATE)
+    print("📚 Indicizzazione temporale di TUTTI gli eventi...")
     cursor.execute("""
-        SELECT event_id, ai_report_json, last_seen_date, full_text_dossier, 
-               urls_list, sources_list, embedding_vector
+        SELECT event_id, last_seen_date 
         FROM unique_events 
-        WHERE ai_analysis_status IN ('COMPLETED', 'VERIFIED', 'PENDING', 'MERGED') 
-        -- AND ai_analysis_status != 'MERGED' 
-        AND ai_report_json IS NOT NULL
+        WHERE embedding_vector IS NOT NULL 
+        AND ai_analysis_status != 'MERGED'
+        ORDER BY last_seen_date DESC
     """)
-    rows = cursor.fetchall()
+    all_index = cursor.fetchall()
+    total_events = len(all_index)
+    print(f"✅ Indice caricato: {total_events} eventi pronti.")
 
-    events_map = {}
-    event_ids = []
+    if total_events == 0:
+        print("⚠️ Nessun evento con vettori trovato. Esegui prima 'migrate_vectors.py'!")
+        return
 
-    print(f"   📂 Caricati {len(rows)} eventi. Verifica Embeddings...")
+    # Variabili di stato
+    start_idx = 0
+    total_fused = 0
 
-    embeddings_generated = 0
+    # 2. Loop della Finestra Mobile
+    while start_idx < total_events:
+        end_idx = min(start_idx + WINDOW_SIZE, total_events)
+        print(
+            f"\n🔄 Processando Finestra: {start_idx} -> {end_idx} (di {total_events})...")
 
-    for r in rows:
-        try:
-            data = json.loads(r['ai_report_json'])
-            geo = data.get('tactics', {}).get(
-                'geo_location', {}).get('explicit', {}) or {}
-            editorial = data.get('editorial', {})
+        # A. Caricamento Dati Completi (Solo per la finestra corrente)
+        current_ids = [row['event_id'] for row in all_index[start_idx:end_idx]]
+        placeholders = ','.join(['?'] * len(current_ids))
 
-            dt = None
-            if r['last_seen_date']:
-                try:
-                    dt = datetime.fromisoformat(r['last_seen_date'])
-                    # FIX: Rimuovi info timezone per uniformare tutto a "naive"
-                    if dt and dt.tzinfo is not None:
-                        dt = dt.replace(tzinfo=None)
-                except:
-                    pass
+        cursor.execute(f"""
+            SELECT event_id, ai_report_json, last_seen_date, full_text_dossier, embedding_vector
+            FROM unique_events WHERE event_id IN ({placeholders})
+        """, current_ids)
+        rows = cursor.fetchall()
 
-            # --- GESTIONE VETTORE ---
-            vec = None
-            if 'embedding_vector' in r.keys() and r['embedding_vector']:
-                try:
-                    vec = np.array(json.loads(r['embedding_vector']))
-                except:
-                    vec = None
+        # B. Preparazione Matrici NumPy (Velocità Pura)
+        events = []
+        vectors = []
 
-            if vec is None:
-                text_for_embed = f"{editorial.get('title_it', '')} {editorial.get('description_it', '')} {r['full_text_dossier'][:500]}"
-                vec_list = get_embedding(text_for_embed)
-                if vec_list:
-                    vec = np.array(vec_list)
-                    try:
-                        cursor.execute("UPDATE unique_events SET embedding_vector = ? WHERE event_id = ?",
-                                       (json.dumps(vec_list), r['event_id']))
-                        embeddings_generated += 1
-                    except:
-                        pass
+        for r in rows:
+            try:
+                vec = json.loads(r['embedding_vector'])
+                if not vec:
+                    continue
 
-            evt = {
-                "id": r['event_id'],
-                "date": dt,
-                "lat": float(geo.get('lat')) if geo.get('lat') else None,
-                "lon": float(geo.get('lon')) if geo.get('lon') else None,
-                "title": editorial.get('title_it', '') or "",
-                "text_compare": (editorial.get('description_it', '') + " " + (r['full_text_dossier'][:500] or "")).lower(),
-                "vector": vec,
-                "full_text": r['full_text_dossier'] or "",
-                "urls": parse_list_field(r['urls_list']),
-                "sources": parse_list_field(r['sources_list'])
-            }
-            events_map[r['event_id']] = evt
-            event_ids.append(r['event_id'])
-        except Exception as e:
+                # Titolo rapido
+                title = r['full_text_dossier'][:50]
+                if r['ai_report_json']:
+                    j = json.loads(r['ai_report_json'])
+                    title = j.get('editorial', {}).get('title_it', title)
+
+                dt = datetime.fromisoformat(
+                    r['last_seen_date']).replace(tzinfo=None)
+
+                events.append({
+                    "id": r['event_id'],
+                    "title": title,
+                    "text": r['full_text_dossier'],
+                    "date": dt
+                })
+                vectors.append(vec)
+            except:
+                continue
+
+        if not vectors:
+            start_idx += (WINDOW_SIZE - WINDOW_OVERLAP)
             continue
 
-    if embeddings_generated > 0:
-        conn.commit()
+        # Converti in matrice NumPy
+        matrix = np.array(vectors)  # Shape: (N, 1536)
+
+        # Normalizzazione (per sicurezza coseno)
+        norm = np.linalg.norm(matrix, axis=1, keepdims=True)
+        matrix = matrix / (norm + 1e-10)  # Evita divisione per zero
+
         print(
-            f"   🧠 Generati {embeddings_generated} nuovi embeddings vettoriali.")
+            f"⚡ Calcolo similarità matriciale ({len(matrix)}x{len(matrix)})...")
 
-    # 2. RICERCA CONNESSIONI
-    confirmed_links = []
-    sorted_ids = sorted(
-        event_ids, key=lambda eid: events_map[eid]['date'] if events_map[eid]['date'] else datetime.min)
+        # C. Moltiplicazione Matriciale (Il trucco magico)
+        # Calcola TUTTE le similarità in un colpo solo
+        sim_matrix = np.dot(matrix, matrix.T)
 
-    api_calls = 0
-    cache_hits = 0
+        # Azzera la diagonale e il triangolo inferiore (evita auto-confronto e doppi)
+        np.fill_diagonal(sim_matrix, 0)
+        sim_matrix = np.triu(sim_matrix)
 
-    print("   🔍 Analisi incrociata (Hybrid: Vector + Geo + Text)...")
+        # D. Estrazione Candidati (Solo quelli sopra soglia)
+        # Restituisce gli indici (i, j) dove score > soglia
+        candidates = np.argwhere(sim_matrix > VECTOR_THRESHOLD)
 
-    for i in range(len(sorted_ids)):
-        id_a = sorted_ids[i]
-        evt_a = events_map[id_a]
+        print(f"🧐 Candidati vettoriali trovati: {len(candidates)}")
 
-        for j in range(i + 1, len(sorted_ids)):
-            id_b = sorted_ids[j]
-            evt_b = events_map[id_b]
+        # E. Verifica Raffinata (Tempo + AI)
+        merges_in_window = []
+        processed_ids = set()
 
-            # A. FILTRO TEMPORALE (Rigido)
-            if evt_a['date'] and evt_b['date']:
-                delta = abs((evt_a['date'] - evt_b['date']
-                             ).total_seconds()) / 3600
-                if delta > MAX_TIME_DIFF_HOURS:
-                    continue
-
-            # B. CALCOLO VETTORIALE & DISTANZA DINAMICA
-            sim_score = 0.0
-            if evt_a['vector'] is not None and evt_b['vector'] is not None:
-                sim_score = cosine_similarity(evt_a['vector'], evt_b['vector'])
-
-            # Soglia dinamica basata sulla similarità
-            current_max_dist = MAX_DISTANCE_KM  # Default 25km
-            if sim_score > 0.95:
-                current_max_dist = 2000.0  # Stesso evento, location vaghe
-            elif sim_score > 0.90:
-                current_max_dist = 100.0  # Tolleranza regionale
-
-            # C. FILTRO GEOGRAFICO (Con soglia dinamica)
-            is_near = False
-            if evt_a['lat'] and evt_b['lat']:
-                try:
-                    dist = geodesic(
-                        (evt_a['lat'], evt_a['lon']), (evt_b['lat'], evt_b['lon'])).km
-                    if dist <= current_max_dist:
-                        is_near = True
-                except:
-                    pass
-
-            # Se coordinate presenti ma lontani -> SCARTA
-            if (evt_a['lat'] and evt_b['lat']) and not is_near:
+        for i, j in candidates:
+            # Se uno dei due è già stato fuso in questo giro, salta
+            if events[i]['id'] in processed_ids or events[j]['id'] in processed_ids:
                 continue
 
-            # D. FILTRO VETTORIALE (Hard Threshold)
-            if sim_score < VECTOR_SIM_THRESHOLD:
+            # Check Temporale
+            delta = abs((events[i]['date'] - events[j]
+                        ['date']).total_seconds()) / 3600
+            if delta > MAX_TIME_DIFF_HOURS:
                 continue
 
-            # E. FILTRO TESTUALE (Sanity Check Finale)
-            threshold = TEXT_SIM_THRESHOLD_GEO if is_near else TEXT_SIM_THRESHOLD_BLIND
-            text_sim = get_combined_similarity(
-                evt_a['text_compare'], evt_b['text_compare'])
+            score = sim_matrix[i, j]
 
-            # Se passa anche il filtro testuale (o ha score vettoriale altissimo)
-            if text_sim > threshold or sim_score > 0.92:
-                # CHECK CACHE
-                history = check_history(cursor, id_a, id_b)
-                if history == 'MATCH':
-                    confirmed_links.append((id_a, id_b))
-                    cache_hits += 1
-                    continue
-                elif history == 'DIFF':
-                    cache_hits += 1
-                    continue
+            # --- ZONA AI ---
+            print(
+                f"   🔗 Checking: {events[i]['title'][:30]} vs {events[j]['title'][:30]} (Sim: {score:.2f})")
 
-                # CHIAMATA AI (DeepSeek)
-                print(
-                    f"\n   🔗 Sospetto Link (Vec: {sim_score:.2f} | Txt: {text_sim:.2f}): {evt_a['title'][:30]}... <--> {evt_b['title'][:30]}...")
-                verdict = ask_the_judge(evt_a, evt_b)
-                api_calls += 1
-
+            # Se è praticamente identico, unisci senza chiedere (risparmia API)
+            is_match = False
+            if score > 0.96 and delta < 12:
+                is_match = True
+                print("      🚀 AUTO-MERGE (Super High Confidence)")
+            else:
+                # Chiedi al Giudice
+                verdict = ask_the_judge(events[i], events[j])
                 if verdict and verdict.get('is_same_event'):
-                    print(f"      ✅ LINK CONFERMATO!")
-                    save_history(cursor, id_a, id_b, 'MATCH')
-                    confirmed_links.append((id_a, id_b))
+                    is_match = True
+                    print(
+                        f"      ✅ AI CONFIRMED (Conf: {verdict.get('confidence')})")
                 else:
-                    print(f"      ❌ Falso Positivo.")
-                    save_history(cursor, id_a, id_b, 'DIFF')
+                    print("      ❌ AI REJECTED")
 
-            if api_calls % 10 == 0:
-                conn.commit()
+            if is_match:
+                # Logica Master/Victim (Il più vecchio è il Master)
+                if events[i]['date'] < events[j]['date']:
+                    master, victim = events[i], events[j]
+                else:
+                    master, victim = events[j], events[i]
 
-    # 3. CREAZIONE CLUSTER
-    print(
-        f"\n   🧩 Analisi Grafo (Calls: {api_calls}, Cache Hits: {cache_hits})...")
-    clusters = find_connected_components(event_ids, confirmed_links)
-    print(f"   📊 Trovati {len(clusters)} Super-Eventi (Cluster).")
+                merges_in_window.append((master, victim))
+                processed_ids.add(master['id'])
+                processed_ids.add(victim['id'])
 
-    # 4. FUSIONE
-    fusions_count = 0
-    for cluster in clusters:
-        cluster_sorted = sorted(
-            cluster, key=lambda eid: events_map[eid]['date'] if events_map[eid]['date'] else datetime.min)
-        master_id = cluster_sorted[0]
-        master_evt = events_map[master_id]
+        # F. Scrittura nel DB (Batch)
+        if merges_in_window:
+            print(f"💾 Scrittura {len(merges_in_window)} fusioni nel DB...")
+            for m, v in merges_in_window:
+                new_text = f"{m['text']} ||| [MERGED]: {v['text']}"
+                # Segna vittima come MERGED
+                cursor.execute(
+                    "UPDATE unique_events SET ai_analysis_status='MERGED' WHERE event_id=?", (v['id'],))
+                # Aggiorna Master e rimetti in PENDING per nuova analisi
+                cursor.execute("""
+                    UPDATE unique_events 
+                    SET full_text_dossier=?, ai_analysis_status='PENDING', ai_report_json=NULL, embedding_vector=NULL
+                    WHERE event_id=?
+                """, (new_text, m['id']))
 
-        merged_full_text = master_evt['full_text']
-        merged_urls = set(master_evt['urls'])
-        merged_sources = set(master_evt['sources'])
+            conn.commit()
+            total_fused += len(merges_in_window)
 
-        print(
-            f"   🔥 FUSIONE CLUSTER ({len(cluster)} eventi) -> MASTER: {master_id[:8]}...")
+        # G. Avanzamento Finestra
+        start_idx += (WINDOW_SIZE - WINDOW_OVERLAP)
 
-        for victim_id in cluster_sorted[1:]:
-            victim_evt = events_map[victim_id]
-            if victim_evt['full_text'] not in merged_full_text:
-                merged_full_text += f" ||| [MERGED {victim_id[:6]}]: {victim_evt['full_text']}"
-            merged_urls.update(victim_evt['urls'])
-            merged_sources.update(victim_evt['sources'])
-            cursor.execute(
-                "UPDATE unique_events SET ai_analysis_status = 'MERGED' WHERE event_id = ?", (victim_id,))
+        # Pulizia RAM aggressiva
+        del matrix
+        del sim_matrix
+        del events
+        del vectors
 
-        cursor.execute("""
-            UPDATE unique_events 
-            SET full_text_dossier = ?, urls_list = ?, sources_list = ?,
-                ai_analysis_status = 'PENDING', ai_report_json = NULL, embedding_vector = NULL
-            WHERE event_id = ?
-        """, (merged_full_text, str(list(merged_urls)), str(list(merged_sources)), master_id))
-
-        fusions_count += 1
-
-    conn.commit()
     conn.close()
-    print(f"\n✅ CLUSTERING COMPLETATO. {fusions_count} fusioni.")
+    print(f"\n🏁 CLUSTERING COMPLETATO. Totale fusioni: {total_fused}")
 
 
 if __name__ == "__main__":

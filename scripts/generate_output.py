@@ -175,6 +175,9 @@ def main():
                         # Metriche KPI
                         "reliability": scores.get('reliability', 0),
                         "bias_score": scores.get('bias_score', 0),
+                        
+                        # AI Strategist Comment
+                        "ai_reasoning": ai_data.get('ai_summary', ''),
 
                         # Link
                         # Serializzato per sicurezza JS

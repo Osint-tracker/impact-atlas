@@ -477,53 +477,93 @@ class SuperSquadAgent:
             return {}
 
     # =========================================================================
-    # 🛡️ STEP 0: THE BOUNCER (Qwen 2.5 32B Instruct via OpenRouter)
+    # 🛡️ STEP 0: THE BOUNCER v2.0 (Hybrid: Regex + AI)
     # =========================================================================
+
+    def _is_obvious_junk(self, text):
+        """
+        LAYER 1: Filtro meccanico a costo zero.
+        Ritorna (True, "motivo") se è spazzatura ovvia.
+        """
+        t = text.lower()
+
+        # 1. Errori Tecnici / Pagine Vuote
+        if len(t) < 50:
+            return True, "Text too short"
+        if "404 not found" in t or "enable cookies" in t or "captcha" in t:
+            return True, "Technical Error Page"
+
+        # 2. Blacklist Aggressiva (Crypto, Casino, Porn)
+        # Usiamo word boundaries (\b) per evitare falsi positivi parziali
+        junk_patterns = [
+            r"\b(bitcoin|crypto|nft|ethereum|wallet|binance)\b",  # Crypto
+            r"\b(casino|slot\s?machine|poker|betting|bonus)\b",   # Gambling
+            r"\b(dating|hot\s?girls|sexy|porn|xxx)\b",            # Adult
+            r"\b(viagra|cialis|weight\s?loss)\b",                 # Pharma Spam
+            r"\b(subscribe\s?to\s?view|accedi\s?per|login)\b"     # Paywall hard
+        ]
+
+        for pattern in junk_patterns:
+            if re.search(pattern, t):
+                return True, f"Regex Blacklist: {pattern}"
+
+        # 3. Filtro Immobiliare/Commerciale (Contestuale)
+        # Se parla di affitto/vendita MA NON di danni/bombe
+        commercial_keywords = ["vendesi", "affittasi", "in vendita",
+                               "immobiliare", "real estate", "sconto", "promo"]
+        war_keywords = ["bomb", "missil", "colpit", "distrutto",
+                        "esplosione", "strike", "attack", "damage"]
+
+        if any(cw in t for cw in commercial_keywords):
+            # Se è commerciale, lo salviamo SOLO se c'è una parola di guerra
+            if not any(wk in t for wk in war_keywords):
+                return True, "Commercial/Real Estate Spam"
+
+        return False, None
+
     def _step_0_the_bouncer(self, text):
-        print("   🛡️ Step 0: The Bouncer sta analizzando...")
+        print("   🛡️ Step 0: The Bouncer v2.0 analyzing...")
 
-        # 1. Inizializziamo il default per sicurezza (così 'data' esiste sempre)
-        default_result = {"is_relevant": True, "reason": "Fallback/Error"}
-        data = None
+        # --- FASE 1: FILTRO MECCANICO (Gratis) ---
+        is_junk, reason = self._is_obvious_junk(text)
+        if is_junk:
+            print(f"      🗑️ REJECTED by Regex Sentry: {reason}")
+            return {"is_relevant": False, "reason": reason}
 
-        preview_text = text[:2000]
+        # --- FASE 2: FILTRO SEMANTICO (AI) ---
+        # Se siamo qui, il testo potrebbe essere valido. Chiediamo all'AI.
+
+        # Tagliamo a 3000 caratteri (più contesto del precedente 2000)
+        preview_text = text[:3000]
 
         prompt = f"""
-        TASK: AGGRESSIVE COST-SAVING FILTER.
-        CONTEXT: Filtering raw data. We ONLY want KINETIC EVENTS (Explosions, Battles, Strikes) or useful OSINT analysis for Russia-Ukraine war.
+        ROLE: Elite Military Intelligence Filter.
+        TASK: Binary Classification (RELEVANT / IRRELEVANT).
+        
+        CONTEXT: We are tracking the Russia-Ukraine war. We need KINETIC EVENTS (Strikes, Battles, Movements) or SIGNIFICANT STRATEGIC NEWS.
+        
+        INPUT TEXT:
+        "{preview_text}"
 
-        INPUT TEXT: "{preview_text}"
+        ⚠️ CRITERIA FOR "IRRELEVANT" (Reject these):
+        1. **General Politics:** "Putin signed a decree", "Zelensky met Biden" (UNLESS it involves immediate weapon delivery or escalation).
+        2. **Opinion/Rants:** Telegram bloggers complaining without reporting a specific event.
+        3. **Fundraising:** "Donate to this card", "Buy drones for our boys".
+        4. **Generic News:** Sports, Weather, unrelated Crime.
+        5. **Duplicate/Vague:** "Loud noises reported" (without location or confirmation).
 
-        RULES:
-        - REJECT (is_relevant: false) IF: Crypto, Casino, Dating, Broken HTML, Unrelated Sports.
-        - KEEP (is_relevant: true) IF: War, Military, Politics, Ukraine, Russia, Explosions (even vague).
-
-        INSTRUCTIONS:
-        You are a budget controller. Your goal is to REJECT anything that costs money to analyze but provides no intel.
-
-        ⛔ CRITICAL REJECT CRITERIA (Output is_relevant: false):
-        1. **FUNDRAISING / DONATIONS**: Any mention of "Sborka", "Zbir", "Donat", "Monobank", "PayPal", "Revolut", "Card", "Karta", "Binance", "Wallet". Even if for drones/army -> REJECT.
-        2. **COMMERCIAL / ADS**: Real estate ("Kvartira", "Rent"), Crypto, Casino, Job offers, recruiting spam, advertisements.
-        3. **GENERIC / POLITICAL**: Abstract statements ("Zelensky said", "Putin signed") without a physical military event on the ground.
-        4. **OPINION / RANT**: Just text complaining without facts.
-        5. **SPAM**: Fundraisers ("Donate", "Cards", "Monobank"), abstract politics, recruiting spam, advertisements.
-
-        ✅ KEEP ONLY IF (is_relevant: true):
-        - Concrete Military Action: "Explosion in Kyiv", "Drone shot down", "Tank destroyed", "Advance near Robotyne".
-        - Specific Movement: "Column of equipment moving towards...".
-        - Describes a PHYSICAL EVENT (Explosion, Strike, Battle, Movement, Fire, Death).
-        - Mentions specific equipment losses or tactical changes.
-        - EVENT TYPE: Focus ONLY on KINETIC events (Explosions, Strikes, Movements, Battles).
-
-        OUTPUT JSON ONLY: {{ "is_relevant": boolean, "reason": "short string" }}
+        ✅ CRITERIA FOR "RELEVANT" (Keep these):
+        1. **Kinetic Action:** Shelling, Explosions, Drone Strikes, Air Defense active.
+        2. **Movement:** Troop columns, equipment transfer (trains/convoys).
+        3. **Damage:** Infrastructure hit, power outages caused by strikes.
+        4. **Logistics:** Bridges hit, Ammo depots destroyed.
+        
+        OUTPUT JSON: {{ "is_relevant": boolean, "confidence": float (0.0-1.0), "reason": "Short explanation" }}
         """
 
         try:
-            # Verifica che il client esista
             if not hasattr(self, 'router_client'):
-                print(
-                    "      ⚠️ ERRORE: 'router_client' non definito in __init__. Uso default.")
-                return default_result
+                return {"is_relevant": True, "reason": "Client Error - Fallback"}
 
             response = self.router_client.chat.completions.create(
                 model="qwen/qwen2.5-vl-32b-instruct",
@@ -537,27 +577,58 @@ class SuperSquadAgent:
 
             content = response.choices[0].message.content.strip()
 
-            # Pulizia markdown
-            if "```json" in content:
-                content = content.split("```json")[1].split("```")[0].strip()
-            elif "```" in content:
-                content = content.split("```")[1].split("```")[0].strip()
+            # Pulizia standard
+            if "```" in content:
+                content = content.split("```json")[1].split("```")[0].strip(
+                ) if "json" in content else content.split("```")[1].strip()
 
-            # Assegnazione di data
             data = json.loads(content)
 
-            # Debug Print
-            if data.get('is_relevant') is False:
-                print(f"      ⛔ BOUNCER BLOCK: {data.get('reason')}")
+            # Debug Log
+            if data.get('is_relevant'):
+                print(
+                    f"      ✅ Bouncer Approved (Conf: {data.get('confidence')}): {data.get('reason')}")
             else:
-                print(f"      ✅ Bouncer OK. ({data.get('reason')})")
+                print(f"      ⛔ Bouncer Blocked: {data.get('reason')}")
 
             return data
 
         except Exception as e:
             print(f"      ⚠️ BOUNCER EXCEPTION: {e}")
-            # Se siamo qui, 'data' potrebbe non esistere, quindi ritorniamo il default
-            return default_result
+            # In caso di dubbio (errore API), lasciamo passare per non perdere dati
+            return {"is_relevant": True, "reason": "Error Fallback"}
+
+    def _step_titan_classifier(self, text):
+        """
+        Chiama il modello Fine-Tuned per ottenere la classificazione precisa.
+        """
+        print("   ⚡ Step 1.5: Titan Fine-Tuned is classifying...")
+
+        # System Prompt Rinforzato (Quello validato prima)
+        system_prompt = """You are a military intelligence analyst. Output strict JSON.
+CRITICAL CLASSIFICATION RULES:
+1. NOISE FILTER: If the text is a summary, historical analysis, political opinion, or static map, classify as NULL.
+2. MANOUVRE PRIORITY: If text mentions territorial change (captured, retreated, entered), classify as MANOUVRE.
+3. SHAPING PRIORITY: Strikes on deep rear targets, capitals, infrastructure, logistics -> SHAPING (OFFENSIVE/COERCIVE).
+4. ATTRITION: Only for static fighting/shelling."""
+
+        try:
+            response = self.openai_client.chat.completions.create(
+                model="ft:gpt-4o-mini-2024-07-18:personal:osint-analyst-v4--clean:Cv5yHxTJ",  # IL TUO ID
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": text[:15000]}
+                ],
+                temperature=0.0,
+                response_format={"type": "json_object"}
+            )
+            result = json.loads(response.choices[0].message.content)
+            if "classification" in result:
+                result["classification"] = result["classification"].upper()
+            return result
+        except Exception as e:
+            print(f"   ⚠️ Titan Error: {e}")
+            return {"classification": "UNKNOWN", "reasoning": "Error", "confidence": 0}
 
     # =========================================================================
     # 🧠 STEP 1: THE BRAIN (DeepSeek V3 via OpenRouter)
@@ -1125,9 +1196,6 @@ RAW TEXT:
     # =========================================================================
     # 📰 STEP 4: THE JOURNALIST (GPT-4o-mini via OpenAI)
     # =========================================================================
-# =========================================================================
-    # 📰 STEP 4: THE JOURNALIST (GPT-4o-mini via OpenAI)
-    # =========================================================================
     def _step_4_the_journalist(self, text, brain_data, soldier_data):
         """
         Role: Description & Title.
@@ -1244,196 +1312,276 @@ RAW TEXT:
             "description_it": "Impossibile riassumere i dati in modo neutrale."
         }
 
+# =========================================================================
+# 🏰 STEP 5: THE STRATEGIST (DeepSeek-V3 via OpenRouter)
+# =========================================================================
+
+
+def _step_5_the_strategist(client_or, final_report):
+    """
+    THE STRATEGIST (DeepSeek-V3.2 via OpenRouter)
+    Generates high-level strategic insight in EN and IT.
+    """
+    print("   ♟️  Step 5: The Strategist is assessing impact (Dual Lang)...")
+
+    # 1. Prepare Data
+    editorial = final_report.get('editorial', {})
+    metrics = final_report.get('titan_metrics', {})
+    strategy = final_report.get('strategy', {})
+
+    # Recuperiamo l'analisi di Titan (che avrai salvato in final_report)
+    titan_data = final_report.get('titan_analysis', {})
+
+    # Tactical Dossier ARRICCHITO DA TITAN
+    dossier = f"""
+    EVENT: {editorial.get('title_en')}
+    CONTEXT: {editorial.get('description_en')}
+    
+    === TACTICAL CLASSIFICATION (AI CONFIRMED) ===
+    CATEGORY: {titan_data.get('classification')} (e.g. SHAPING = Preparation, MANOUVRE = Frontline Change)
+    TACTICAL REASONING: {titan_data.get('reasoning')}
+    
+    T.I.E. METRICS (0-10):
+    - KINETIC (Violence/Intensity): {metrics.get('kinetic_score')}
+    - TARGET (Strategic Value): {metrics.get('target_score')}
+    - EFFECT (Success/Damage): {metrics.get('effect_score')}
+    """
+
+    # 2. The Prompt (English for better reasoning)
+    system_prompt = """
+    You are a Senior Intelligence Analyst for a conflict monitor.
+    Your task: Generate a "Strategic Assessment" for the provided event.
+
+    CRITICAL RULES:
+    1. NO SUMMARIES. Do not repeat what happened. Focus strictly on "So What?".
+    2. ANALYZE CONSEQUENCES. Explain the operational or strategic implication.
+    3. USE METRICS. Use the T.I.E. scores to guide your assessment.
+    4. GLOBAL CONTEXT. Mention how this fits into the broader war.
+    5. BREVITY. Maximum 3 sentences per language. Tone: Cold, Professional, Direct.
+
+    OUTPUT FORMAT (Strictly follow this):
+    [EN] <Insight in English>
+    [IT] <Insight in Italian>
+    """
+
+    try:
+        response = client_or.chat.completions.create(
+            model="deepseek/deepseek-v3.2",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": dossier}
+            ],
+            temperature=0.1,
+            max_tokens=100
+        )
+
+        insight_raw = response.choices[0].message.content.strip()
+        print(f"      🧠 Strategist Output:\n{insight_raw}")
+        return insight_raw
+
+    except Exception as e:
+        print(f"      ⚠️ Strategist Error: {e}")
+        return "[EN] Analysis unavailable.\n[IT] Analisi non disponibile."
+
     # =========================================================================
     # 🔄 MAIN PROCESS FLOW
     # =========================================================================
-    def perform_search(self, query, event_date_str=None):
-        """
-        Motore Google (Serper) con TIME MACHINE BLINDATA.
-        Se la data non è leggibile, ABORTISCE la ricerca per sicurezza.
-        """
-        if not self.serper_api_key:
-            print("   ❌ Errore: SERPER_API_KEY mancante.")
-            return "", "unknown", []
 
-        url = "https://google.serper.dev/search"
-        date_filter = ""
 
-        # --- LOGICA DI SICUREZZA TEMPORALE ---
-        if event_date_str:
-            # 1. Pulizia preliminare della data
-            clean_date = str(event_date_str).strip().replace(
-                '.', '/').replace('-', '/')
-            dt = None
+def perform_search(self, query, event_date_str=None):
+    """
+    Motore Google (Serper) con TIME MACHINE BLINDATA.
+    Se la data non è leggibile, ABORTISCE la ricerca per sicurezza.
+    """
+    if not self.serper_api_key:
+        print("   ❌ Errore: SERPER_API_KEY mancante.")
+        return "", "unknown", []
 
-            # 2. Lista estesa di formati per non fallire
-            formats = [
-                '%d/%m/%Y',  # 25/12/2023
-                '%Y/%m/%d',  # 2023/12/25
-                '%d-%m-%Y',  # 25-12-2023
-                '%d/%m/%y',  # 25/12/23
-                '%Y%m%d',    # 20231225
-                '%m/%d/%Y',  # 12/25/2023 (US style)
-                '%d %b %Y'   # 25 Dec 2023
-            ]
+    url = "https://google.serper.dev/search"
+    date_filter = ""
 
-            for fmt in formats:
-                try:
-                    dt = datetime.strptime(clean_date, fmt)
-                    break  # Trovato!
-                except ValueError:
-                    continue
+    # --- LOGICA DI SICUREZZA TEMPORALE ---
+    if event_date_str:
+        # 1. Pulizia preliminare della data
+        clean_date = str(event_date_str).strip().replace(
+            '.', '/').replace('-', '/')
+        dt = None
 
-            if dt:
-                # DATA VALIDA -> Attivo Time Machine
-                start_date = (dt - timedelta(days=30)).strftime('%Y-%m-%d')
-                end_date = (dt + timedelta(days=30)).strftime('%Y-%m-%d')
-                date_filter = f" after:{start_date} before:{end_date}"
-            else:
-                # DATA INVALIDA -> SAFETY STOP!
-                # Questo impedisce di cercare "a caso" e trovare news sbagliate
-                print(
-                    f"   🛑 DATA ILLEGIBILE: '{event_date_str}' -> BLOCCO RICERCA.")
-                return "", "skipped_bad_date", []
-
-        # Se non c'è proprio la data nel DB (None), è rischioso cercare.
-        # Decommenta le due righe sotto se vuoi bloccare anche questi casi:
-        # else:
-        #     return "", "skipped_no_date", []
-
-        final_query = f"{query}{date_filter}"
-        print(f"   🗓️ Time Machine: '{final_query}'")
-
-        payload = json.dumps({
-            "q": final_query,
-            "num": 10,
-            "gl": "us",      # US per indice globale
-            "hl": "en"       # Inglese per max compatibilità
-        })
-
-        headers = {
-            'X-API-KEY': self.serper_api_key,
-            'Content-Type': 'application/json'
-        }
-
-        try:
-            response = requests.request(
-                "POST", url, headers=headers, data=payload)
-            results = response.json()
-
-            candidates = results.get("news", []) + results.get("organic", [])
-
-            if not candidates:
-                return "", "unknown", []
-
-            text_snippets = []
-            urls = []
-
-            for item in candidates[:5]:
-                link = item.get('link')
-                snippet_date = item.get('date', 'Unknown Date')
-                title = item.get('title', '')
-                body = item.get('snippet', '')
-
-                entry = f"SOURCE: {link}\nGOOGLE_DATE: {snippet_date}\nTITLE: {title}\nTEXT: {body}\n---"
-                text_snippets.append(entry)
-                urls.append(link)
-
-            return "\n".join(text_snippets), (urls[0] if urls else "unknown"), urls
-
-        except Exception as e:
-            print(f"   ❌ Serper Error: {e}")
-            return "", "unknown", []
-
-    # ... (questo è l'ultimo metodo corretto della classe)
-    def parse_date_strict(self, date_str):
-        """
-        Tenta di interpretare la data con ogni formato umanamente possibile.
-        Se fallisce, restituisce None (segnale di STOP).
-        """
-        if not date_str:
-            return None
-
-        date_str = str(date_str).strip().replace('.', '/').replace('-', '/')
-
-        # Lista estesa dei formati accettati
+        # 2. Lista estesa di formati per non fallire
         formats = [
             '%d/%m/%Y',  # 25/12/2023
             '%Y/%m/%d',  # 2023/12/25
+            '%d-%m-%Y',  # 25-12-2023
             '%d/%m/%y',  # 25/12/23
-            '%m/%d/%Y',  # 12/25/2023 (US)
             '%Y%m%d',    # 20231225
-            '%d %b %Y',  # 25 Dec 2023
-            '%d %B %Y'   # 25 December 2023
+            '%m/%d/%Y',  # 12/25/2023 (US style)
+            '%d %b %Y'   # 25 Dec 2023
         ]
 
         for fmt in formats:
             try:
-                return datetime.strptime(date_str, fmt)
+                dt = datetime.strptime(clean_date, fmt)
+                break  # Trovato!
             except ValueError:
                 continue
 
+        if dt:
+            # DATA VALIDA -> Attivo Time Machine
+            start_date = (dt - timedelta(days=30)).strftime('%Y-%m-%d')
+            end_date = (dt + timedelta(days=30)).strftime('%Y-%m-%d')
+            date_filter = f" after:{start_date} before:{end_date}"
+        else:
+            # DATA INVALIDA -> SAFETY STOP!
+            # Questo impedisce di cercare "a caso" e trovare news sbagliate
+            print(
+                f"   🛑 DATA ILLEGIBILE: '{event_date_str}' -> BLOCCO RICERCA.")
+            return "", "skipped_bad_date", []
+
+    # Se non c'è proprio la data nel DB (None), è rischioso cercare.
+    # Decommenta le due righe sotto se vuoi bloccare anche questi casi:
+    # else:
+    #     return "", "skipped_no_date", []
+
+    final_query = f"{query}{date_filter}"
+    print(f"   🗓️ Time Machine: '{final_query}'")
+
+    payload = json.dumps({
+        "q": final_query,
+        "num": 10,
+        "gl": "us",      # US per indice globale
+        "hl": "en"       # Inglese per max compatibilità
+    })
+
+    headers = {
+        'X-API-KEY': self.serper_api_key,
+        'Content-Type': 'application/json'
+    }
+
+    try:
+        response = requests.request(
+            "POST", url, headers=headers, data=payload)
+        results = response.json()
+
+        candidates = results.get("news", []) + results.get("organic", [])
+
+        if not candidates:
+            return "", "unknown", []
+
+        text_snippets = []
+        urls = []
+
+        for item in candidates[:5]:
+            link = item.get('link')
+            snippet_date = item.get('date', 'Unknown Date')
+            title = item.get('title', '')
+            body = item.get('snippet', '')
+
+            entry = f"SOURCE: {link}\nGOOGLE_DATE: {snippet_date}\nTITLE: {title}\nTEXT: {body}\n---"
+            text_snippets.append(entry)
+            urls.append(link)
+
+        return "\n".join(text_snippets), (urls[0] if urls else "unknown"), urls
+
+    except Exception as e:
+        print(f"   ❌ Serper Error: {e}")
+        return "", "unknown", []
+
+    # ... (questo è l'ultimo metodo corretto della classe)
+
+
+def parse_date_strict(self, date_str):
+    """
+    Tenta di interpretare la data con ogni formato umanamente possibile.
+    Se fallisce, restituisce None (segnale di STOP).
+    """
+    if not date_str:
         return None
 
-    def fetch_url_text(self, url):
-        """Scrape specific URL"""
+    date_str = str(date_str).strip().replace('.', '/').replace('-', '/')
+
+    # Lista estesa dei formati accettati
+    formats = [
+        '%d/%m/%Y',  # 25/12/2023
+        '%Y/%m/%d',  # 2023/12/25
+        '%d/%m/%y',  # 25/12/23
+        '%m/%d/%Y',  # 12/25/2023 (US)
+        '%Y%m%d',    # 20231225
+        '%d %b %Y',  # 25 Dec 2023
+        '%d %B %Y'   # 25 December 2023
+    ]
+
+    for fmt in formats:
         try:
-            headers = {'User-Agent': 'Mozilla/5.0'}
-            response = requests.get(url, headers=headers, timeout=10)
-            if response.status_code == 200:
-                soup = BeautifulSoup(response.text, 'html.parser')
-                return ' '.join([p.get_text() for p in soup.find_all(['p', 'h1', 'h2'])])[:6000]
-        except Exception:
-            pass
-        return None
+            return datetime.strptime(date_str, fmt)
+        except ValueError:
+            continue
+
+    return None
+
+
+def fetch_url_text(self, url):
+    """Scrape specific URL"""
+    try:
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        response = requests.get(url, headers=headers, timeout=10)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            return ' '.join([p.get_text() for p in soup.find_all(['p', 'h1', 'h2'])])[:6000]
+    except Exception:
+        pass
+    return None
 
     # =========================================================================
     # 🎯 HELPER: CLASSIFICAZIONE TIPO ATTACCO (Priorità Cinetica)
     # =========================================================================
     # NOTA: Ho aggiunto l'indentazione qui sotto per farlo rientrare nella classe
-    def _classify_event_type(self, text):
-        """
-        Determina il "Type" basandosi su regex keywords (Priorità Utente).
-        """
-        if not text:
-            return "Unknown"
-        t = text.lower()
 
-        # --- PRIORITÀ 1: EVENTI MILITARI CINETICI ---
-        if re.search(r"naval|sea|ship|boat|maritime|vessel", t):
-            return "Naval Engagement"
-        if re.search(r"drone|uav|loitering|kamikaze|quadcopter|unmanned", t):
-            return "Drone Strike"
-        if re.search(r"missile|rocket|ballistic|cruise|himars|mlrs", t):
-            return "Missile Strike"
-        if re.search(r"air|jet|plane|bombing|airstrike|su-", t):
-            return "Airstrike"
-        if re.search(r"artillery|shelling|mortar|howitzer|grad|cannon", t):
-            return "Artillery Shelling"
-        if re.search(r"ied|mine|landmine|vbied|explosion|trap", t):
-            return "IED / Explosion"
-        if re.search(r"clash|firefight|skirmish|ambush|raid|attack|ground|shooting|sniper", t):
-            return "Ground Clash"
 
-        # --- PRIORITÀ 2: CONTESTO CIVILE E POLITICO ---
-        if re.search(r"politic|protest|riot|demonstration|diploma|unrest|arrest", t):
-            return "Political / Unrest"
+def _classify_event_type(self, text):
+    """
+    Determina il "Type" basandosi su regex keywords (Priorità Utente).
+    """
+    if not text:
+        return "Unknown"
+    t = text.lower()
 
-        # --- PRIORITÀ 3: CIVIL / ACCIDENT ---
-        if re.search(r"civil|accident|crash|fire|infrastructure|logistics|humanitarian", t):
-            return "Civil / Accident"
+    # --- PRIORITÀ 1: EVENTI MILITARI CINETICI ---
+    if re.search(r"naval|sea|ship|boat|maritime|vessel", t):
+        return "Naval Engagement"
+    if re.search(r"drone|uav|loitering|kamikaze|quadcopter|unmanned", t):
+        return "Drone Strike"
+    if re.search(r"missile|rocket|ballistic|cruise|himars|mlrs", t):
+        return "Missile Strike"
+    if re.search(r"air|jet|plane|bombing|airstrike|su-", t):
+        return "Airstrike"
+    if re.search(r"artillery|shelling|mortar|howitzer|grad|cannon", t):
+        return "Artillery Shelling"
+    if re.search(r"ied|mine|landmine|vbied|explosion|trap", t):
+        return "IED / Explosion"
+    if re.search(r"clash|firefight|skirmish|ambush|raid|attack|ground|shooting|sniper", t):
+        return "Ground Clash"
 
-        return "Others"
+    # --- PRIORITÀ 2: CONTESTO CIVILE E POLITICO ---
+    if re.search(r"politic|protest|riot|demonstration|diploma|unrest|arrest", t):
+        return "Political / Unrest"
+
+    # --- PRIORITÀ 3: CIVIL / ACCIDENT ---
+    if re.search(r"civil|accident|crash|fire|infrastructure|logistics|humanitarian", t):
+        return "Civil / Accident"
+
+    return "Others"
 
     # ---------------------------------------------------------
     # 1. SMART QUERY (La funzione che hai appena modificato)
     # ---------------------------------------------------------
-    def _generate_event_fingerprints(self, title, location, date_str):
-        """
-        Analizza l'evento per estrarre 'Impronte Digitali' uniche (Fingerprints)
-        invece di keyword generiche.
-        """
-        system_prompt = """
+
+
+def _generate_event_fingerprints(self, title, location, date_str):
+    """
+    Analizza l'evento per estrarre 'Impronte Digitali' uniche (Fingerprints)
+    invece di keyword generiche.
+    """
+    system_prompt = """
         You are an elite OSINT Analyst specializing in the Ukraine War (2022-2025).
         Your goal is to extract SEARCH FINGERPRINTS to find a specific historical event.
 
@@ -1465,290 +1613,292 @@ RAW TEXT:
         }
         """
 
-        user_content = f"Event: {title}\nLocation: {location}\nDate: {date_str}"
+    user_content = f"Event: {title}\nLocation: {location}\nDate: {date_str}"
 
-        try:
-            response = self.openai_client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_content}
-                ],
-                temperature=0.2,
-                response_format={"type": "json_object"}  # Forza output JSON
-            )
-            return json.loads(response.choices[0].message.content)
-        except Exception as e:
-            print(f"   ⚠️ Fingerprint Error: {e}")
-            # Fallback di emergenza
-            return {"ua": [location], "ru": [location], "en": [location]}
+    try:
+        response = self.openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_content}
+            ],
+            temperature=0.2,
+            response_format={"type": "json_object"}  # Forza output JSON
+        )
+        return json.loads(response.choices[0].message.content)
+    except Exception as e:
+        print(f"   ⚠️ Fingerprint Error: {e}")
+        # Fallback di emergenza
+        return {"ua": [location], "ru": [location], "en": [location]}
 
-    def build_sniper_query(self, fingerprints_list, date, domain):
-        """
-        Costruisce una query Google Dork precisa: site:domain + "keyword" + "data"
-        """
-        try:
-            # Converte YYYY-MM-DD in "DD Month YYYY" (es. "24 February 2022")
-            # Questo formato è molto più efficace per la ricerca di news
-            date_obj = datetime.strptime(date, "%Y-%m-%d")
-            date_str = date_obj.strftime("%d %B %Y")
-        except Exception as e:
-            # Fallback se la data non è parseabile
-            date_str = date
 
-        # Prende solo le prime 3 keyword per non confondere Google
-        terms = fingerprints_list[:3]
+def build_sniper_query(self, fingerprints_list, date, domain):
+    """
+    Costruisce una query Google Dork precisa: site:domain + "keyword" + "data"
+    """
+    try:
+        # Converte YYYY-MM-DD in "DD Month YYYY" (es. "24 February 2022")
+        # Questo formato è molto più efficace per la ricerca di news
+        date_obj = datetime.strptime(date, "%Y-%m-%d")
+        date_str = date_obj.strftime("%d %B %Y")
+    except Exception as e:
+        # Fallback se la data non è parseabile
+        date_str = date
 
-        # Le mette tra virgolette per forzare la corrispondenza esatta
-        quoted = " ".join([f'"{t}"' for t in terms])
+    # Prende solo le prime 3 keyword per non confondere Google
+    terms = fingerprints_list[:3]
 
-        return f'site:{domain} {quoted} "{date_str}"'
+    # Le mette tra virgolette per forzare la corrispondenza esatta
+    quoted = " ".join([f'"{t}"' for t in terms])
+
+    return f'site:{domain} {quoted} "{date_str}"'
 
     # ---------------------------------------------------------
     # 2. PROCESS ROW (La funzione principale corretta)
     # ---------------------------------------------------------
 
-    def process_row(self, row):
-        """ Orchestrates the Super Squad Pipeline with Quality-First Cross-Referencing."""
 
-        # 1. Estrazione Dati Iniziali
-        # Cerchiamo il titolo ovunque, dando priorità alle note ACLED (che sono più descrittive)
-        title = row.get('Title') or row.get('notes') or row.get('Event')
-        if not title:
-            return None
+def process_row(self, row):
+    """ Orchestrates the Super Squad Pipeline with Quality-First Cross-Referencing."""
 
-        # --- Helper Fallback (Copia questo blocco così com'è) ---
-        def create_fallback_entry(reason):
-            print(f"   ⚠️ Fallback Triggered: {reason}")
-            return {
-                "Title": title,
-                "Date": row.get("Date"),
-                "Type": row.get("Type", "Unknown"),
-                "Location": row.get("Location") or "Unknown",
-                "Latitude": row.get("Latitude", 0.0),
-                "Longitude": row.get("Longitude", 0.0),
-                "Source": row.get("Source") or "Search Failed",
-                "Archived": "No",
-                "Verification": "Unconfirmed",
-                "Description": "",
-                "Notes": f"AUTO-SKIPPED: {reason}",
-                "Video": "No",
-                "Intensity": 0.0,
-                "Actor": row.get("Actor", "Unknown"),
-                "Bias dominante": "Neutral",
-                "Location Precision": "UNKNOWN",
-                "Aggregated Sources": "",
-                "Reliability": 0,
-                "Bias Score": 0
-            }
+    # 1. Estrazione Dati Iniziali
+    # Cerchiamo il titolo ovunque, dando priorità alle note ACLED (che sono più descrittive)
+    title = row.get('Title') or row.get('notes') or row.get('Event')
+    if not title:
+        return None
 
-        print(f"\n🚀 Processing Event: {title[:50]}...")
+    # --- Helper Fallback (Copia questo blocco così com'è) ---
+    def create_fallback_entry(reason):
+        print(f"   ⚠️ Fallback Triggered: {reason}")
+        return {
+            "Title": title,
+            "Date": row.get("Date"),
+            "Type": row.get("Type", "Unknown"),
+            "Location": row.get("Location") or "Unknown",
+            "Latitude": row.get("Latitude", 0.0),
+            "Longitude": row.get("Longitude", 0.0),
+            "Source": row.get("Source") or "Search Failed",
+            "Archived": "No",
+            "Verification": "Unconfirmed",
+            "Description": "",
+            "Notes": f"AUTO-SKIPPED: {reason}",
+            "Video": "No",
+            "Intensity": 0.0,
+            "Actor": row.get("Actor", "Unknown"),
+            "Bias dominante": "Neutral",
+            "Location Precision": "UNKNOWN",
+            "Aggregated Sources": "",
+            "Reliability": 0,
+            "Bias Score": 0
+        }
 
-        # A. SMART QUERY (Generazione Keyword)
-        smart_query_text = self._generate_event_fingerprints(
-            title, row.get('Location', ''), row.get('Date', ''))
+    print(f"\n🚀 Processing Event: {title[:50]}...")
 
-        # =====================================================================
-        # NUOVA LOGICA IBRIDA: FINGERPRINTS + SNIPER + ARCHEOLOGO (FIXED)
-        # =====================================================================
+    # A. SMART QUERY (Generazione Keyword)
+    smart_query_text = self._generate_event_fingerprints(
+        title, row.get('Location', ''), row.get('Date', ''))
 
-        # 1. SETUP DOSSIER & FINGERPRINTS
-        acled_source = row.get('ACLED_Original_Source') or row.get('source')
-        event_ctx = self._init_event_context(row, acled_source)
+    # =====================================================================
+    # NUOVA LOGICA IBRIDA: FINGERPRINTS + SNIPER + ARCHEOLOGO (FIXED)
+    # =====================================================================
 
-        # Inizializziamo subito per sicurezza (evita "undefined variable")
-        event_ctx["source_name"] = "Unknown"
+    # 1. SETUP DOSSIER & FINGERPRINTS
+    acled_source = row.get('ACLED_Original_Source') or row.get('source')
+    event_ctx = self._init_event_context(row, acled_source)
 
-        print(f"\n🚀 Investigating: {event_ctx['title'][:50]}...")
+    # Inizializziamo subito per sicurezza (evita "undefined variable")
+    event_ctx["source_name"] = "Unknown"
 
-        # Generazione Impronte Digitali
-        fingerprints = self._generate_event_fingerprints(
-            event_ctx['title'], event_ctx['location'], event_ctx['date'])
-        print(f"   🔍 Fingerprints (UA): {fingerprints.get('ua', [])}")
+    print(f"\n🚀 Investigating: {event_ctx['title'][:50]}...")
 
-        # ---------------------------------------------------------------------
-        # 2. FASE SNIPER (Target: Fonte Originale)
-        # ---------------------------------------------------------------------
-        target_domain = None
-        if acled_source:
-            for name, domain in self.ACLED_SOURCE_MAP.items():
-                if name.lower() in str(acled_source).lower():
-                    target_domain = domain
-                    break
+    # Generazione Impronte Digitali
+    fingerprints = self._generate_event_fingerprints(
+        event_ctx['title'], event_ctx['location'], event_ctx['date'])
+    print(f"   🔍 Fingerprints (UA): {fingerprints.get('ua', [])}")
 
-        if target_domain:
-            sniper_query = self.build_sniper_query(
-                fingerprints.get('ua', []),
-                event_ctx['date'],
-                target_domain
-            )
-            print(f"   🎯 Sniper Attempt: {sniper_query}")
-
-            s_text, s_source, s_urls = self.perform_search(
-                sniper_query, event_ctx['date'])
-
-            if s_urls:
-                event_ctx["status"] = "ORIGINAL_FOUND"
-                event_ctx["verification_method"] = "SNIPER"
-                event_ctx["best_link"] = s_urls[0]
-                # Salviamo la fonte trovata!
-                event_ctx["source_name"] = s_source
-                event_ctx["confidence_score"] = 0.95
-                event_ctx["sniper_results"] = s_text
-                print("   ✅ Sniper Hit! Original source confirmed.")
-
-                # ---------------------------------------------------------------------
-        # 3. FASE ARCHEOLOGO (MODIFICATA: Corroborazione FORZATA)
-        # ---------------------------------------------------------------------
-        # ORA ESEGUIAMO SEMPRE QUESTA FASE per popolare "Aggregated Sources",
-        # anche se lo Sniper ha già trovato il link Telegram originale.
-
-        print("   🌍 Activating Archeologist Protocol (Broad Search)...")
-
-        # Assicuriamoci che la lista URL esista
-        if "all_urls" not in event_ctx:
-            event_ctx["all_urls"] = []
-
-        # Costruzione Query
-        ua_keys = " OR ".join(
-            [f'"{k}"' for k in fingerprints.get('ua', [])[:4]])
-        ru_keys = " OR ".join(
-            [f'"{k}"' for k in fingerprints.get('ru', [])[:4]])
-
-        arch_query = f"({ua_keys} OR {ru_keys}) {event_ctx['location']}"
-        arch_query += " (news OR report OR новини OR новости)"
-
-        # Eseguiamo la ricerca
-        a_text, a_source, a_urls = self.perform_search(
-            arch_query, event_ctx['date'])
-
-        # LOGICA DI UNIONE RISULTATI
-        if a_urls:
-            # Aggiungiamo i nuovi URL alla lista esistente
-            event_ctx["all_urls"].extend(a_urls)
-
-            # CASO A: Avevamo già trovato la fonte originale (Sniper Success)
-            if event_ctx["status"] == "ORIGINAL_FOUND":
-                # Upgrade dello status!
-                event_ctx["status"] = "CONFIRMED_MULTI_SOURCE"
-                event_ctx["confidence_score"] = 0.99
-                # Salviamo il testo dell'articolo come fallback se necessario
-                if not event_ctx.get("sniper_results"):
-                    event_ctx["fallback_results"] = a_text
-                print(
-                    f"   ✅ News Corroboration! Added {len(a_urls)} external sources.")
-
-            # CASO B: Non avevamo trovato nulla prima
-            elif event_ctx["status"] == "PENDING":
-                event_ctx["status"] = "CORROBORATED"
-                event_ctx["verification_method"] = "ARCHEOLOGIST"
-                event_ctx["best_link"] = a_urls[0]
-                event_ctx["source_name"] = a_source
-                event_ctx["confidence_score"] = 0.70
-                event_ctx["fallback_results"] = a_text
-                print(f"   ✅ Event Corroborated. Found {len(a_urls)} sources.")
-
-        else:
-            # Se l'archeologo non trova nulla...
-            if event_ctx["status"] == "PENDING":
-                # ...e non avevamo trovato nulla nemmeno prima: ALLORA è perso.
-                event_ctx["status"] = "NOT_FOUND"
-                event_ctx["confidence_score"] = 0.1
-                print("   ❌ Event Lost in Digital Rot.")
-
-        # ---------------------------------------------------------------------
-        # 4. PONTE DI COMPATIBILITÀ & FILTRO INTELLIGENTE FONTI
-        # ---------------------------------------------------------------------
-        if event_ctx["status"] == "NOT_FOUND":
-            return create_fallback_entry("Acled Only (Digital Rot - No web verification)")
-
-        # Assegnazione variabili principali
-        primary_link = event_ctx["best_link"]
-        primary_source = event_ctx["source_name"]
-
-        # --- LOGICA DI FILTRAGGIO AVANZATO PER "AGGREGATED SOURCES" ---
-        raw_urls = event_ctx.get("all_urls", [])
-        final_aggregated_urls = []
-        seen_domains = set()
-
-        # 1. Aggiungiamo sempre il Primary Link (se esiste)
-        if primary_link:
-            final_aggregated_urls.append(primary_link)
-            # Estraiamo il dominio per evitare duplicati dello stesso sito
-            try:
-                from urllib.parse import urlparse
-                domain = urlparse(primary_link).netloc.replace("www.", "")
-                seen_domains.add(domain)
-            except:
-                pass
-
-        # 2. Analizziamo gli altri candidati
-        for url in raw_urls:
-            # Ci fermiamo se abbiamo già 5 fonti valide
-            if len(final_aggregated_urls) >= 5:
+    # ---------------------------------------------------------------------
+    # 2. FASE SNIPER (Target: Fonte Originale)
+    # ---------------------------------------------------------------------
+    target_domain = None
+    if acled_source:
+        for name, domain in self.ACLED_SOURCE_MAP.items():
+            if name.lower() in str(acled_source).lower():
+                target_domain = domain
                 break
 
-            # Saltiamo se è lo stesso link del primario
-            if url == primary_link:
+    if target_domain:
+        sniper_query = self.build_sniper_query(
+            fingerprints.get('ua', []),
+            event_ctx['date'],
+            target_domain
+        )
+        print(f"   🎯 Sniper Attempt: {sniper_query}")
+
+        s_text, s_source, s_urls = self.perform_search(
+            sniper_query, event_ctx['date'])
+
+        if s_urls:
+            event_ctx["status"] = "ORIGINAL_FOUND"
+            event_ctx["verification_method"] = "SNIPER"
+            event_ctx["best_link"] = s_urls[0]
+            # Salviamo la fonte trovata!
+            event_ctx["source_name"] = s_source
+            event_ctx["confidence_score"] = 0.95
+            event_ctx["sniper_results"] = s_text
+            print("   ✅ Sniper Hit! Original source confirmed.")
+
+            # ---------------------------------------------------------------------
+    # 3. FASE ARCHEOLOGO (MODIFICATA: Corroborazione FORZATA)
+    # ---------------------------------------------------------------------
+    # ORA ESEGUIAMO SEMPRE QUESTA FASE per popolare "Aggregated Sources",
+    # anche se lo Sniper ha già trovato il link Telegram originale.
+
+    print("   🌍 Activating Archeologist Protocol (Broad Search)...")
+
+    # Assicuriamoci che la lista URL esista
+    if "all_urls" not in event_ctx:
+        event_ctx["all_urls"] = []
+
+    # Costruzione Query
+    ua_keys = " OR ".join(
+        [f'"{k}"' for k in fingerprints.get('ua', [])[:4]])
+    ru_keys = " OR ".join(
+        [f'"{k}"' for k in fingerprints.get('ru', [])[:4]])
+
+    arch_query = f"({ua_keys} OR {ru_keys}) {event_ctx['location']}"
+    arch_query += " (news OR report OR новини OR новости)"
+
+    # Eseguiamo la ricerca
+    a_text, a_source, a_urls = self.perform_search(
+        arch_query, event_ctx['date'])
+
+    # LOGICA DI UNIONE RISULTATI
+    if a_urls:
+        # Aggiungiamo i nuovi URL alla lista esistente
+        event_ctx["all_urls"].extend(a_urls)
+
+        # CASO A: Avevamo già trovato la fonte originale (Sniper Success)
+        if event_ctx["status"] == "ORIGINAL_FOUND":
+            # Upgrade dello status!
+            event_ctx["status"] = "CONFIRMED_MULTI_SOURCE"
+            event_ctx["confidence_score"] = 0.99
+            # Salviamo il testo dell'articolo come fallback se necessario
+            if not event_ctx.get("sniper_results"):
+                event_ctx["fallback_results"] = a_text
+            print(
+                f"   ✅ News Corroboration! Added {len(a_urls)} external sources.")
+
+        # CASO B: Non avevamo trovato nulla prima
+        elif event_ctx["status"] == "PENDING":
+            event_ctx["status"] = "CORROBORATED"
+            event_ctx["verification_method"] = "ARCHEOLOGIST"
+            event_ctx["best_link"] = a_urls[0]
+            event_ctx["source_name"] = a_source
+            event_ctx["confidence_score"] = 0.70
+            event_ctx["fallback_results"] = a_text
+            print(f"   ✅ Event Corroborated. Found {len(a_urls)} sources.")
+
+    else:
+        # Se l'archeologo non trova nulla...
+        if event_ctx["status"] == "PENDING":
+            # ...e non avevamo trovato nulla nemmeno prima: ALLORA è perso.
+            event_ctx["status"] = "NOT_FOUND"
+            event_ctx["confidence_score"] = 0.1
+            print("   ❌ Event Lost in Digital Rot.")
+
+    # ---------------------------------------------------------------------
+    # 4. PONTE DI COMPATIBILITÀ & FILTRO INTELLIGENTE FONTI
+    # ---------------------------------------------------------------------
+    if event_ctx["status"] == "NOT_FOUND":
+        return create_fallback_entry("Acled Only (Digital Rot - No web verification)")
+
+    # Assegnazione variabili principali
+    primary_link = event_ctx["best_link"]
+    primary_source = event_ctx["source_name"]
+
+    # --- LOGICA DI FILTRAGGIO AVANZATO PER "AGGREGATED SOURCES" ---
+    raw_urls = event_ctx.get("all_urls", [])
+    final_aggregated_urls = []
+    seen_domains = set()
+
+    # 1. Aggiungiamo sempre il Primary Link (se esiste)
+    if primary_link:
+        final_aggregated_urls.append(primary_link)
+        # Estraiamo il dominio per evitare duplicati dello stesso sito
+        try:
+            from urllib.parse import urlparse
+            domain = urlparse(primary_link).netloc.replace("www.", "")
+            seen_domains.add(domain)
+        except:
+            pass
+
+    # 2. Analizziamo gli altri candidati
+    for url in raw_urls:
+        # Ci fermiamo se abbiamo già 5 fonti valide
+        if len(final_aggregated_urls) >= 5:
+            break
+
+        # Saltiamo se è lo stesso link del primario
+        if url == primary_link:
+            continue
+
+        try:
+            domain = urlparse(url).netloc.replace("www.", "")
+
+            # A. FILTRO DUPLICATI DI DOMINIO
+            # Se abbiamo già una fonte da "pravda.com.ua", magari evitiamo di metterne
+            # altre 3 dello stesso sito per dare varietà.
+            # (Se preferisci averne più dello stesso sito, commenta queste due righe sotto)
+            if domain in seen_domains:
                 continue
 
-            try:
-                domain = urlparse(url).netloc.replace("www.", "")
-
-                # A. FILTRO DUPLICATI DI DOMINIO
-                # Se abbiamo già una fonte da "pravda.com.ua", magari evitiamo di metterne
-                # altre 3 dello stesso sito per dare varietà.
-                # (Se preferisci averne più dello stesso sito, commenta queste due righe sotto)
-                if domain in seen_domains:
+            # B. FILTRO SPAM / IRRILEVANTI (Blacklist al volo)
+            # Scartiamo domini che sappiamo non contenere notizie utili
+            junk_domains = ["facebook.com", "twitter.com",
+                            "instagram.com", "youtube.com", "google.com", "t.me"]
+            if any(junk in domain for junk in junk_domains):
+                # Eccezione: accettiamo link diretti a post specifici, non home page
+                if len(url) < 40:  # Link troppo corto = probabilmente homepage inutile
                     continue
 
-                # B. FILTRO SPAM / IRRILEVANTI (Blacklist al volo)
-                # Scartiamo domini che sappiamo non contenere notizie utili
-                junk_domains = ["facebook.com", "twitter.com",
-                                "instagram.com", "youtube.com", "google.com", "t.me"]
-                if any(junk in domain for junk in junk_domains):
-                    # Eccezione: accettiamo link diretti a post specifici, non home page
-                    if len(url) < 40:  # Link troppo corto = probabilmente homepage inutile
-                        continue
+            # C. PROMOZIONE FONTI AFFIDABILI
+            # Se il dominio è nella nostra mappa, è oro colato.
+            is_trusted = False
+            for trusted_name, trusted_domain in self.ACLED_SOURCE_MAP.items():
+                if trusted_domain in domain:
+                    is_trusted = True
+                    break
 
-                # C. PROMOZIONE FONTI AFFIDABILI
-                # Se il dominio è nella nostra mappa, è oro colato.
-                is_trusted = False
-                for trusted_name, trusted_domain in self.ACLED_SOURCE_MAP.items():
-                    if trusted_domain in domain:
-                        is_trusted = True
-                        break
+            # Se è fidato lo prendiamo subito, altrimenti lo prendiamo ma teniamo d'occhio il limite
+            final_aggregated_urls.append(url)
+            seen_domains.add(domain)
 
-                # Se è fidato lo prendiamo subito, altrimenti lo prendiamo ma teniamo d'occhio il limite
-                final_aggregated_urls.append(url)
-                seen_domains.add(domain)
+        except Exception:
+            continue  # Se l'URL è malformato, ignoralo
 
-            except Exception:
-                continue  # Se l'URL è malformato, ignoralo
+    # Assegnamo la lista pulita alla variabile 'urls'
+    urls = final_aggregated_urls
 
-        # Assegnamo la lista pulita alla variabile 'urls'
-        urls = final_aggregated_urls
+    # Log di verifica per te
+    if len(urls) > 1:
+        print(
+            f"   📚 Aggregated Sources: {len(urls)} links selected (Filtered from {len(raw_urls)})")
 
-        # Log di verifica per te
-        if len(urls) > 1:
-            print(
-                f"   📚 Aggregated Sources: {len(urls)} links selected (Filtered from {len(raw_urls)})")
+    # Recuperiamo il testo per il Deep Verify (snippet di ricerca)
+    search_text = event_ctx.get("sniper_results") or event_ctx.get(
+        "fallback_results") or ""
 
-        # Recuperiamo il testo per il Deep Verify (snippet di ricerca)
-        search_text = event_ctx.get("sniper_results") or event_ctx.get(
-            "fallback_results") or ""
+    # Scarichiamo contenuto SOLO del link migliore (Primary)
+    # Nota: Non facciamo scraping degli altri 4 per non rallentare l'agente del 500%
+    deep_content = ""
+    if primary_link:
+        print(f"   🕵️ Deep Verifying Best Source: {primary_link}...")
+        deep_content = self.fetch_url_text(primary_link)
+        if deep_content:
+            deep_content = f"=== VERIFIED CONTENT ({event_ctx['verification_method']}) ===\n{deep_content[:15000]}"
 
-        # Scarichiamo contenuto SOLO del link migliore (Primary)
-        # Nota: Non facciamo scraping degli altri 4 per non rallentare l'agente del 500%
-        deep_content = ""
-        if primary_link:
-            print(f"   🕵️ Deep Verifying Best Source: {primary_link}...")
-            deep_content = self.fetch_url_text(primary_link)
-            if deep_content:
-                deep_content = f"=== VERIFIED CONTENT ({event_ctx['verification_method']}) ===\n{deep_content[:15000]}"
-
-        # D. COSTRUZIONE CONTESTO
-        combined_text = f"""
+    # D. COSTRUZIONE CONTESTO
+    combined_text = f"""
         === ACLED SOURCE NOTES ===
         {title}
 
@@ -1757,118 +1907,131 @@ RAW TEXT:
         === WEB SEARCH CONTEXT (SNIPPETS) ===
         {search_text[:3000]}
         """
+    # =====================================================================
+    # ⚡ STEP 1: TITAN GATEKEEPER (Fine-Tuned)
+    # =====================================================================
+    # Chiamiamo prima lo specialista per capire se vale la pena procedere.
+    titan_result = self._step_titan_classifier(combined_text)
 
-        # 2. RUN PIPELINE
-        # Step 1: Brain (Now analyzes the hybrid context)
-        brain_out = self._step_1_the_brain(
-            combined_text, {"Title": title, "Date": row.get("Date")})
+    # HARD FILTER: Se Titan dice NULL, abortiamo subito.
+    if titan_result.get('classification') == 'NULL':
+        print(f"   🗑️ Titan Rejected: {titan_result.get('reasoning')}")
+        return create_fallback_entry("Titan Filtered (Noise/Political)")
 
-        # --- MODIFICA 3: Sostituisci i controlli su brain_out ---
-        if not brain_out:
-            return create_fallback_entry("AI Analysis Failed (Brain Error)")
+    print(
+        f"   🤖 TITAN CLASS: {titan_result.get('classification')} (Conf: {titan_result.get('confidence')})")
 
-        if not brain_out.get("is_relevant", True):
-            return create_fallback_entry("Deemed Irrelevant by AI")
+    # 2. RUN PIPELINE
+    # Step 1: Brain (Now analyzes the hybrid context)
+    brain_out = self._step_1_the_brain(
+        combined_text, {"Title": title, "Date": row.get("Date")})
 
-        # Adattiamo i dati della singola riga al formato "Cluster" richiesto dal nuovo prompt
-        # --- INIZIO BLOCCO LAYER 1 ---
-        soldier_input_packet = {
-            "reference_timestamp": row.get("Date"),
-            "raw_messages": [combined_text]
-        }
+    # --- MODIFICA 3: Sostituisci i controlli su brain_out ---
+    if not brain_out:
+        return create_fallback_entry("AI Analysis Failed (Brain Error)")
 
-        # 1. Chiamata al Soldato
-        # Nota: Usiamo 'soldier_input_packet' perché è il formato richiesto dalla funzione.
-        soldier_out = self._step_2_the_soldier(soldier_input_packet)
+    if not brain_out.get("is_relevant", True):
+        return create_fallback_entry("Deemed Irrelevant by AI")
 
-        # 2. Controllo Fallimento Soldier
-        if not soldier_out:
-            print("   ⚠️ Soldier failed. Skipping.")
-            return create_fallback_entry("AI Analysis Failed (Soldier Error)")
+    # Adattiamo i dati della singola riga al formato "Cluster" richiesto dal nuovo prompt
+    # --- INIZIO BLOCCO LAYER 1 ---
+    soldier_input_packet = {
+        "reference_timestamp": row.get("Date"),
+        "raw_messages": [combined_text]
+    }
 
-        # 3. Calcolo T.I.E. (Layer 1)
-        titan_data = soldier_out.get('titan_assessment', {})
-        visual_evidence = soldier_out.get('visual_evidence', False)
+    # 1. Chiamata al Soldato
+    # Nota: Usiamo 'soldier_input_packet' perché è il formato richiesto dalla funzione.
+    soldier_out = self._step_2_the_soldier(soldier_input_packet)
 
-        tie_result = self._calculate_tie(titan_data, visual_evidence)
+    # 2. Controllo Fallimento Soldier
+    if not soldier_out:
+        print("   ⚠️ Soldier failed. Skipping.")
+        return create_fallback_entry("AI Analysis Failed (Soldier Error)")
 
-        print(f"      🎯 TIE: {tie_result['value']} [{tie_result['status']}] "
-              f"(K:{tie_result['vectors']['k']} T:{tie_result['vectors']['t']} E:{tie_result['vectors']['e']})")
+    # 3. Calcolo T.I.E. (Layer 1)
+    titan_data = soldier_out.get('titan_assessment', {})
+    visual_evidence = soldier_out.get('visual_evidence', False)
 
-        # Step 3: Calculator (Passiamo la LISTA delle fonti se disponibile, altrimenti stringa singola)
-        sources_for_calc = row.get("sources_list_for_bias") or primary_source
+    tie_result = self._calculate_tie(titan_data, visual_evidence)
 
-        calc_out = self._step_3_the_calculator(
-            soldier_out, brain_out, sources_for_calc, combined_text)
+    print(f"      🎯 TIE: {tie_result['value']} [{tie_result['status']}] "
+          f"(K:{tie_result['vectors']['k']} T:{tie_result['vectors']['t']} E:{tie_result['vectors']['e']})")
 
-        # Step 4: Journalist
-        journo_out = self._step_4_the_journalist(
-            combined_text, brain_out, soldier_out)
+    # Step 3: Calculator (Passiamo la LISTA delle fonti se disponibile, altrimenti stringa singola)
+    sources_for_calc = row.get("sources_list_for_bias") or primary_source
 
-        # 3. FORMAT FINAL OUTPUT
-        # Unisce tutte le URL trovate
-        all_sources_list = list(set([u for u in urls if u]))
-        aggregated_sources_str = " | ".join(all_sources_list)
+    calc_out = self._step_3_the_calculator(
+        soldier_out, brain_out, sources_for_calc, combined_text)
 
-        # --- CALCOLO TIPO EVENTO ---
-        computed_event_type = self._classify_event_type(combined_text)
+    # Step 4: Journalist
+    journo_out = self._step_4_the_journalist(
+        combined_text, brain_out, soldier_out)
 
-        # --- FUNZIONE HELPER ANTI-SOVRASCRITTURA ---
-        def keep_or_update(key, new_val):
-            current = str(row.get(key, '')).strip()
-            if current and current not in ['0', '0.0', 'None', '']:
-                return row.get(key)
-            return new_val
+    # 3. FORMAT FINAL OUTPUT
+    # Unisce tutte le URL trovate
+    all_sources_list = list(set([u for u in urls if u]))
+    aggregated_sources_str = " | ".join(all_sources_list)
 
-        # --- CORREZIONE VARIABILI ---
-        # 1. Recuperiamo il tipo dall'AI (soldier_out ha target_category)
-        # Nota: soldier_out viene da Qwen, journo_out da GPT.
+    # --- CALCOLO TIPO EVENTO ---
+    computed_event_type = self._classify_event_type(combined_text)
 
-        # Usiamo soldier_out per i dati tecnici
-        ai_type = soldier_out.get("target_category", "Unknown")
+    # --- FUNZIONE HELPER ANTI-SOVRASCRITTURA ---
+    def keep_or_update(key, new_val):
+        current = str(row.get(key, '')).strip()
+        if current and current not in ['0', '0.0', 'None', '']:
+            return row.get(key)
+        return new_val
 
-        # Se Qwen fallisce, fallback alla regex
-        if ai_type == "Unknown" or ai_type not in self.EVENT_TYPES:
-            # Usa combined_text, non raw_text_full
-            ai_type = self._classify_event_type(combined_text)
+    # --- CORREZIONE VARIABILI ---
+    # 1. Recuperiamo il tipo dall'AI (soldier_out ha target_category)
+    # Nota: soldier_out viene da Qwen, journo_out da GPT.
 
-        # 2. Status Finale
-        final_verif = "Unconfirmed"
-        if event_ctx["status"] == "CONFIRMED_MULTI_SOURCE":
-            final_verif = "Confirmed"
-        elif event_ctx["status"] == "ORIGINAL_FOUND":
-            final_verif = "Verified (Source Linked)"
-        elif event_ctx["status"] == "CORROBORATED":
-            final_verif = "Corroborated"
+    # Usiamo soldier_out per i dati tecnici
+    ai_type = soldier_out.get("target_category", "Unknown")
 
-        # 3. Costruzione output usando i dizionari corretti (journo_out, soldier_out, calc_out)
-        return {
-            # Usa journo_out, fallback al titolo originale
-            "Title": journo_out.get("title", title),
-            "Type": ai_type,
-            "Date": row.get("Date"),
-            "Location": row.get("Location"),
-            "Latitude": soldier_out.get("lat") if soldier_out.get("lat") not in [0, 0.0, None] else row.get("Latitude", 0.0),
-            "Longitude": soldier_out.get("lon") if soldier_out.get("lon") not in [0, 0.0, None] else row.get("Longitude", 0.0),
-            "Source": event_ctx.get("best_link") or row.get("Source"),
-            "Archived": "No",
-            "Verification": final_verif,
-            "Description": journo_out.get("description", ""),
-            "Notes": f"Strategy: {event_ctx['verification_method']} | Bias: {calc_out['bias_score']}",
-            "Video": "Yes" if soldier_out.get("visual_evidence") else "No",
-            "Intensity": str(calc_out.get("intensity", 0.0)),
-            "Actor": brain_out.get("actor", "Unknown"),  # Preso dal Brain
-            "Bias dominante": calc_out.get("dominant_bias", "Neutral"),
-            "Location Precision": soldier_out.get("location_precision", "UNKNOWN"),
-            "Aggregated Sources": row.get("aggregated_log") or aggregated_sources_str,
-            "Reliability": str(calc_out.get("reliability", 0)),
-            "Bias Score": str(calc_out.get("bias_score", 0))
-        }
+    # Se Qwen fallisce, fallback alla regex
+    if ai_type == "Unknown" or ai_type not in self.EVENT_TYPES:
+        # Usa combined_text, non raw_text_full
+        ai_type = self._classify_event_type(combined_text)
 
+    # 2. Status Finale
+    final_verif = "Unconfirmed"
+    if event_ctx["status"] == "CONFIRMED_MULTI_SOURCE":
+        final_verif = "Confirmed"
+    elif event_ctx["status"] == "ORIGINAL_FOUND":
+        final_verif = "Verified (Source Linked)"
+    elif event_ctx["status"] == "CORROBORATED":
+        final_verif = "Corroborated"
+
+    # 3. Costruzione output usando i dizionari corretti (journo_out, soldier_out, calc_out)
+    return {
+        # Usa journo_out, fallback al titolo originale
+        "Title": journo_out.get("title", title),
+        "Type": ai_type,
+        "Date": row.get("Date"),
+        "Location": row.get("Location"),
+        "Latitude": soldier_out.get("lat") if soldier_out.get("lat") not in [0, 0.0, None] else row.get("Latitude", 0.0),
+        "Longitude": soldier_out.get("lon") if soldier_out.get("lon") not in [0, 0.0, None] else row.get("Longitude", 0.0),
+        "Source": event_ctx.get("best_link") or row.get("Source"),
+        "Archived": "No",
+        "Verification": final_verif,
+        "Description": journo_out.get("description", ""),
+        "Notes": f"Strategy: {event_ctx['verification_method']} | Bias: {calc_out['bias_score']}",
+        "Video": "Yes" if soldier_out.get("visual_evidence") else "No",
+        "Intensity": str(calc_out.get("intensity", 0.0)),
+        "Actor": brain_out.get("actor", "Unknown"),  # Preso dal Brain
+        "Bias dominante": calc_out.get("dominant_bias", "Neutral"),
+        "Location Precision": soldier_out.get("location_precision", "UNKNOWN"),
+        "Aggregated Sources": row.get("aggregated_log") or aggregated_sources_str,
+        "Reliability": str(calc_out.get("reliability", 0)),
+        "Bias Score": str(calc_out.get("bias_score", 0))
+    }
 
 # =============================================================================
 # 🚀 NEW MAIN LOOP: SQLITE ENGINE (Fase 4 Ready)
 # =============================================================================
+
 
 DB_PATH = os.path.join(BASE_DIR, '../war_tracker_v2/data/raw_events.db')
 
@@ -2020,6 +2183,15 @@ def main():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
+
+    # Inizializza Client OpenAI Standard (per GPT-4o-mini)
+    client_openai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+    # Inizializza Client OpenRouter (per DeepSeek / The Strategist)
+    client_or = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+    )
     # [MODIFICA 1] Controllo/Creazione colonna per salvare il report AI
     try:
         cursor.execute("ALTER TABLE events ADD COLUMN ai_report_json TEXT")
@@ -2264,12 +2436,27 @@ def main():
                 "tactics": soldier_result,
                 "scores": calc_result,
                 "editorial": journo_result,
-                "tie_score": tie_result['value'],       # <--- AGGIUNGI QUESTO
-                "tie_status": tie_result['status'],     # <--- AGGIUNGI QUESTO
-                "titan_metrics": titan_data             # <--- AGGIUNGI QUESTO
+                "tie_score": tie_result['value'],
+                "tie_status": tie_result['status'],
+                "titan_metrics": titan_data,
+                "titan_analysis": titan_result
             }
 
             print("   ✅ Intelligence Extracted & Verified:")
+
+            # ==============================================================================
+            # [NUOVO] STEP 5: THE STRATEGIST (Tactical Insight)
+            # ==============================================================================
+            # 1. Aggiungi 'self.' davanti alla funzione
+            # 2. Usa 'self.client' (o il nome corretto del tuo client) al posto di 'client_or'
+            tactical_insight = _step_5_the_strategist(
+                client_or, final_report)
+
+            # 3. Allinea questo print ESATTAMENTE sotto la riga sopra
+            print("   🧩 Tactical Insight Generated.")
+
+            # 4. Allinea anche questo
+            final_report['ai_summary'] = tactical_insight
 
             # ==================================================================================
             # GEO-FIXER BLOCK (VERSIONE SICURA CON RECINTO)

@@ -21,12 +21,12 @@ except ImportError as e:
 
 
 def main():
-    print("🕰️ AVVIO BACKFILL: 22 Dicembre 2025 -> Oggi")
+    print("🕰️ AVVIO BACKFILL: 3 Gennaio 2026 -> Oggi")
 
     # Timezone Aware (UTC)
-    start_dt = datetime(2025, 12, 22, 0, 0, 0, tzinfo=timezone.utc)
+    start_dt = datetime(2026, 1, 3, 0, 0, 0, tzinfo=timezone.utc)
     # Impostiamo la fine a "domani" per essere sicuri di prendere tutto oggi
-    end_dt = datetime(2026, 1, 3, 0, 0, 0, tzinfo=timezone.utc)
+    end_dt = datetime(2026, 1, 5, 0, 0, 0, tzinfo=timezone.utc)
 
     # 1. Esegui Telegram
     print("\n--- AVVIO TELEGRAM ---")

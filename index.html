@@ -575,68 +575,84 @@
         <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
           <span class="close-modal" onclick="closeModal(event)">&times;</span>
 
-          <div class="modal-header" style="display: flex; align-items: flex-start; gap: 20px; margin-bottom: 20px;">
+          <div class="dossier-grid">
+            
+            <!-- LEFT COLUMN: CONTEXT -->
+            <div class="dossier-left">
+               <div class="dossier-header-group">
+                  <h3 id="modalTitle">Titolo Evento</h3>
+                  <div class="dossier-meta-row">
+                    <span id="modalDate">YYYY-MM-DD</span>
+                    <span class="dossier-separator">|</span>
+                    <span id="modalType" class="dossier-tag">TYPE</span>
+                  </div>
+               </div>
 
-            <div style="flex-grow:1;">
-              <h3 id="modalTitle" style="margin-top:0; font-size: 1.5rem; color: #f8fafc;">Titolo Evento</h3>
-              <div class="modal-meta" style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
-                <span id="modalDate" style="color: #94a3b8; font-size: 0.9rem;">Data</span>
-                <span id="modalType" class="modal-tag"
-                  style="background: #334155; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; color: #e2e8f0;">Tipo</span>
-              </div>
+               <div id="modalDesc" class="dossier-description">
+                 Descrizione evento...
+               </div>
+
+               <div id="modalVideoContainer" class="dossier-media"></div>
+               <div id="modalJuxtapose"></div>
             </div>
 
-            <div class="confidence-container" style="text-align: center; min-width: 80px;">
-              <div style="width: 60px; height: 60px; position: relative; margin: 0 auto;">
-                <canvas id="confidenceChart"></canvas>
+            <!-- RIGHT COLUMN: INTEL -->
+            <div class="dossier-right">
+              
+              <!-- CARD 1: METRICS (Radar + Bars) -->
+              <div class="dossier-card metrics-card">
+                <div class="card-label">METRICS CARD</div>
+                
+                <div class="tie-radar-container">
+                  <canvas id="tieRadarChart"></canvas>
+                </div>
+
+                <div class="tie-bars-container" id="tieBarsContent">
+                  <!-- Bars inserted via JS -->
+                </div>
               </div>
 
-              <div id="modal-reliability-badge" style="margin-top:5px; display:flex; justify-content:center;"></div>
+              <!-- CARD 2: METADATA (Sources + Reliability) -->
+              <div class="dossier-card metadata-card">
+                <div class="card-header-row">
+                  <div class="card-label">METADATA CARD</div>
+                  <div id="modal-reliability-badge"></div>
+                </div>
 
-            </div>
-          </div>
-          <p id="modalDesc"
-            style="color:#cbd5e1; line-height:1.6; margin-bottom:20px; padding-right: 20px; min-height:60px;"></p>
-          <div id="modalVideoContainer" style="margin-bottom:20px;"></div>
-          <div id="modalJuxtapose"></div>
+                <div class="meta-section">
+                   <div class="meta-label">SOURCES</div>
+                   <div class="source-list" id="modal-source-list">
+                     <!-- Populated by JS -->
+                   </div>
+                </div>
 
-          <div id="modal-bibliography" style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #334155;">
-          </div>
+                <div class="meta-section">
+                  <div class="meta-label">BIAS SCORE</div>
+                  <div class="bias-meter-container" id="modal-bias-meter">
+                    <!-- Visual Meter -->
+                  </div>
+                </div>
 
-          <div class="modal-metadata"
-            style="margin-top: 30px; padding: 20px; background: rgba(15, 23, 42, 0.5); border-radius: 8px; border: 1px solid #334155;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
-
-              <div class="meta-item">
-                <div
-                  style="font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700;">
-                  Tipologia Target</div>
-                <div id="modal-location-precision" style="color: #f1f5f9; font-weight: 600;">Loading...</div>
-              </div>
-
-              <div class="meta-item">
-                <div
-                  style="font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700;">
-                  Bias Fonte</div>
-                <div id="modal-dominant-bias" style="color: #f1f5f9; font-weight: 600;">Loading...</div>
-              </div>
-
-              <div class="meta-item">
-                <div
-                  style="font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700;">
-                  Fonti </div>
-                <div id="modal-source-count" style="color: #f59e0b; font-weight: 700; font-size: 1.2rem;">0</div>
-              </div>
-
-              <div class="meta-item">
-                <div
-                  style="font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700;">
-                  Impatto Strategico</div>
-                <div id="modal-intensity" style="font-weight: 700; font-size: 1.2rem;">Loading...</div>
               </div>
 
             </div>
+
+            <!-- BOTTOM ROW: STRATEGIST -->
+            <div class="dossier-bottom">
+               <div class="strategist-box">
+                  <div class="strategist-header">
+                    <i class="fa-solid fa-robot"></i> THE STRATEGIST
+                    <span class="ai-tag">Generated by AI - CONFIDENTIAL</span>
+                  </div>
+                  <div class="strategist-content" id="modal-strategist-content">
+                    AI ASSESSMENT: Analysis in progress...
+                  </div>
+               </div>
+            </div>
+
           </div>
+
+
 
           <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 
