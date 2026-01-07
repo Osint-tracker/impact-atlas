@@ -3,7 +3,8 @@
    ============================================ */
 .dossier-grid {
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr; /* Left (Context) vs Right (Intel) */
+    grid-template-columns: 1.2fr 0.8fr;
+    /* Left (Context) vs Right (Intel) */
     gap: 24px;
     height: 100%;
 }
@@ -12,7 +13,8 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    padding-right: 10px; /* Space for scrollbar */
+    padding-right: 10px;
+    /* Space for scrollbar */
 }
 
 .dossier-right {
@@ -22,7 +24,8 @@
 }
 
 .dossier-bottom {
-    grid-column: 1 / -1; /* Spans full width */
+    grid-column: 1 / -1;
+    /* Spans full width */
     margin-top: 20px;
 }
 
@@ -65,14 +68,17 @@
 .dossier-description {
     font-size: 0.95rem;
     line-height: 1.6;
-    color: #e2e8f0; /* Slate 200 */
+    color: #e2e8f0;
+    /* Slate 200 */
     margin-bottom: 24px;
-    white-space: pre-line; /* Handle line breaks */
+    white-space: pre-line;
+    /* Handle line breaks */
 }
 
 /* --- CARDS (METRICS & METADATA) --- */
 .dossier-card {
-    background: rgba(30, 41, 59, 0.5); /* Slate 800 with transparency */
+    background: rgba(30, 41, 59, 0.5);
+    /* Slate 800 with transparency */
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 16px;
@@ -81,7 +87,8 @@
 }
 
 .metrics-card {
-    flex: 1; /* Takes available space */
+    flex: 1;
+    /* Takes available space */
 }
 
 .metadata-card {
@@ -147,15 +154,30 @@
 }
 
 /* Colors for Bars - Conservative Palette */
-.bar-kinetic { background: #ef4444; } /* Red */
-.bar-target  { background: #eab308; } /* Yellow/Amber */
-.bar-effect  { background: #3b82f6; } /* Blue */
+.bar-kinetic {
+    background: #ef4444;
+}
+
+/* Red */
+.bar-target {
+    background: #eab308;
+}
+
+/* Yellow/Amber */
+.bar-effect {
+    background: #3b82f6;
+}
+
+/* Blue */
 
 /* --- METADATA SECTIONS --- */
 .meta-section {
     margin-bottom: 15px;
 }
-.meta-section:last-child { margin-bottom: 0; }
+
+.meta-section:last-child {
+    margin-bottom: 0;
+}
 
 .meta-label {
     font-size: 0.65rem;
@@ -176,8 +198,14 @@
 }
 
 /* Scrollbar for source list */
-.source-list::-webkit-scrollbar { width: 3px; }
-.source-list::-webkit-scrollbar-thumb { background: var(--bg-element); border-radius: 3px; }
+.source-list::-webkit-scrollbar {
+    width: 3px;
+}
+
+.source-list::-webkit-scrollbar-thumb {
+    background: var(--bg-element);
+    border-radius: 3px;
+}
 
 .source-item {
     display: flex;
@@ -204,39 +232,143 @@
     object-fit: cover;
 }
 
-/* Bias Meter */
-.bias-meter-container {
-    height: 24px;
-    background: linear-gradient(90deg, #3b82f6 0%, #94a3b8 50%, #ef4444 100%); /* Blue -> Grey -> Red */
+/* ============================================
+   SPLIT METADATA LAYOUT (NEW)
+   ============================================ */
+.metadata-split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.metadata-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.sources-col .source-list {
+    max-height: 140px;
+}
+
+.metrics-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.metric-bar-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metric-bar-group .meta-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.metric-value {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.8rem;
+}
+
+.metric-tooltip {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+    font-style: italic;
+}
+
+/* ============================================
+   RELIABILITY BAR (NEW)
+   ============================================ */
+.reliability-bar-track {
+    height: 8px;
+    background: var(--bg-body);
     border-radius: 4px;
+    overflow: hidden;
     position: relative;
-    margin-top: 5px;
+}
+
+.reliability-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #ef4444 0%, #eab308 40%, #22c55e 80%);
+    transition: width 0.8s ease-out;
+    width: 0%;
+}
+
+/* ============================================
+   BIAS METER (ENHANCED)
+   ============================================ */
+.bias-meter-container {
+    height: 10px;
+    background: linear-gradient(90deg,
+            #3b82f6 0%,
+            /* Blue - Pro-RU */
+            #94a3b8 50%,
+            /* Grey - Neutral */
+            #ef4444 100%);
+    /* Red - Pro-UA */
+    border-radius: 5px;
+    position: relative;
 }
 
 .bias-marker {
     position: absolute;
-    top: -4px;
-    bottom: -4px;
+    top: -3px;
+    bottom: -3px;
     width: 4px;
     background: white;
-    border: 1px solid #1e293b;
+    border: 1px solid #0f172a;
     border-radius: 2px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.5);
-    transition: left 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+    transition: left 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    left: 50%;
+    /* Default center */
 }
 
 .bias-label {
-    margin-top: 6px;
     display: flex;
     justify-content: space-between;
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     color: var(--text-muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.bias-pole {
+    opacity: 0.6;
+    font-weight: 600;
+}
+
+.bias-pole.pro-ru {
+    color: #3b82f6;
+}
+
+.bias-pole.neutral {
+    color: #94a3b8;
+}
+
+.bias-pole.pro-ua {
+    color: #ef4444;
+}
+
+@media (max-width: 600px) {
+    .metadata-split-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* --- THE STRATEGIST --- */
 .strategist-box {
     background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(245, 158, 11, 0.3); /* Amber border */
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    /* Amber border */
     border-radius: 6px;
     padding: 15px;
 }
@@ -260,7 +392,8 @@
 }
 
 .strategist-content {
-    font-family: 'Inter', sans-serif; /* Clean font requested */
+    font-family: 'Inter', sans-serif;
+    /* Clean font requested */
     font-size: 0.9rem;
     line-height: 1.5;
     color: #cbd5e1;
@@ -269,15 +402,17 @@
 /* RESPONSIVE adjustment for Modal Grid */
 @media (max-width: 800px) {
     .dossier-grid {
-        grid-template-columns: 1fr; /* Stack vertically */
+        grid-template-columns: 1fr;
+        /* Stack vertically */
     }
-    
+
     .dossier-right {
         order: 2;
     }
-    
+
     .dossier-left {
         order: 1;
-        max-height: 300px; /* Limit height on mobile */
+        max-height: 300px;
+        /* Limit height on mobile */
     }
 }

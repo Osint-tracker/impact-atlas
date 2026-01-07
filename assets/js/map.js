@@ -848,16 +848,38 @@
     const biasPercent = ((biasScore + 10) / 20) * 100;
     const clampedBias = Math.max(0, Math.min(100, biasPercent));
 
-    const biasMeterEl = document.getElementById('modal-bias-meter');
-    if (biasMeterEl) {
-      biasMeterEl.innerHTML = `
-            <div class="bias-marker" style="left: ${clampedBias}%"></div>
-            <div class="bias-label">
-                <span>PRO-RU</span>
-                <span>NEUTRAL</span>
-                <span>PRO-UA</span>
-            </div>
-        `;
+    // --- 3b. RELIABILITY BAR ---
+    const reliabilityValue = parseFloat(eventData.reliability || eventData.Reliability || 0);
+    const reliabilityFill = document.getElementById('reliability-bar-fill');
+    const reliabilityText = document.getElementById('reliability-value');
+    const reliabilityTooltip = document.getElementById('reliability-tooltip');
+
+    if (reliabilityFill) {
+      reliabilityFill.style.width = `${Math.min(100, Math.max(0, reliabilityValue))}%`;
+    }
+    if (reliabilityText) {
+      reliabilityText.textContent = `${Math.round(reliabilityValue)}%`;
+    }
+    if (reliabilityTooltip) {
+      let tooltipText = "Based on cross-verification and source quality";
+      if (reliabilityValue >= 80) tooltipText = "High confidence - Multiple independent sources";
+      else if (reliabilityValue >= 60) tooltipText = "Moderate confidence - Corroborated reports";
+      else if (reliabilityValue >= 40) tooltipText = "Low confidence - Limited verification";
+      else tooltipText = "Unverified - Requires additional sources";
+      reliabilityTooltip.textContent = tooltipText;
+    }
+
+    // --- 3c. BIAS METER ---
+    const biasMarker = document.getElementById('bias-marker');
+    const biasValueEl = document.getElementById('bias-value');
+
+    if (biasMarker) {
+      // Bias ranges from -10 (Pro-RU) to +10 (Pro-UA), map to 0-100%
+      biasMarker.style.left = `${clampedBias}%`;
+    }
+    if (biasValueEl) {
+      const biasLabel = rawBias <= -3 ? "Pro-RU" : (rawBias >= 3 ? "Pro-UA" : "Neutral");
+      biasValueEl.textContent = `${rawBias.toFixed(1)} (${biasLabel})`;
     }
 
     // --- 4. THE STRATEGIST ---

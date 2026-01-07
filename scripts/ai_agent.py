@@ -558,7 +558,8 @@ class SuperSquadAgent:
         3. **Damage:** Infrastructure hit, power outages caused by strikes.
         4. **Logistics:** Bridges hit, Ammo depots destroyed.
         
-        OUTPUT JSON: {{ "is_relevant": boolean, "confidence": float (0.0-1.0), "reason": "Short explanation" }}
+        STRICT WORD LIMIT: The "reason" MUST be extremely short (5-10 words max).
+        OUTPUT JSON: {{ "is_relevant": boolean, "confidence": float (0.0-1.0), "reason": "5-10 words explanation" }}
         """
 
         try:
@@ -583,6 +584,12 @@ class SuperSquadAgent:
                 ) if "json" in content else content.split("```")[1].strip()
 
             data = json.loads(content)
+            
+            # Fail-safe: troncamento forzato se l'AI è prolissa (max 10 parole)
+            if data.get('reason'):
+                words = data['reason'].split()
+                if len(words) > 10:
+                    data['reason'] = " ".join(words[:10]) + "..."
 
             # Debug Log
             if data.get('is_relevant'):
@@ -1564,18 +1571,18 @@ def _step_5_the_strategist(client_or, final_report):
     editorial = final_report.get('editorial', {})
     metrics = final_report.get('titan_metrics', {})
     strategy = final_report.get('strategy', {})
-
-    # Recuperiamo l'analisi di Titan (che avrai salvato in final_report)
-    titan_data = final_report.get('titan_analysis', {})
-
-    # Tactical Dossier ARRICCHITO DA TITAN
+    
+    # [FIX] Recuperiamo i dati tattici dal Soldier (poiché titan_analysis è stato rimosso)
+    tactics = final_report.get('tactics', {})
+    
+    # Tactical Dossier ARRICCHITO
     dossier = f"""
     EVENT: {editorial.get('title_en')}
     CONTEXT: {editorial.get('description_en')}
     
-    === TACTICAL CLASSIFICATION (AI CONFIRMED) ===
-    CATEGORY: {titan_data.get('classification')} (e.g. SHAPING = Preparation, MANOUVRE = Frontline Change)
-    TACTICAL REASONING: {titan_data.get('reasoning')}
+    === TACTICAL CLASSIFICATION ===
+    CATEGORY: {tactics.get('target_category', 'UNKNOWN')}
+    REASONING: {tactics.get('target_status', 'N/A')}
     
     T.I.E. METRICS (0-10):
     - KINETIC (Violence/Intensity): {metrics.get('kinetic_score')}
@@ -1602,7 +1609,7 @@ def _step_5_the_strategist(client_or, final_report):
 
     try:
         response = client_or.chat.completions.create(
-            model="deepseek/deepseek-v3.2",
+            model="deepseek/deepseek-chat",  # [FIX] Nome modello corretto (v3 standard)
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": dossier}
@@ -2502,7 +2509,7 @@ def main():
                     ELSE 1
                 END ASC,
                 last_seen_date DESC
-            LIMIT 500
+            LIMIT 2000
         """)
 
         clusters_to_process = cursor.fetchall()
@@ -2691,6 +2698,24 @@ def main():
                 print(
                     f"   🔧 Correction Applied: {brain_review.get('correction_notes')}")
 
+            # Recupere liste fonti dal DB
+            db_urls = row['urls_list']
+            db_sources = row['sources_list']
+            
+            # Parsing sicuro delle liste (potrebbero essere stringhe "foo | bar")
+            def safe_parse_list(val):
+                if not val: return []
+                if isinstance(val, list): return val
+                if ' ||| ' in str(val): return [x.strip() for x in str(val).split(' ||| ') if x.strip()]
+                if ' | ' in str(val): return [x.strip() for x in str(val).split(' | ') if x.strip()]
+                return [str(val)]
+
+            actual_sources_list = safe_parse_list(db_sources)
+            actual_urls_list = safe_parse_list(db_urls)
+            
+            # Uniamo tutto per il Calculator (che vuole nomi di dominio o fonti)
+            sources_for_calc = actual_sources_list + actual_urls_list
+
             # --- STEP 3: CALCULATOR ---
             # Usiamo i dati validati. Se il soldato aveva fallito, usiamo soldier_result (che è dummy)
             # ma il Calculator lavora sul testo, quindi funzionerà comunque per il bias/intensity.
@@ -2698,7 +2723,7 @@ def main():
                 soldier_data=soldier_result if soldier_result.get(
                     "status") != "FAILED_EXTRACTION" else {},
                 brain_data=brain_review['verified_data'],
-                source_name="Cluster Aggregated",
+                source_name=sources_for_calc if sources_for_calc else ["Cluster Aggregated"],
                 text=combined_text
             )
 
@@ -2723,7 +2748,7 @@ def main():
                 "tie_score": tie_result['value'],
                 "tie_status": tie_result['status'],
                 "titan_metrics": titan_data,
-                "titan_analysis": titan_result
+                "Aggregated Sources": actual_urls_list  # [FIX] Esportazione esplicita per generate_output.py
             }
 
             print("   ✅ Intelligence Extracted & Verified:")
@@ -2801,14 +2826,26 @@ def main():
             try:
                 # Serializziamo il dizionario in una stringa JSON
                 report_text = json.dumps(final_report, ensure_ascii=False)
+                
+                # Serializziamo anche le metriche Titan separatamente
+                titan_metrics_json = json.dumps(titan_data, ensure_ascii=False) if titan_data else None
 
-                # Scriviamo nel DB
+                # Scriviamo nel DB - Salviamo sia nel JSON blob CHE nei campi legacy per compatibilità
                 cursor.execute("""
                     UPDATE unique_events
                     SET ai_report_json = ?,
-                    ai_analysis_status = 'COMPLETED'
+                        ai_analysis_status = 'COMPLETED',
+                        tie_score = ?,
+                        tie_status = ?,
+                        titan_metrics = ?
                     WHERE event_id = ?
-                    """, (json.dumps(final_report), cluster_id))
+                    """, (
+                        json.dumps(final_report, ensure_ascii=False),
+                        tie_result['value'],
+                        tie_result['status'],
+                        titan_metrics_json,
+                        cluster_id
+                    ))
 
                 conn.commit()
                 print("   💾 Salvataggio nel DB completato (Golden Record Saved).")

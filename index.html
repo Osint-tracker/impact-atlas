@@ -576,33 +576,33 @@
           <span class="close-modal" onclick="closeModal(event)">&times;</span>
 
           <div class="dossier-grid">
-            
+
             <!-- LEFT COLUMN: CONTEXT -->
             <div class="dossier-left">
-               <div class="dossier-header-group">
-                  <h3 id="modalTitle">Titolo Evento</h3>
-                  <div class="dossier-meta-row">
-                    <span id="modalDate">YYYY-MM-DD</span>
-                    <span class="dossier-separator">|</span>
-                    <span id="modalType" class="dossier-tag">TYPE</span>
-                  </div>
-               </div>
+              <div class="dossier-header-group">
+                <h3 id="modalTitle">Titolo Evento</h3>
+                <div class="dossier-meta-row">
+                  <span id="modalDate">YYYY-MM-DD</span>
+                  <span class="dossier-separator">|</span>
+                  <span id="modalType" class="dossier-tag">TYPE</span>
+                </div>
+              </div>
 
-               <div id="modalDesc" class="dossier-description">
-                 Descrizione evento...
-               </div>
+              <div id="modalDesc" class="dossier-description">
+                Descrizione evento...
+              </div>
 
-               <div id="modalVideoContainer" class="dossier-media"></div>
-               <div id="modalJuxtapose"></div>
+              <div id="modalVideoContainer" class="dossier-media"></div>
+              <div id="modalJuxtapose"></div>
             </div>
 
             <!-- RIGHT COLUMN: INTEL -->
             <div class="dossier-right">
-              
+
               <!-- CARD 1: METRICS (Radar + Bars) -->
               <div class="dossier-card metrics-card">
                 <div class="card-label">METRICS CARD</div>
-                
+
                 <div class="tie-radar-container">
                   <canvas id="tieRadarChart"></canvas>
                 </div>
@@ -612,24 +612,50 @@
                 </div>
               </div>
 
-              <!-- CARD 2: METADATA (Sources + Reliability) -->
+              <!-- CARD 2: METADATA (Split Layout: Sources | Metrics) -->
               <div class="dossier-card metadata-card">
-                <div class="card-header-row">
-                  <div class="card-label">METADATA CARD</div>
-                  <div id="modal-reliability-badge"></div>
-                </div>
+                <div class="card-label">INTELLIGENCE METADATA</div>
 
-                <div class="meta-section">
-                   <div class="meta-label">SOURCES</div>
-                   <div class="source-list" id="modal-source-list">
-                     <!-- Populated by JS -->
-                   </div>
-                </div>
+                <div class="metadata-split-grid">
+                  <!-- LEFT: Sources List -->
+                  <div class="metadata-col sources-col">
+                    <div class="meta-label">SOURCES</div>
+                    <div class="source-list" id="modal-source-list">
+                      <!-- Populated by JS -->
+                    </div>
+                  </div>
 
-                <div class="meta-section">
-                  <div class="meta-label">BIAS SCORE</div>
-                  <div class="bias-meter-container" id="modal-bias-meter">
-                    <!-- Visual Meter -->
+                  <!-- RIGHT: Reliability & Bias Bars -->
+                  <div class="metadata-col metrics-col">
+
+                    <!-- Reliability Bar -->
+                    <div class="metric-bar-group">
+                      <div class="meta-label">
+                        RELIABILITY
+                        <span class="metric-value" id="reliability-value">0%</span>
+                      </div>
+                      <div class="reliability-bar-track" title="Source verification quality">
+                        <div class="reliability-bar-fill" id="reliability-bar-fill"></div>
+                      </div>
+                      <div class="metric-tooltip" id="reliability-tooltip">Based on cross-verification</div>
+                    </div>
+
+                    <!-- Bias Bar -->
+                    <div class="metric-bar-group">
+                      <div class="meta-label">
+                        BIAS SCORE
+                        <span class="metric-value" id="bias-value">0</span>
+                      </div>
+                      <div class="bias-meter-container" id="modal-bias-meter" title="Source narrative leaning">
+                        <div class="bias-marker" id="bias-marker"></div>
+                      </div>
+                      <div class="bias-label">
+                        <span class="bias-pole pro-ru">PRO-RU</span>
+                        <span class="bias-pole neutral">NEUTRAL</span>
+                        <span class="bias-pole pro-ua">PRO-UA</span>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
 
@@ -639,15 +665,15 @@
 
             <!-- BOTTOM ROW: STRATEGIST -->
             <div class="dossier-bottom">
-               <div class="strategist-box">
-                  <div class="strategist-header">
-                    <i class="fa-solid fa-robot"></i> THE STRATEGIST
-                    <span class="ai-tag">Generated by AI - CONFIDENTIAL</span>
-                  </div>
-                  <div class="strategist-content" id="modal-strategist-content">
-                    AI ASSESSMENT: Analysis in progress...
-                  </div>
-               </div>
+              <div class="strategist-box">
+                <div class="strategist-header">
+                  <i class="fa-solid fa-robot"></i> THE STRATEGIST
+                  <span class="ai-tag">Generated by AI - CONFIDENTIAL</span>
+                </div>
+                <div class="strategist-content" id="modal-strategist-content">
+                  AI ASSESSMENT: Analysis in progress...
+                </div>
+              </div>
             </div>
 
           </div>
