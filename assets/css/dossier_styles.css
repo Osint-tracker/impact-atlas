@@ -457,21 +457,32 @@
     left: 50%;
     transform: translateX(-50%) translateY(10px);
     width: 280px;
-    /* Slightly wider */
+
+    /* FIX 2: FORCE SOLID BACKGROUND & REMOVE TRANSPARENCY */
+    background-color: #0f172a !important;
     background: #0f172a !important;
-    /* FORCE SOLID SLATE 900 */
+    opacity: 1 !important;
+    /* Ensure generic opacity is 1 */
+    backdrop-filter: none !important;
+    /* Disable glassmorphism if inherited */
+
+    /* FIX 1: STOP UPPERCASE INHERITANCE */
+    text-transform: none !important;
+    isolation: isolate;
+    /* Ensure stacking context */
+
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 1), 0 0 0 1px rgba(255, 255, 255, 0.1);
-    /* Stronger shadow */
-    opacity: 0;
+
     visibility: hidden;
     transition: all 0.1s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: none;
-    z-index: 99999 !important;
-    /* Max Z-Index */
+    z-index: 2147483647 !important;
+    /* Nuclear option for Z-Index */
     text-align: left;
+    white-space: normal !important;
 }
 
 /* Show on Hover */
@@ -482,12 +493,11 @@
     transform: translateX(-50%) translateY(0);
 }
 
-/* Arrow Tip (Pseudo-element) */
+/* Arrow Tip */
 .tooltip-card::after {
     content: '';
     position: absolute;
     top: 100%;
-    /* Bottom of card */
     left: 50%;
     transform: translateX(-50%);
     border-width: 6px;
@@ -501,10 +511,11 @@
     font-family: 'Inter', sans-serif;
     font-size: 0.75rem;
     font-weight: 700;
+
+    /* FIX 1: FORCE TITLE CASE VISUALS */
     text-transform: none !important;
-    /* NO UPPERCASE */
+
     color: var(--primary);
-    /* Amber header */
     margin-bottom: 6px;
     letter-spacing: normal;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -517,9 +528,10 @@
     font-size: 0.8rem;
     line-height: 1.4;
     color: #e2e8f0;
-    /* Slate 200 */
     font-weight: 400;
-    white-space: normal;
+    white-space: normal !important;
+    text-transform: none !important;
+    /* FIX 1 */
 }
 
 .tooltip-footer {
@@ -529,9 +541,10 @@
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     font-size: 0.7rem;
     color: #94a3b8;
-    /* Explicit gray */
     font-style: italic;
-    white-space: normal;
+    white-space: normal !important;
+    text-transform: none !important;
+    /* FIX 1 */
 }
 
 /* 4. Positioning Overrides (Collision Fixes) */
@@ -548,7 +561,6 @@
     top: auto;
     bottom: 100%;
     border-color: transparent transparent #0f172a transparent;
-    /* Flip arrow */
 }
 
 /* Force LEFT-ALIGN (For Strategist) */
