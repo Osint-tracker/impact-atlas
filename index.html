@@ -606,8 +606,19 @@
               <div class="dossier-card metrics-card">
                 <div class="card-label">
                   T.I.E. SCORE
-                  <span class="info-icon"
-                    data-tooltip="T.I.E. SCORE (Target Impact Estimate)&#10;&#10;Composite metric (0-100) measuring event significance:&#10;&#10;• KINETIC (K): Violence/Intensity level&#10;• TARGET (T): Strategic value of target&#10;• EFFECT (E): Confirmed damage/success&#10;&#10;Formula: (T^1.6) × (E/10) × Kinetic Multiplier&#10;&#10;Higher = More strategically significant event.">ⓘ</span>
+                  <div class="info-icon-wrapper pos-bottom">
+                    <div class="info-icon">i</div>
+                    <div class="tooltip-card">
+                      <div class="tooltip-header">T.I.E. SCORE</div>
+                      <div class="tooltip-body">
+                        Composite metric (0-100) measuring event significance:<br><br>
+                        • <strong>KINETIC (K)</strong>: Violence/Intensity<br>
+                        • <strong>TARGET (T)</strong>: Strategic value<br>
+                        • <strong>EFFECT (E)</strong>: Confirmed success
+                      </div>
+                      <div class="tooltip-footer">Formula: (T^1.6) × (E/10) × K-Mult</div>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="tie-radar-container">
@@ -639,28 +650,30 @@
                     <div class="metric-bar-group">
                       <div class="meta-label">
                         RELIABILITY
-                        <span class="info-icon"
-                          data-tooltip="RELIABILITY SCORE (0-100%)&#10;&#10;Measures source credibility based on:&#10;• Base source reputation (40%)&#10;• Visual evidence bonus (+20%)&#10;• Semantic penalty for speculation (-25%)&#10;• Multi-source corroboration (+10-20%)&#10;&#10;Higher = More trustworthy report.">ⓘ</span>
-                        <span class="metric-value" id="reliability-value">0%</span>
+                        <!-- Tooltip moved to dynamic JS content for context awareness -->
+                        <span class="metric-value" id="reliability-value"></span>
                       </div>
-                      <div class="reliability-bar-track">
-                        <div class="reliability-bar-fill" id="reliability-bar-fill"></div>
-                        <div class="reliability-marker" id="reliability-marker"></div>
-                      </div>
-                      <div class="reliability-label">
-                        <span class="rel-pole dubbia">DUBBIA</span>
-                        <span class="rel-pole incerta">INCERTA</span>
-                        <span class="rel-pole attendibile">ATTEND.</span>
-                        <span class="rel-pole confermata">CONFERM.</span>
-                      </div>
+                      <!-- Container for dynamic content -->
+                      <div id="modal-reliability-badge"></div>
                     </div>
 
                     <!-- Bias Bar -->
                     <div class="metric-bar-group">
                       <div class="meta-label">
                         BIAS SCORE
-                        <span class="info-icon"
-                          data-tooltip="BIAS SCORE (-10 to +10)&#10;&#10;Indicates narrative leaning:&#10;• -10 to -3: Pro-Russian sources&#10;• -3 to +3: Neutral/Balanced&#10;• +3 to +10: Pro-Ukrainian sources&#10;&#10;Calculated via HBC Formula combining&#10;source reputation + AI analysis + semantic keywords.">ⓘ</span>
+                        <div class="info-icon-wrapper">
+                          <div class="info-icon">i</div>
+                          <div class="tooltip-card">
+                            <div class="tooltip-header">Bias Score (-10 to +10)</div>
+                            <div class="tooltip-body">
+                              Indicates narrative leaning:<br>
+                              • <span style="color:#ef4444">-10 to -3:</span> Pro-Russian<br>
+                              • <span style="color:#94a3b8">-3 to +3:</span> Neutral<br>
+                              • <span style="color:#3b82f6">+3 to +10:</span> Pro-Ukrainian
+                            </div>
+                            <div class="tooltip-footer">Calculated via HBC Formula.</div>
+                          </div>
+                        </div>
                         <span class="metric-value" id="bias-value">0</span>
                       </div>
                       <div class="bias-meter-container" id="modal-bias-meter">
@@ -686,8 +699,17 @@
                 <div class="strategist-header">
                   <span>
                     <i class="fa-solid fa-robot"></i> THE STRATEGIST
-                    <span class="info-icon info-light"
-                      data-tooltip="THE STRATEGIST (AI Analysis)&#10;&#10;DeepSeek-V3 generates strategic assessments&#10;analyzing the 'So What?' of each event.&#10;&#10;It evaluates:&#10;• Operational implications&#10;• Strategic significance&#10;• Broader war context&#10;&#10;Output is bilingual (EN/IT) and focuses&#10;on consequences, not event summary.">ⓘ</span>
+                    <div class="info-icon-wrapper pos-left">
+                      <div class="info-icon">i</div>
+                      <div class="tooltip-card">
+                        <div class="tooltip-header">AI Strategist (DeepSeek-V3)</div>
+                        <div class="tooltip-body">
+                          Generates strategic assessments analyzing the "So What?" of each event.<br><br>
+                          Evaluates operational implications and broader war context.
+                        </div>
+                        <div class="tooltip-footer">Values are bilingual (EN/IT).</div>
+                      </div>
+                    </div>
                   </span>
                   <span class="ai-tag">Generated by AI - CONFIDENTIAL</span>
                 </div>

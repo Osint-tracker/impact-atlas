@@ -904,7 +904,20 @@
       // Use language parser
       let rawReasoning = eventData.ai_reasoning || "AI Analysis confirms high probability of kinetic event based on cross-referenced multi-source reporting. Strategic impact affects local logistics.";
       const reasoning = getLocalizedText(rawReasoning);
-      stratBox.innerHTML = reasoning;
+      stratBox.innerHTML = `
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+            <h5 style="color:#94a3b8; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; margin:0;">AI STRATEGIST ANALYSIS</h5>
+            <div class="info-icon-wrapper pos-left">
+                <div class="info-icon">i</div>
+                <div class="tooltip-card">
+                    <div class="tooltip-header">AI Strategist</div>
+                    <div class="tooltip-body">This section provides an AI-generated analysis of the event's strategic implications, based on available intelligence.</div>
+                    <div class="tooltip-footer">Powered by advanced language models.</div>
+                </div>
+            </div>
+        </div>
+        <p style="font-size:0.9rem; line-height:1.5; color:#cbd5e1;">${reasoning}</p>
+      `;
     }
 
     // ============================================================
@@ -954,7 +967,7 @@
       renderConfidenceChart(score, relData.color);
     }
 
-    // --- RELIABILITY GRADIENT BAR (NEW VISUAL) ---
+    // --- RELIABILITY GRADIENT BAR (NEW VISUAL - CLEAN) ---
     const relContainer = document.getElementById('modal-reliability-badge');
     if (relContainer) {
       // Calculate marker position (0-100%)
@@ -967,22 +980,26 @@
                     <strong style="color:${relData.color}">${score}%</strong>
                 </div>
                 
-                <div class="reliability-bar-track">
+                <!-- GRADIENT BAR -->
+                <div class="reliability-bar-track" style="margin-bottom:8px;">
                     <div class="reliability-bar-fill" style="width: 100%;"></div> 
                     <div class="reliability-marker" style="left: ${markerPos}%"></div>
                 </div>
 
-                <div class="reliability-label">
-                     <span>Unverified</span>
-                     <span>Confirmed</span>
-                </div>
-
-                <div style="margin-top:8px; display:flex; align-items:center;">
-                     <span style="font-size:0.7rem; color:${relData.color}; font-weight:700; letter-spacing:1px;">${relData.label}</span>
+                <!-- INFO ROW (LABEL + TOOLTIP) -->
+                <div style="display:flex; align-items:center;">
+                     <!-- REMOVED: Static Labels below bar -->
                      
-                     <!-- CSS ONLY TOOLTIP -->
-                     <div class="info-icon" data-tooltip="${relData.desc}\n\n${relData.footer}">
-                        <i class="fa-solid fa-circle-info"></i>
+                     <span style="font-size:0.7rem; color:${relData.color}; font-weight:700; letter-spacing:1px; margin-right:5px;">${relData.label}</span>
+                     
+                     <!-- TOOLTIP WRAPPER (Mini-Card) -->
+                     <div class="info-icon-wrapper">
+                        <div class="info-icon">i</div>
+                        <div class="tooltip-card">
+                            <div class="tooltip-header" style="color:${relData.color}">${relData.label} (${score}%)</div>
+                            <div class="tooltip-body">${relData.desc}</div>
+                            <div class="tooltip-footer">${relData.footer}</div>
+                        </div>
                      </div>
                 </div>
             </div>`;

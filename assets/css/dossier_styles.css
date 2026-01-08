@@ -411,99 +411,171 @@
 /* Blue */
 
 /* ============================================
-   INFO ICON TOOLTIPS (NEW)
+   INFO ICON & MINI-CARD TOOLTIPS (OVERHAUL)
    ============================================ */
+
+/* Wrapper keeps icon and tooltip together */
+.info-icon-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    margin-left: 6px;
+    z-index: 10;
+}
+
+/* 1. The Trigger Icon (Clean Vector Style) */
 .info-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 16px;
-    height: 16px;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    background: rgba(255, 255, 255, 0.05);
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--text-muted);
     border-radius: 50%;
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
     cursor: help;
-    margin-left: 6px;
-    position: relative;
     transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .info-icon:hover {
     color: var(--primary);
-    background: rgba(245, 158, 11, 0.15);
+    border-color: var(--primary);
+    background: rgba(245, 158, 11, 0.1);
+    box-shadow: 0 0 5px rgba(245, 158, 11, 0.3);
 }
 
-.info-icon.info-light {
-    color: var(--primary);
-    background: transparent;
-}
-
-/* Tooltip on hover (RESTORED & ROBUST) */
-.info-icon[data-tooltip]::after {
-    content: attr(data-tooltip);
+/* 2. The Tooltip "Mini-Card" (Hidden by default) */
+.tooltip-card {
     position: absolute;
-    bottom: 125%;
+    bottom: 140%;
+    /* Default: Above */
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(10px);
+    width: 260px;
     background: #0f172a;
-    color: #f1f5f9;
+    /* Slate 900 - SOLID, NO TRANSPARENCY */
+    border: 1px solid var(--border);
+    border-radius: 8px;
     padding: 12px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 400;
-    line-height: 1.5;
-    white-space: pre-line;
-    width: 240px;
-    text-align: left;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8), 0 0 0 1px #334155;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05);
     opacity: 0;
     visibility: hidden;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 9999;
-    /* Ensure on top of everything */
+    transition: all 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Snappy transition */
     pointer-events: none;
+    z-index: 1000;
+    text-align: left;
 }
 
-.info-icon[data-tooltip]::before {
-    content: '';
-    position: absolute;
-    bottom: 115%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-top-color: #0f172a;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.2s;
-    z-index: 9999;
-}
-
-.info-icon[data-tooltip]:hover::after,
-.info-icon[data-tooltip]:hover::before {
+/* Show on Hover */
+.info-icon-wrapper:hover .tooltip-card,
+.info-icon-wrapper:focus-within .tooltip-card {
     opacity: 1;
     visibility: visible;
-    bottom: 135%;
-    /* Slight animation up */
+    transform: translateX(-50%) translateY(0);
 }
 
-@media (max-width: 600px) {
-    .info-icon[data-tooltip]::after {
-        width: 180px;
-        left: -80px;
-        /* Shift to stay on screen */
-        transform: none;
-    }
+/* Arrow Tip (Pseudo-element) */
+.tooltip-card::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    /* Bottom of card */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: #0f172a transparent transparent transparent;
 }
 
-@media (max-width: 600px) {
-    .metadata-split-grid {
-        grid-template-columns: 1fr;
-    }
+/* 3. Content Styling */
+.tooltip-header {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--primary);
+    /* Amber header */
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 6px;
+}
 
-    .info-icon::after {
-        width: 180px;
-        font-size: 0.65rem;
+.tooltip-body {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: #e2e8f0;
+    /* Slate 200 - High legibility */
+    font-weight: 400;
+}
+
+.tooltip-footer {
+    display: block;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* 4. Positioning Overrides (Collision Fixes) */
+
+/* Force BOTTOM position (For T.I.E. Score) */
+.pos-bottom .tooltip-card {
+    bottom: auto;
+    top: 140%;
+    transform: translateX(-50%) translateY(-10px);
+}
+
+.pos-bottom .tooltip-card::after {
+    top: auto;
+    bottom: 100%;
+    border-color: transparent transparent #0f172a transparent;
+    /* Flip arrow */
+}
+
+.info-icon-wrapper.pos-bottom:hover .tooltip-card {
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Force LEFT position (For Strategist) */
+.pos-left .tooltip-card {
+    left: auto;
+    right: 120%;
+    /* Move to left side */
+    bottom: 50%;
+    transform: translateY(50%) translateX(10px);
+}
+
+.pos-left .tooltip-card::after {
+    top: 50%;
+    left: 100%;
+    /* Right side of card */
+    transform: translateY(-50%);
+    border-color: transparent transparent transparent #0f172a;
+    /* Right pointing arrow */
+}
+
+.info-icon-wrapper.pos-left:hover .tooltip-card {
+    transform: translateY(50%) translateX(0);
+}
+
+
+/* Media Query Adjustments */
+@media (max-width: 600px) {
+    .tooltip-card {
+        width: 200px;
+        font-size: 0.75rem;
     }
 }
 
