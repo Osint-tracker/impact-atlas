@@ -12,6 +12,10 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
+import sys
+
+# Windows Unicode Fix
+sys.stdout.reconfigure(encoding='utf-8')
 
 geolocator = Nominatim(user_agent="ai_agent_fixer_v2")
 
@@ -2702,13 +2706,27 @@ def main():
             db_urls = row['urls_list']
             db_sources = row['sources_list']
             
-            # Parsing sicuro delle liste (potrebbero essere stringhe "foo | bar")
+            # Parsing sicuro delle liste (potrebbero essere stringhe "foo | bar" o JSON)
             def safe_parse_list(val):
                 if not val: return []
                 if isinstance(val, list): return val
-                if ' ||| ' in str(val): return [x.strip() for x in str(val).split(' ||| ') if x.strip()]
-                if ' | ' in str(val): return [x.strip() for x in str(val).split(' | ') if x.strip()]
-                return [str(val)]
+                
+                # Prova JSON
+                val_str = str(val).strip()
+                if val_str.startswith('[') and val_str.endswith(']'):
+                    try:
+                        parsed = json.loads(val_str)
+                        if isinstance(parsed, list):
+                            return parsed
+                    except:
+                        pass
+                
+                # Prova separator
+                if ' ||| ' in val_str: return [x.strip() for x in val_str.split(' ||| ') if x.strip()]
+                if ' | ' in val_str: return [x.strip() for x in val_str.split(' | ') if x.strip()]
+                
+                # Fallback singolo item
+                return [val_str]
 
             actual_sources_list = safe_parse_list(db_sources)
             actual_urls_list = safe_parse_list(db_urls)

@@ -7,7 +7,11 @@ import sqlite3
 import json
 import os
 import csv
+import sys
 from urllib.parse import urlparse
+
+# Windows Unicode Fix
+sys.stdout.reconfigure(encoding='utf-8')
 
 # =============================================================================
 # CONFIGURATION
