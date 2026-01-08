@@ -880,17 +880,17 @@
     // --- HOST FUNCTION: Language Parser ---
     function getLocalizedText(text) {
       if (!text) return "";
-      // Default to Italian if present
-      if (text.includes('[IT]')) {
-        const parts = text.split('[IT]');
+      // 1. PRIORITIZE ENGLISH ([EN])
+      if (text.includes('[EN]')) {
+        const parts = text.split('[EN]');
         if (parts.length > 1) {
-          // Return text after [IT] until end or next tag
+          // Return text after [EN] until end or next tag
           return parts[1].split('[')[0].trim();
         }
       }
-      // Fallback to English or raw text
-      if (text.includes('[EN]')) {
-        const parts = text.split('[EN]');
+      // 2. Fallback to Italian ([IT]) or raw text
+      if (text.includes('[IT]')) {
+        const parts = text.split('[IT]');
         if (parts.length > 1) {
           return parts[1].split('[')[0].trim();
         }
@@ -912,41 +912,41 @@
     // ============================================================
     const score = parseInt(eventData.reliability || eventData.Reliability || eventData.confidence || 0);
 
-    // Definisci Colori e Testi (Base Data)
+    // Define Colors and Text (ENGLISH DEFAULT)
     let relData = {
-      label: "NON VERIFICATO",
+      label: "UNVERIFIED",
       color: "#64748b",
-      desc: "Dati insufficienti per valutare l'attendibilità.",
-      footer: "Dati insufficienti per il calcolo algoritmico."
+      desc: "Insufficient data to evaluate reliability.",
+      footer: "Score withheld due to lack of sources."
     };
 
     if (score >= 80) {
       relData = {
-        label: "CONFERMATA",
+        label: "CONFIRMED",
         color: "#22c55e",
-        desc: "Confermato visivamente. L'evento è supportato da documentazione multimediale verificata o geolocalizzazione precisa.",
-        footer: "Score massimo garantito dalla presenza di prove visive (IMINT)."
+        desc: "Visually confirmed. Event supported by verified footage (IMINT) or precise geolocation.",
+        footer: "Max score guaranteed by visual proof."
       };
     } else if (score >= 60) {
       relData = {
-        label: "ATTENDIBILE",
+        label: "RELIABLE",
         color: "#84cc16",
-        desc: "Molto probabile. Evento confermato da molteplici vettori indipendenti o da fonti istituzionali.",
-        footer: "Score elevato grazie alla convergenza narrativa."
+        desc: "Highly probable. Confirmed by multiple independent vectors or reputable institutional sources.",
+        footer: "High score due to narrative convergence."
       };
     } else if (score >= 40) {
       relData = {
-        label: "INCERTA",
+        label: "UNCERTAIN",
         color: "#f59e0b",
-        desc: "In attesa di riscontro. Riportato da fonti mainstream o locali credibili, ma non verificato.",
-        footer: "Score assegnato sulla base della reputazione storica."
+        desc: "Pending verification. Reported by mainstream or credible local sources, but not field-verified.",
+        footer: "Score based on historical source reputation."
       };
     } else if (score < 40) {
       relData = {
-        label: "DUBBIA",
+        label: "DUBIOUS",
         color: "#ef4444",
-        desc: "Bassa Confidenza. Rischio elevato di disinformazione o errore.",
-        footer: "Score limitato dall'assenza di riscontri indipendenti."
+        desc: "Low Confidence. High risk of circular reporting or disinformation.",
+        footer: "Limited score due to lack of independent corroboration."
       };
     }
 

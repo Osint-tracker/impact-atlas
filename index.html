@@ -26,14 +26,17 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/style.css?v=2">
+  <link rel="stylesheet" href="assets/css/dossier_styles.css?v=2">
 
   <style>
     /* --- CSS PER TOOLTIP E LINGUETTE --- */
+    /* (Manteniamo gli stili esistenti che non confliggono) */
     .intensity-badge-wrapper {
       display: inline-flex;
       align-items: center;
       gap: 8px;
+
       position: relative;
       cursor: help;
     }
@@ -818,11 +821,7 @@
             }
           </script>
 
-          <script src="map.js"></script>
-</body>
-
-</html>
-
+          <script src="assets/js/map.js?v=2"></script>
 </body>
 
 </html>
