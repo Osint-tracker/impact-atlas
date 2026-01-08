@@ -877,24 +877,42 @@
 
     // --- 4. THE STRATEGIST ---
     // If there is an AI summary field (e.g. 'desc' repurposed or specific field), use it.
-    // For now, we reuse description or a mock if missing.
+    // --- HOST FUNCTION: Language Parser ---
+    function getLocalizedText(text) {
+      if (!text) return "";
+      // Default to Italian if present
+      if (text.includes('[IT]')) {
+        const parts = text.split('[IT]');
+        if (parts.length > 1) {
+          // Return text after [IT] until end or next tag
+          return parts[1].split('[')[0].trim();
+        }
+      }
+      // Fallback to English or raw text
+      if (text.includes('[EN]')) {
+        const parts = text.split('[EN]');
+        if (parts.length > 1) {
+          return parts[1].split('[')[0].trim();
+        }
+      }
+      return text;
+    }
+
+    // --- 4. THE STRATEGIST ---
     const stratBox = document.getElementById('modal-strategist-content');
     if (stratBox) {
-      // Fallback or specific reasoning field
-      const reasoning = eventData.ai_reasoning || "AI Analysis confirms high probability of kinetic event based on cross-referenced multi-source reporting. Strategic impact affects local logistics.";
+      // Use language parser
+      let rawReasoning = eventData.ai_reasoning || "AI Analysis confirms high probability of kinetic event based on cross-referenced multi-source reporting. Strategic impact affects local logistics.";
+      const reasoning = getLocalizedText(rawReasoning);
       stratBox.innerHTML = reasoning;
     }
 
-
-
     // ============================================================
-    // B. GESTIONE SCORE & GRAFICO (INSERITO ORA)
+    // B. GESTIONE SCORE & GRAFICO 
     // ============================================================
-
-    // 1. Normalizza Score
     const score = parseInt(eventData.reliability || eventData.Reliability || eventData.confidence || 0);
 
-    // 2. Definisci Colori e Testi (AGGIUNTO IL FOOTER EXECUTIVE)
+    // Definisci Colori e Testi (Base Data)
     let relData = {
       label: "NON VERIFICATO",
       color: "#64748b",
@@ -907,95 +925,73 @@
         label: "CONFERMATA",
         color: "#22c55e",
         desc: "Confermato visivamente. L'evento è supportato da documentazione multimediale verificata o geolocalizzazione precisa.",
-        footer: "Score massimo garantito dalla presenza di prove visive (IMINT) o geolocalizzazione confermata."
+        footer: "Score massimo garantito dalla presenza di prove visive (IMINT)."
       };
     } else if (score >= 60) {
       relData = {
         label: "ATTENDIBILE",
         color: "#84cc16",
-        desc: "Molto probabile. Evento confermato da molteplici vettori indipendenti o da fonti istituzionali con alto grado di accuratezza.",
-        footer: "Score elevato grazie alla convergenza narrativa rilevata tra molteplici fonti non collegate."
+        desc: "Molto probabile. Evento confermato da molteplici vettori indipendenti o da fonti istituzionali.",
+        footer: "Score elevato grazie alla convergenza narrativa."
       };
     } else if (score >= 40) {
       relData = {
         label: "INCERTA",
         color: "#f59e0b",
-        desc: "In attesa di riscontro. Riportato da fonti mainstream o locali credibili, ma non ancora verificato sul campo.",
-        footer: "Score assegnato sulla base della reputazione storica della fonte, in attesa di evidenze materiali."
+        desc: "In attesa di riscontro. Riportato da fonti mainstream o locali credibili, ma non verificato.",
+        footer: "Score assegnato sulla base della reputazione storica."
       };
     } else if (score < 40) {
       relData = {
         label: "DUBBIA",
         color: "#ef4444",
-        desc: "Bassa Confidenza. Dati insufficienti per confermare l'evento. Rischio elevato di disinformazione o errore.",
-        footer: "Score limitato dall'assenza di riscontri indipendenti o dalla natura speculativa della fonte."
+        desc: "Bassa Confidenza. Rischio elevato di disinformazione o errore.",
+        footer: "Score limitato dall'assenza di riscontri indipendenti."
       };
     }
 
-    // 3. Disegna il Grafico (INVARIATO)
     if (typeof renderConfidenceChart === 'function') {
       renderConfidenceChart(score, relData.color);
     }
 
-    // 4. Aggiorna il Badge HTML (AGGIORNATO CON STILE PROFESSIONALE E FOOTER)
+    // --- RELIABILITY GRADIENT BAR (NEW VISUAL) ---
     const relContainer = document.getElementById('modal-reliability-badge');
     if (relContainer) {
+      // Calculate marker position (0-100%)
+      const markerPos = Math.max(0, Math.min(100, score));
+
       relContainer.innerHTML = `
-            <div class="intensity-badge-wrapper" style="
-                font-size:0.7rem; 
-                color:${relData.color}; 
-                font-weight:700; 
-                letter-spacing:1px; 
-                cursor:help; 
-                margin-top:5px; 
-                display:flex; 
-                align-items:center; 
-                justify-content:center; 
-                gap:4px;
-                position: relative;
-            ">
-                ${relData.label}
-                <div class="info-icon" style="
-                    width:12px; height:12px; font-size:0.6rem; 
-                    border-color:${relData.color}; color:${relData.color}; 
-                    display:flex;
-                ">i</div>
+            <div style="margin-top:10px;">
+                <div class="reliability-label">
+                    <span>RELIABILITY SCORE</span>
+                    <strong style="color:${relData.color}">${score}%</strong>
+                </div>
                 
-                <div class="intensity-tooltip" style="
-                    width: 240px; 
-                    bottom: 130%; 
-                    left: 50%; 
-                    transform: translateX(-50%);
-                    background: rgba(15, 23, 42, 0.95);
-                    border: 1px solid ${relData.color}44;
-                    padding: 12px;
-                    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-                    text-align: left;
-                    white-space: normal; /* Importante per il testo lungo */
-                    z-index: 100;
-                ">
-                    <div style="border-bottom: 1px solid #334155; padding-bottom: 8px; margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.7rem; color:#64748b; text-transform:uppercase;">CONFIDENCE SCORE</span>
-                        <strong style="color:${relData.color}; font-size:1.1rem;">${score}%</strong>
-                    </div>
+                <div class="reliability-bar-track">
+                    <div class="reliability-bar-fill" style="width: 100%;"></div> 
+                    <div class="reliability-marker" style="left: ${markerPos}%"></div>
+                </div>
 
-                    <div style="font-size:0.8rem; color:#e2e8f0; line-height:1.4; margin-bottom:8px; font-weight:400;">
-                        ${relData.desc}
-                    </div>
+                <div class="reliability-label">
+                     <span>Unverified</span>
+                     <span>Confirmed</span>
+                </div>
 
-                    <div style="font-size:0.65rem; color:#94a3b8; font-style:italic; border-top:1px solid #334155; padding-top:6px; line-height:1.3;">
-                        ${relData.footer}
-                    </div>
+                <div style="margin-top:8px; display:flex; align-items:center;">
+                     <span style="font-size:0.7rem; color:${relData.color}; font-weight:700; letter-spacing:1px;">${relData.label}</span>
+                     
+                     <!-- CSS ONLY TOOLTIP -->
+                     <div class="info-icon" data-tooltip="${relData.desc}\n\n${relData.footer}">
+                        <i class="fa-solid fa-circle-info"></i>
+                     </div>
                 </div>
             </div>`;
     }
 
-    // 3. Renderizza Bibliografia (se la funzione helper esiste)
     if (typeof renderBibliography === 'function') {
       renderBibliography(eventData.references || []);
     }
 
-    // 4. Mostra il Modal (Supporta entrambi gli ID comuni)
     const modal = document.getElementById('videoModal') || document.getElementById('eventModal');
     if (modal) modal.style.display = 'flex';
   }
