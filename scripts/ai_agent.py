@@ -2669,8 +2669,26 @@ def main():
         # 🟢 LAYER 1: T.I.E. CALCULATOR (SAFETY VERSION)
         # =================================================================
         # 1. Estrazione sicura (Se soldier_result è il fallback, userà i default)
-        titan_data = soldier_result.get('titan_assessment', {})
+        titan_data = soldier_result.get('titan_assessment') or {}
         visual_evidence = soldier_result.get('visual_evidence', False)
+
+        # --- 🛡️ METRIC BOOSTER (FALLBACK) ---
+        # Se mancano i dati Titan (K/T/E sono 0 o mancanti), chiamiamo il Fine-Tuning
+        k_score = titan_data.get('kinetic_score', 0)
+        if not k_score or int(k_score) == 0:
+             print("      ⚠️ Missing Metrics (K=0). Activating Titan Fallback...")
+             try:
+                 # Usa il classificatore dedicato
+                 titan_fallback = agent._step_titan_classifier(combined_text)
+                 
+                 # Merge intelligente: sovrascrive solo se mancano
+                 if 'kinetic_score' in titan_fallback: titan_data['kinetic_score'] = titan_fallback['kinetic_score']
+                 if 'target_score' in titan_fallback: titan_data['target_score'] = titan_fallback['target_score']
+                 if 'effect_score' in titan_fallback: titan_data['effect_score'] = titan_fallback['effect_score']
+                 
+                 print(f"      ✅ Fallback Metrics Applied: K={titan_data.get('kinetic_score')}")
+             except Exception as e:
+                 print(f"      ❌ Fallback Failed: {e}")
 
         # 2. Calcolo T.I.E.
         tie_result = agent._calculate_tie(titan_data, visual_evidence)

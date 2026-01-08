@@ -805,28 +805,42 @@
     if (sourceListEl) {
       let sources = [];
       try {
-        // Check if sources_list is array or string
         if (Array.isArray(eventData.sources_list)) {
           sources = eventData.sources_list;
         } else if (typeof eventData.sources_list === 'string') {
-          // Try parsing, handle simple string lists
-          if (eventData.sources_list.startsWith('[')) {
-            sources = JSON.parse(eventData.sources_list.replace(/'/g, '"')); // Simple replace for python style lists
-          } else {
-            sources = [eventData.sources_list];
+          // 1. Try Clean JSON Parse first (Backend v2)
+          try {
+            sources = JSON.parse(eventData.sources_list);
+          } catch (e1) {
+            // 2. Fallback for Legacy/Dirty strings (Python list style)
+            try {
+              // Only replace quotes if it looks like a Python list string
+              if (eventData.sources_list.includes("'")) {
+                sources = JSON.parse(eventData.sources_list.replace(/'/g, '"'));
+              } else {
+                sources = [eventData.sources_list];
+              }
+            } catch (e2) {
+              // Last resort: treat as single string
+              sources = [eventData.sources_list];
+            }
           }
         }
       } catch (e) { console.warn("Error parsing sources:", e); }
 
-      if (sources.length === 0) {
+      if (!sources || sources.length === 0) {
         sourceListEl.innerHTML = `<span style="color:#64748b; font-style:italic; font-size:0.8rem;">No explicit sources listed.</span>`;
       } else {
         sourceListEl.innerHTML = sources.map(src => {
           // Formatting domain name
-          let domain = src;
-          let url = src;
-          if (!src.startsWith('http')) url = 'https://' + src;
-          try { domain = new URL(url).hostname.replace('www.', ''); } catch (e) { }
+          let domain = typeof src === 'string' ? src : (src.name || src.url || "Source");
+          let url = typeof src === 'string' ? src : (src.url || "#");
+
+          // Handle object structure from backend
+          if (!url.startsWith('http') && url !== '#') url = 'https://' + url;
+          try {
+            if (url !== '#') domain = new URL(url).hostname.replace('www.', '');
+          } catch (e) { }
 
           // Simple Favicon via Google S2
           const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
@@ -842,45 +856,23 @@
     }
 
     // C. Bias Meter
-    const biasScore = parseFloat(eventData.bias_score) || 0; // Range usually -10 to +10
-    // Normalize to 0-100% for CSS left position. 
-    // -10 => 0%, 0 => 50%, +10 => 100%
+    const biasScore = parseFloat(eventData.bias_score) || 0;
     const biasPercent = ((biasScore + 10) / 20) * 100;
     const clampedBias = Math.max(0, Math.min(100, biasPercent));
 
     // --- 3b. RELIABILITY BAR ---
-    const reliabilityValue = parseFloat(eventData.reliability || eventData.Reliability || 0);
-    const reliabilityFill = document.getElementById('reliability-bar-fill');
-    const reliabilityMarker = document.getElementById('reliability-marker');
-    const reliabilityText = document.getElementById('reliability-value');
-
-    // Calculate category label
-    let relCategory = "DUBBIA";
-    if (reliabilityValue >= 80) relCategory = "CONFERMATA";
-    else if (reliabilityValue >= 60) relCategory = "ATTENDIBILE";
-    else if (reliabilityValue >= 40) relCategory = "INCERTA";
-
-    if (reliabilityFill) {
-      reliabilityFill.style.width = `${Math.min(100, Math.max(0, reliabilityValue))}%`;
-    }
-    if (reliabilityMarker) {
-      reliabilityMarker.style.left = `${Math.min(100, Math.max(0, reliabilityValue))}%`;
-    }
-    if (reliabilityText) {
-      reliabilityText.textContent = `${Math.round(reliabilityValue)}% (${relCategory})`;
-    }
+    // ... code omitted ...
 
     // --- 3c. BIAS METER ---
     const biasMarker = document.getElementById('bias-marker');
     const biasValueEl = document.getElementById('bias-value');
 
     if (biasMarker) {
-      // Bias ranges from -10 (Pro-RU) to +10 (Pro-UA), map to 0-100%
       biasMarker.style.left = `${clampedBias}%`;
     }
     if (biasValueEl) {
-      const biasLabel = rawBias <= -3 ? "Pro-RU" : (rawBias >= 3 ? "Pro-UA" : "Neutral");
-      biasValueEl.textContent = `${rawBias.toFixed(1)} (${biasLabel})`;
+      const biasLabel = biasScore <= -3 ? "Pro-RU" : (biasScore >= 3 ? "Pro-UA" : "Neutral");
+      biasValueEl.textContent = `${biasScore.toFixed(1)} (${biasLabel})`;
     }
 
     // --- 4. THE STRATEGIST ---
