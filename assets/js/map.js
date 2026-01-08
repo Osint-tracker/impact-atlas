@@ -910,7 +910,7 @@
             <div class="info-icon-wrapper pos-left">
                 <div class="info-icon">i</div>
                 <div class="tooltip-card">
-                    <div class="tooltip-header">AI Strategist</div>
+                    <div class="tooltip-header">AI Strategist Analysis</div>
                     <div class="tooltip-body">This section provides an AI-generated analysis of the event's strategic implications, based on available intelligence.</div>
                     <div class="tooltip-footer">Powered by advanced language models.</div>
                 </div>
@@ -976,7 +976,7 @@
       relContainer.innerHTML = `
             <div style="margin-top:10px;">
                 <div class="reliability-label">
-                    <span>RELIABILITY SCORE</span>
+                    <span>Reliability Score</span> <!-- Title Case -->
                     <strong style="color:${relData.color}">${score}%</strong>
                 </div>
                 
@@ -996,7 +996,7 @@
                      <div class="info-icon-wrapper">
                         <div class="info-icon">i</div>
                         <div class="tooltip-card">
-                            <div class="tooltip-header" style="color:${relData.color}">${relData.label} (${score}%)</div>
+                            <div class="tooltip-header">${relData.label} (${score}%)</div> <!-- Keep classification uppercase/bold as user liked that part -->
                             <div class="tooltip-body">${relData.desc}</div>
                             <div class="tooltip-footer">${relData.footer}</div>
                         </div>
