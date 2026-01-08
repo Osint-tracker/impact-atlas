@@ -456,27 +456,29 @@
     /* Default: Above */
     left: 50%;
     transform: translateX(-50%) translateY(10px);
-    width: 260px;
-    background: #0f172a;
-    /* Slate 900 - SOLID, NO TRANSPARENCY */
+    width: 280px;
+    /* Slightly wider */
+    background: #0f172a !important;
+    /* FORCE SOLID SLATE 900 */
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 1), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    /* Stronger shadow */
     opacity: 0;
     visibility: hidden;
     transition: all 0.1s cubic-bezier(0.16, 1, 0.3, 1);
-    /* Snappy transition */
     pointer-events: none;
-    z-index: 1000;
+    z-index: 99999 !important;
+    /* Max Z-Index */
     text-align: left;
 }
 
 /* Show on Hover */
 .info-icon-wrapper:hover .tooltip-card,
 .info-icon-wrapper:focus-within .tooltip-card {
-    opacity: 1;
-    visibility: visible;
+    opacity: 1 !important;
+    visibility: visible !important;
     transform: translateX(-50%) translateY(0);
 }
 
@@ -499,11 +501,12 @@
     font-family: 'Inter', sans-serif;
     font-size: 0.75rem;
     font-weight: 700;
-    /* REMOVED text-transform: uppercase */
+    text-transform: none !important;
+    /* NO UPPERCASE */
     color: var(--primary);
     /* Amber header */
     margin-bottom: 6px;
-    letter-spacing: 0.3px;
+    letter-spacing: normal;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 6px;
 }
@@ -514,7 +517,7 @@
     font-size: 0.8rem;
     line-height: 1.4;
     color: #e2e8f0;
-    /* Slate 200 - High legibility */
+    /* Slate 200 */
     font-weight: 400;
     white-space: normal;
 }
@@ -526,6 +529,7 @@
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     font-size: 0.7rem;
     color: #94a3b8;
+    /* Explicit gray */
     font-style: italic;
     white-space: normal;
 }
@@ -547,38 +551,40 @@
     /* Flip arrow */
 }
 
-/* Force LEFT position (For Strategist) - FIXED */
-/* Anchors to the LEFT of the icon, growing leftwards */
+/* Force LEFT-ALIGN (For Strategist) */
+/* This aligns the RIGHT edge of tooltip to RIGHT edge of icon to keep it on screen */
 .pos-left .tooltip-card {
     left: auto;
-    right: 140%;
-    /* Moved further left to clear icon */
-    top: 50%;
-    bottom: auto;
-    transform: translateY(-50%);
-    margin-right: 8px;
+    right: -10px;
+    /* Anchor right edge near icon */
+    bottom: 140%;
+    /* Appear above */
+    transform: translateY(10px);
+    /* Init offset */
+    margin-right: 0;
+    top: auto;
 }
 
 .pos-left .tooltip-card::after {
-    top: 50%;
-    left: 100%;
-    /* Right side of card */
-    transform: translateY(-50%);
-    border-color: transparent transparent transparent #0f172a;
-    /* Right pointing arrow */
+    left: auto;
+    right: 15px;
+    /* Arrow moves to right side */
+    transform: none;
+    top: 100%;
+    border-color: #0f172a transparent transparent transparent;
 }
 
 .info-icon-wrapper.pos-left:hover .tooltip-card {
-    /* No horizontal transform needed if positioned by right % */
-    opacity: 1;
-    visibility: visible;
+    transform: translateY(0);
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 
 /* Media Query Adjustments */
 @media (max-width: 600px) {
     .tooltip-card {
-        width: 200px;
+        width: 220px;
         font-size: 0.75rem;
     }
 }

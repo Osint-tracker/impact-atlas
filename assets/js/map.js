@@ -907,7 +907,7 @@
       stratBox.innerHTML = `
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
             <h5 style="color:#94a3b8; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; margin:0;">AI STRATEGIST ANALYSIS</h5>
-            <div class="info-icon-wrapper pos-left">
+            <div class="info-icon-wrapper">
                 <div class="info-icon">i</div>
                 <div class="tooltip-card">
                     <div class="tooltip-header">AI Strategist Analysis</div>
