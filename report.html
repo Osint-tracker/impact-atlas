@@ -20,7 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="assets/css/report_styles.css?v=1">
+    <link rel="stylesheet" href="assets/css/report_styles.css?v=2">
 </head>
 
 <body>
@@ -36,7 +36,7 @@
                 <div class="header-text">
                     <h1>DAILY INTELLIGENCE BRIEFING</h1>
                     <div class="sub-header">
-                        <span class="date">09 JAN 2026</span>
+                        <span class="date">10 Jan 2026</span>
                         <span class="separator">|</span>
                         <span class="classification">CLASSIFIED // OSINT ONLY</span>
                     </div>
@@ -44,7 +44,7 @@
             </div>
             <div class="header-right">
                 <div class="time-box">
-                    <span id="utc-time">08:45:32 UTC</span>
+                    <span id="utc-time">15:40 UTC</span>
                     <span class="status-dot"></span>
                 </div>
                 <div class="user-profile">
@@ -74,19 +74,7 @@
                 <div class="summary-content">
                     <div class="text-col">
                         <h2>EXECUTIVE SUMMARY</h2>
-                        <p>
-                            A significant increase in hostile ground movements and communication intercepts has been
-                            detected along the eastern front, particularly in the <strong class="highlight-red">Donetsk
-                                sector</strong>. Multiple armored convoys are mobilizing towards key infrastructure
-                            points.
-                            <br><br>
-                            Satellite imagery confirms fortified positions. Cybersecurity units report a <strong>25%
-                                spike</strong> in state-sponsored intrusion attempts targeting critical defense
-                            networks. Immediate defensive posture adjustments are recommended.
-                            <br><br>
-                            <span class="highlight-blue">T.I.E. (Threat Indicator & Evaluation)</span> scores across
-                            several nodes have escalated to critical levels, signaling an imminent high-impact event.
-                        </p>
+                        <p><p><b>Executive Summary</b>: As of 10 Jan 2026, there has been a significant lull in reported events, with a delta decrease of 100%. The active sector remains unknown, and the average threat score is at a minimal level of 0/100. This anomaly suggests either a critical intelligence gap or a possible shift in enemy tactics to lower visibility operations. Analysts are advised to enhance surveillance and revisit threat assessments in uncharted sectors to uncover potential covert operations that may not be currently tracked.</p></p>
                     </div>
                     <div class="chart-col">
                         <div class="chart-header">
@@ -108,9 +96,9 @@
                         <i class="fa-solid fa-ellipsis-vertical menu-dots"></i>
                     </div>
                     <div class="metric-value-group">
-                        <div class="value">142</div>
-                        <div class="delta positive">
-                            <i class="fa-solid fa-caret-up"></i> 18%
+                        <div class="value">0</div>
+                        <div class="delta negative">
+                            <i class="fa-solid fa-caret-down"></i> -100.0%
                             <span class="period">from yesterday</span>
                         </div>
                     </div>
@@ -124,12 +112,12 @@
                         <i class="fa-solid fa-ellipsis-vertical menu-dots"></i>
                     </div>
                     <div class="metric-value-group">
-                        <div class="value">68</div>
+                        <div class="value">0</div>
                         <div class="gauge-container">
                             <i class="fa-solid fa-gauge-high gauge-icon" style="color:#f59e0b"></i>
                         </div>
                     </div>
-                    <div class="status-text warning">Warning Level: ELEVATED</div>
+                    <div class="status-text safe">Warning Level: NORMAL</div>
                 </div>
 
                 <!-- Card 3: Active Sector -->
@@ -139,7 +127,7 @@
                         <i class="fa-solid fa-ellipsis-vertical menu-dots"></i>
                     </div>
                     <div class="metric-value-group">
-                        <div class="value text-value">DONETSK</div>
+                        <div class="value text-value">UNKNOWN</div>
                     </div>
                     <div class="sector-map-bg"></div> <!-- CSS BG Image placeholder -->
                     <div class="status-text danger">
@@ -154,7 +142,7 @@
                         <i class="fa-solid fa-ellipsis-vertical menu-dots"></i>
                     </div>
                     <div class="metric-value-group">
-                        <div class="value">2,450</div>
+                        <div class="value">0</div>
                     </div>
                     <div class="status-text safe">
                         <i class="fa-solid fa-tower-broadcast"></i> ENCRYPTED COMMS SPIKE
@@ -171,62 +159,7 @@
                 </div>
 
                 <div class="alerts-list">
-
-                    <!-- Alert 1 -->
-                    <div class="alert-item critical">
-                        <div class="score-badge red">92</div>
-                        <div class="alert-info">
-                            <div class="alert-title">
-                                IMMINENT OFFENSIVE PREP - DONETSK
-                                <span class="tag ugent">ACTION REQUIRED</span>
-                            </div>
-                            <div class="alert-desc">
-                                Multiple sources indicate large-scale artillery mobilization & troop staging near
-                                Avdiivka. High probability of coordinated assault within 12-24 hours. Priority: URGENT.
-                            </div>
-                        </div>
-                        <div class="alert-meta">
-                            <div class="alert-time">09 JAN 07:12 UTC</div>
-                        </div>
-                    </div>
-
-                    <!-- Alert 2 -->
-                    <div class="alert-item high">
-                        <div class="score-badge orange">88</div>
-                        <div class="alert-info">
-                            <div class="alert-title">
-                                CYBERATTACK ON DEFENSE GRID
-                                <span class="tag warning">CONTAINING</span>
-                            </div>
-                            <div class="alert-desc">
-                                Detected sophisticated malware infiltration attempt on national air defense control
-                                systems. Origin traced to known state-actor group. Containment protocols initiated.
-                                Priority: HIGH.
-                            </div>
-                        </div>
-                        <div class="alert-meta">
-                            <div class="alert-time">09 JAN 06:45 UTC</div>
-                        </div>
-                    </div>
-
-                    <!-- Alert 3 -->
-                    <div class="alert-item elevated">
-                        <div class="score-badge amber">86</div>
-                        <div class="alert-info">
-                            <div class="alert-title">
-                                UNUSUAL NAVAL MANEUVERS - BLACK SEA
-                                <span class="tag monitor">MONITORING</span>
-                            </div>
-                            <div class="alert-desc">
-                                Satellite reconnaissance observes three hostile corvettes departing Sevastopol naval
-                                base, heading towards key maritime trade routes. Purpose unclear. Priority: ELEVATED.
-                            </div>
-                        </div>
-                        <div class="alert-meta">
-                            <div class="alert-time">09 JAN 05:30 UTC</div>
-                        </div>
-                    </div>
-
+                    <div style="padding:20px; color:#64748b;">No high-priority alerts for this period.</div>
                 </div>
             </section>
 
@@ -235,20 +168,7 @@
                 <div class="outlook-content">
                     <div class="outlook-text">
                         <h3>STRATEGIC OUTLOOK</h3>
-                        <p>
-                            The current geopolitical landscape suggests a multi-domain escalation is likely in the next
-                            48-72 hours. The convergence of physical force mobilization in the eastern theater with
-                            intensified cyber operations points to a coordinated hybrid warfare strategy. Intelligence
-                            models predict a <strong>75% probability</strong> of a significant kinetic engagement.
-                            <br><br>
-                            Strategic priorities should focus on reinforcing defensive lines in the Donetsk sector,
-                            enhancing cyber resilience for critical infrastructure, and maintaining heightened
-                            surveillance on naval activities in the Black Sea.
-                            <br><br>
-                            Long-term projections indicate a sustained period of elevated friction, necessitating
-                            adaptive defense strategies and international collaboration. Resource allocation should
-                            prioritize rapid response capabilities and intelligence gathering in contested zones.
-                        </p>
+                        <p><p><b>Strategic Outlook</b>: Over the next 24-48 hours, it is crucial to focus on enhancing intelligence collection efforts, particularly in the identified active sector which currently remains UNKNOWN. Units should prepare for possible escalation points by increasing readiness levels and conducting preemptive reconnaissance missions. Special attention should be given to cyber and electronic warfare fronts, as these could be the new theaters for adversarial engagements amidst the current operational silence.</p></p>
                     </div>
                     <div class="outlook-map">
                         <!-- Placeholder for Map Visualization -->

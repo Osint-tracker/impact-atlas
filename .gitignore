@@ -39,3 +39,6 @@ Thumbs.db
 
 # --- LOGS ---
 *.log
+
+# --- WHITELIST ---
+!war_tracker_v2/data/gazetteer_places.txt

@@ -239,6 +239,18 @@ MANDATORY_ROOTS = GEO_LOCATIONS_BASE + GEO_LOCATIONS_TRANS + [
     "украина", "україна", "киев", "київ"
 ]
 
+# --- GAZETTEER EXTERNAL LOADER (Miglioramento IA) ---
+GAZETTEER_PATH = os.path.join(DATA_DIR, "gazetteer_places.txt")
+if os.path.exists(GAZETTEER_PATH):
+    try:
+        with open(GAZETTEER_PATH, 'r', encoding='utf-8') as f:
+            places = [line.strip().lower() for line in f if line.strip()]
+            print(f"[*] GAZETTEER ATTIVO: Caricati {len(places)} luoghi extra (High Precision Mode).")
+            # Aggiungiamo alla lista Mandatory
+            MANDATORY_ROOTS.extend(places)
+    except Exception as e:
+        print(f"[!] Errore caricamento Gazetteer: {e}")
+
 # Ottimizzazione: Set per ricerca istantanea
 MANDATORY_SET = list(set(k.lower() for k in MANDATORY_ROOTS if k))
 print(
@@ -385,8 +397,19 @@ class WarRefiner:
                     existing_metadata = query_results['metadatas'][0][0]
                     existing_ts = existing_metadata.get('timestamp', 0)
 
-                    # 1. Check Semantico
-                    if existing_distance < SIMILARITY_THRESHOLD:
+                    # 1. Check Semantico (Soglia Dinamica)
+                    # Testi brevi (< 400 char) sono spesso ambigui/generici -> Richiedono similarità più alta
+                    # Testi lunghi possono variare di più -> Soglia standard
+                    text_len = len(str(row['text_content']))
+                    dynamic_threshold = SIMILARITY_THRESHOLD
+                    
+                    if text_len < 400:
+                        dynamic_threshold = 0.15  # Molto severo per one-liners (richiede distanza < 0.15)
+                    elif text_len < 1000:
+                        dynamic_threshold = 0.20  # Severo medio
+                        
+                    # Nota: Distanza Coseno Minore = Più Simile
+                    if existing_distance < dynamic_threshold:
 
                         time_diff_hours = abs(pub_ts - existing_ts) / 3600
                         match_confirmed = False

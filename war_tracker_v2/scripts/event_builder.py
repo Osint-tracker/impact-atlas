@@ -144,6 +144,15 @@ class EventBuilder:
             if re.search(r'\d{1,2}\.\d{3,},\s*\d{1,2}\.\d{3,}', text):
                 score += 50.0
 
+            # [NEW] Pattern Bonus: Quantità Specifiche (es. "5 tanks", "12 killed")
+            # Indica report tattico ad alta precisione, prioritario per l'Analista.
+            if re.search(r'\d+\s+(?:tank|drone|uav|missile|rocket|soldier|troop|killed|wounded|dead|km|mile)', text_lower):
+                score += 10.0
+            
+            # [NEW] Pattern Bonus: Orari specifici (es. "at 05:30", "14:00")
+            if re.search(r'\d{1,2}:\d{2}', text):
+                score += 5.0
+
             for word in geo_keywords:
                 if word in text_lower:
                     score += 3.0
@@ -201,24 +210,47 @@ class EventBuilder:
         return pd.DataFrame(final_selection)
 
     def build_dossier_text(self, df: pd.DataFrame) -> str:
-        """Formatta il testo per l'AI Agent."""
+        """Formatta il testo per l'AI Agent con Deduplicazione Paragrafi."""
         dossier = ""
+        seen_paragraphs_hash = set()
+
         for i, row in enumerate(df.itertuples()):
             # Tronchiamo testi eccessivi per sicurezza
-            text_content = row.text_content
+            text_content = str(row.text_content)
+            
+            # --- DEDUPLICAZIONE PARAGRAFI ---
+            paragraphs = text_content.split('\n')
+            unique_text_blocks = []
+            
+            for p in paragraphs:
+                clean_p = p.strip()
+                if not clean_p: continue
+                
+                # Normalizziamo per confronto (ignore case/spaces)
+                p_hash = hash(clean_p.lower())
+                
+                if p_hash in seen_paragraphs_hash:
+                    # Se paragraph già visto in articoli precedenti di questo dossier, skippa (Riduce token)
+                    continue
+                
+                seen_paragraphs_hash.add(p_hash)
+                unique_text_blocks.append(clean_p)
+            
+            # Ricostruiamo il testo pulito
+            full_clean_text = "\n".join(unique_text_blocks)
+            
             was_truncated = False
-
-            if len(text_content) > MAX_CHAR_PER_ARTICLE:
-                clean_text = text_content[:MAX_CHAR_PER_ARTICLE]
+            if len(full_clean_text) > MAX_CHAR_PER_ARTICLE:
+                final_text = full_clean_text[:MAX_CHAR_PER_ARTICLE]
                 was_truncated = True
             else:
-                clean_text = text_content
+                final_text = full_clean_text
 
             # Header chiaro per aiutare Qwen a distinguere le fonti
             dossier += f"### REPORT {i+1} ###\n"
             dossier += f"SOURCE: {row.source_name}\n"
             dossier += f"DATE: {row.date_published}\n"
-            dossier += f"CONTENT:\n{clean_text}"
+            dossier += f"CONTENT:\n{final_text}"
 
             if was_truncated:
                 dossier += "\n... [TEXT TRUNCATED FOR BREVITY]"

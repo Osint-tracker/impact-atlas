@@ -24,9 +24,9 @@ def main():
     print("🕰️ AVVIO BACKFILL: 5 Gennaio 2026 -> 9 Gennaio 2026")
 
     # Timezone Aware (UTC)
-    start_dt = datetime(2026, 1, 5, 0, 0, 0, tzinfo=timezone.utc)
+    start_dt = datetime(2026, 1, 9, 0, 0, 0, tzinfo=timezone.utc)
     # Impostiamo la fine a "domani" per essere sicuri di prendere tutto oggi
-    end_dt = datetime(2026, 1, 9, 0, 0, 0, tzinfo=timezone.utc)
+    end_dt = datetime(2026, 1, 11, 0, 0, 0, tzinfo=timezone.utc)
 
     # 1. Esegui Telegram
     print("\n--- AVVIO TELEGRAM ---")
