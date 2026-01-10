@@ -20,6 +20,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, '../war_tracker_v2/data/raw_events.db')
 GEOJSON_PATH = os.path.join(BASE_DIR, '../assets/data/events.geojson')
 CSV_PATH = os.path.join(BASE_DIR, '../assets/data/events_export.csv')
+UNITS_JSON_PATH = os.path.join(BASE_DIR, '../assets/data/units.json')
 
 
 def parse_sources_to_list(sources_str):
@@ -75,6 +76,42 @@ def get_marker_style(tie_score, effect_score):
     return radius, color
 
 
+def export_units():
+    print("[DB] Exporting ORBAT Units...")
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        # Check if table exists
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='units_registry'")
+        if not cursor.fetchone():
+            print("   [SKIP] units_registry table does not exist.")
+            conn.close()
+            return
+
+        cursor.execute("SELECT * FROM units_registry ORDER BY last_seen_date DESC")
+        rows = cursor.fetchall()
+        
+        units = []
+        for row in rows:
+            u = dict(row)
+            # Ensure proper types
+            if u.get('last_seen_date'):
+               u['last_seen_date'] = str(u['last_seen_date'])
+            units.append(u)
+        
+        # Save to JSON
+        with open(UNITS_JSON_PATH, 'w', encoding='utf-8') as f:
+            json.dump(units, f, indent=2, ensure_ascii=False)
+            
+        print(f"   [DONE] Exported {len(units)} units to {UNITS_JSON_PATH}")
+        conn.close()
+    except Exception as e:
+        print(f"   [ERR] Failed to export units: {e}")
+
+
+
 def main():
     print("[DB] Connecting to database...")
     
@@ -107,7 +144,7 @@ def main():
             -- JSON blob for coordinates fallback
             ai_report_json
         FROM unique_events 
-        WHERE ai_analysis_status = 'COMPLETED'
+        WHERE ai_analysis_status IN ('COMPLETED', 'PENDING')
     """)
     
     rows = cursor.fetchall()
@@ -261,6 +298,9 @@ def main():
     print(f"\n[DONE] Export complete!")
     print(f"   GeoJSON: {len(geojson_features)} events -> {GEOJSON_PATH}")
     print(f"   CSV: {len(csv_rows)} rows -> {CSV_PATH}")
+
+    # Export Units
+    export_units()
 
 
 if __name__ == "__main__":

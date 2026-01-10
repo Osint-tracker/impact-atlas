@@ -123,6 +123,14 @@ You will receive a "Cluster Object" containing:
     * "Box", "Armor" -> TYPE: "Armored Vehicle"
     * "200" -> KILLED / "300" -> WOUNDED.
     * "Cotton" (Bavovna) -> Explosion.
+    * "47th", "3rd Assault", "82nd" -> MILITARY UNITS.
+
+4.  **ORBAT EXTRACTION (MILITARY UNITS):**
+    * Identify specific military units mentioned.
+    * Normalize ID: "47th Brigade" -> "UA_47_MECH_BDE" (if unsure use generic "UA_47_BDE").
+    * STATUS: "ENGAGED" (Fighting), "DESTROYED" (Eliminated), "ACTIVE" (Present), "REGROUPING" (Rotated).
+    * INFERENCE: If "Challenger 2" mentioned -> implies "UA_82_AIR_ASSAULT" (only if highly specific).
+    * OUTPUT FIELD: `military_units_detected`: [{ `unit_name`: "47th Brigade", `unit_id`: "UA_47_MECH_BDE", `faction`: "UA", `type`: "MECH_INF", `status`: "ENGAGED" }]
 
 **PROTOCOL "TITAN-10": INTENSITY SCORING STANDARDS**
 Assign scores (1-10) based STRICTLY on these definitions. Do not guess.
@@ -188,7 +196,16 @@ Return ONLY valid JSON:
   "actors": {
     "aggressor": { "side": "RU | UA | UNKNOWN" },
     "target": { "side": "RU | UA | CIVILIAN" }
-  }
+  },
+  "military_units_detected": [
+      {
+          "unit_name": "String (Raw Name)",
+          "unit_id": "String (Normalized ID)",
+          "faction": "UA | RU",
+          "type": "ARMORED | INFANTRY | ARTILLERY | AIRBORNE | SOF",
+          "status": "ACTIVE | ENGAGED | DESTROYED | REGROUPING"
+      }
+  ]
 }
 """
 
@@ -2239,6 +2256,22 @@ def process_row(self, row):
     # Store verified coordinates for later use
     soldier_out['verified_coordinates'] = verified_coords
 
+    # =========================================================================
+    # 🪖 ORBAT TRACKER UPDATE
+    # =========================================================================
+    units_detected = soldier_out.get('military_units_detected', [])
+    if units_detected:
+        # Use verified coords if available, else explicit, else row
+        final_lat = verified_coords.get('lat') if verified_coords else (soldier_out.get("geo_location", {}).get("explicit", {}).get("lat"))
+        final_lon = verified_coords.get('lon') if verified_coords else (soldier_out.get("geo_location", {}).get("explicit", {}).get("lon"))
+        
+        # Fallback to row data if everything else fails (but usually verified_coords handles it)
+        if not final_lat: final_lat = row.get("Latitude", 0.0)
+        if not final_lon: final_lon = row.get("Longitude", 0.0)
+
+        if final_lat and final_lat != 0.0:
+            self._update_units_registry(units_detected, row.get("Date"), {'lat': final_lat, 'lon': final_lon})
+    
     # 3. Calcolo T.I.E. (Layer 1)
     titan_data = soldier_out.get('titan_assessment', {})
     visual_evidence = soldier_out.get('visual_evidence', False)
@@ -2322,6 +2355,45 @@ def process_row(self, row):
         "Reliability": str(calc_out.get("reliability", 0)),
         "Bias Score": str(calc_out.get("bias_score", 0))
     }
+
+    # =========================================================================
+    # 🪖 HELPER: UPDATE UNITS REGISTRY
+    # =========================================================================
+    def _update_units_registry(self, units_list, event_date_str, coords):
+        """Updates the units_registry table with fresh location data."""
+        if not units_list: return
+        
+        try:
+            # We open a transient connection here to allow portability
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+            
+            affected = 0
+            for unit in units_list:
+                unit_id = unit.get('unit_id')
+                status = unit.get('status', 'ACTIVE')
+                
+                if not unit_id: continue
+                
+                # Update only if unit exists (Seeder should have populated it)
+                cursor.execute("""
+                    UPDATE units_registry 
+                    SET last_seen_lat = ?, 
+                        last_seen_lon = ?, 
+                        last_seen_date = ?, 
+                        status = ?
+                    WHERE unit_id = ?
+                """, (coords.get('lat'), coords.get('lon'), event_date_str, status, unit_id))
+                
+                affected += cursor.rowcount
+            
+            conn.commit()
+            conn.close()
+            if affected > 0:
+                print(f"      🪖 ORBAT Tracker: Updated positions for {affected} units.")
+                
+        except Exception as e:
+            print(f"      ⚠️ ORBAT Update Error: {e}")
 
 # =============================================================================
 # 🚀 NEW MAIN LOOP: SQLITE ENGINE (Fase 4 Ready)

@@ -360,15 +360,16 @@
   // 7. MAP INITIALIZATION (Fix Crash)
   // ============================================
   function initMap() {
-    // FIX: Se la mappa esiste già, ci fermiamo qui.
-    if (map) {
-      console.log("⚠️ Mappa già inizializzata.");
+    // FIX: Check both internal state string and DOM element
+    const container = L.DomUtil.get('map');
+    if (map || (container && container._leaflet_id)) {
+      console.log("⚠️ Map container already initialized. Skipping init.");
       return;
     }
 
     map = L.map('map', {
       zoomControl: false,
-      preferCanvas: true,
+      preferCanvas: true, // Performance boost
       wheelPxPerZoomLevel: 120
     }).setView([48.5, 32.0], 6);
 
@@ -600,6 +601,22 @@
     }
 
     renderInternal(window.currentFilteredEvents);
+  };
+
+  window.flyToUnit = function (lat, lon, unitName) {
+    if (!map) return;
+    if (!lat || !lon) {
+      console.warn("Unit has no coordinates");
+      return;
+    }
+
+    map.flyTo([lat, lon], 10, { animate: true, duration: 1.5 });
+
+    // Create a temporary pulse marker
+    const popup = L.popup()
+      .setLatLng([lat, lon])
+      .setContent(`<div style="text-align:center"><b>${unitName}</b><br>Last Known Position</div>`)
+      .openOn(map);
   };
 
   window.selectMapSource = function (card, sourceName) {
