@@ -1,0 +1,66 @@
+[
+  {
+    "date": "2026-01-09",
+    "model": "T-90M",
+    "type": "Tank",
+    "country": "RUS",
+    "status": "Destroyed",
+    "proof_url": "#"
+  },
+  {
+    "date": "2026-01-09",
+    "model": "Bradley M2A2",
+    "type": "IFV",
+    "country": "UKR",
+    "status": "Damaged",
+    "proof_url": "#"
+  },
+  {
+    "date": "2026-01-08",
+    "model": "Ka-52",
+    "type": "Helicopter",
+    "country": "RUS",
+    "status": "Destroyed",
+    "proof_url": "#"
+  },
+  {
+    "date": "2026-01-08",
+    "model": "Leopard 2A6",
+    "type": "Tank",
+    "country": "UKR",
+    "status": "Abandoned",
+    "proof_url": "#"
+  },
+  {
+    "date": "2026-01-08",
+    "model": "BMP-3",
+    "type": "IFV",
+    "country": "RUS",
+    "status": "Captured",
+    "proof_url": "#"
+  },
+  {
+    "date": "2026-01-07",
+    "model": "Lancet",
+    "type": "Loitering Munition",
+    "country": "RUS",
+    "status": "Expendable",
+    "proof_url": "#"
+  },
+  {
+    "date": "2026-01-07",
+    "model": "M777",
+    "type": "Artillery",
+    "country": "UKR",
+    "status": "Damaged",
+    "proof_url": "#"
+  },
+  {
+    "date": "2026-01-06",
+    "model": "Su-34",
+    "type": "Aircraft",
+    "country": "RUS",
+    "status": "Destroyed",
+    "proof_url": "#"
+  }
+]

@@ -510,6 +510,9 @@
           // C. Aggiorna Mappa e Contatori
           window.currentFilteredEvents = filtered;
           renderInternal(filtered);
+
+          // NEW: Dashboard Update
+          if (window.Dashboard) window.Dashboard.update(filtered);
         };
 
         // Espone la funzione
@@ -537,7 +540,9 @@
         // Charts Init
         try {
           if (typeof window.initCharts === 'function') window.initCharts(window.globalEvents);
-        } catch (e) { console.log("Charts error:", e); }
+          // NEW: Dashboard Init
+          if (window.Dashboard) window.Dashboard.init();
+        } catch (e) { console.log("Charts/Dashboard error:", e); }
 
         console.log(`✅ Events processed: ${window.globalEvents.length} ready for map`);
 
@@ -576,14 +581,22 @@
 
   window.toggleVisualMode = function () {
     isHeatmapMode = !isHeatmapMode;
+    // Handle both old and new toggle buttons if they exist
     const btn = document.getElementById('heatmapToggle');
+    const checkbox = document.getElementById('dashboardHeatmapToggle');
 
     if (isHeatmapMode) {
-      btn.classList.add('active');
-      btn.innerHTML = '<i class="fa-solid fa-circle-nodes"></i> Cluster';
+      if (btn) {
+        btn.classList.add('active');
+        btn.innerHTML = '<i class="fa-solid fa-circle-nodes"></i> Cluster';
+      }
+      if (checkbox) checkbox.checked = true;
     } else {
-      btn.classList.remove('active');
-      btn.innerHTML = '<i class="fa-solid fa-layer-group"></i> Heatmap';
+      if (btn) {
+        btn.classList.remove('active');
+        btn.innerHTML = '<i class="fa-solid fa-layer-group"></i> Heatmap';
+      }
+      if (checkbox) checkbox.checked = false;
     }
 
     renderInternal(window.currentFilteredEvents);

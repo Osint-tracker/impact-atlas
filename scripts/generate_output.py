@@ -201,6 +201,11 @@ def main():
                     # Quality Metrics
                     "reliability": reliability,
                     "bias_score": bias_score,
+
+                    # Tactical Data (Extracted for Dashboard)
+                    "classification": ai_data.get('classification', ai_data.get('event_analysis', {}).get('classification', 'UNKNOWN')),
+                    "target_type": ai_data.get('target_type', ai_data.get('titan_assessment', {}).get('target_type_category', 'UNKNOWN')),
+                    "intensity_score": k_score, # Mapping Kinetic Score to Intensity
                     
                     # AI Content
                     "ai_reasoning": ai_summary,

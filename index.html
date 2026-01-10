@@ -517,56 +517,62 @@
 
       <div class="timeline-section-wrapper">
         <div id="view-visual" class="view-container">
-          <div class="visual-grid" id="visual-grid-content">
-          </div>
-        </div>
+          <div class="tactical-dashboard-grid">
 
-        <div class="section-header"
-          style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:end;">
-          <div>
-            <h3>Analisi Operativa</h3>
-            <p style="color:#94a3b8;">Monitoraggio eventi in tempo reale</p>
-          </div>
-
-          <div
-            style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 5px 15px; border-radius: 20px; display:flex; align-items:center; gap:10px;">
-            <i class="fa-solid fa-robot" style="color:#f59e0b;"></i>
-            <span style="font-size:0.8rem; color:#f59e0b;"><strong>AI Insight:</strong> Attività elevata nel settore
-              Sud.</span>
-          </div>
-        </div>
-
-        <div class="view-switcher">
-          <button class="view-btn active" onclick="switchView('kanban', this)"><i
-              class="fa-solid fa-clipboard-list"></i> War Room</button>
-          <button class="view-btn" onclick="switchView('visual', this)"><i class="fa-solid fa-images"></i> Visual
-            Tracker</button>
-          <button class="view-btn" onclick="switchView('intel', this)"><i class="fa-solid fa-satellite-dish"></i> Intel
-            Feed</button>
-        </div>
-
-        <div id="view-kanban" class="view-container active">
-          <div class="kanban-board">
-            <div class="kanban-column" id="col-ground">
-              <div class="column-header"><span><i class="fa-solid fa-person-rifle"></i> Terra & Scontri</span> <span
-                  class="count-badge">0</span></div>
-              <div class="column-content"></div>
+            <!-- 1. MOMENTUM GAUGE (Operational Tempo) -->
+            <div class="dashboard-panel momentum-panel">
+              <div class="panel-header">
+                <h4><i class="fa-solid fa-gauge-high"></i> OPERATIONAL TEMPO (48H)</h4>
+                <div class="info-icon-wrapper"
+                  data-tooltip="Ratio of Offensive (Manoeuvre/Shaping) vs Static (Attrition) events.">
+                  <i class="fa-solid fa-circle-info"></i>
+                </div>
+              </div>
+              <div class="gauge-container" id="momentum-gauge-wrapper">
+                <canvas id="momentumCanvas"></canvas>
+                <div class="gauge-value" id="momentumValue">CALCULATING...</div>
+                <div class="gauge-status" id="momentumStatus">--</div>
+              </div>
             </div>
-            <div class="kanban-column" id="col-air">
-              <div class="column-header"><span><i class="fa-solid fa-jet-fighter"></i> Aereo & Deep Strike</span> <span
-                  class="count-badge">0</span></div>
-              <div class="column-content"></div>
-            </div>
-            <div class="kanban-column" id="col-strat">
-              <div class="column-header"><span><i class="fa-solid fa-city"></i> Civile & Strategico</span> <span
-                  class="count-badge">0</span></div>
-              <div class="column-content"></div>
-            </div>
-          </div>
-        </div>
 
-        <div id="view-visual" class="view-container">
-          <div class="visual-grid" id="visual-grid-content">
+            <!-- 2. HEATMAP CONTROLS & KPI -->
+            <div class="dashboard-panel heatmap-panel">
+              <div class="panel-header">
+                <h4><i class="fa-solid fa-fire-flame-curved"></i> INTENSITY LAYERS</h4>
+              </div>
+              <div class="heatmap-controls" id="dashboard-heatmap-controls">
+                <p style="color: #94a3b8; font-size: 0.9em; margin-bottom: 15px;">
+                  Visualizza la densità degli scontri basata sul punteggio d'intensità (0-10).
+                </p>
+
+                <label class="tech-toggle-row big-toggle">
+                  <span class="tech-toggle-label">COMBAT HEATMAP MODE</span>
+                  <input type="checkbox" id="dashboardHeatmapToggle" onchange="window.toggleVisualMode()">
+                  <div class="tech-switch"></div>
+                </label>
+
+                <div class="heat-legend">
+                  <span>Low</span>
+                  <div class="heat-gradient-bar"></div>
+                  <span>Critical</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. EQUIPMENT LOSS TICKER -->
+            <div class="dashboard-panel ticker-panel">
+              <div class="panel-header">
+                <h4><i class="fa-solid fa-skull-crossbones"></i> EQUIPMENT LOSS FEED</h4>
+                <span class="live-dot"></span>
+              </div>
+              <div class="ticker-container" id="equipment-ticker-wrapper">
+                <div class="ticker-scroll" id="ticker-content">
+                  <!-- JS Injects Items Here -->
+                  <div class="ticker-item placeholder">Loading intelligence streams...</div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -585,6 +591,10 @@
         </div>
 
       </div>
+
+      <!-- Scripts specifici per la dashboard che carichiamo dopo -->
+      <link rel="stylesheet" href="assets/css/dashboard.css">
+      <script src="assets/js/dashboard.js"></script>
 
       <div id="videoModal" class="modal-overlay" onclick="closeModal(event)">
         <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
