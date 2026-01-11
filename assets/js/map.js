@@ -863,11 +863,20 @@
       } else {
         sourceListEl.innerHTML = sources.map(src => {
           // Formatting domain name
-          let domain = typeof src === 'string' ? src : (src.name || src.url || "Source");
-          let url = typeof src === 'string' ? src : (src.url || "#");
+          let domain = typeof src === 'string' ? src : (src.name || src.source || src.url || "Source");
 
-          // Handle object structure from backend
-          if (!url.startsWith('http') && url !== '#') url = 'https://' + url;
+          // Robust URL extraction
+          let url = "#";
+          if (typeof src === 'string') {
+            url = src;
+          } else if (typeof src === 'object') {
+            url = src.url || src.link || src.source_url || src.uri || "#";
+          }
+
+          // Ensure protocol
+          if (url !== '#' && !url.startsWith('http')) {
+            url = 'https://' + url;
+          }
           try {
             if (url !== '#') domain = new URL(url).hostname.replace('www.', '');
           } catch (e) { }

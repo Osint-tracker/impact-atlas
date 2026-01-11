@@ -26,7 +26,7 @@ def migrate_gdelt():
     
     # We fetch in batches to avoid RAM explosion
     BATCH_SIZE = 5000
-    offset = 0
+    offset = 640000
     migrated_count = 0
     skipped_count = 0
 

@@ -58,6 +58,13 @@ class OrbatTracker {
             // Location formatting
             let locDisplay = unit.location_name || 'CLASSIFIED';
 
+            // Icon mapping (Restored)
+            let icon = 'fa-person-rifle';
+            if (unit.type && unit.type.includes('ARMORED')) icon = 'fa-truck-monster';
+            if (unit.type && unit.type.includes('ARTILLERY')) icon = 'fa-bomb';
+            if (unit.type && unit.type.includes('AIRBORNE')) icon = 'fa-parachute-box';
+            if (unit.type && unit.type.includes('RECON')) icon = 'fa-binoculars';
+
             el.innerHTML = `
                 <div class="hud-card ${statusClass}">
                     
