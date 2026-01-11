@@ -172,13 +172,13 @@ class BriefingDoc(FPDF):
         script_dir = os.path.dirname(os.path.abspath(__file__))
         try:
             self.add_font('Roboto', '', os.path.join(
-                script_dir, 'Roboto-Regular.ttf'))
+                script_dir, 'fonts', 'Roboto-Regular.ttf'))
             self.add_font('Roboto', 'B', os.path.join(
-                script_dir, 'Roboto-Bold.ttf'))
+                script_dir, 'fonts', 'Roboto-Bold.ttf'))
             self.add_font('JBM', '', os.path.join(
-                script_dir, 'JetBrainsMono-Regular.ttf'))
+                script_dir, 'fonts', 'JetBrainsMono-Regular.ttf'))
             self.add_font('JBM', 'B', os.path.join(
-                script_dir, 'JetBrainsMono-Bold.ttf'))
+                script_dir, 'fonts', 'JetBrainsMono-Bold.ttf'))
         except:
             print("⚠️ Fonts missing. Using fallback (Helvetica).")
 

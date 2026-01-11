@@ -26,7 +26,7 @@ def get_embedding(text):
 
 
 def main():
-    print(f"🔧 ANALISI VETTORI MANCANTI...")
+    print(f"ANALISI VETTORI MANCANTI...")
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
@@ -36,11 +36,11 @@ def main():
     missing_count = cursor.fetchone()[0]
 
     if missing_count == 0:
-        print("✅ Tutti gli eventi hanno già i vettori! Puoi passare alla fase 2.")
+        print("Tutti gli eventi hanno già i vettori! Puoi passare alla fase 2.")
         return
 
     print(
-        f"📉 Trovati {missing_count} eventi senza vettori. Generazione in corso...")
+        f"Trovati {missing_count} eventi senza vettori. Generazione in corso...")
 
     # Carica ID e Testo di quelli mancanti
     cursor.execute(
@@ -66,7 +66,7 @@ def main():
     conn.commit()
     conn.close()
     print(
-        f"\n✅ FINITO. Generati {updated} vettori. Ora lo Smart Fusion volerà.")
+        f"\nFINITO. Generati {updated} vettori. Ora lo Smart Fusion volerà.")
 
 
 if __name__ == "__main__":

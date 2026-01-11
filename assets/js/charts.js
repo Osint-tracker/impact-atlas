@@ -30,7 +30,7 @@ window.initCharts = function (events) {
         }
 
         let m = moment(e.date);
-        if (!m.isValid()) m = moment(e.date, ["DD/MM/YYYY", "DD-MM-YYYY", "DD.MM.YYYY"]);
+        if (!m.isValid()) m = moment(e.date, ["DD/MM/YYYY", "DD-MM-YYYY", "DD.MM.YYYY", "MM/DD/YYYY", "YYYY-MM-DD"]);
         const ts = m.isValid() ? m.valueOf() : moment().valueOf();
 
         return {
@@ -168,9 +168,14 @@ function renderKanban(data) {
     });
 
     // Aggiorna badge
-    document.querySelector('#col-ground .count-badge').innerText = counts.ground;
-    document.querySelector('#col-air .count-badge').innerText = counts.air;
-    document.querySelector('#col-strat .count-badge').innerText = counts.strat;
+    const badgeGround = document.querySelector('#col-ground .count-badge');
+    if (badgeGround) badgeGround.innerText = counts.ground;
+
+    const badgeAir = document.querySelector('#col-air .count-badge');
+    if (badgeAir) badgeAir.innerText = counts.air;
+
+    const badgeStrat = document.querySelector('#col-strat .count-badge');
+    if (badgeStrat) badgeStrat.innerText = counts.strat;
 }
 
 function renderVisualGallery(data) {

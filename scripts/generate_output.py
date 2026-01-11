@@ -144,7 +144,9 @@ def main():
             -- JSON blob for coordinates fallback
             ai_report_json
         FROM unique_events 
-        WHERE ai_analysis_status IN ('COMPLETED', 'PENDING')
+        WHERE ai_analysis_status = 'COMPLETED'
+          AND urls_list IS NOT NULL 
+          AND urls_list != ''
     """)
     
     rows = cursor.fetchall()
@@ -211,6 +213,10 @@ def main():
             
             # Skip if no coordinates
             if not lat or not lon or float(lat) == 0 or float(lon) == 0:
+                continue
+
+            # Skip if no valid sources (Python-level check)
+            if not structured_sources:
                 continue
             
             # Calculate marker style

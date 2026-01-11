@@ -66,14 +66,19 @@ def main():
     cursor = conn.cursor()
 
     # 1. Indicizzazione Leggera (Carichiamo solo ID e DATE)
-    print("📚 Indicizzazione temporale di TUTTI gli eventi...")
+    # [MOD 96H] Filter scope to recent events
+    from datetime import timedelta
+    cutoff_date = (datetime.now() - timedelta(hours=96)).isoformat()
+    print(f"   ⏳ Smart Fusion Scope: Analyzing events newer than {cutoff_date}")
+
     cursor.execute("""
         SELECT event_id, last_seen_date 
         FROM unique_events 
         WHERE embedding_vector IS NOT NULL 
         AND ai_analysis_status != 'MERGED'
+        AND last_seen_date >= ?
         ORDER BY last_seen_date DESC
-    """)
+    """, (cutoff_date,))
     all_index = cursor.fetchall()
     total_events = len(all_index)
     print(f"✅ Indice caricato: {total_events} eventi pronti.")

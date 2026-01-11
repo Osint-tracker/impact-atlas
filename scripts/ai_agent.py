@@ -32,6 +32,10 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SOURCES_DB_PATH = os.path.join(BASE_DIR, '../assets/data/sources_db.json')
 KEYWORDS_DB_PATH = os.path.join(BASE_DIR, '../assets/data/keywords_db.json')
 
+# --- CONFIGURATION ---
+# Correct Fine-Tuned Model ID (Single dash in 'v4-clean')
+TITAN_MODEL_ID = os.getenv("TITAN_MODEL_ID", "ft:gpt-4o-mini-2024-07-18:personal:osint-analyst-v4-clean:Cv5yHxTJ")
+
 # --- PROTOCOL CONSTANTS (ELASTIC MODE) ---
 # LOGICA: Il valore base è l'importanza STRATEGICA.
 # Per arrivare a 1.0 (Massimo), serve un danno CRITICAL (x1.5).
@@ -638,11 +642,29 @@ CRITICAL CLASSIFICATION RULES:
 1. NOISE FILTER: If the text is a summary, historical analysis, political opinion, or static map, classify as NULL.
 2. MANOUVRE PRIORITY: If text mentions territorial change (captured, retreated, entered), classify as MANOUVRE.
 3. SHAPING PRIORITY: Strikes on deep rear targets, capitals, infrastructure, logistics -> SHAPING (OFFENSIVE/COERCIVE).
-4. ATTRITION: Only for static fighting/shelling."""
+4. ATTRITION: Only for static fighting/shelling.
+
+TASK 2: ESTIMATE METRICS (TITAN-10 PROTOCOL)
+If classification is NOT NULL, you MUST estimate:
+- kinetic_score (1-10): 1=Small Arms, 5=Tank/Grad, 7=Missile, 10=Nuke.
+- target_score (1-10): 1=Field, 5=Tank, 8=AirDefense, 10=Command/Capital.
+- effect_score (1-10): 1=Fail/Unknown, 5=Moderate Damage, 7=Destroyed.
+
+OUTPUT FORMAT:
+{
+  "classification": "STRING",
+  "kinetic_score": INTEGER,
+  "target_score": INTEGER,
+  "effect_score": INTEGER
+}"""
 
         try:
+            # Uses the constant with fallback to env var
+            model_id = TITAN_MODEL_ID
+            print(f"      🧬 Model: {model_id}")
+
             response = self.openai_client.chat.completions.create(
-                model="ft:gpt-4o-mini-2024-07-18:personal:osint-analyst-v4--clean:Cv5yHxTJ",  # IL TUO ID
+                model=model_id,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": text[:15000]}
@@ -1363,6 +1385,8 @@ OR
         # Ciclo su tutte le fonti per fare la media
         for src in sources_to_check:
             # Normalize source name for DB lookup
+            if not src:
+                continue
             src_clean = src.lower().strip().replace(
                 'www.', '').replace('https://', '').split('/')[0]
 
@@ -2011,7 +2035,7 @@ def process_row(self, row):
             event_ctx["sniper_results"] = s_text
             print("   ✅ Sniper Hit! Original source confirmed.")
 
-            # ---------------------------------------------------------------------
+    # ---------------------------------------------------------------------
     # 3. FASE ARCHEOLOGO (MODIFICATA: Corroborazione FORZATA)
     # ---------------------------------------------------------------------
     # ORA ESEGUIAMO SEMPRE QUESTA FASE per popolare "Aggregated Sources",
@@ -2579,12 +2603,7 @@ def main():
         cursor.execute("""
             SELECT * FROM unique_events
             WHERE ai_analysis_status = 'PENDING'
-            ORDER BY
-                CASE
-                    WHEN full_text_dossier LIKE '%[MERGED%' THEN 0
-                    ELSE 1
-                END ASC,
-                last_seen_date DESC
+            ORDER BY last_seen_date DESC
             LIMIT 2000
         """)
 
@@ -2799,7 +2818,9 @@ def main():
             # Parsing sicuro delle liste (potrebbero essere stringhe "foo | bar" o JSON)
             def safe_parse_list(val):
                 if not val: return []
-                if isinstance(val, list): return val
+                if isinstance(val, list):
+                    # Filter None and empty strings immediately
+                    return [str(x) for x in val if x]
                 
                 # Prova JSON
                 val_str = str(val).strip()
@@ -2807,7 +2828,7 @@ def main():
                     try:
                         parsed = json.loads(val_str)
                         if isinstance(parsed, list):
-                            return parsed
+                            return [str(x) for x in parsed if x]
                     except:
                         pass
                 

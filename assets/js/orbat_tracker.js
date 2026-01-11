@@ -47,45 +47,62 @@ class OrbatTracker {
             const el = document.createElement('div');
             el.className = 'unit-card';
 
-            // Icon mapping
-            let icon = 'fa-person-rifle';
-            if (unit.type.includes('ARMORED')) icon = 'fa-truck-monster'; // Tank-ish
-            if (unit.type.includes('ARTILLERY')) icon = 'fa-bomb';
-            if (unit.type.includes('AIRBORNE')) icon = 'fa-parachute-box';
+            // Status Logic for CSS class
+            let statusClass = 'status-idle';
+            if (unit.status === 'ENGAGED') statusClass = 'status-engaged';
+            if (unit.status === 'REGROUPING' || unit.status === 'MOVING') statusClass = 'status-regrouping';
 
-            // Status Color
-            let statusColor = '#94a3b8'; // active/grey
-            if (unit.status === 'ENGAGED') statusColor = '#ef4444'; // red
-            if (unit.status === 'REGROUPING') statusColor = '#f59e0b'; // amber
+            // Strength formatting
+            let strengthDisplay = unit.strength ? `${unit.strength}%` : 'UNK';
+
+            // Location formatting
+            let locDisplay = unit.location_name || 'CLASSIFIED';
 
             el.innerHTML = `
-                <div class="unit-header">
-                    <span class="unit-type-icon"><i class="fa-solid ${icon}"></i></span>
-                    <span class="unit-name">${unit.display_name}</span>
+                <div class="hud-card ${statusClass}">
+                    
+                    <div class="hud-header">
+                        <span class="hud-unit-name">
+                             <i class="fa-solid ${icon}" style="margin-right:8px; opacity:0.7; font-size:0.9em;"></i>
+                             ${unit.display_name}
+                        </span>
+                        <span class="hud-status-dot"></span> 
+                    </div>
+
+                    <div class="hud-details">
+                        <div class="hud-meta-row">
+                             <div><span class="hud-label">STR:</span> ${strengthDisplay}</div>
+                             <div style="text-align:right;"><span class="hud-label">LOC:</span> ${locDisplay}</div>
+                        </div>
+                        <div class="hud-meta-row">
+                            <div><span class="hud-label">UPD:</span> ${this.formatTimeAgo(unit.last_seen_date)}</div>
+                        </div>
+
+                        ${unit.subordination ? `<div class="unit-sub" style="margin-top:4px;">CMD: ${unit.subordination}</div>` : ''}
+
+                        <div class="hud-coords" onclick="window.flyToUnit(${unit.last_seen_lat}, ${unit.last_seen_lon}, '${unit.unit_id}')" title="Locate on Map">
+                            <i class="fa-solid fa-crosshairs"></i> 
+                            ${unit.last_seen_lat.toFixed(4)}N ${unit.last_seen_lon.toFixed(4)}E
+                        </div>
+                    </div>
                 </div>
-                <div class="unit-meta">
-                    <span class="unit-badge" style="border: 1px solid ${statusColor}; color: ${statusColor}">
-                        ${unit.status}
-                    </span>
-                    <span class="unit-date">
-                        <i class="fa-regular fa-clock"></i> ${this.formatDate(unit.last_seen_date)}
-                    </span>
-                </div>
-                ${unit.subordination ? `<div class="unit-sub">${unit.subordination}</div>` : ''}
-                
-                <button class="unit-locate-btn" onclick="window.flyToUnit(${unit.last_seen_lat}, ${unit.last_seen_lon}, '${unit.unit_id}')">
-                    <i class="fa-solid fa-crosshairs"></i> LOCATE ON MAP
-                </button>
             `;
             this.container.appendChild(el);
         });
     }
 
-    formatDate(dateStr) {
-        if (!dateStr || dateStr === 'None') return 'Unknown';
+    formatTimeAgo(dateStr) {
+        if (!dateStr || dateStr === 'None') return 'UNK';
         try {
-            return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-        } catch (e) { return dateStr; }
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+
+            if (diffHrs < 1) return 'JUST NOW';
+            if (diffHrs < 24) return `${diffHrs}H AGO`;
+            return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }).toUpperCase();
+        } catch (e) { return 'UNK'; }
     }
 }
 

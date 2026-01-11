@@ -619,7 +619,51 @@
       </div>
 
       <div class="timeline-section-wrapper">
-        <div id="view-visual" class="view-container">
+
+        <div class="view-switcher">
+          <button class="view-btn active" onclick="switchView('visual', this)">
+            <i class="fa-solid fa-gauge-high"></i> TACTICAL
+          </button>
+          <button class="view-btn" onclick="switchView('kanban', this)">
+            <i class="fa-solid fa-clipboard-list"></i> WAR ROOM
+          </button>
+          <button class="view-btn" onclick="switchView('intel', this)">
+            <i class="fa-solid fa-satellite-dish"></i> INTEL FEED
+          </button>
+        </div>
+
+        <div id="view-kanban" class="view-container">
+          <div class="kanban-board">
+            <!-- Colonna 1: Ground Ops -->
+            <div id="col-ground" class="kanban-column">
+              <div class="column-header">
+                <span>GROUND OPS</span>
+                <span class="count-badge badge-source" style="background:#334155;">0</span>
+              </div>
+              <div class="column-content"></div>
+            </div>
+
+            <!-- Colonna 2: Air/Strike -->
+            <div id="col-air" class="kanban-column">
+              <div class="column-header">
+                <span>AIR / STRIKE</span>
+                <span class="count-badge badge-source" style="background:#334155;">0</span>
+              </div>
+              <div class="column-content"></div>
+            </div>
+
+            <!-- Colonna 3: Strategic/Civil -->
+            <div id="col-strat" class="kanban-column">
+              <div class="column-header">
+                <span>STRATEGIC / CIVIL</span>
+                <span class="count-badge badge-source" style="background:#334155;">0</span>
+              </div>
+              <div class="column-content"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="view-visual" class="view-container active">
           <div class="tactical-dashboard-grid">
 
             <!-- 1. MOMENTUM GAUGE (Operational Tempo) -->
@@ -860,7 +904,7 @@
           <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
 
           <script src="assets/js/charts.js"></script>
-          <script src="assets/js/charts.js"></script>
+
           <script src="assets/js/map.js"></script>
           <script src="assets/js/orbat_tracker.js"></script>
 
