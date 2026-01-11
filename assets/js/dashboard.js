@@ -7,10 +7,11 @@ console.log("🚀 Dashboard Module Loading...");
 
 class MomentumGauge {
     constructor(canvasId, valueId, statusId) {
-        this.canvas = document.getElementById(canvasId);
+        // Canvas no longer used, but keep reference for compatibility
         this.valueEl = document.getElementById(valueId);
         this.statusEl = document.getElementById(statusId);
-        this.chart = null;
+        this.barFill = document.getElementById('tempoBarFill');
+        this.marker = document.getElementById('tempoMarker');
     }
 
     calculateMetrics(events) {
@@ -43,7 +44,7 @@ class MomentumGauge {
         const percent = Math.round(metrics.ratio * 100);
 
         // Update Text
-        this.valueEl.innerText = `${percent}%`;
+        if (this.valueEl) this.valueEl.innerText = `${percent}%`;
 
         let statusText = "STALEMATE";
         let color = "#64748b"; // Grey
@@ -59,39 +60,18 @@ class MomentumGauge {
             color = "#3b82f6"; // Blue
         }
 
-        this.statusEl.innerText = statusText;
-        this.statusEl.style.color = color;
+        if (this.statusEl) {
+            this.statusEl.innerText = statusText;
+            this.statusEl.style.color = color;
+        }
 
-        // Draw Gauge (Simple Arc on Canvas)
-        this.drawGauge(metrics.ratio, color);
-    }
-
-    drawGauge(value, color) {
-        if (!this.canvas) return;
-        const ctx = this.canvas.getContext('2d');
-        const W = this.canvas.width = this.canvas.parentElement.clientWidth;
-        const H = this.canvas.height = 200;
-        const CX = W / 2;
-        const CY = H - 20;
-        const R = Math.min(W, H) / 1.5;
-
-        // Clear
-        ctx.clearRect(0, 0, W, H);
-
-        // Background Arc
-        ctx.beginPath();
-        ctx.arc(CX, CY, R, Math.PI, 2 * Math.PI);
-        ctx.lineWidth = 20;
-        ctx.strokeStyle = "#1e293b";
-        ctx.stroke();
-
-        // Value Arc
-        ctx.beginPath();
-        const endAngle = Math.PI + (value * Math.PI);
-        ctx.arc(CX, CY, R, Math.PI, endAngle);
-        ctx.lineWidth = 20;
-        ctx.strokeStyle = color;
-        ctx.stroke();
+        // Update horizontal bar and marker
+        if (this.barFill) {
+            this.barFill.style.width = `${percent}%`;
+        }
+        if (this.marker) {
+            this.marker.style.left = `${percent}%`;
+        }
     }
 }
 
@@ -142,24 +122,43 @@ class EquipmentTicker {
     }
 
     render() {
+        if (!this.content) return;
+
         if (this.data.length === 0) {
-            this.content.innerHTML = '<div class="ticker-item">No recent losses reported.</div>';
+            this.content.innerHTML = '<div class="loss-card placeholder">No recent losses reported.</div>';
             return;
         }
 
-        // Create HTML
-        const itemsHtml = this.data.map(item => `
-            <div class="ticker-item ${item.status.toLowerCase()}">
-                <div class="ticker-icon">${item.icon}</div>
-                <div class="ticker-info">
-                    <span class="ticker-model">${item.model}</span>
-                    <span class="ticker-meta">${item.date} | ${item.country} | ${item.status}</span>
-                </div>
-            </div>
-        `).join('');
+        // Limit to 20 most recent for cleaner display
+        const displayData = this.data.slice(0, 20);
 
-        // Duplicate for seamless scroll loop
-        this.content.innerHTML = itemsHtml + itemsHtml;
+        // Create HTML cards
+        const itemsHtml = displayData.map(item => {
+            const statusClass = item.status.toLowerCase().replace(/\s+/g, '-');
+            const statusClean = item.status.split(' ')[0].toUpperCase(); // First word
+
+            // Icon based on type
+            let iconClass = 'fa-solid fa-truck-monster'; // Default ground
+            const type = (item.model || '').toLowerCase();
+            if (type.includes('heli') || type.includes('ka-') || type.includes('mi-')) iconClass = 'fa-solid fa-helicopter';
+            if (type.includes('jet') || type.includes('su-') || type.includes('mig')) iconClass = 'fa-solid fa-jet-fighter';
+            if (type.includes('art') || type.includes('howitzer') || type.includes('m777')) iconClass = 'fa-solid fa-burst';
+            if (type.includes('tank') || type.includes('t-')) iconClass = 'fa-solid fa-truck-monster';
+            if (type.includes('drone') || type.includes('uav') || type.includes('orlan')) iconClass = 'fa-solid fa-plane';
+
+            return `
+            <div class="loss-card ${statusClass}">
+                <div class="loss-icon"><i class="${iconClass}"></i></div>
+                <div class="loss-info">
+                    <span class="loss-model">${item.model}</span>
+                    <span class="loss-meta">${item.date}</span>
+                </div>
+                <span class="loss-status ${statusClass}">${statusClean}</span>
+                <span class="loss-country">${item.country}</span>
+            </div>`;
+        }).join('');
+
+        this.content.innerHTML = itemsHtml;
     }
 }
 

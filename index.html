@@ -666,7 +666,7 @@
         <div id="view-visual" class="view-container active">
           <div class="tactical-dashboard-grid">
 
-            <!-- 1. MOMENTUM GAUGE (Operational Tempo) -->
+            <!-- 1. OPERATIONAL TEMPO (Redesigned - Minimalist) -->
             <div class="dashboard-panel momentum-panel">
               <div class="panel-header">
                 <h4><i class="fa-solid fa-gauge-high"></i> OPERATIONAL TEMPO (48H)</h4>
@@ -675,10 +675,21 @@
                   <i class="fa-solid fa-circle-info"></i>
                 </div>
               </div>
-              <div class="gauge-container" id="momentum-gauge-wrapper">
-                <canvas id="momentumCanvas"></canvas>
-                <div class="gauge-value" id="momentumValue">CALCULATING...</div>
-                <div class="gauge-status" id="momentumStatus">--</div>
+              <div class="tempo-widget">
+                <div class="tempo-bar-container">
+                  <div class="tempo-labels">
+                    <span class="tempo-label-left">STATIC</span>
+                    <span class="tempo-label-right">OFFENSIVE</span>
+                  </div>
+                  <div class="tempo-bar-track">
+                    <div class="tempo-bar-fill" id="tempoBarFill"></div>
+                    <div class="tempo-marker" id="tempoMarker"></div>
+                  </div>
+                </div>
+                <div class="tempo-readout">
+                  <div class="tempo-value" id="momentumValue">--</div>
+                  <div class="tempo-status" id="momentumStatus">CALCULATING...</div>
+                </div>
               </div>
             </div>
 
@@ -706,16 +717,22 @@
               </div>
             </div>
 
-            <!-- 3. EQUIPMENT LOSS TICKER -->
+            <!-- 3. EQUIPMENT LOSS FEED (Redesigned - Minimalist) -->
             <div class="dashboard-panel ticker-panel">
               <div class="panel-header">
-                <h4><i class="fa-solid fa-skull-crossbones"></i> EQUIPMENT LOSS FEED</h4>
+                <h4><i class="fa-solid fa-skull-crossbones"></i> EQUIPMENT LOSSES</h4>
                 <span class="live-dot"></span>
               </div>
-              <div class="ticker-container" id="equipment-ticker-wrapper">
-                <div class="ticker-scroll" id="ticker-content">
+              <div class="loss-filter-tabs">
+                <button class="loss-tab active" onclick="filterLosses('all')">ALL</button>
+                <button class="loss-tab" onclick="filterLosses('tank')">TANKS</button>
+                <button class="loss-tab" onclick="filterLosses('air')">AIR</button>
+                <button class="loss-tab" onclick="filterLosses('other')">OTHER</button>
+              </div>
+              <div class="loss-feed-container" id="equipment-ticker-wrapper">
+                <div class="loss-feed-list" id="ticker-content">
                   <!-- JS Injects Items Here -->
-                  <div class="ticker-item placeholder">Loading intelligence streams...</div>
+                  <div class="loss-card placeholder">Loading intelligence streams...</div>
                 </div>
               </div>
             </div>
