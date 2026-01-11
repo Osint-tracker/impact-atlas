@@ -44,14 +44,21 @@ def main():
         print(f"Database not found at {DB_PATH}")
         return
 
-    conn = sqlite3.connect(DB_PATH)
+    # Set timeout to 60s to wait for locks to clear
+    conn = sqlite3.connect(DB_PATH, timeout=60.0)
+    # Enable WAL mode for better concurrency
+    conn.execute("PRAGMA journal_mode=WAL")
     cursor = conn.cursor()
 
     # 1. Count Missing
-    cursor.execute(
-        "SELECT count(*) FROM unique_events WHERE embedding_vector IS NULL AND full_text_dossier IS NOT NULL"
-    )
-    missing_count = cursor.fetchone()[0]
+    try:
+        cursor.execute(
+            "SELECT count(*) FROM unique_events WHERE embedding_vector IS NULL AND full_text_dossier IS NOT NULL"
+        )
+        missing_count = cursor.fetchone()[0]
+    except sqlite3.OperationalError as e:
+        print(f"Error accessing DB: {e}")
+        return
 
     if missing_count == 0:
         print("All events have vectors! Ready for Smart Fusion.")
@@ -60,8 +67,6 @@ def main():
     print(f"Found {missing_count} events without vectors. Starting Generation...")
 
     # 2. Fetch Candidates
-    # Limit batch to avoid huge memory usage, loop will need to be re-run or we fetch all IDs
-    # Fetching all IDs is fine for 1M rows (ints are small)
     cursor.execute(
         "SELECT event_id, full_text_dossier FROM unique_events WHERE embedding_vector IS NULL AND full_text_dossier IS NOT NULL"
     )
@@ -70,7 +75,6 @@ def main():
     updated = 0
     errors = 0
     
-    # process in loop
     print("Starting processing loop (Ctrl+C to stop)...")
     
     for row in tqdm(rows, desc="Generating Embeddings", unit="evt"):
@@ -82,22 +86,35 @@ def main():
 
         vec = get_embedding(text)
         if vec:
-            cursor.execute(
-                "UPDATE unique_events SET embedding_vector = ? WHERE event_id = ?",
-                (json.dumps(vec), evt_id)
-            )
+            # Retry loop for DB lock
+            max_retries = 5
+            for attempt in range(max_retries):
+                try:
+                    cursor.execute(
+                        "UPDATE unique_events SET embedding_vector = ? WHERE event_id = ?",
+                        (json.dumps(vec), evt_id)
+                    )
+                    # Commit every 50 to keep transactions short
+                    if updated > 0 and updated % 50 == 0:
+                        conn.commit()
+                    break # Success
+                except sqlite3.OperationalError as e:
+                    if "locked" in str(e) and attempt < max_retries - 1:
+                        time.sleep(0.5 * (attempt + 1)) # Backoff
+                        continue
+                    else:
+                        print(f"Failed to update {evt_id}: {e}")
+                        errors += 1
+                        break
             updated += 1
         else:
             errors += 1
 
-        # Commit every 50
-        if updated > 0 and updated % 50 == 0:
-            conn.commit()
-            
-        # Optional: Sleep specifically requested? No, but good practice.
-        # time.sleep(0.01) 
-
-    conn.commit()
+    try:
+        conn.commit()
+    except Exception as e:
+        print(f"Final commit failed: {e}")
+        
     conn.close()
     print(f"\nFINISHED. Generated {updated} vectors. Errors: {errors}.")
 
