@@ -1262,262 +1262,261 @@ header nav a:hover {
   color: #64748b;
   margin: 10px 0 15px 0;
   text-transform: uppercase;
-
-  /* ============================================
-       ORBAT TRACKER - MINIMALIST HUD THEME v2 (REFINED)
-       ============================================ */
-  .orbat-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    color: #e2e8f0;
-    font-family: 'Rajdhani', sans-serif;
-    /* Enforce Tech Font */
-  }
-
-  .orbat-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    /* Very generous spacing */
-  }
-
-  /* --- TAB REDESIGN (Clean & Holographic) --- */
-  .sidebar-tabs {
-    background: transparent;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 0 10px;
-    gap: 0;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .s-tab-btn {
-    flex: 1;
-    background: transparent;
-    border: none;
-    border-bottom: 2px solid transparent;
-    color: #475569;
-    /* Muted inactive */
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 16px 0;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    text-align: center;
-  }
-
-  .s-tab-btn:hover {
-    color: #94a3b8;
-    background: rgba(255, 255, 255, 0.01);
-  }
-
-  .s-tab-btn.active {
-    color: #f8fafc;
-    /* White active */
-    text-shadow: 0 0 15px rgba(245, 158, 11, 0.8);
-    /* Amber Glow */
-  }
-
-  /* Sci-Fi Underline Glow */
-  .s-tab-btn.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 20%;
-    width: 60%;
-    /* Centered dash */
-    height: 2px;
-    background: #f59e0b;
-    box-shadow: 0 -2px 10px #f59e0b, 0 0 20px #f59e0b;
-    border-radius: 2px;
-    animation: glowPulse 3s infinite;
-  }
-
-  @keyframes glowPulse {
-    0% {
-      box-shadow: 0 -2px 10px #f59e0b, 0 0 20px #f59e0b;
-      opacity: 0.8;
-    }
-
-    50% {
-      box-shadow: 0 -2px 15px #f59e0b, 0 0 30px #f59e0b;
-      opacity: 1;
-    }
-
-    100% {
-      box-shadow: 0 -2px 10px #f59e0b, 0 0 20px #f59e0b;
-      opacity: 0.8;
-    }
-  }
-
-  /* --- HUD CARD (Holographic Plate) --- */
-  .hud-card {
-    position: relative;
-    /* Very subtle gradient, almost invisible background */
-    background: linear-gradient(90deg, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.2) 100%);
-    border-left: 2px solid #334155;
-    /* Default Idle Border */
-    padding: 4px 0 4px 16px;
-    /* Indent content */
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    transition: all 0.3s ease;
-  }
-
-  /* Hover Effect: Light up the plate */
-  .hud-card:hover {
-    background: linear-gradient(90deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.3) 100%);
-    padding-left: 20px;
-    /* Slight shift */
-  }
-
-  /* STATUS VARIANTS */
-  .hud-card.status-engaged {
-    border-left-color: #ef4444;
-    box-shadow: -15px 0 20px -10px rgba(239, 68, 68, 0.15);
-    /* Soft red ambient glow */
-  }
-
-  .hud-card.status-regrouping {
-    border-left-color: #eab308;
-  }
-
-  /* --- HEADER (Clean Typography) --- */
-  .hud-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .hud-unit-name {
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 600;
-    font-size: 1.25rem;
-    /* Larger */
-    color: #f1f5f9;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
-  /* Animated Status Dot */
-  .hud-status-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: #334155;
-  }
-
-  .hud-card.status-engaged .hud-status-dot {
-    background-color: #ef4444;
-    box-shadow: 0 0 8px #ef4444, 0 0 15px #ef4444;
-    /* Neon Red Dot */
-    animation: pulse-dot 1s infinite alternate;
-  }
-
-  .hud-card.status-regrouping .hud-status-dot {
-    background-color: #eab308;
-    box-shadow: 0 0 8px #eab308;
-  }
-
-  @keyframes pulse-dot {
-    from {
-      opacity: 0.5;
-      transform: scale(0.8);
-    }
-
-    to {
-      opacity: 1;
-      transform: scale(1.2);
-    }
-  }
-
-  /* --- DETAILS (Grid Layout) --- */
-  .hud-details {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding-right: 10px;
-  }
-
-  .hud-meta-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-size: 0.8rem;
-    color: #94a3b8;
-  }
-
-  .hud-label {
-    color: #475569;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    margin-right: 8px;
-  }
-
-  /* --- COORDINATES (Tech Bracket Style) --- */
-  .hud-coords {
-    align-self: flex-start;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    color: #f59e0b;
-    margin-top: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    opacity: 0.8;
-    position: relative;
-    padding: 2px 0;
-  }
-
-  .hud-coords::before {
-    content: '[';
-    margin-right: 5px;
-    color: #475569;
-    transition: 0.2s;
-  }
-
-  .hud-coords::after {
-    content: ']';
-    margin-left: 5px;
-    color: #475569;
-    transition: 0.2s;
-  }
-
-  .hud-coords:hover {
-    opacity: 1;
-    text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
-    letter-spacing: 1px;
-    /* Expand effect */
-  }
-
-  .hud-coords:hover::before,
-  .hud-coords:hover::after {
-    color: #f59e0b;
-    margin: 0 8px;
-    /* Brackets move out */
-  }
-
-  .hud-coords i {
-    display: none;
-  }
-
-  /* Hide icon for cleaner look */
-
   letter-spacing: 1px;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 10px;
 }
+
+/* ============================================
+       ORBAT TRACKER - MINIMALIST HUD THEME v2 (REFINED)
+       ============================================ */
+.orbat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: #e2e8f0;
+  font-family: 'Rajdhani', sans-serif;
+  /* Enforce Tech Font */
+}
+
+.orbat-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  /* Very generous spacing */
+}
+
+/* --- TAB REDESIGN (Clean & Holographic) --- */
+.sidebar-tabs {
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0 10px;
+  gap: 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.s-tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #475569;
+  /* Muted inactive */
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 16px 0;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  text-align: center;
+}
+
+.s-tab-btn:hover {
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.s-tab-btn.active {
+  color: #f8fafc;
+  /* White active */
+  text-shadow: 0 0 15px rgba(245, 158, 11, 0.8);
+  /* Amber Glow */
+}
+
+/* Sci-Fi Underline Glow */
+.s-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 20%;
+  width: 60%;
+  /* Centered dash */
+  height: 2px;
+  background: #f59e0b;
+  box-shadow: 0 -2px 10px #f59e0b, 0 0 20px #f59e0b;
+  border-radius: 2px;
+  animation: glowPulse 3s infinite;
+}
+
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 -2px 10px #f59e0b, 0 0 20px #f59e0b;
+    opacity: 0.8;
+  }
+
+  50% {
+    box-shadow: 0 -2px 15px #f59e0b, 0 0 30px #f59e0b;
+    opacity: 1;
+  }
+
+  100% {
+    box-shadow: 0 -2px 10px #f59e0b, 0 0 20px #f59e0b;
+    opacity: 0.8;
+  }
+}
+
+/* --- HUD CARD (Holographic Plate) --- */
+.hud-card {
+  position: relative;
+  /* Very subtle gradient, almost invisible background */
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.2) 100%);
+  border-left: 2px solid #334155;
+  /* Default Idle Border */
+  padding: 4px 0 4px 16px;
+  /* Indent content */
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.3s ease;
+}
+
+/* Hover Effect: Light up the plate */
+.hud-card:hover {
+  background: linear-gradient(90deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.3) 100%);
+  padding-left: 20px;
+  /* Slight shift */
+}
+
+/* STATUS VARIANTS */
+.hud-card.status-engaged {
+  border-left-color: #ef4444;
+  box-shadow: -15px 0 20px -10px rgba(239, 68, 68, 0.15);
+  /* Soft red ambient glow */
+}
+
+.hud-card.status-regrouping {
+  border-left-color: #eab308;
+}
+
+/* --- HEADER (Clean Typography) --- */
+.hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hud-unit-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 1.25rem;
+  /* Larger */
+  color: #f1f5f9;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Animated Status Dot */
+.hud-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #334155;
+}
+
+.hud-card.status-engaged .hud-status-dot {
+  background-color: #ef4444;
+  box-shadow: 0 0 8px #ef4444, 0 0 15px #ef4444;
+  /* Neon Red Dot */
+  animation: pulse-dot 1s infinite alternate;
+}
+
+.hud-card.status-regrouping .hud-status-dot {
+  background-color: #eab308;
+  box-shadow: 0 0 8px #eab308;
+}
+
+@keyframes pulse-dot {
+  from {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* --- DETAILS (Grid Layout) --- */
+.hud-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-right: 10px;
+}
+
+.hud-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.hud-label {
+  color: #475569;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-right: 8px;
+}
+
+/* --- COORDINATES (Tech Bracket Style) --- */
+.hud-coords {
+  align-self: flex-start;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: #f59e0b;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  opacity: 0.8;
+  position: relative;
+  padding: 2px 0;
+}
+
+.hud-coords::before {
+  content: '[';
+  margin-right: 5px;
+  color: #475569;
+  transition: 0.2s;
+}
+
+.hud-coords::after {
+  content: ']';
+  margin-left: 5px;
+  color: #475569;
+  transition: 0.2s;
+}
+
+.hud-coords:hover {
+  opacity: 1;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+  letter-spacing: 1px;
+  /* Expand effect */
+}
+
+.hud-coords:hover::before,
+.hud-coords:hover::after {
+  color: #f59e0b;
+  margin: 0 8px;
+  /* Brackets move out */
+}
+
+.hud-coords i {
+  display: none;
+}
+
+/* Hide icon for cleaner look */
 
 .layer-section-title::after {
   content: '';
