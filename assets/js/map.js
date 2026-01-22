@@ -15,6 +15,7 @@
   let currentFrontlineLayer = null;
   let historicalFrontlineLayer = null;
   let firmsLayer = null;
+  let unitsLayer = null;
 
   window.allEventsData = [];
   window.globalEvents = [];
@@ -22,18 +23,18 @@
 
   let mapDates = []; // Historical dates index
 
-  // Helper centrale per definire cosa è civile
+  // Central helper to define what is civilian
   function isCivilianEvent(e) {
-    // Unisce tutti i campi di testo per cercare parole chiave
+    // Joins all text fields to search for keywords
     const fullText = (e.category + ' ' + e.type + ' ' + e.location_precision + ' ' + e.filters).toUpperCase();
 
-    // Parole che identificano un evento NON strettamente militare/cinetico
+    // Words identifying a NON strictly military/kinetic event
     const civKeywords = ['CIVIL', 'POLITIC', 'ECONOM', 'HUMANITAR', 'DIPLOMA', 'ACCIDENT', 'STATEMENT'];
 
-    // Se trova una di queste parole, è civile
+    // If one of these words is found, it is civilian
     if (civKeywords.some(k => fullText.includes(k))) return true;
 
-    // Opzionale: esclude tutto ciò che non è in UA/RU (Geofencing grezzo)
+    // Optional: excludes everything not in UA/RU (Rough Geofencing)
     // if (e.lat < 44 || e.lat > 57 || e.lon < 22 || e.lon > 50) return true; 
 
     return false;
@@ -101,36 +102,36 @@
   }
 
   // ==========================================
-  // 1. GENERAZIONE POPUP (Corretta e con Stile Elegante)
+  // 1. POPUP GENERATION (Correct and with Elegant Style)
   // ==========================================
   function createPopupContent(e) {
-    // 1. Recupera l'ID in modo sicuro
-    // Usa 'event_id' se esiste, altrimenti 'id'. 'feature' NON esiste qui.
+    // 1. Safely retrieve ID
+    // Use 'event_id' if exists, otherwise 'id'. 'feature' does NOT exist here.
     const id = e.event_id || e.id || (e.properties ? e.properties.event_id : null);
 
-    // 2. Determina il colore
+    // 2. Determine color
     const color = getColor(e.intensity);
 
-    // 3. Gestione Footer Fonte
+    // 3. Source Footer Management
     let sourceFooter = '';
     if (e.source && e.source !== 'Unknown Source') {
       const url = e.source.startsWith('http') ? e.source : '#';
-      let domain = "Fonte Originale";
+      let domain = "Original Source";
       try {
         if (url !== '#') domain = new URL(url).hostname.replace('www.', '');
       } catch (err) { }
 
       sourceFooter = `
             <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #334155; display: flex; align-items: center; justify-content: space-between;">
-              <span style="font-size: 0.7rem; color: #64748b;">Fonte:</span>
+              <span style="font-size: 0.7rem; color: #64748b;">Source:</span>
               <a href="${url}" target="_blank" style="color: #3b82f6; text-decoration: none;">
                  <i class="fa-solid fa-link"></i> ${domain}
               </a>
             </div>`;
     }
 
-    // 4. Costruzione HTML Popup (Stile Elegante Ripristinato)
-    // Nota: Il bottone ha lo stile INLINE per garantire che sia blu e bello come prima.
+    // 4. Popup HTML Construction (Elegant Style Restored)
+    // Note: Button has INLINE style to ensure it is blue and beautiful as before.
     return `
     <div class="acled-popup" style="color:#e2e8f0; font-family: 'Inter', sans-serif; min-width: 260px;">
       
@@ -139,19 +140,19 @@
         
         <div style="margin-top:8px; display:flex; gap:8px;">
           <span class="popup-meta-tag" style="background:#1e293b; padding:2px 6px; border-radius:4px; font-size:0.75rem;"><i class="fa-regular fa-calendar"></i> ${e.date}</span>
-          <span class="popup-meta-tag" style="background:#1e293b; padding:2px 6px; border-radius:4px; font-size:0.75rem;"><i class="fa-solid fa-tag"></i> ${e.type || 'Evento'}</span>
+          <span class="popup-meta-tag" style="background:#1e293b; padding:2px 6px; border-radius:4px; font-size:0.75rem;"><i class="fa-solid fa-tag"></i> ${e.type || 'Event'}</span>
         </div>
       </div>
 
       <div style="font-size:0.85rem; line-height:1.6; color:#cbd5e1; margin-bottom:15px;">
-        ${e.description ? (e.description.length > 120 ? e.description.substring(0, 120) + '...' : e.description) : 'Nessuna descrizione.'}
+        ${e.description ? (e.description.length > 120 ? e.description.substring(0, 120) + '...' : e.description) : 'No description.'}
       </div>
       
       <div class="popup-actions">
         <button 
           class="custom-dossier-btn" 
           onclick="openModal('${id}')"> 
-          <i class="fas fa-folder-open"></i> APRI DOSSIER
+          <i class="fas fa-folder-open"></i> OPEN DOSSIER
         </button>
       </div>
       
@@ -224,7 +225,7 @@
             className: 'historical-line'
           },
           onEachFeature: function (feature, layer) {
-            layer.bindPopup(`<b>Situazione al:</b> ${dateString}<br>Territorio occupato`);
+            layer.bindPopup(`<b>Situation as of:</b> ${dateString}<br>Occupied territory`);
           }
         }).addTo(map);
 
@@ -412,7 +413,7 @@
     fetch('assets/data/events.geojson')
       .then(response => response.json())
       .then(data => {
-        // 1. Dati Grezzi
+        // 1. Raw Data
         window.allEventsData = data.features || data;
         console.log(`💾 Data downloaded: ${window.allEventsData.length} raw events`);
 
@@ -421,15 +422,15 @@
           return;
         }
 
-        // 2. PROCESSAMENTO (Unico ciclo map corretto)
+        // 2. PROCESSING (Unique correct map cycle)
         window.globalEvents = window.allEventsData.map(f => {
-          // Logica Moment.js
+          // Moment.js Logic
           const props = f.properties || f;
 
-          // Tentativo con formati espliciti
+          // Attempt with explicit formats
           let m = moment(props.date, ["DD/MM/YY", "DD/MM/YYYY", "YYYY-MM-DD", "DD-MM-YYYY"]);
 
-          // Fallback se non valido
+          // Fallback if invalid
           if (!m.isValid()) {
             m = moment(props.date);
           }
@@ -438,8 +439,8 @@
 
           return {
             ...props,
-            // --- FIX CRITICO: UNIFICAZIONE ID ---
-            // Se esiste cluster_id, usalo come event_id. Questo ripara il tasto Dossier.
+            // --- CRITICAL FIX: ID UNIFICATION ---
+            // If cluster_id exists, use it as event_id. This fixes the Dossier button.
             event_id: props.event_id || props.cluster_id || props.id,
             // ------------------------------------
             lat: f.geometry ? f.geometry.coordinates[1] : props.lat,
@@ -448,20 +449,20 @@
             date: m.isValid() ? m.format("DD/MM/YYYY") : props.date
           };
         })
-          // MODIFICA: Filtro "Spazzatura" Frontend
+          // MODIFICATION: Frontend "Junk" Filter
           .filter(e => {
-            // Esclude se coordinate sono 0
+            // Excludes if coordinates are 0
             if (!e.lat || !e.lon || e.lat === 0 || e.lon === 0) return false;
 
             return true;
           })
-          .sort((a, b) => b.timestamp - a.timestamp); // Ordine decrescente
+          .sort((a, b) => b.timestamp - a.timestamp); // Descending order
 
         console.log(`✅ Events processed: ${window.globalEvents.length}`);
 
-        // 3. DEFINIZIONE FILTRI (CIVILI + ATTORI + RICERCA SMART)
+        // 3. FILTER DEFINITION (CIVILIAN + ACTORS + SMART SEARCH)
         window._applyMapFiltersImpl = function () {
-          // A. Recupera Input (Gestione sicura se mancano elementi)
+          // A. Retrieve Input (Safe handling if elements missing)
           const toggle = document.getElementById('civilianToggle');
           const showCivilian = toggle ? toggle.checked : true;
 
@@ -471,44 +472,44 @@
           const actorSelect = document.getElementById('actorFilter');
           const selectedActor = actorSelect ? actorSelect.value : '';
 
-          // B. Ciclo di Filtraggio
+          // B. Filtering Cycle
           const filtered = window.globalEvents.filter(e => {
 
-            // 1. Filtro Civili (LOGICA ORIGINALE MANTENUTA)
+            // 1. Civilian Filter (ORIGINAL LOGIC KEPT)
             if (typeof isCivilianEvent === 'function') {
               const isCivil = isCivilianEvent(e);
               if (isCivil && !showCivilian) return false;
             }
 
-            // 2. Filtro Attore (NUOVO)
-            // Se c'è un attore selezionato nel menu, l'evento deve coincidere
+            // 2. Actor Filter (NEW)
+            // If an actor is selected in the menu, the event must match
             if (selectedActor && e.actor !== selectedActor) {
               return false;
             }
 
-            // 3. Ricerca Testuale Smart (NUOVO)
+            // 3. Smart Text Search (NEW)
             if (searchTerm) {
-              // Mapping Intelligente: Utente scrive "Russia" -> Cerchiamo Actor "RUS"
+              // Smart Mapping: User types "Russia" -> We search Actor "RUS"
               let targetActor = null;
               if (['russia', 'russo', 'russi', 'mosca'].some(k => searchTerm.includes(k))) targetActor = 'RUS';
               if (['ucraina', 'ukraine', 'kiev'].some(k => searchTerm.includes(k))) targetActor = 'UKR';
 
-              // Cerca nei campi di testo
+              // Search in text fields
               const inTitle = (e.title || '').toLowerCase().includes(searchTerm);
               const inDesc = (e.description || '').toLowerCase().includes(searchTerm);
               const inLoc = (e.location_precision || '').toLowerCase().includes(searchTerm);
 
-              // Cerca per attore smart (es. ho scritto "attacchi russi" -> mostra eventi RUS)
+              // Search by smart actor (e.g. wrote "russian attacks" -> show RUS events)
               const isSmartMatch = targetActor && e.actor === targetActor;
 
-              // Se non trovo il testo E non è un match smart -> Nascondi
+              // If text not found AND not a smart match -> Hide
               if (!inTitle && !inDesc && !inLoc && !isSmartMatch) return false;
             }
 
             return true;
           });
 
-          // C. Aggiorna Mappa e Contatori
+          // C. Update Map and Counters
           window.currentFilteredEvents = filtered;
           renderInternal(filtered);
 
@@ -516,17 +517,17 @@
           if (window.Dashboard) window.Dashboard.update(filtered);
         };
 
-        // Espone la funzione
+        // Exposes the function
         window.applyMapFilters = window._applyMapFiltersImpl;
 
-        // --- ATTIVAZIONE LIVE (FONDAMENTALE) ---
-        // Collega i filtri agli input HTML per aggiornare la mappa in tempo reale
+        // --- LIVE ACTIVATION (FUNDAMENTAL) ---
+        // Connects filters to HTML inputs to update map in real time
         const inputsToCheck = ['textSearch', 'actorFilter', 'civilianToggle'];
         inputsToCheck.forEach(id => {
           const el = document.getElementById(id);
           if (el) {
-            el.oninput = window.applyMapFilters; // Per quando scrivi
-            el.onchange = window.applyMapFilters; // Per menu e checkbox
+            el.oninput = window.applyMapFilters; // For when writing
+            el.onchange = window.applyMapFilters; // For menu and checkbox
           }
         });
 
@@ -550,17 +551,17 @@
         // Slider Init
         if (typeof setupTimeSlider === 'function') setupTimeSlider(window.globalEvents);
 
-        // 4. AVVIO MAPPA E RENDERING
+        // 4. START MAP AND RENDERING
         if (typeof window.applyMapFilters === 'function') {
           window.applyMapFilters();
         } else {
           renderInternal(window.globalEvents);
         }
 
-        // Inizializza Cluster/Map
+        // Initialize Cluster/Map
         initMap(window.globalEvents);
 
-      }) // <--- QUESTA CHIUDE IL .THEN (Il punto critico degli errori precedenti)
+      }) // <--- THIS CLOSES THE .THEN (The critical point of previous errors)
       .catch(err => {
         console.error("❌ CRITICAL: Failed to load events:", err);
       });
@@ -660,29 +661,355 @@
 
     if (layerName === 'firms') {
       if (isChecked) {
-        firmsLayer = L.tileLayer('https://map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_SNPP_Fires_375m_Day_Night/default/{time}/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png', {
-          attribution: 'NASA FIRMS',
-          maxZoom: 12,
-          minZoom: 6,
-          time: moment().format('YYYY-MM-DD'),
-          opacity: 0.7,
-          bounds: [[44.0, 22.0], [53.0, 40.0]]
-        }).addTo(map);
+        // Load FIRMS data from local GeoJSON (more reliable than WMTS tiles)
+        fetch('assets/data/thermal_firms.geojson')
+          .then(response => response.json())
+          .then(data => {
+            if (!data.features || data.features.length === 0) {
+              console.warn("⚠️ No FIRMS data available");
+              return;
+            }
+
+            // Create layer group for thermal hotspots
+            firmsLayer = L.layerGroup();
+
+            data.features.forEach(f => {
+              const coords = f.geometry.coordinates;
+              const props = f.properties;
+              const brightness = props.brightness || 300;
+
+              // Color based on brightness (hotter = more red)
+              let color = '#ff6b35'; // Default orange
+              if (brightness >= 350) color = '#ff0000'; // Red hot
+              else if (brightness >= 330) color = '#ff4500'; // Orange-red
+              else if (brightness >= 310) color = '#ff6b35'; // Orange
+              else color = '#ffa500'; // Yellow-orange
+
+              const marker = L.circleMarker([coords[1], coords[0]], {
+                radius: 6,
+                fillColor: color,
+                color: '#000',
+                weight: 1,
+                opacity: 0.8,
+                fillOpacity: 0.7
+              });
+
+              // Popup with dossier-matching styling
+              const confidenceLabel = props.confidence === 'h' ? 'HIGH' : props.confidence === 'l' ? 'LOW' : 'NOMINAL';
+              const confidenceColor = props.confidence === 'h' ? '#22c55e' : props.confidence === 'l' ? '#ef4444' : '#f59e0b';
+              const intensityPercent = Math.min(100, ((brightness - 280) / 120) * 100);
+              const frpValue = props.frp || 0;
+              const timeFormatted = props.acq_time ? `${String(props.acq_time).padStart(4, '0').slice(0, 2)}:${String(props.acq_time).padStart(4, '0').slice(2)} UTC` : 'N/A';
+
+              marker.bindPopup(`
+                <div class="firms-popup-content" style="
+                  min-width: 260px;
+                  max-width: 320px;
+                  font-family: 'Inter', sans-serif;
+                  background: #0f172a;
+                  border-radius: 8px;
+                  overflow: visible;
+                  border: 1px solid #334155;
+                ">
+                  <!-- Header matching dossier style -->
+                  <div style="
+                    background: linear-gradient(90deg, ${color}, #d97706);
+                    padding: 16px;
+                    border-bottom: 1px solid rgba(0,0,0,0.3);
+                  ">
+                    <div style="
+                      font-size: 1.1rem;
+                      font-weight: 700;
+                      line-height: 1.3;
+                      color: #fff;
+                    ">Thermal Anomaly Detected</div>
+                    <div style="
+                      display: flex;
+                      align-items: center;
+                      gap: 8px;
+                      margin-top: 6px;
+                      font-size: 0.8rem;
+                      color: rgba(255,255,255,0.8);
+                    ">
+                      <span>${props.acq_date || 'N/A'}</span>
+                      <span style="color: rgba(255,255,255,0.4);">|</span>
+                      <span style="
+                        background: rgba(0,0,0,0.25);
+                        padding: 2px 8px;
+                        border-radius: 4px;
+                        font-weight: 600;
+                        font-size: 0.7rem;
+                      ">NASA FIRMS</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Body -->
+                  <div style="padding: 16px;">
+                    <!-- Brightness Meter -->
+                    <div style="margin-bottom: 16px;">
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                          <span style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Brightness Temperature</span>
+                          <div class="info-icon-wrapper">
+                            <div class="info-icon">i</div>
+                            <div class="tooltip-card">
+                              <div class="tooltip-header">Brightness Temperature</div>
+                              <div class="tooltip-body">Temperature measured by satellite infrared sensor. Higher values indicate more intense thermal radiation from fires or explosions.</div>
+                              <div class="tooltip-footer">Scale: 280K (cool) to 400K+ (intense)</div>
+                            </div>
+                          </div>
+                        </div>
+                        <span style="
+                          font-family: 'JetBrains Mono', monospace;
+                          color: ${color};
+                          font-weight: 700;
+                          font-size: 1.1rem;
+                        ">${brightness.toFixed(0)} K</span>
+                      </div>
+                      <div style="background: #1e293b; border-radius: 4px; height: 6px; overflow: hidden;">
+                        <div style="
+                          width: ${intensityPercent}%;
+                          height: 100%;
+                          background: linear-gradient(90deg, #ffa500, ${color});
+                          border-radius: 4px;
+                        "></div>
+                      </div>
+                    </div>
+                    
+                    <!-- Stats Grid -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                      <div style="background: rgba(30,41,59,0.5); padding: 10px; border-radius: 6px; border: 1px solid #334155;">
+                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
+                          <span style="color: #94a3b8; font-size: 0.6rem; text-transform: uppercase; font-weight: 700;">Satellite</span>
+                          <div class="info-icon-wrapper">
+                            <div class="info-icon">i</div>
+                            <div class="tooltip-card">
+                              <div class="tooltip-header">Satellite Source</div>
+                              <div class="tooltip-body">NASA satellite that captured this detection. VIIRS sensors provide 375m spatial resolution.</div>
+                              <div class="tooltip-footer">Updated every 12 hours per satellite.</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div style="color: #f8fafc; font-weight: 600; font-size: 0.85rem;">${props.satellite || 'VIIRS'}</div>
+                      </div>
+                      <div style="background: rgba(30,41,59,0.5); padding: 10px; border-radius: 6px; border: 1px solid #334155;">
+                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
+                          <span style="color: #94a3b8; font-size: 0.6rem; text-transform: uppercase; font-weight: 700;">FRP</span>
+                          <div class="info-icon-wrapper">
+                            <div class="info-icon">i</div>
+                            <div class="tooltip-card">
+                              <div class="tooltip-header">Fire Radiative Power</div>
+                              <div class="tooltip-body">Rate of radiant energy released, measured in Megawatts. Higher FRP indicates larger or more intense fires.</div>
+                              <div class="tooltip-footer">Typical range: 1-50 MW for fires.</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div style="color: #f8fafc; font-weight: 600; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">${frpValue.toFixed(1)} MW</div>
+                      </div>
+                      <div style="background: rgba(30,41,59,0.5); padding: 10px; border-radius: 6px; border: 1px solid #334155;">
+                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
+                          <span style="color: #94a3b8; font-size: 0.6rem; text-transform: uppercase; font-weight: 700;">Detection Time</span>
+                          <div class="info-icon-wrapper">
+                            <div class="info-icon">i</div>
+                            <div class="tooltip-card">
+                              <div class="tooltip-header">Acquisition Time</div>
+                              <div class="tooltip-body">Time when the satellite sensor detected this thermal anomaly, in Coordinated Universal Time.</div>
+                              <div class="tooltip-footer">Detection window is ~5 minutes.</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div style="color: #f8fafc; font-weight: 600; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">${timeFormatted}</div>
+                      </div>
+                      <div style="background: rgba(30,41,59,0.5); padding: 10px; border-radius: 6px; border: 1px solid #334155;">
+                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
+                          <span style="color: #94a3b8; font-size: 0.6rem; text-transform: uppercase; font-weight: 700;">Confidence</span>
+                          <div class="info-icon-wrapper">
+                            <div class="info-icon">i</div>
+                            <div class="tooltip-card">
+                              <div class="tooltip-header">Detection Confidence</div>
+                              <div class="tooltip-body">Algorithm confidence level. High = strong thermal signature. Low = possible false positive from industrial activity.</div>
+                              <div class="tooltip-footer">Based on NASA FIRMS algorithm.</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div style="
+                          color: ${confidenceColor};
+                          font-weight: 700;
+                          font-size: 0.85rem;
+                        ">${confidenceLabel}</div>
+                      </div>
+                    </div>
+                    
+                    <!-- Coordinates Footer -->
+                    <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #334155; text-align: center;">
+                      <span style="color: #64748b; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace;">
+                        ${coords[1].toFixed(5)}°N, ${coords[0].toFixed(5)}°E
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              `, {
+                className: 'firms-popup',
+                maxWidth: 340,
+                minWidth: 260
+              });
+
+              firmsLayer.addLayer(marker);
+            });
+
+            firmsLayer.addTo(map);
+            console.log(`✅ FIRMS layer loaded: ${data.features.length} hotspots`);
+
+            // Show metadata info
+            if (data.metadata) {
+              console.log(`   Source: ${data.metadata.source}`);
+              console.log(`   Generated: ${data.metadata.generated}`);
+            }
+          })
+          .catch(err => {
+            console.error("❌ Failed to load FIRMS data:", err);
+          });
       } else {
-        if (firmsLayer) map.removeLayer(firmsLayer);
+        if (firmsLayer) {
+          map.removeLayer(firmsLayer);
+          firmsLayer = null;
+        }
+      }
+    } else if (layerName === 'units') {
+      // ORBAT Units Layer - Military unit positions from Parabellum sync
+      if (isChecked) {
+        fetch('assets/data/units.json')
+          .then(response => response.json())
+          .then(data => {
+            if (!data || data.length === 0) {
+              console.warn("⚠️ No units data available");
+              return;
+            }
+
+            unitsLayer = L.layerGroup();
+
+            data.forEach(unit => {
+              const lat = unit.last_seen_lat;
+              const lon = unit.last_seen_lon;
+
+              if (!lat || !lon) return;
+
+              // Faction colors
+              let color = '#64748b'; // Default gray
+              let factionLabel = 'Unknown';
+              if (unit.faction === 'UA') {
+                color = '#3b82f6'; // Blue for Ukraine
+                factionLabel = 'Ukraine';
+              } else if (unit.faction === 'RU' || unit.faction === 'RU_PROXY' || unit.faction === 'RU_PMC') {
+                color = '#ef4444'; // Red for Russia
+                factionLabel = 'Russia';
+              }
+
+              // Unit type icon
+              let unitIcon = 'fa-users';
+              const unitType = (unit.type || '').toUpperCase();
+              if (unitType.includes('ARMOR') || unitType.includes('TANK')) unitIcon = 'fa-shield-halved';
+              else if (unitType.includes('ARTILLERY')) unitIcon = 'fa-burst';
+              else if (unitType.includes('AIRBORNE') || unitType.includes('AIR_ASSAULT')) unitIcon = 'fa-parachute-box';
+              else if (unitType.includes('DRONE')) unitIcon = 'fa-drone';
+              else if (unitType.includes('SOF') || unitType.includes('SPECIAL')) unitIcon = 'fa-crosshairs';
+
+              const marker = L.circleMarker([lat, lon], {
+                radius: 8,
+                fillColor: color,
+                color: '#fff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8
+              });
+
+              // Format last seen date
+              let lastSeenStr = 'Unknown';
+              if (unit.last_seen_date) {
+                try {
+                  const d = new Date(unit.last_seen_date);
+                  lastSeenStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                } catch (e) {
+                  lastSeenStr = unit.last_seen_date;
+                }
+              }
+
+              marker.bindPopup(`
+                <div style="
+                  min-width: 220px;
+                  font-family: 'Inter', sans-serif;
+                  background: #0f172a;
+                  border-radius: 8px;
+                  border: 1px solid ${color};
+                ">
+                  <div style="
+                    background: ${color};
+                    padding: 12px;
+                    border-radius: 8px 8px 0 0;
+                  ">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <i class="fa-solid ${unitIcon}" style="font-size: 1.2rem; color: #fff;"></i>
+                      <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">
+                        ${unit.display_name || unit.unit_id}
+                      </div>
+                    </div>
+                    <div style="color: rgba(255,255,255,0.8); font-size: 0.75rem; margin-top: 4px;">
+                      ${factionLabel} • ${unit.echelon || unit.type || 'Unit'}
+                    </div>
+                  </div>
+                  <div style="padding: 12px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.75rem;">
+                      <div style="background: rgba(30,41,59,0.5); padding: 8px; border-radius: 4px;">
+                        <div style="color: #94a3b8; text-transform: uppercase; font-size: 0.6rem; font-weight: 700;">Type</div>
+                        <div style="color: #f8fafc; font-weight: 600;">${unit.type || 'N/A'}</div>
+                      </div>
+                      <div style="background: rgba(30,41,59,0.5); padding: 8px; border-radius: 4px;">
+                        <div style="color: #94a3b8; text-transform: uppercase; font-size: 0.6rem; font-weight: 700;">Status</div>
+                        <div style="color: ${unit.status === 'ACTIVE' ? '#22c55e' : '#f59e0b'}; font-weight: 600;">${unit.status || 'ACTIVE'}</div>
+                      </div>
+                    </div>
+                    <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #334155; text-align: center;">
+                      <span style="color: #64748b; font-size: 0.65rem;">Last seen: ${lastSeenStr}</span>
+                    </div>
+                    <div style="text-align: center; margin-top: 4px;">
+                      <span style="color: #475569; font-size: 0.6rem; font-family: 'JetBrains Mono', monospace;">
+                        ${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              `, {
+                className: 'unit-popup',
+                maxWidth: 280
+              });
+
+              unitsLayer.addLayer(marker);
+            });
+
+            unitsLayer.addTo(map);
+            console.log(`✅ Units layer loaded: ${data.length} units`);
+          })
+          .catch(err => {
+            console.error("❌ Failed to load units data:", err);
+          });
+      } else {
+        if (unitsLayer) {
+          map.removeLayer(unitsLayer);
+          unitsLayer = null;
+        }
       }
     }
   };
 
-  // Funzione filtro globale (wrapper difensivo)
-  // La vera implementazione viene impostata dopo il caricamento dei dati in window._applyMapFiltersImpl
+  // Global filter function (defensive wrapper)
+  // The real implementation is set after data loading in window._applyMapFiltersImpl
   window.applyMapFilters = function () {
-    // Se l'implementazione reale è disponibile, usala
+    // If real implementation is available, use it
     if (typeof window._applyMapFiltersImpl === 'function') {
       return window._applyMapFiltersImpl();
     }
 
-    // Fallback difensivo se i dati non sono ancora pronti o il DOM non contiene il toggle
+    // Defensive fallback if data not yet ready or DOM misses toggle
     const toggleEl = document.getElementById('civilianToggle');
     const showCivilian = toggleEl ? toggleEl.checked : true;
 
@@ -703,14 +1030,14 @@
   // ============================================
 
   window.openModal = function (eventIdOrObj) {
-    console.log("Tentativo apertura dossier:", eventIdOrObj);
+    console.log("Dossier opening attempt:", eventIdOrObj);
     let eventData = null;
 
     if (typeof eventIdOrObj === 'string') {
       if (eventIdOrObj.startsWith('%7B') || eventIdOrObj.startsWith('{')) {
         try { eventData = JSON.parse(decodeURIComponent(eventIdOrObj)); } catch (err) { }
       } else {
-        // FIX: Confronto robusto (converte tutto a stringa)
+        // FIX: Robust comparison (converts all to string)
         if (window.globalEvents) {
           const searchId = String(eventIdOrObj);
           eventData = window.globalEvents.find(evt => String(evt.event_id) === searchId);
@@ -721,11 +1048,11 @@
     }
 
     if (!eventData) {
-      console.error(`❌ Evento non trovato per il Dossier. ID ricercato: ${eventIdOrObj}`);
-      return; // Interrompe l'esecuzione se non trova dati
+      console.error(`❌ Event not found for Dossier. Searched ID: ${eventIdOrObj}`);
+      return; // Interrupts execution if no data found
     }
 
-    // 2. Passa i dati alla funzione di rendering
+    // 2. Pass data to rendering function
     window.openIntelDossier(eventData);
   };
   // ============================================
@@ -740,7 +1067,7 @@
     document.getElementById('videoModal').style.display = 'flex'; // Use Flex for centering
 
     // --- 1. CONTEXT (Left Column) ---
-    document.getElementById('modalTitle').innerText = eventData.title || "Titolo non disponibile";
+    document.getElementById('modalTitle').innerText = eventData.title || "Title not available";
     document.getElementById('modalDate').innerText = eventData.date || "Unknown Date";
 
     // Type Tag
@@ -749,7 +1076,7 @@
 
     // Description
     const descEl = document.getElementById('modalDesc');
-    if (descEl) descEl.innerText = eventData.description || "Nessuna descrizione disponibile per questo evento.";
+    if (descEl) descEl.innerText = eventData.description || "No description available for this event.";
 
     // --- 2. METRICS CARD (Right Column) ---
     const vecK = parseFloat(eventData.vec_k) || 0;
@@ -960,7 +1287,7 @@
     }
 
     // ============================================================
-    // B. GESTIONE SCORE & GRAFICO 
+    // B. SCORE & CHART MANAGEMENT 
     // ============================================================
     const score = parseInt(eventData.reliability || eventData.Reliability || eventData.confidence || 0);
 
@@ -1052,41 +1379,41 @@
     if (modal) modal.style.display = 'flex';
   }
 
-  // --- DATI INTELLIGENCE AGGIUNTIVI ---
+  // --- ADDITIONAL INTELLIGENCE DATA ---
   // Duplicate intelligence rendering logic removed because it is already handled inside openIntelDossier(eventData).
   // The duplicate block referenced an undefined variable `e` and caused unmatched braces/syntax errors.
 
-  // Funzione per disegnare le fonti (Aggiornata per liste URL)
+  // Function to draw sources (Updated for URL lists)
   function renderBibliography(references) {
     const container = document.getElementById('modal-bibliography');
     if (!container) return;
 
     container.innerHTML = '';
 
-    // Se non ci sono reference o è una lista vuota
+    // If no references or empty list
     if (!references || references.length === 0) {
-      container.innerHTML = '<div style="padding:10px; background:rgba(255,255,255,0.02); border-radius:4px; color:#64748b; font-style:italic; font-size:0.85rem; text-align:center;">Nessuna fonte aggregata disponibile per questo evento.</div>';
+      container.innerHTML = '<div style="padding:10px; background:rgba(255,255,255,0.02); border-radius:4px; color:#64748b; font-style:italic; font-size:0.85rem; text-align:center;">No aggregated sources available for this event.</div>';
       return;
     }
 
-    let html = `<h5 style="color:#94a3b8; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:15px; border-bottom:1px solid #334155; padding-bottom:5px; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-link"></i> Fonti Correlate & Intelligence</h5>`;
+    let html = `<h5 style="color:#94a3b8; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:15px; border-bottom:1px solid #334155; padding-bottom:5px; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-link"></i> Related Sources & Intelligence</h5>`;
 
     references.forEach((ref, idx) => {
-      // Gestione robusta: supporta sia stringhe (URL) che oggetti vecchi
+      // Robust management: supports both strings (URs) and old objects
       let url = (typeof ref === 'object' && ref.url) ? ref.url : ref;
 
-      // Se non è un link valido, lo mostriamo come testo, altrimenti creiamo il link
+      // If not valid link, show as text, otherwise create link
       let isLink = typeof url === 'string' && (url.startsWith('http') || url.startsWith('www'));
 
-      // Estetica: Estrae il dominio per non mostrare URL chilometrici (es. "twitter.com")
-      let displayName = "Fonte Esterna";
+      // Aesthetics: Extracts domain to not show kilometer-long URLs (e.g. "twitter.com")
+      let displayName = "External Source";
       if (isLink) {
         try {
           const urlObj = new URL(url.startsWith('http') ? url : 'https://' + url);
           displayName = urlObj.hostname.replace('www.', '');
         } catch (e) { displayName = url; }
       } else {
-        displayName = "Riferimento d'archivio";
+        displayName = "Archive Reference";
       }
 
       html += `
@@ -1114,9 +1441,9 @@
     wrapper.querySelector('.juxtapose-handle').style.left = `${pos}%`;
   };
 
-  // Funzione Grafico Aggiornata con Colore Dinamico
+  // Updated Chart Function with Dynamic Color
   let confChart = null;
-  function renderConfidenceChart(score, color = '#f59e0b') { // <--- Aggiunto parametro color
+  function renderConfidenceChart(score, color = '#f59e0b') { // <--- Added color parameter
     const ctxEl = document.getElementById('confidenceChart');
     if (!ctxEl) return;
 
@@ -1128,7 +1455,7 @@
       data: {
         datasets: [{
           data: [score, 100 - score],
-          backgroundColor: [color, '#1e293b'], // <--- Usa il colore dinamico qui
+          backgroundColor: [color, '#1e293b'], // <--- Use dynamic color here
           borderWidth: 0,
           borderRadius: 20
         }]
@@ -1148,7 +1475,7 @@
           const fontSize = (height / 100).toFixed(2);
           ctx.font = "bold " + fontSize + "em Inter";
           ctx.textBaseline = "middle";
-          ctx.fillStyle = color; // <--- E anche qui per il testo centrale
+          ctx.fillStyle = color; // <--- And also here for central text
           const text = score + "%";
           const textX = Math.round((width - ctx.measureText(text).width) / 2);
           const textY = height / 2;
@@ -1205,7 +1532,7 @@
     });
 
     if (visualEvents.length === 0) {
-      grid.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; color:#64748b; padding:40px;"><i class="fa-solid fa-camera-retro" style="font-size:2rem; margin-bottom:10px; opacity:0.5;"></i><br>Nessun media visivo trovato.</div>`;
+      grid.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; color:#64748b; padding:40px;"><i class="fa-solid fa-camera-retro" style="font-size:2rem; margin-bottom:10px; opacity:0.5;"></i><br>No visual media found.</div>`;
     }
   };
 

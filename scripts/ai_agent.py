@@ -12,6 +12,11 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
+from geo_instrument import GeoProbe  
+from history_instrument import UnitHistoryProbe
+from debug_instrument import CrashRecorder
+from ai_inference_node import TitanIntelligenceNode  # Trident: Fine-tuned classifier
+from layer1_sensor import TitanSensor  # Trident: Physics-based scorer
 import sys
 
 # Windows Unicode Fix
@@ -255,6 +260,16 @@ class SuperSquadAgent:
         # 3. Load Knowledge Bases
         self.sources_db = self._load_json_db(SOURCES_DB_PATH, "sources")
         self.keywords_db = self._load_json_db(KEYWORDS_DB_PATH, "keywords")
+
+        # 4. Initialize Geographic Sanity Probe (Sanfilippo Method)
+        self.geo_probe = GeoProbe(use_reverse_geocoding=True, timeout=5)
+        
+        # 5. Initialize Kinetic Plausibility Probe (Sanfilippo Method - Part 2)
+        self.history_probe = UnitHistoryProbe()
+        
+        # Configuration for the retry loop
+        self.GEO_MAX_RETRIES = 3
+        self.KINETIC_MAX_RETRIES = 2  # Max retries for kinetic validation
 
         print("✅ Super Squad Agent Initialized (Engine: Google Serper Time-Machine).")
 
@@ -871,7 +886,11 @@ RAW TEXT:
     # =========================================================================
     def _repair_json_with_ai(self, broken_text, error_context):
         """
-        Chiama un modello veloce (GPT-4o-mini) per correggere errori di sintassi JSON.
+        Calls a fast model (GPT-4o-mini) to fix JSON syntax errors.
+        
+        INSTRUMENTED with CrashRecorder:
+        - Logs successful repairs with before/after
+        - Logs failures with full context for post-mortem
         """
         print(f"   🔧 Activating JSON Mechanic (Error: {error_context})...")
 
@@ -897,15 +916,42 @@ RAW TEXT:
             )
             fixed_text = response.choices[0].message.content.strip()
 
-            # Rimuoviamo eventuali backticks residui
+            # Remove residual backticks
             if "```" in fixed_text:
                 fixed_text = fixed_text.replace(
                     "```json", "").replace("```", "").strip()
 
-            return json.loads(fixed_text)
+            # Attempt to parse the repaired JSON
+            repaired_data = json.loads(fixed_text)
+            
+            # SUCCESS: Log the repair for analysis (helps understand common errors)
+            print(f"   ✅ JSON Mechanic succeeded! Repaired {len(broken_text)} chars -> {len(fixed_text)} chars")
+            
+            return repaired_data
 
+        except json.JSONDecodeError as repair_parse_error:
+            # AI repair produced invalid JSON - log for forensics
+            print(f"   ❌ JSON Mechanic repair produced invalid JSON: {repair_parse_error}")
+            CrashRecorder.dump_state(
+                context_name="_repair_json_with_ai.post_repair_failure",
+                raw_input=broken_text,
+                error=repair_parse_error,
+                partial_data={
+                    "original_error": error_context,
+                    "ai_output": fixed_text[:1000] if 'fixed_text' in dir() else None
+                }
+            )
+            return None
+            
         except Exception as e:
+            # API error or other failure - log with original context
             print(f"   ❌ JSON Mechanic Failed: {e}")
+            CrashRecorder.dump_state(
+                context_name="_repair_json_with_ai.api_failure",
+                raw_input=broken_text,
+                error=e,
+                partial_data={"original_error": error_context}
+            )
             return None
 
     # =========================================================================
@@ -972,6 +1018,11 @@ RAW TEXT:
     def _step_2_the_soldier(self, cluster_data):
         """
         Role: Strict Extraction from Cluster with Fallback Repair.
+        
+        UPGRADED with "Sanfilippo Method" Geographic Sanity Loop:
+        - Validates extracted coordinates against theatre of operations
+        - Retries up to 3 times if coordinates are hallucinated
+        - Falls back to null coordinates after exhausting retries
         """
         print("   🤖 Step 2: The Soldier analyzing cluster...")
 
@@ -989,76 +1040,142 @@ RAW TEXT:
         {combined_text[:25000]}
         """
 
-        raw_response_text = ""
+        # =====================================================================
+        # GEOGRAPHIC SANITY LOOP (Sanfilippo Method)
+        # =====================================================================
+        attempt = 0
+        last_probe_result = None
+        parsed_data = None
+        
+        while attempt < self.GEO_MAX_RETRIES:
+            attempt += 1
+            raw_response_text = ""
+            
+            try:
+                # Build the prompt - add feedback if this is a retry
+                if attempt == 1:
+                    # First attempt - standard prompt
+                    current_user_content = user_content
+                else:
+                    # Retry attempt - include feedback from GeoProbe
+                    print(f"   🔄 Geographic Correction Attempt {attempt}/{self.GEO_MAX_RETRIES}...")
+                    feedback_prompt = self.geo_probe.format_feedback_prompt(
+                        combined_text, parsed_data, last_probe_result, attempt
+                    )
+                    current_user_content = feedback_prompt
+                
+                # LLM Call
+                response = self.openrouter_client.chat.completions.create(
+                    model="qwen/qwen-2.5-72b-instruct",
+                    messages=[
+                        {"role": "system", "content": SOLDIER_SYSTEM_PROMPT},
+                        {"role": "user", "content": current_user_content}
+                    ],
+                    temperature=0.0,
+                    response_format={"type": "json_object"}
+                )
+                raw_response_text = response.choices[0].message.content
 
-        try:
-            # 1. Chiamata Principale (Qwen/DeepSeek)
-            response = self.openrouter_client.chat.completions.create(
-                model="qwen/qwen-2.5-72b-instruct",
-                messages=[
-                    {"role": "system", "content": SOLDIER_SYSTEM_PROMPT},
-                    {"role": "user", "content": user_content}
-                ],
-                temperature=0.0,
-                response_format={"type": "json_object"}
-            )
-            raw_response_text = response.choices[0].message.content
+                # Parse JSON
+                parsed_data = self._clean_and_parse_json(raw_response_text)
 
-            # 2. Parsing Standard
-            parsed_data = self._clean_and_parse_json(raw_response_text)
+                # AUTO-REPAIR if JSON is broken
+                if not parsed_data:
+                    print("   ⚠️ JSON Syntax Error detected. Calling Mechanic...")
+                    parsed_data = self._repair_json_with_ai(
+                        raw_response_text, "Invalid JSON format")
 
-            # 3. AUTO-REPAIR CHECK
-            # Se _clean_and_parse_json ritorna None, significa che il JSON è rotto.
-            if not parsed_data:
-                print("   ⚠️ JSON Syntax Error detected. Calling Mechanic...")
-                parsed_data = self._repair_json_with_ai(
-                    raw_response_text, "Invalid JSON format")
+                if not parsed_data:
+                    print("   ❌ Soldier Failed (Unfixable JSON).")
+                    return None
 
-            # Se anche il meccanico fallisce, ci arrendiamo
-            if not parsed_data:
-                print("   ❌ Soldier Failed (Unfixable JSON).")
-                return None
-
-            # 4. SAFETY LAYER (Validazione Coordinate)
-            geo = parsed_data.get("geo_location", {})
-            explicit = geo.get("explicit")
-            if explicit:
-                lat = explicit.get('lat')
-                lon = explicit.get('lon')
-                is_invalid_lat = lat in [0, 0.0, "0", None, "null"]
-                is_invalid_lon = lon in [0, 0.0, "0", None, "null"]
-
-                if is_invalid_lat or is_invalid_lon:
-                    parsed_data["geo_location"]["explicit"] = None
-
-                    # 5. SANITY CHECK SUL NOME CITTÀ (Inferred)
-            # Se l'AI ha scritto "Kyiv, Ukraine" o "Kyiv, Lviv", teniamo solo la prima parte.
+                # =============================================================
+                # INSTRUMENTATION STEP: Validate Coordinates with GeoProbe
+                # =============================================================
+                # Guard against None parsed_data (can happen if repair failed)
+                if not parsed_data:
+                    print("   ⚠️ Parsed data is None after parse attempt, retrying...")
+                    if attempt >= self.GEO_MAX_RETRIES:
+                        return None
+                    continue
+                    
+                geo = parsed_data.get("geo_location", {}) or {}
+                explicit = geo.get("explicit")
+                
+                # Check if we have explicit coordinates to validate
+                if explicit:
+                    lat = explicit.get('lat')
+                    lon = explicit.get('lon')
+                    
+                    # Skip validation for null/zero coordinates
+                    is_invalid_lat = lat in [0, 0.0, "0", None, "null", ""]
+                    is_invalid_lon = lon in [0, 0.0, "0", None, "null", ""]
+                    
+                    if is_invalid_lat or is_invalid_lon:
+                        # Clear invalid coordinates - no need to retry, toponym will be geocoded later
+                        parsed_data["geo_location"]["explicit"] = None
+                        print("   📍 No explicit coordinates extracted (null/zero). Will geocode toponym instead.")
+                        break  # Exit loop - _step_geo_verifier will handle toponym geocoding
+                    else:
+                        # PROBE THE COORDINATES
+                        probe_result = self.geo_probe.probe_coordinates(lat, lon)
+                        last_probe_result = probe_result
+                        
+                        if probe_result['is_valid']:
+                            # SUCCESS - Coordinates are valid
+                            print(f"   ✅ GeoProbe PASS: {probe_result['region']} ({probe_result['country_code'].upper()})")
+                            # Continue to sanity checks below and return
+                            break
+                        else:
+                            # FAILURE - Coordinates are outside theatre
+                            print(f"   ❌ GeoProbe FAIL: {probe_result['error_msg'][:100]}...")
+                            if attempt < self.GEO_MAX_RETRIES:
+                                # Loop will retry with feedback
+                                continue
+                            else:
+                                # Exhausted retries - fallback to null
+                                print(f"   ⚠️ Exhausted {self.GEO_MAX_RETRIES} attempts. Setting coordinates to null.")
+                                parsed_data["geo_location"]["explicit"] = None
+                                parsed_data["geo_location"]["_geo_validation_failed"] = True
+                                parsed_data["geo_location"]["_last_error"] = probe_result['error_msg']
+                                break
+                else:
+                    # No explicit coordinates - nothing to validate
+                    print("   📍 No explicit coordinates in response.")
+                    break
+                    
+            except Exception as e:
+                print(f"   ⚠️ Soldier Exception on attempt {attempt}: {e}")
+                if raw_response_text:
+                    print("   🔧 Attempting emergency repair on raw text...")
+                    parsed_data = self._repair_json_with_ai(raw_response_text, str(e))
+                    if parsed_data:
+                        break
+                if attempt >= self.GEO_MAX_RETRIES:
+                    return None
+        
+        # =================================================================
+        # POST-LOOP CLEANUP: Sanity checks on toponym names
+        # =================================================================
+        if parsed_data:
             try:
                 raw_loc = parsed_data.get("geo_location", {}).get(
                     "inferred", {}).get("toponym_raw")
                 if raw_loc and isinstance(raw_loc, str):
-                    # Pulisce liste (prende il primo elemento)
+                    # Clean lists (take first element)
                     if "," in raw_loc:
                         clean_loc = raw_loc.split(",")[0].strip()
                         parsed_data["geo_location"]["inferred"]["toponym_raw"] = clean_loc
 
-                    # Pulisce liste con 'and' (es. "Kyiv and Lviv")
+                    # Clean lists with 'and' (e.g., "Kyiv and Lviv")
                     if " and " in raw_loc.lower():
                         clean_loc = raw_loc.lower().split(
-                            " and ")[0].strip().title()  # Rimette maiuscola
+                            " and ")[0].strip().title()
                         parsed_data["geo_location"]["inferred"]["toponym_raw"] = clean_loc
             except:
                 pass
 
-            return parsed_data
-
-        except Exception as e:
-            print(f"   ⚠️ Soldier Exception: {e}")
-            # Tentativo disperato di riparazione se l'errore è avvenuto durante il parsing iniziale
-            if raw_response_text:
-                print("   🔧 Attempting emergency repair on raw text...")
-                return self._repair_json_with_ai(raw_response_text, str(e))
-            return None
+        return parsed_data
 
     # =========================================================================
     # 🌍 STEP GEO-VERIFIER: Anti-Hallucination Geolocation Validator
@@ -1300,33 +1417,90 @@ OR
 
     def _clean_and_parse_json(self, raw_text):
         """
-        Pulisce l'output dell'AI cercando il primo '{' e l'ultimo '}'
-        per ignorare testo introduttivo o conclusivo.
+        SAFE PARSE PATTERN (Sanfilippo Method - Part 3)
+        
+        Implements 3-level fallback for JSON parsing with forensic logging:
+        - Level 1: Standard json.loads()
+        - Level 2: Heuristic cleaning (markdown, trailing commas)
+        - Level 3: CrashRecorder dump for post-mortem analysis
+        
+        Returns:
+            dict: Parsed JSON object, or None if all levels fail
         """
+        # Store original for crash dump
+        original_raw_text = raw_text
+        
+        # =====================================================================
+        # LEVEL 1: Direct Parse Attempt
+        # =====================================================================
         try:
-            # 1. Pulizia base
+            return json.loads(raw_text.strip())
+        except json.JSONDecodeError:
+            pass  # Expected for LLM output with markdown wrappers
+        
+        # =====================================================================
+        # LEVEL 2: Heuristic Cleaning
+        # =====================================================================
+        print("   🧹 Level 2: Cleaning attempt triggered...")
+        
+        try:
             text = raw_text.strip()
-
-            # 2. Rimuove i backticks del markdown (es. ```json ... ```)
+            
+            # 2a. Remove markdown backticks (e.g., ```json ... ```)
             if "```" in text:
-                text = text.split("```")[1]
-                if text.startswith("json"):
-                    text = text[4:]
-
-            # 3. Estrazione Chirurgica: Cerca la prima { e l'ultima }
+                # Handle ```json\n...``` pattern
+                parts = text.split("```")
+                if len(parts) >= 2:
+                    text = parts[1]
+                    if text.startswith("json"):
+                        text = text[4:]
+                    elif text.startswith("JSON"):
+                        text = text[4:]
+                    text = text.strip()
+            
+            # 2b. Surgical extraction: Find first '{' and last '}'
             start = text.find('{')
             end = text.rfind('}')
-
-            if start != -1 and end != -1:
-                text = text[start: end + 1]
-
-            # 4. Parsing
-            return json.loads(text)
-
-        except json.JSONDecodeError as e:
-            print(f"   ⚠️ JSON Parsing Error: {e}")
-            # Debug per vedere cosa ha scritto
-            print(f"   RAW OUTPUT: {raw_text[:100]}...")
+            
+            if start != -1 and end != -1 and start < end:
+                text = text[start:end + 1]
+            
+            # 2c. Fix trailing commas before closing braces/brackets
+            # Common LLM error: {"key": "value",}
+            text = re.sub(r',\s*}', '}', text)
+            text = re.sub(r',\s*]', ']', text)
+            
+            # 2d. Attempt parse on cleaned text
+            parsed = json.loads(text)
+            print("   ✅ Level 2: Cleaning succeeded.")
+            return parsed
+            
+        except json.JSONDecodeError as level_2_error:
+            # =====================================================================
+            # LEVEL 3: CRASH DUMP (Flight Data Recorder)
+            # =====================================================================
+            print(f"   🔴 Level 3: Parsing failed after cleaning. Recording crash dump...")
+            
+            # Trigger the CrashRecorder
+            CrashRecorder.dump_state(
+                context_name="_clean_and_parse_json",
+                raw_input=original_raw_text,
+                error=level_2_error,
+                partial_data={"cleaned_length": len(text) if text else 0}
+            )
+            
+            # Return None - caller should try _repair_json_with_ai as fallback
+            return None
+        
+        except Exception as unexpected_error:
+            # Catch-all for non-JSON errors (shouldn't happen, but safety first)
+            print(f"   🔴 Unexpected error during parsing: {unexpected_error}")
+            CrashRecorder.dump_state(
+                context_name="_clean_and_parse_json.unexpected",
+                raw_input=original_raw_text,
+                error=unexpected_error,
+                partial_data=None
+            )
             return None
 
     def _step_3_the_calculator(self, soldier_data, brain_data, source_name, text):
@@ -2281,7 +2455,7 @@ def process_row(self, row):
     soldier_out['verified_coordinates'] = verified_coords
 
     # =========================================================================
-    # 🪖 ORBAT TRACKER UPDATE
+    # 🪖 ORBAT TRACKER UPDATE with KINETIC PLAUSIBILITY CHECK
     # =========================================================================
     units_detected = soldier_out.get('military_units_detected', [])
     if units_detected:
@@ -2294,7 +2468,43 @@ def process_row(self, row):
         if not final_lon: final_lon = row.get("Longitude", 0.0)
 
         if final_lat and final_lat != 0.0:
-            self._update_units_registry(units_detected, row.get("Date"), {'lat': final_lat, 'lon': final_lon})
+            # =========================================================
+            # KINETIC PLAUSIBILITY CHECK (Sanfilippo Method - Part 2)
+            # =========================================================
+            # Validate each unit's movement before updating the registry
+            event_date = row.get("Date")
+            validated_units = []
+            implausible_units = []
+            
+            for unit in units_detected:
+                unit_id = unit.get('unit_id')
+                if not unit_id:
+                    continue
+                    
+                # Check if this movement is physically plausible
+                plausibility = self.history_probe.check_plausibility(
+                    unit_id, final_lat, final_lon, event_date
+                )
+                
+                if plausibility['is_plausible']:
+                    validated_units.append(unit)
+                    if plausibility['status'] == 'KNOWN':
+                        print(f"      ✅ Kinetic OK: {unit_id} ({plausibility['distance_km']:.1f}km in {plausibility['time_delta_hours']:.1f}h)")
+                    else:
+                        print(f"      ✅ Kinetic OK: {unit_id} (NEW - no prior history)")
+                else:
+                    implausible_units.append((unit, plausibility))
+                    print(f"      ⚠️ KINETIC VIOLATION: {unit_id}")
+                    print(f"         → {plausibility['reason'][:100]}...")
+            
+            # Log summary of implausible movements (but don't block the pipeline)
+            if implausible_units:
+                print(f"      ⚠️ {len(implausible_units)} unit(s) failed kinetic check. Skipping their ORBAT update.")
+                # Future: Could trigger AI self-correction loop here
+            
+            # Only update registry for validated units
+            if validated_units:
+                self._update_units_registry(validated_units, event_date, {'lat': final_lat, 'lon': final_lon})
     
     # 3. Calcolo T.I.E. (Layer 1)
     titan_data = soldier_out.get('titan_assessment', {})
@@ -2736,6 +2946,40 @@ def main():
         # Creazione testo unico per l'AI
         combined_text = "\n".join(raw_msgs)
 
+        # =================================================================
+        # 🔱 TRIDENT PRE-CHECK: Get base scores from fine-tuned model
+        # =================================================================
+        # Trident provides reliable base K/T/E scores
+        # Soldier/Brain can override with evidence, but this is the foundation
+        trident_base_scores = {'kinetic_score': 0, 'target_score': 0, 'effect_score': 0}
+        trident_classification = 'UNKNOWN'
+        
+        try:
+            # Initialize Trident components (lazy init on first use)
+            if not hasattr(agent, '_trident_titan'):
+                agent._trident_titan = TitanIntelligenceNode(TITAN_MODEL_ID)
+                agent._trident_sensor = TitanSensor()
+                print("   🔱 Trident components initialized")
+            
+            # 1. Classification from fine-tuned model
+            titan_result = agent._trident_titan.analyze(combined_text)
+            trident_classification = titan_result.get('classification', 'UNKNOWN')
+            
+            # 2. K/T/E from physics-based sensor (always produces valid scores)
+            sensor_result = agent._trident_sensor.analyze_text(combined_text)
+            
+            # Convert 0.0-1.0 metrics to 0-10 scale
+            trident_base_scores = {
+                'kinetic_score': max(1, int(sensor_result['k_metric'] * 10)),
+                'target_score': max(1, int(sensor_result['t_metric'] * 10)),
+                'effect_score': max(1, int(sensor_result['e_metric'] * 10))
+            }
+            
+            print(f"   🔱 Trident Base: {trident_classification} | K={trident_base_scores['kinetic_score']}, T={trident_base_scores['target_score']}, E={trident_base_scores['effect_score']}")
+            
+        except Exception as e:
+            print(f"   ⚠️ Trident pre-check failed: {e} - continuing with Soldier")
+
         # --- STEP 1: THE SOLDIER (Extraction) ---
         cluster_data = {
             "reference_timestamp": ref_date,
@@ -2763,23 +3007,17 @@ def main():
         titan_data = soldier_result.get('titan_assessment') or {}
         visual_evidence = soldier_result.get('visual_evidence', False)
 
-        # --- 🛡️ METRIC BOOSTER (FALLBACK) ---
-        # Se mancano i dati Titan (K/T/E sono 0 o mancanti), chiamiamo il Fine-Tuning
+        # --- 🔱 TRIDENT SCORE INTEGRATION ---
+        # Use Trident base scores if Soldier didn't provide valid metrics
         k_score = titan_data.get('kinetic_score', 0)
         if not k_score or int(k_score) == 0:
-             print("      ⚠️ Missing Metrics (K=0). Activating Titan Fallback...")
-             try:
-                 # Usa il classificatore dedicato
-                 titan_fallback = agent._step_titan_classifier(combined_text)
-                 
-                 # Merge intelligente: sovrascrive solo se mancano
-                 if 'kinetic_score' in titan_fallback: titan_data['kinetic_score'] = titan_fallback['kinetic_score']
-                 if 'target_score' in titan_fallback: titan_data['target_score'] = titan_fallback['target_score']
-                 if 'effect_score' in titan_fallback: titan_data['effect_score'] = titan_fallback['effect_score']
-                 
-                 print(f"      ✅ Fallback Metrics Applied: K={titan_data.get('kinetic_score')}")
-             except Exception as e:
-                 print(f"      ❌ Fallback Failed: {e}")
+            print("      🔱 Using Trident base scores (Soldier returned K=0)")
+            # Use pre-computed Trident scores as foundation
+            titan_data['kinetic_score'] = trident_base_scores.get('kinetic_score', 1)
+            titan_data['target_score'] = trident_base_scores.get('target_score', 1)
+            titan_data['effect_score'] = trident_base_scores.get('effect_score', 1)
+            titan_data['classification'] = trident_classification
+            print(f"      ✅ Trident Scores Applied: K={titan_data.get('kinetic_score')}, T={titan_data.get('target_score')}, E={titan_data.get('effect_score')}")
 
         # 2. Calcolo T.I.E.
         tie_result = agent._calculate_tie(titan_data, visual_evidence)

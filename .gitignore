@@ -4,6 +4,13 @@ osint_session
 osint_session.session
 **/*.session
 scripts/service_account.json
+scripts_una_tantum
+training_finetuning
+scripts/orbat_ua.csv
+scripts/orbat_ru.json   
+scripts/parabellum_sync.py
+scripts/orbat_seeder.py
+scripts_una_tantum/reset_status.py
 
 # --- Log e file temporanei ---
 tracker_log.txt

@@ -1840,6 +1840,8 @@ header nav a:hover {
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
   /* Ombra profonda */
   border-radius: 8px !important;
+  overflow: visible !important;
+  /* Required for tooltips */
 }
 
 /* 2. Rimuove margini standard per avere controllo totale */
@@ -1848,6 +1850,8 @@ header nav a:hover {
   padding: 16px !important;
   width: 300px !important;
   /* Leggermente più largo */
+  overflow: visible !important;
+  /* Required for tooltips */
 }
 
 /* 3. Stile della "X" di chiusura */
@@ -2200,4 +2204,111 @@ header nav a:hover {
     max-height: 300px;
     /* Limit height on mobile */
   }
+}
+
+/* ============================================
+   FIRMS POPUP CENTERED TOOLTIPS
+   ============================================ */
+.firms-popup-content .info-icon-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  z-index: 10;
+}
+
+.firms-popup-content .info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border: 1px solid #64748b;
+  border-radius: 50%;
+  color: #64748b;
+  font-size: 0.65rem;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  cursor: help;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.firms-popup-content .info-icon:hover {
+  color: #f59e0b;
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+  box-shadow: 0 0 5px rgba(245, 158, 11, 0.3);
+}
+
+/* CENTERED TOOLTIP */
+.firms-popup-content .tooltip-card {
+  position: absolute;
+  bottom: 150%;
+  /* Above the icon */
+  left: 50%;
+  /* Center horizontally */
+  transform: translateX(-50%);
+  /* Perfect center */
+  width: 200px;
+  background-color: #0f172a !important;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.15s ease;
+  pointer-events: none;
+  z-index: 9999 !important;
+  text-align: center;
+  /* Center text inside too */
+}
+
+/* Force visibility on hover */
+.firms-popup-content .info-icon-wrapper:hover .tooltip-card {
+  opacity: 1 !important;
+  visibility: visible !important;
+  bottom: 160%;
+  /* Slight lift animation */
+}
+
+/* Arrow Centered at Bottom */
+.firms-popup-content .tooltip-card::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: #0f172a transparent transparent transparent;
+}
+
+/* Content Styling */
+.firms-popup-content .tooltip-header {
+  color: #f59e0b;
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.firms-popup-content .tooltip-body {
+  font-size: 0.7rem;
+  color: #e2e8f0;
+  line-height: 1.3;
+}
+
+.firms-popup-content .tooltip-footer {
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.6rem;
+  color: #94a3b8;
+  font-style: italic;
 }

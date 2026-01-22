@@ -1418,4 +1418,369 @@ priority_3:
 
 ---
 
+## ADDENDUM: FEATURES IMPLEMENTED POST v1.3 (January 2026)
+
+The following sections document features added after the initial specification.
+
+---
+
+### COMPONENT_7: T.I.E. SCORING PROTOCOL
+
+**PURPOSE:**
+```yaml
+value: Standardized intensity measurement using three orthogonal vectors
+acronym: Target-Kinetic-Effect
+```
+
+**VECTOR DEFINITIONS:**
+```yaml
+kinetic_score:
+  name: Vector K
+  range: [1, 10]
+  measures: Weapon magnitude / Physics
+  scale:
+    - 1: Small Arms, Sniper
+    - 3: Heavy Mortars, FPV Drone
+    - 5: MLRS (Grad), Tank
+    - 7: Heavy Strike (Iskander, KAB-500)
+    - 10: WMD / Dam Breach
+
+target_score:
+  name: Vector T
+  range: [1, 10]
+  measures: Target strategic value
+  scale:
+    - 1: Empty Terrain
+    - 5: Heavy Armor (Tanks, IFVs)
+    - 8: Strategic Air Defense, Airfields
+    - 10: National Leadership, Nuclear
+
+effect_score:
+  name: Vector E
+  range: [1, 10]
+  measures: Damage outcome / Reality
+  scale:
+    - 1: Failure / Intercepted
+    - 5: Moderate Damage
+    - 7: Destruction (single)
+    - 10: Total Erase
+```
+
+**INTENSITY DATABASE:**
+```yaml
+purpose: Maps target categories to base intensity values
+file: ai_agent.py (INTENSITY_DB constant)
+
+tier_a_existential:
+  CRITICAL_NUCLEAR: 1.0
+  CRITICAL_DAM: 0.9
+
+tier_b_strategic:
+  MIL_AIRBASE: 0.7
+  IND_DEFENSE_PLANT: 0.7
+  INFRA_REFINERY: 0.65
+  INFRA_GENERATION: 0.65
+
+tier_c_operational:
+  MIL_AMMO_DEPOT: 0.55
+  MIL_HQ: 0.5
+  MIL_AIR_DEFENSE_LONG: 0.5
+
+tier_d_tactical:
+  MIL_ARTILLERY: 0.35
+  MIL_APC_TANK: 0.35
+
+tier_e_minor:
+  MIL_TRENCH: 0.1
+  CIV_RESIDENTIAL: 0.1
+  OPEN_FIELD: 0.05
+```
+
+**DAMAGE MODIFIERS:**
+```yaml
+CRITICAL: 1.5  # Destroyed - boost to reach 1.0
+HEAVY: 1.2     # Serious damage
+LIGHT: 0.5     # Halves value (crucial for skirmishes)
+NONE: 0.0
+UNKNOWN: 0.5   # Conservative estimate
+```
+
+**TIE TOTAL CALCULATION:**
+```yaml
+formula: (K × T × E) ÷ 10
+range: [0, 100]
+normalization: Capped at 100
+```
+
+---
+
+### COMPONENT_8: GEOPROBE INSTRUMENTATION (Sanfilippo Method)
+
+**PURPOSE:**
+```yaml
+value: Self-healing geographic validation with retry loop
+file: scripts/geo_instrument.py
+class: GeoProbe
+```
+
+**CONFIGURATION:**
+```yaml
+theatre_of_operations:
+  north: 56.0
+  south: 44.0
+  east: 42.0
+  west: 22.0
+
+valid_countries:
+  - ua  # Ukraine
+  - ru  # Russia (border regions)
+
+max_retries: 3
+use_reverse_geocoding: true
+timeout: 5
+```
+
+**VALIDATION LOGIC:**
+```yaml
+step_1:
+  name: Bounding Box Check
+  action: Verify coordinates within theatre bounds
+
+step_2:
+  name: Reverse Geocoding
+  action: Validate country matches expected (ua/ru)
+  provider: Nominatim
+
+step_3_on_fail:
+  name: Feedback Loop
+  action: Generate correction prompt for AI retry
+  max_attempts: 3
+  fallback: Set lat/lon to null
+```
+
+**INTEGRATION:**
+```yaml
+location: SuperSquadAgent._step_2_the_soldier()
+trigger: After initial coordinate extraction
+```
+
+---
+
+### COMPONENT_9: HISTORY PROBE (Kinetic Plausibility Check)
+
+**PURPOSE:**
+```yaml
+value: Validate unit movement physics to detect teleportation errors
+file: scripts/history_instrument.py
+class: UnitHistoryProbe
+```
+
+**PLAUSIBILITY RULES:**
+```yaml
+max_speed_kmh: 80  # Maximum ground unit speed
+time_window_hours: 24
+detection_threshold: Impossible movement flagged
+```
+
+**VALIDATION FLOW:**
+```yaml
+step_1: Retrieve unit's last known position from DB
+step_2: Calculate distance and time delta
+step_3: Compute implied speed
+step_4: If speed > max_speed → Reject or flag for correction
+```
+
+---
+
+### COMPONENT_10: CRASH RECORDER (Debug Instrumentation)
+
+**PURPOSE:**
+```yaml
+value: Forensic logging for parser failures
+file: scripts/debug_instrument.py
+class: CrashRecorder
+```
+
+**OUTPUT:**
+```yaml
+log_file: logs/parser_crashes.log
+format: JSONL
+
+captured_fields:
+  - timestamp
+  - raw_input
+  - error_type
+  - token_context
+  - stack_trace
+```
+
+---
+
+### FEATURE_5: ORBAT_TRACKER
+
+**PURPOSE:**
+```yaml
+value: Real-time military unit tracking sidebar
+```
+
+**DATA_SOURCE:**
+```yaml
+table: units_registry
+export: assets/data/units.json
+```
+
+**UI_COMPONENT:**
+```yaml
+location: Sidebar Tab "ORBAT"
+tabs:
+  - UA FORCES
+  - RU FORCES
+
+unit_card_fields:
+  - unit_name
+  - unit_id (normalized)
+  - type (ARMORED, INFANTRY, etc.)
+  - status (ACTIVE, ENGAGED, DESTROYED)
+  - last_seen_date
+  - location
+
+actions:
+  - Locate on Map (flyTo)
+```
+
+---
+
+### FEATURE_6: UI_VIEWS_SYSTEM
+
+**PURPOSE:**
+```yaml
+value: Multiple visualization paradigms for different analysis needs
+```
+
+**VIEWS:**
+```yaml
+view_1:
+  name: TACTICAL
+  id: view-visual
+  components:
+    - Operational Tempo Gauge (48h)
+    - Intensity Heatmap Toggle
+    - Equipment Losses Feed
+
+view_2:
+  name: WAR ROOM
+  id: view-kanban
+  layout: Kanban Board
+  columns:
+    - GROUND OPS
+    - AIR / STRIKE
+    - STRATEGIC / CIVIL
+
+view_3:
+  name: INTEL FEED
+  id: view-intel
+  layout: Master-Detail
+  left_panel: Chronological event list
+  right_panel: Full dossier with TIE metrics
+```
+
+---
+
+### FEATURE_7: EQUIPMENT_LOSSES_FEED
+
+**PURPOSE:**
+```yaml
+value: Real-time aggregation of confirmed equipment losses
+```
+
+**DATA_SOURCES:**
+```yaml
+source_1:
+  name: WarSpotting
+  url: warspotting.net
+
+source_2:
+  name: Oryx
+  url: oryxspioenkop.com
+
+source_3:
+  name: DeepState
+  url: deepstatemap.live
+```
+
+**UPDATE_SCRIPT:**
+```yaml
+file: scripts/update_losses.py
+output: assets/data/external_losses.json
+```
+
+**UI_COMPONENT:**
+```yaml
+location: TACTICAL view → Equipment Losses Panel
+filter_tabs:
+  - ALL
+  - TANKS
+  - AIR
+  - OTHER
+live_indicator: Animated dot
+```
+
+---
+
+### FEATURE_8: FRONTLINE_LAYER_SWITCHING
+
+**PURPOSE:**
+```yaml
+value: Multiple frontline data sources with toggle
+```
+
+**SOURCES:**
+```yaml
+source_1:
+  name: DeepState
+  file: assets/data/frontline.geojson
+  badge: UA
+
+source_2:
+  name: ISW Research
+  file: assets/data/frontline_isw.geojson
+  badge: US
+
+source_3:
+  name: Rybar
+  status: LOCKED (data not available)
+  badge: RU
+```
+
+**UI_COMPONENT:**
+```yaml
+location: Sidebar Tab "MAPPE"
+selection: Radio-style (one active at a time)
+```
+
+---
+
+### FEATURE_9: NASA_FIRMS_INTEGRATION
+
+**PURPOSE:**
+```yaml
+value: Thermal anomaly overlay from satellite data
+provider: NASA FIRMS (Fire Information for Resource Management System)
+```
+
+**DATA:**
+```yaml
+file: assets/data/thermal_firms.geojson
+update_frequency: Manual/Planned automation
+```
+
+**UI_COMPONENT:**
+```yaml
+location: Sidebar Tab "MAPPE" → Technical Toggles
+toggle_label: NASA FIRMS (Termico)
+icon: fa-fire-flame-curved (red)
+```
+
+---
+
 **END OF SPECIFICATION**

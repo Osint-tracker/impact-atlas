@@ -117,11 +117,37 @@ def seed_russia(conn):
     conn.commit()
     print(f"   [OK] Seeded {count} Russian units.")
 
+def seed_parabellum():
+    """Sync live unit positions from Parabellum Think Tank map."""
+    print("[*] Syncing from Parabellum Maps (live positions)...")
+    try:
+        import subprocess
+        result = subprocess.run(
+            [sys.executable, os.path.join(BASE_DIR, 'parabellum_sync.py')],
+            capture_output=True,
+            text=True
+        )
+        if result.returncode == 0:
+            # Extract summary line
+            for line in result.stdout.split('\n'):
+                if 'From Parabellum' in line:
+                    print(f"   {line.strip()}")
+            print("   [OK] Parabellum sync complete.")
+        else:
+            print(f"   [WARN] Parabellum sync failed: {result.stderr[:200]}")
+    except Exception as e:
+        print(f"   [WARN] Could not run Parabellum sync: {e}")
+
+
 def main():
     conn = init_db()
     seed_ukraine(conn)
     seed_russia(conn)
     conn.close()
+    
+    # Also sync live positions from Parabellum
+    seed_parabellum()
+    
     print("[*] Seeding Complete.")
 
 if __name__ == "__main__":

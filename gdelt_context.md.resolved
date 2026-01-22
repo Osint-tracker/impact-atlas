@@ -1,0 +1,175 @@
+# GDELT Data Integration: Technical Context Document
+
+## System Overview
+
+This project is an OSINT (Open Source Intelligence) tracker for the Ukraine-Russia conflict. It ingests data from multiple sources, generates vector embeddings, clusters semantically similar events, and produces AI-analyzed intelligence reports.
+
+### Data Architecture
+
+```
+PRIMARY DATABASE: war_tracker_v2/data/raw_events.db (SQLite)
+
+TABLE: raw_signals
+├── event_hash (TEXT, PRIMARY KEY) - SHA256 hash of content for deduplication
+├── source_type (TEXT) - 'TELEGRAM', 'GDELT', or 'WEB_NEWS'
+├── source_name (TEXT) - Channel name or domain
+├── date_published (TEXT) - YYYYMMDDHHMMSS format
+├── text_content (TEXT) - The actual article/message content
+├── url (TEXT) - Source URL
+├── is_embedded (INTEGER) - 0=pending, 1=embedded, 2=rejected
+├── embedding_vector (TEXT) - JSON-serialized float array (1536 dimensions)
+└── cluster_id (TEXT) - UUID grouping related events
+
+TABLE: unique_events
+├── event_id (TEXT, PRIMARY KEY) - Same as cluster_id from raw_signals
+├── sources_list (TEXT) - JSON array of contributing source names
+├── full_text_dossier (TEXT) - Merged text from all cluster members
+├── embedding_vector (TEXT) - Cluster representative vector
+├── ai_analysis_status (TEXT) - 'PENDING', 'DONE', 'ERROR'
+└── [30+ AI-generated columns for analysis output]
+```
+
+## The GDELT Integration Problem
+
+### Problem 1: Disconnected Pipeline
+
+GDELT data was ingested into `raw_signals` but never appeared in [unique_events](file:///c:/Users/lucag/.vscode/cli/osint-tracker/war_tracker_v2/scripts/event_builder.py#37-54) (the table used by the AI agent and dashboard).
+
+**Root Cause Analysis:**
+- [ingestion/fetch_gdelt.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/ingestion/fetch_gdelt.py) wrote to `raw_signals` with `source_type='GDELT'`
+- [war_tracker_v2/scripts/refiner.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/war_tracker_v2/scripts/refiner.py) should embed and cluster these records
+- [war_tracker_v2/scripts/event_builder.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/war_tracker_v2/scripts/event_builder.py) should create [unique_events](file:///c:/Users/lucag/.vscode/cli/osint-tracker/war_tracker_v2/scripts/event_builder.py#37-54) from clusters
+- HOWEVER: refiner.py had an aggressive relevance filter that rejected 73% of GDELT
+
+**The Filter (refiner.py lines 494-520):**
+```python
+# Required MANDATORY context words like "ukraine", "russia", "kyiv"
+# GDELT articles often use indirect language, failing this filter
+for anchor in MANDATORY_SET:
+    if anchor in content_to_check:
+        has_mandatory_context = True
+        break
+if not has_mandatory_context:
+    continue  # REJECTED, marked is_embedded=2
+```
+
+**Result:**
+- TELEGRAM: 185,684 embedded (52% of total)
+- GDELT: 85,828 embedded (27% of total) - 235,123 rejected
+
+### Problem 2: Empty GDELT Content
+
+Even the 85,828 embedded GDELT records were unusable because they contained only metadata, not article content.
+
+**Root Cause Analysis:**
+The ingestion script ([ingestion/fetch_gdelt.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/ingestion/fetch_gdelt.py) line 96):
+```python
+'text': f"{art.get('title')} - {art.get('url')}"
+```
+
+This stored only the headline and URL (~40-60 characters), not the actual article text. GDELT's API returns metadata; the full article must be scraped from the source URL.
+
+**Evidence:**
+```sql
+SELECT LENGTH(text_content) FROM raw_signals WHERE source_type='GDELT' LIMIT 5;
+-- Result: 41, 41, 41, 41, 41 (all ~40 chars)
+```
+
+### Problem 3: Clustering Failure
+
+Because GDELT content was too short:
+- [event_builder.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/war_tracker_v2/scripts/event_builder.py) has `MIN_TEXT_LENGTH = 150` filter
+- Clusters with only short articles were skipped entirely
+- Result: 166 GDELT-only clusters created, 0 appeared in [unique_events](file:///c:/Users/lucag/.vscode/cli/osint-tracker/war_tracker_v2/scripts/event_builder.py#37-54)
+
+## Solution Implementation
+
+### Solution 1: Content Scraper ([scripts/gdelt_scraper.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/scripts/gdelt_scraper.py))
+
+Created an async web scraper to fetch full article content:
+
+```python
+# Identifies GDELT entries with minimal content
+SELECT event_hash, url FROM raw_signals 
+WHERE source_type = 'GDELT' AND LENGTH(text_content) < 100
+
+# Scrapes each URL with 20 concurrent async requests
+# Extracts article text using BeautifulSoup
+# Updates raw_signals with full content
+# Resets is_embedded = 0 for re-processing
+```
+
+**Progress as of 2026-01-13:**
+- Total GDELT URLs: 320,951
+- Attempted: 66,800 (21%)
+- Successfully scraped: 18,298 (27% success rate)
+- Failures due to: paywalls, dead links, bot blocking, timeouts
+
+### Solution 2: Relaxed Filter ([scripts/refiner_fast.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/scripts/refiner_fast.py))
+
+Created modified refiner with:
+1. Bypass strict MANDATORY_SET filter for GDELT sources
+2. Batched OpenAI API calls (50 texts per request)
+3. Async concurrency (10 parallel requests)
+4. Automatic reset of previously rejected GDELT records
+
+### Solution 3: Lowered Text Threshold
+
+Modified [event_builder.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/war_tracker_v2/scripts/event_builder.py):
+```python
+MIN_TEXT_LENGTH = 50  # Was 150, lowered to include shorter GDELT articles
+```
+
+## Current State (2026-01-16)
+
+### Database Statistics
+```
+raw_signals:
+├── TELEGRAM: 353,517 total
+│   ├── is_embedded=1: 185,684 (processed)
+│   └── is_embedded=2: 167,833 (rejected as off-topic)
+├── GDELT: 320,951 total
+│   ├── is_embedded=1: 85,828 (embedded but mostly empty content)
+│   ├── is_embedded=2: 235,123 (rejected by old filter)
+│   └── ~18,298 now have full scraped content
+└── WEB_NEWS: 4,250 total
+
+unique_events: 809,503 total
+├── With embedding_vector: 249,463
+├── With GDELT sources: ~3,000 (domain names in sources_list)
+└── Missing GDELT integration: Majority
+```
+
+### Outstanding Work
+
+1. **Continue scraping**: ~253k GDELT URLs remain unprocessed
+2. **Re-embed scraped content**: Run [refiner_fast.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/scripts/refiner_fast.py) after scraping completes
+3. **Rebuild events**: Run [event_builder.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/war_tracker_v2/scripts/event_builder.py) to create multi-source clusters
+4. **Verify integration**: Confirm GDELT sources appear in `unique_events.sources_list`
+
+## Key Files Referenced
+
+| File | Purpose |
+|------|---------|
+| [ingestion/fetch_gdelt.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/ingestion/fetch_gdelt.py) | Original GDELT ingestion (stores only titles) |
+| [war_tracker_v2/scripts/refiner.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/war_tracker_v2/scripts/refiner.py) | Embedding + clustering (aggressive filter) |
+| [war_tracker_v2/scripts/event_builder.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/war_tracker_v2/scripts/event_builder.py) | Creates unique_events from clusters |
+| [scripts/gdelt_scraper.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/scripts/gdelt_scraper.py) | NEW: Fetches full article content |
+| [scripts/refiner_fast.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/scripts/refiner_fast.py) | NEW: Relaxed filter + batched embeddings |
+| [scripts/debug_gdelt.py](file:///c:/Users/lucag/.vscode/cli/osint-tracker/scripts/debug_gdelt.py) | Diagnostic queries for investigation |
+
+## Expected Final State
+
+After all fixes are applied:
+- GDELT articles have full text content (hundreds to thousands of chars)
+- Both TELEGRAM and GDELT pass the embedding filter
+- Clusters contain mixed sources (same event from multiple perspectives)
+- `unique_events.sources_list` shows both Telegram channels AND GDELT domains
+- Approximate source ratio: 50-60% Telegram, 40-50% GDELT
+
+## Lessons Learned
+
+1. **Ingestion must capture content, not just metadata** - GDELT API returns pointers, not data
+2. **Filters should be source-aware** - Different sources have different content patterns
+3. **Pipeline debugging requires tracing event_hash through all tables**
+4. **Success rate for web scraping is typically 25-40%** - Plan for failures

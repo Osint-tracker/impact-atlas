@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
@@ -36,8 +36,8 @@
   <link rel="stylesheet" href="assets/css/dossier_styles.css?v=2">
 
   <style>
-    /* --- CSS PER TOOLTIP E LINGUETTE --- */
-    /* (Manteniamo gli stili esistenti che non confliggono) */
+    /* --- CSS FOR TOOLTIPS AND TABS --- */
+    /* (Keeping existing styles that do not conflict) */
     .intensity-badge-wrapper {
       display: inline-flex;
       align-items: center;
@@ -101,12 +101,12 @@
 
     /* --- INTEGRATIONS & OVERRIDES --- */
 
-    /* 1. Stili per i Tab della Sidebar */
+    /* 1. Styles for Sidebar Tabs */
     .sidebar {
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      /* Importante per gestire lo scroll interno */
+      /* Important for handling internal scroll */
     }
 
     .sidebar-tabs {
@@ -142,12 +142,12 @@
 
     .s-tab-btn.active {
       color: #f59e0b;
-      /* Amber - Tuo colore accent */
+      /* Amber - Your accent color */
       border-bottom: 2px solid #f59e0b;
       background: linear-gradient(to top, rgba(245, 158, 11, 0.1), transparent);
     }
 
-    /* 2. Gestione Contenuto Tab */
+    /* 2. Tab Content Management */
     .sidebar-content-wrapper {
       flex: 1;
       overflow: hidden;
@@ -178,14 +178,14 @@
       }
     }
 
-    /* Riadattamento Scroll Area esistente */
+    /* Readaptation of existing Scroll Area */
     .sidebar-scroll-area {
       flex: 1;
       overflow-y: auto;
       padding: 20px;
     }
 
-    /* Slider Personalizzato */
+    /* Custom Slider */
     input[type="range"] {
       height: 6px;
       background: linear-gradient(90deg, #304f79 0%, #f59e0b 50%, #ef4444 100%);
@@ -193,10 +193,10 @@
       outline: none;
       margin: 10px 0;
       -webkit-appearance: none;
-      /* Necessario per Chrome/Safari */
+      /* Necessary for Chrome/Safari */
     }
 
-    /* Stile del "pallino" che trascini */
+    /* Style of the "dot" you drag */
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
@@ -345,9 +345,9 @@
       </div>
       <nav>
         <a href="#" class="active">Dashboard</a>
-        <a href="#methodology">Metodologia</a>
-        <a href="#data">Esporta Dati</a>
-        <a href="#" class="btn-primary" style="padding: 5px 15px;">Accedi</a>
+        <a href="#methodology">Methodology</a>
+        <a href="#data">Export Data</a>
+        <a href="#" class="btn-primary" style="padding: 5px 15px;">Login</a>
       </nav>
     </div>
   </header>
@@ -358,10 +358,10 @@
 
       <div class="sidebar-tabs">
         <button class="s-tab-btn active" onclick="switchSidebarTab('filters')">
-          <i class="fa-solid fa-filter"></i> FILTRI
+          <i class="fa-solid fa-filter"></i> FILTERS
         </button>
         <button class="s-tab-btn" onclick="switchSidebarTab('layers')">
-          <i class="fa-solid fa-layer-group"></i> MAPPE
+          <i class="fa-solid fa-layer-group"></i> MAPS
         </button>
         <button class="s-tab-btn" onclick="switchSidebarTab('orbat')">
           <i class="fa-solid fa-shield-halved"></i> ORBAT
@@ -375,9 +375,9 @@
           <div class="sidebar-header-wrapper">
             <div class="search-box" style="margin-top: 15px;">
               <i class="fa-solid fa-magnifying-glass search-icon"></i>
-              <input type="text" id="textSearch" placeholder="Cerca evento, città...">
+              <input type="text" id="textSearch" placeholder="Search event, city...">
 
-              <div class="info-icon-wrapper" data-tooltip="Cerca nel titolo o descrizione.">
+              <div class="info-icon-wrapper" data-tooltip="Search in title or description.">
                 <i class="fa-solid fa-circle-info"></i>
               </div>
             </div>
@@ -387,8 +387,8 @@
 
             <div class="filter-block">
               <label>
-                Finestra Temporale
-                <span class="info-icon-wrapper tooltip-bottom" data-tooltip="Filtra per data.">
+                Time Window
+                <span class="info-icon-wrapper tooltip-bottom" data-tooltip="Filter by date.">
                   <i class="fa-solid fa-circle-info"></i>
                 </span>
               </label>
@@ -400,11 +400,11 @@
             </div>
 
             <div class="filter-block">
-              <label>Filtro Operativo</label>
+              <label>Operational Filter</label>
               <div class="toggle-container" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;">
                 <label class="tech-toggle-row" style="margin:0; width:100%;">
                   <span class="tech-toggle-label" style="font-size: 0.85rem; color: #94a3b8;">
-                    <i class="fa-solid fa-users"></i> Mostra Eventi Civili
+                    <i class="fa-solid fa-users"></i> Show Civilian Events
                   </span>
                   <input type="checkbox" id="civilianToggle" onchange="window.applyMapFilters()">
                   <div class="tech-switch"></div>
@@ -413,56 +413,56 @@
             </div>
 
             <div class="filter-block">
-              <label>Categoria Evento</label>
+              <label>Event Category</label>
               <div class="custom-select">
                 <select id="chartTypeFilter" class="clean-input">
-                  <option value="">Tutte le categorie</option>
+                  <option value="">All categories</option>
                 </select>
                 <i class="fa-solid fa-chevron-down select-arrow"></i>
               </div>
             </div>
 
             <div class="control-group">
-              <h3>Fonti Esterne</h3>
+              <h3>External Sources</h3>
               <button onclick="openExternalMap()" class="action-btn"
                 style="width:100%; padding:10px; background:#444; color:white; border:1px solid #666; cursor:pointer;">
-                🗺️ Apri Mappa Playfra
+                🗺️ Open Playfra Map
               </button>
-              <small style="color:#aaa; font-size:0.8em;">Dati curati da @Playfra</small>
+              <small style="color:#aaa; font-size:0.8em;">Data curated by @Playfra</small>
             </div>
 
             <div class="filter-block">
-              <label>Attori</label>
+              <label>Actors</label>
               <div class="custom-select">
                 <select id="actorFilter" class="clean-input">
-                  <option value="">Tutti gli attori</option>
-                  <option value="UKR">Ucraina (UKR)</option>
+                  <option value="">All actors</option>
+                  <option value="UKR">Ukraine (UKR)</option>
                   <option value="RUS">Russia (RUS)</option>
-                  <option value="UNK">Sconosciuto / Non attribuito</option>
+                  <option value="UNK">Unknown / Unattributed</option>
                 </select>
                 <i class="fa-solid fa-chevron-down select-arrow"></i>
               </div>
             </div>
 
             <div class="filter-block">
-              <label>Livello di Minaccia</label>
+              <label>Threat Level</label>
               <div class="toggle-container">
 
                 <label class="toggle-card">
                   <input type="checkbox" checked value="critical">
-                  <div class="card-content"><span class="dot red"></span> Critico</div>
+                  <div class="card-content"><span class="dot red"></span> Critical</div>
                   <i class="fa-solid fa-check check-icon"></i>
                 </label>
 
                 <label class="toggle-card">
                   <input type="checkbox" checked value="high">
-                  <div class="card-content"><span class="dot orange"></span> Alto</div>
+                  <div class="card-content"><span class="dot orange"></span> High</div>
                   <i class="fa-solid fa-check check-icon"></i>
                 </label>
 
                 <label class="toggle-card">
                   <input type="checkbox" checked value="medium">
-                  <div class="card-content"><span class="dot yellow"></span> Medio</div>
+                  <div class="card-content"><span class="dot yellow"></span> Medium</div>
                   <i class="fa-solid fa-check check-icon"></i>
                 </label>
 
@@ -472,7 +472,7 @@
           </div>
 
           <div class="sidebar-actions" style="flex-wrap: wrap; gap: 10px;">
-            <button id="applyFilters" class="action-btn primary" style="flex: 1 1 100%;">Applica Filtri</button>
+            <button id="applyFilters" class="action-btn primary" style="flex: 1 1 100%;">Apply Filters</button>
             <a href="report.html" target="_blank" class="action-btn ghost"
               style="flex: 1 1 45%; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
               <i class="fa-solid fa-file-contract"></i> REPORT
@@ -486,7 +486,7 @@
         <div id="sidebar-tab-layers" class="s-tab-content">
           <div class="sidebar-scroll-area">
 
-            <div class="layer-section-title">FONTE FRONTLINE</div>
+            <div class="layer-section-title">FRONTLINE SOURCE</div>
 
             <div class="map-layer-card active" onclick="selectMapSource(this, 'deepstate')">
               <div class="card-header">
@@ -496,7 +496,7 @@
                 </div>
                 <i class="fa-solid fa-circle-dot status-dot"></i>
               </div>
-              <div class="card-desc">Aggiornamento live. Fonte primaria basata su prove visive.</div>
+              <div class="card-desc">Live update. Primary source based on visual evidence.</div>
             </div>
 
             <div class="map-layer-card" onclick="selectMapSource(this, 'isw')">
@@ -507,7 +507,7 @@
                 </div>
                 <i class="fa-regular fa-circle status-dot"></i>
               </div>
-              <div class="card-desc">Analisi conservativa con aggiornamento giornaliero.</div>
+              <div class="card-desc">Conservative analysis with daily update.</div>
             </div>
 
             <div class="map-layer-card" style="opacity: 0.5; cursor: not-allowed;">
@@ -518,13 +518,13 @@
                 </div>
                 <i class="fa-solid fa-lock status-dot"></i>
               </div>
-              <div class="card-desc">Dati vettoriali non disponibili. Report statici Telegram.</div>
+              <div class="card-desc">Vector data not available. Static Telegram reports.</div>
             </div>
 
-            <div class="layer-section-title">DATI EXTRA</div>
+            <div class="layer-section-title">EXTRA DATA</div>
 
             <label class="tech-toggle-row">
-              <span class="tech-toggle-label"><i class="fa-solid fa-cloud-bolt"></i> Radar Meteo</span>
+              <span class="tech-toggle-label"><i class="fa-solid fa-cloud-bolt"></i> Weather Radar</span>
               <input type="checkbox">
               <div class="tech-switch"></div>
             </label>
@@ -532,7 +532,7 @@
             <label class="tech-toggle-row">
               <span class="tech-toggle-label">
                 <i class="fa-solid fa-fire-flame-curved" style="color:#ef4444;"></i>
-                NASA FIRMS (Termico)
+                NASA FIRMS (Thermal)
               </span>
               <input type="checkbox" onchange="toggleTechLayer('firms', this)">
               <div class="tech-switch"></div>
@@ -544,7 +544,7 @@
             </label>
 
             <label class="tech-toggle-row">
-              <span class="tech-toggle-label"><i class="fa-solid fa-shield-halved"></i> Fortificazioni</span>
+              <span class="tech-toggle-label"><i class="fa-solid fa-shield-halved"></i> Fortifications</span>
               <input type="checkbox" checked>
               <div class="tech-switch"></div>
             </label>
@@ -572,15 +572,15 @@
 
       <div class="kpi-bar">
         <div class="kpi-card">
-          <span class="kpi-label">Eventi Totali</span>
+          <span class="kpi-label">Total Events</span>
           <span class="kpi-value" id="eventCount">0</span>
         </div>
         <div class="kpi-card">
-          <span class="kpi-label">Ultimo Aggiornamento</span>
+          <span class="kpi-label">Last Update</span>
           <span class="kpi-value" id="lastUpdate" style="font-size:1.2rem;">Loading...</span>
         </div>
         <div class="kpi-card" id="categoryStats">
-          <span class="kpi-label">Stato Sistema</span>
+          <span class="kpi-label">System Status</span>
           <span class="kpi-value" style="color:#f59e0b; font-size:1.2rem;">ONLINE</span>
         </div>
       </div>
@@ -605,15 +605,15 @@
 
       <div class="charts-section">
         <div class="chart-card">
-          <h4>Trend Temporale</h4>
+          <h4>Time Trend</h4>
           <div class="chart-wrapper"><canvas id="timelineChart"></canvas></div>
         </div>
         <div class="chart-card half">
-          <h4>Distribuzione per Tipo</h4>
+          <h4>Distribution by Type</h4>
           <div class="chart-wrapper"><canvas id="typeDistributionChart"></canvas></div>
         </div>
         <div class="chart-card half">
-          <h4>Indice di Intensità</h4>
+          <h4>Intensity Index</h4>
           <div class="chart-wrapper"><canvas id="intensityRadarChart"></canvas></div>
         </div>
       </div>
@@ -700,7 +700,7 @@
               </div>
               <div class="heatmap-controls" id="dashboard-heatmap-controls">
                 <p style="color: #94a3b8; font-size: 0.9em; margin-bottom: 15px;">
-                  Visualizza la densità degli scontri basata sul punteggio d'intensità (0-10).
+                  Visualize the density of clashes based on intensity score (0-10).
                 </p>
 
                 <label class="tech-toggle-row big-toggle">
@@ -748,7 +748,7 @@
               <div
                 style="height:100%; display:flex; align-items:center; justify-content:center; color:#64748b; flex-direction:column;">
                 <i class="fa-solid fa-crosshairs" style="font-size:3rem; margin-bottom:15px; opacity:0.3;"></i>
-                <p>Seleziona un evento dal feed per visualizzare il dossier.</p>
+                <p>Select an event from the feed to view the dossier.</p>
               </div>
             </div>
           </div>
@@ -756,7 +756,7 @@
 
       </div>
 
-      <!-- Scripts specifici per la dashboard che carichiamo dopo -->
+      <!-- Dashboard specific scripts loaded later -->
       <link rel="stylesheet" href="assets/css/dashboard.css">
       <script src="assets/js/dashboard.js"></script>
 
@@ -769,7 +769,7 @@
             <!-- LEFT COLUMN: CONTEXT -->
             <div class="dossier-left">
               <div class="dossier-header-group">
-                <h3 id="modalTitle">Titolo Evento</h3>
+                <h3 id="modalTitle">Event Title</h3>
                 <div class="dossier-meta-row">
                   <span id="modalDate">YYYY-MM-DD</span>
                   <span class="dossier-separator">|</span>
@@ -778,7 +778,7 @@
               </div>
 
               <div id="modalDesc" class="dossier-description">
-                Descrizione evento...
+                Event description...
               </div>
 
               <div id="modalVideoContainer" class="dossier-media"></div>
@@ -926,7 +926,7 @@
           <script src="assets/js/orbat_tracker.js"></script>
 
           <script>
-            // --- FUNZIONI DI SUPPORTO PER LA UI ---
+            // --- UI SUPPORT FUNCTIONS ---
 
             function closeModal(event) {
               if (event.target.id === 'videoModal' || event.target.classList.contains('close-modal')) {
@@ -946,23 +946,23 @@
               document.getElementById('view-' + viewName).classList.add('active');
             }
 
-            // --- LOGICA TAB SIDEBAR (NUOVA) ---
+            // --- SIDEBAR TAB LOGIC (NEW) ---
             function switchSidebarTab(tabName) {
-              // 1. Reset bottoni
+              // 1. Reset buttons
               document.querySelectorAll('.s-tab-btn').forEach(btn => btn.classList.remove('active'));
-              // 2. Attiva bottone cliccato
+              // 2. Activate clicked button
               const activeBtn = document.querySelector(`.s-tab-btn[onclick="switchSidebarTab('${tabName}')"]`);
               if (activeBtn) activeBtn.classList.add('active');
 
-              // 3. Reset contenuti
+              // 3. Reset content
               document.querySelectorAll('.s-tab-content').forEach(content => content.classList.remove('active'));
-              // 4. Mostra contenuto giusto
+              // 4. Show right content
               document.getElementById(`sidebar-tab-${tabName}`).classList.add('active');
             }
 
-            // --- LOGICA SELEZIONE MAPPA (SOLO VISIVA PER ORA) ---
+            // --- MAP SELECTION LOGIC (VISUAL ONLY FOR NOW) ---
             function selectMapSource(card, sourceName) {
-              // Reset card attive
+              // Reset active cards
               document.querySelectorAll('.map-layer-card').forEach(c => {
                 c.classList.remove('active');
                 const icon = c.querySelector('.status-dot');
@@ -972,7 +972,7 @@
                 icon.classList.add('fa-regular');
               });
 
-              // Attiva nuova card
+              // Activate new card
               card.classList.add('active');
               const activeIcon = card.querySelector('.status-dot');
               activeIcon.classList.remove('fa-circle');
@@ -980,8 +980,8 @@
               activeIcon.classList.add('fa-circle-dot');
               activeIcon.classList.add('fa-solid');
 
-              console.log(`Mappa cambiata in: ${sourceName}`);
-              // TODO: Chiamata reale a Leaflet per cambiare GeoJSON
+              console.log(`Map changed to: ${sourceName}`);
+              // TODO: Real Leaflet call to change GeoJSON
             }
           </script>
 

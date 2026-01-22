@@ -42,14 +42,14 @@ window.initCharts = function (events) {
         };
     });
 
-    ORIGINAL_DATA.sort((a, b) => b.timestamp - a.timestamp); // Ordine Decrescente per la lista
+    ORIGINAL_DATA.sort((a, b) => b.timestamp - a.timestamp); // Descending order for the list
 
     updateDashboard(ORIGINAL_DATA);
     populateFilters(ORIGINAL_DATA);
     setupChartFilters();
 };
 
-// --- FILTRI ---
+// --- FILTERS ---
 function setupChartFilters() {
     const btn = document.getElementById('applyFilters');
     if (!btn) return;
@@ -110,7 +110,7 @@ function updateDashboard(data) {
     renderTypeChart(data);
     renderRadarChart(data);
 
-    // RENDERIZZAZIONE DELLE 3 VISTE
+    // RENDERING OF THE 3 VIEWS
     renderKanban(data);
     renderVisualGallery(data);
     renderIntelFeed(data);
@@ -119,7 +119,7 @@ function updateDashboard(data) {
 }
 
 // ===========================================
-// NUOVE FUNZIONI DI RENDERIZZAZIONE VISTE
+// NEW VIEW RENDERING FUNCTIONS
 // ===========================================
 
 function renderKanban(data) {
@@ -129,14 +129,14 @@ function renderKanban(data) {
         strat: document.querySelector('#col-strat .column-content')
     };
 
-    // Pulisci
+    // Clean
     Object.values(cols).forEach(c => { if (c) c.innerHTML = ''; });
 
-    // Contatori
+    // Counters
     let counts = { ground: 0, air: 0, strat: 0 };
 
-    data.slice(0, 100).forEach(e => { // Limitiamo a 100 per performance
-        // Logica semplice di classificazione (può essere migliorata con tag reali)
+    data.slice(0, 100).forEach(e => { // Limit to 100 for performance
+        // Simple classification logic (can be improved with real tags)
         let target = 'ground';
         const t = (e.type || '').toLowerCase();
 
@@ -145,7 +145,7 @@ function renderKanban(data) {
 
         counts[target]++;
 
-        // Determina classe bordo in base a intensità
+        // Determine border class based on intensity
         let borderClass = 'bd-low';
         if (e._intensityNorm >= 0.8) borderClass = 'bd-critical';
         else if (e._intensityNorm >= 0.6) borderClass = 'bd-high';
@@ -167,7 +167,7 @@ function renderKanban(data) {
         if (cols[target]) cols[target].appendChild(card);
     });
 
-    // Aggiorna badge
+    // Update badges
     const badgeGround = document.querySelector('#col-ground .count-badge');
     if (badgeGround) badgeGround.innerText = counts.ground;
 
@@ -183,14 +183,14 @@ function renderVisualGallery(data) {
     if (!container) return;
     container.innerHTML = '';
 
-    // Filtra solo eventi con video o immagini (o mostra placeholder carini)
+    // Filter only events with video or images (or show nice placeholders)
     data.slice(0, 50).forEach(e => {
         const card = document.createElement('div');
         card.className = 'visual-card';
         const encoded = encodeURIComponent(JSON.stringify(e));
         card.onclick = () => window.openModal(encoded);
 
-        // Usa immagine reale se c'è, altrimenti icona
+        // Use real image if exists, otherwise icon
         let contentHtml = `<i class="fa-solid fa-layer-group" style="font-size:2rem; opacity:0.3; color:white;"></i>`;
         let bgStyle = '';
 
@@ -226,7 +226,7 @@ function renderIntelFeed(data) {
         `;
 
         item.onclick = () => {
-            // Rimuovi active dagli altri
+            // Remove active from others
             document.querySelectorAll('.feed-item').forEach(el => el.classList.remove('active'));
             item.classList.add('active');
             showIntelDetail(e);
@@ -237,10 +237,10 @@ function renderIntelFeed(data) {
 
 function showIntelDetail(e) {
     const container = document.getElementById('intel-detail-content');
-    const encoded = encodeURIComponent(JSON.stringify(e)); // Per il tasto "Apri Modale Full"
+    const encoded = encodeURIComponent(JSON.stringify(e)); // For the "Open Full Modal" button
 
     let mediaHtml = '';
-    if (e.video && e.video !== 'null') mediaHtml = `<div style="padding:15px; background:rgba(0,0,0,0.3); border-radius:8px; margin:15px 0; text-align:center;"><i class="fa-solid fa-play"></i> Video disponibile nella modale completa</div>`;
+    if (e.video && e.video !== 'null') mediaHtml = `<div style="padding:15px; background:rgba(0,0,0,0.3); border-radius:8px; margin:15px 0; text-align:center;"><i class="fa-solid fa-play"></i> Video available in full dossier</div>`;
 
     container.innerHTML = `
         <div class="d-header">
@@ -252,21 +252,21 @@ function showIntelDetail(e) {
             </div>
         </div>
         <div class="d-body">
-            <p>${e.description || "Nessuna descrizione dettagliata disponibile."}</p>
+            <p>${e.description || "No detailed description available."}</p>
             ${mediaHtml}
             <button class="btn-primary" onclick="window.openModal('${encoded}')" style="margin-top:20px; width:100%;">
-                <i class="fa-solid fa-expand"></i> Apri Dossier Completo & Media
+                <i class="fa-solid fa-expand"></i> Open Full Dossier & Media
             </button>
         </div>
     `;
 }
 
-// --- HELPER: NORMALIZZAZIONE CATEGORIE (Militari + Civili) ---
+// --- HELPER: CATEGORY NORMALIZATION (Military + Civil) ---
 function getNormalizedType(rawType) {
     if (!rawType) return null;
     const t = rawType.toLowerCase();
 
-    // --- PRIORITÀ 1: EVENTI MILITARI CINETICI ---
+    // --- PRIORITY 1: KINETIC MILITARY EVENTS ---
 
     // 1. NAVAL ENGAGEMENT
     if (t.match(/naval|sea|ship|boat|maritime|vessel/)) return "Naval Engagement";
@@ -283,21 +283,21 @@ function getNormalizedType(rawType) {
     // 7. GROUND CLASH (Include 'firefight')
     if (t.match(/clash|firefight|skirmish|ambush|raid|attack|ground|shooting|sniper/)) return "Ground Clash";
 
-    // --- PRIORITÀ 2: CONTESTO CIVILE E POLITICO ---
+    // --- PRIORITY 2: CIVIL AND POLITICAL CONTEXT ---
 
-    // 8. POLITICAL / UNREST (Proteste, Politica, Diplomazia)
+    // 8. POLITICAL / UNREST (Protests, Politics, Diplomacy)
     if (t.match(/politic|protest|riot|demonstration|diploma|unrest|arrest/)) return "Political / Unrest";
 
-    // 9. CIVIL / ACCIDENT (Incidenti, Incendi generici, Infrastrutture)
-    // Nota: Messo per ultimo per evitare che 'fire' (incendio) catturi 'firefight' (combattimento)
+    // 9. CIVIL / ACCIDENT (Accidents, Generic Fires, Infrastructure)
+    // Note: Placed last to avoid 'fire' capturing 'firefight'
     if (t.match(/civil|accident|crash|fire|infrastructure|logistics|humanitarian/)) return "Civil / Accident";
 
-    return null; // Scarta tutto il resto
+    return null; // Discard the rest
 }
 
 
-// Funzioni Standard Grafici (Timeline, Type, Radar) - Invariate
-function renderTimelineChart(data) { const ctx = document.getElementById('timelineChart'); if (!ctx) return; const aggregated = {}; data.forEach(e => { if (!e.timestamp) return; const key = moment(e.timestamp).format('YYYY-MM'); aggregated[key] = (aggregated[key] || 0) + 1; }); const labels = Object.keys(aggregated).sort(); if (charts.timeline) charts.timeline.destroy(); charts.timeline = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Eventi', data: Object.values(aggregated), backgroundColor: THEME.primary, borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { color: THEME.grid } } } } }); }
+// Standard Chart Functions (Timeline, Type, Radar) - Unchanged
+function renderTimelineChart(data) { const ctx = document.getElementById('timelineChart'); if (!ctx) return; const aggregated = {}; data.forEach(e => { if (!e.timestamp) return; const key = moment(e.timestamp).format('YYYY-MM'); aggregated[key] = (aggregated[key] || 0) + 1; }); const labels = Object.keys(aggregated).sort(); if (charts.timeline) charts.timeline.destroy(); charts.timeline = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Events', data: Object.values(aggregated), backgroundColor: THEME.primary, borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { color: THEME.grid } } } } }); }
 
 function renderTypeChart(data) {
     const ctx = document.getElementById('typeDistributionChart');
@@ -305,12 +305,12 @@ function renderTypeChart(data) {
 
     const counts = {};
 
-    // Definiamo cosa ESCLUDERE dai grafici statistici
+    // Define what to EXCLUDE from statistical charts
     const EXCLUDED_FROM_CHARTS = ['POLITICAL / UNREST', 'CIVIL / ACCIDENT'];
 
     data.forEach(e => {
         const cleanType = getNormalizedType(e.type);
-        // Conta solo se è valido E se non è nella lista nera
+        // Count only if valid AND if not in blacklist
         if (cleanType && !EXCLUDED_FROM_CHARTS.includes(cleanType)) {
             counts[cleanType] = (counts[cleanType] || 0) + 1;
         }
@@ -356,7 +356,7 @@ function renderRadarChart(data) {
 
     data.forEach(e => {
         const cleanType = getNormalizedType(e.type);
-        // Filtra via categorie non militari per il calcolo intensità
+        // Filter out non-military categories for intensity calculation
         if (cleanType && !EXCLUDED_FROM_CHARTS.includes(cleanType)) {
             if (!stats[cleanType]) stats[cleanType] = { sum: 0, count: 0 };
             stats[cleanType].sum += e._intensityNorm;
@@ -373,7 +373,7 @@ function renderRadarChart(data) {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Intensità Media',
+                label: 'Average Intensity',
                 data: labels.map(k => (stats[k].sum / stats[k].count).toFixed(2)),
                 backgroundColor: 'rgba(245, 158, 11, 0.2)',
                 borderColor: THEME.primary,
@@ -402,20 +402,20 @@ function populateFilters(data) {
     if (!select) return;
 
     const currentVal = select.value;
-    select.innerHTML = '<option value="">Tutte le categorie</option>';
+    select.innerHTML = '<option value="">All categories</option>';
 
     const uniqueTypes = new Set();
 
     data.forEach(e => {
         const norm = getNormalizedType(e.type);
-        // Qui accettiamo TUTTO ciò che è normalizzato (quindi anche Civil e Political)
-        // perché nel filtro vogliamo poterli selezionare
+        // Here we accept EVERYTHING that is normalized (so also Civil and Political)
+        // because we want to be able to select them in the filter
         if (norm) {
             uniqueTypes.add(norm);
         }
     });
 
-    // Ordina e crea le opzioni
+    // Sort and create options
     const sortedTypes = [...uniqueTypes].sort();
     sortedTypes.forEach(t => {
         select.innerHTML += `<option value="${t}">${t}</option>`;

@@ -39,7 +39,7 @@ class MapDataLoader:
         dummy = {
             "type": "FeatureCollection",
             "metadata": {
-                "generated": datetime.utcnow().isoformat(),
+                "generated": datetime.now().isoformat(),
                 "source": "fallback",
                 "status": "No data available"
             },
@@ -82,76 +82,110 @@ class MapDataLoader:
 
         return None
 
-    def load_nasa_firms(self, days: int = 1) -> bool:
+    def load_nasa_firms(self, days: int = 3) -> bool:
         """
-        Fetch NASA FIRMS fire data using the user provided key.
+        Fetch NASA FIRMS fire data from multiple satellite sources.
+        Combines VIIRS SNPP, NOAA-20, NOAA-21, and MODIS for maximum coverage.
         """
         if not self.firms_api_key:
             logger.warning("FIRMS API Key missing!")
             return False
 
-        # Area: Ukraine bounding box (West, South, East, North)
+        # Area: Ukraine + border regions bounding box
         bbox = "22.1,44.3,40.2,52.4"
-
-        # VIIRS_SNPP_NRT è il satellite standard per dati in near-real-time
-        url = f"https://firms.modaps.eosdis.nasa.gov/api/area/csv/{self.firms_api_key}/VIIRS_SNPP_NRT/{bbox}/{days}"
-
-        logger.info(f"Contacting NASA FIRMS...")
-        response = self.fetch_with_retry(url)
-        if not response:
-            return False
-
-        # Convert CSV to GeoJSON
-        features = []
-        lines = response.text.strip().split('\n')
-
-        if len(lines) < 2:
-            logger.warning("NASA FIRMS returned no data rows.")
-            return False
-
-        headers = lines[0].split(',')
-
-        for line in lines[1:]:
-            values = line.split(',')
-            if len(values) < 3:
+        
+        # Multiple satellite sources for better coverage
+        satellites = [
+            ("VIIRS_SNPP_NRT", "VIIRS_SNPP"),
+            ("VIIRS_NOAA20_NRT", "VIIRS_NOAA20"),
+            ("VIIRS_NOAA21_NRT", "VIIRS_NOAA21"),
+            ("MODIS_NRT", "MODIS"),
+        ]
+        
+        all_features = []
+        seen_coords = set()  # For deduplication
+        
+        logger.info(f"Fetching NASA FIRMS from {len(satellites)} satellite sources ({days}-day window)...")
+        
+        for source_id, source_label in satellites:
+            url = f"https://firms.modaps.eosdis.nasa.gov/api/area/csv/{self.firms_api_key}/{source_id}/{bbox}/{days}"
+            
+            response = self.fetch_with_retry(url)
+            if not response:
+                logger.warning(f"  {source_label}: No response")
                 continue
-
-            data = dict(zip(headers, values))
-
-            try:
-                feature = {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [float(data['longitude']), float(data['latitude'])]
-                    },
-                    "properties": {
-                        "brightness": float(data.get('bright_ti4', 0)),
-                        "confidence": data.get('confidence', 'unknown'),
-                        "acq_date": data.get('acq_date'),
-                        "acq_time": data.get('acq_time'),
-                        "satellite": "VIIRS"
+            
+            lines = response.text.strip().split('\n')
+            if len(lines) < 2:
+                logger.info(f"  {source_label}: No data")
+                continue
+            
+            headers = lines[0].split(',')
+            count = 0
+            
+            for line in lines[1:]:
+                values = line.split(',')
+                if len(values) < 3:
+                    continue
+                
+                data = dict(zip(headers, values))
+                
+                try:
+                    lat = float(data['latitude'])
+                    lon = float(data['longitude'])
+                    
+                    # Deduplication by rounded coordinates (prevent near-duplicates)
+                    coord_key = (round(lat, 3), round(lon, 3))
+                    if coord_key in seen_coords:
+                        continue
+                    seen_coords.add(coord_key)
+                    
+                    # Get brightness - field name varies by satellite
+                    brightness = float(data.get('bright_ti4', data.get('brightness', 300)))
+                    
+                    feature = {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [lon, lat]
+                        },
+                        "properties": {
+                            "brightness": brightness,
+                            "confidence": data.get('confidence', 'n'),
+                            "acq_date": data.get('acq_date'),
+                            "acq_time": data.get('acq_time'),
+                            "satellite": source_label,
+                            "frp": float(data.get('frp', 0)) if data.get('frp') else 0
+                        }
                     }
-                }
-                features.append(feature)
-            except (ValueError, KeyError) as e:
-                continue
-
+                    all_features.append(feature)
+                    count += 1
+                    
+                except (ValueError, KeyError):
+                    continue
+            
+            logger.info(f"  {source_label}: {count} detections")
+        
+        if not all_features:
+            logger.warning("NASA FIRMS returned no data from any satellite.")
+            return False
+        
         geojson = {
             "type": "FeatureCollection",
             "metadata": {
-                "generated": datetime.utcnow().isoformat(),
-                "source": "NASA FIRMS",
+                "generated": datetime.now().isoformat(),
+                "source": "NASA FIRMS (Multi-satellite)",
+                "satellites": [s[1] for s in satellites],
                 "days": days
             },
-            "features": features
+            "features": all_features
         }
 
         output_path = self.output_dir / "thermal_firms.geojson"
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(geojson, f, indent=2)
 
-        logger.info(f"Saved {len(features)} thermal hotspots from NASA FIRMS")
+        logger.info(f"Saved {len(all_features)} unique thermal hotspots from NASA FIRMS")
         return True
 
     def convert_kml_to_geojson(self, kml_filename: str, output_name: str) -> bool:
@@ -200,8 +234,8 @@ class MapDataLoader:
         logger.info("STARTING IMPACT ATLAS LEGITIMATE DATA LOADER")
         logger.info("=" * 60)
 
-        # 1. NASA FIRMS (Automatico)
-        self.load_nasa_firms(days=1)
+        # 1. NASA FIRMS (Multi-satellite, 3-day window)
+        self.load_nasa_firms(days=3)
 
         # 2. CONVERSIONE MANUALE (Se hai scaricato un file KML)
         # Se metti un file chiamato 'manual_frontline.kml' nella cartella, lui lo converte
