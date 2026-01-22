@@ -914,14 +914,30 @@
               else if (unitType.includes('DRONE')) unitIcon = 'fa-drone';
               else if (unitType.includes('SOF') || unitType.includes('SPECIAL')) unitIcon = 'fa-crosshairs';
 
-              const marker = L.circleMarker([lat, lon], {
-                radius: 8,
-                fillColor: color,
-                color: '#fff',
-                weight: 2,
-                opacity: 1,
-                fillOpacity: 0.8
+              // Flag emoji based on faction
+              let flagEmoji = '🏳️';
+              let bgColor = '#64748b';
+              if (unit.faction === 'UA') {
+                flagEmoji = '🇺🇦';
+                bgColor = '#3b82f6';
+              } else if (unit.faction === 'RU' || unit.faction === 'RU_PROXY' || unit.faction === 'RU_PMC') {
+                flagEmoji = '🇷🇺';
+                bgColor = '#ef4444';
+              }
+
+              // Create a custom div icon with flag
+              const flagIcon = L.divIcon({
+                html: `<div style="
+                  font-size: 18px;
+                  text-shadow: 0 0 3px rgba(0,0,0,0.8), 0 0 6px rgba(0,0,0,0.5);
+                  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
+                ">${flagEmoji}</div>`,
+                className: 'unit-flag-marker',
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
               });
+
+              const marker = L.marker([lat, lon], { icon: flagIcon });
 
               // Format last seen date
               let lastSeenStr = 'Unknown';
@@ -940,15 +956,15 @@
                   font-family: 'Inter', sans-serif;
                   background: #0f172a;
                   border-radius: 8px;
-                  border: 1px solid ${color};
+                  border: 1px solid ${bgColor};
                 ">
                   <div style="
-                    background: ${color};
+                    background: ${bgColor};
                     padding: 12px;
                     border-radius: 8px 8px 0 0;
                   ">
                     <div style="display: flex; align-items: center; gap: 8px;">
-                      <i class="fa-solid ${unitIcon}" style="font-size: 1.2rem; color: #fff;"></i>
+                      <span style="font-size: 1.5rem;">${flagEmoji}</span>
                       <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">
                         ${unit.display_name || unit.unit_id}
                       </div>
