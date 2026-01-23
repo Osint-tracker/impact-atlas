@@ -934,19 +934,22 @@
               const color = isUA ? '#3b82f6' : (isRU ? '#ef4444' : '#64748b');
               const factionLabel = isUA ? 'Ukraine' : (isRU ? 'Russia' : 'Unknown');
 
-              // Simple circle icon (much faster than emoji)
+              // SVG Flag icons (inline for performance)
+              const uaFlag = `<svg width="20" height="14" viewBox="0 0 20 14"><rect width="20" height="7" fill="#005BBB"/><rect y="7" width="20" height="7" fill="#FFD500"/></svg>`;
+              const ruFlag = `<svg width="20" height="14" viewBox="0 0 20 14"><rect width="20" height="4.67" fill="#fff"/><rect y="4.67" width="20" height="4.67" fill="#0039A6"/><rect y="9.33" width="20" height="4.67" fill="#D52B1E"/></svg>`;
+              const unknownFlag = `<svg width="20" height="14" viewBox="0 0 20 14"><rect width="20" height="14" fill="#64748b"/></svg>`;
+
+              const flagSvg = isUA ? uaFlag : (isRU ? ruFlag : unknownFlag);
+
               const icon = L.divIcon({
                 html: `<div style="
-                  width: 12px;
-                  height: 12px;
-                  background: ${color};
-                  border: 2px solid white;
-                  border-radius: 50%;
-                  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-                "></div>`,
-                className: 'unit-marker',
-                iconSize: [16, 16],
-                iconAnchor: [8, 8]
+                  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+                  border-radius: 2px;
+                  overflow: hidden;
+                ">${flagSvg}</div>`,
+                className: 'unit-flag-marker',
+                iconSize: [20, 14],
+                iconAnchor: [10, 7]
               });
 
               const marker = L.marker([lat, lon], {
