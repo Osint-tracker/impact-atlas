@@ -1064,6 +1064,7 @@
     if (typeTag) typeTag.innerText = (eventData.type || "EVENT").toUpperCase();
 
     // Description
+    const descEl = document.getElementById('modalDesc');
     if (descEl) descEl.innerText = eventData.description || "No description available for this event.";
 
     // --- 1.5 UNITS INVOLVED ---
