@@ -1064,8 +1064,55 @@
     if (typeTag) typeTag.innerText = (eventData.type || "EVENT").toUpperCase();
 
     // Description
-    const descEl = document.getElementById('modalDesc');
     if (descEl) descEl.innerText = eventData.description || "No description available for this event.";
+
+    // --- 1.5 UNITS INVOLVED ---
+    const unitsContainer = document.getElementById('modalUnits');
+    const unitsList = document.getElementById('modalUnitsList');
+
+    if (unitsContainer && unitsList) {
+      let units = [];
+      try {
+        if (eventData.units) {
+          units = typeof eventData.units === 'string' ? JSON.parse(eventData.units) : eventData.units;
+        }
+      } catch (e) {
+        console.warn("Failed to parse units:", e);
+      }
+
+      if (units && units.length > 0) {
+        unitsContainer.style.display = 'block';
+        unitsList.innerHTML = units.map(u => {
+          const isUA = u.faction === 'UA';
+          const isRU = u.faction === 'RU' || u.faction === 'RU_PROXY' || u.faction === 'RU_PMC';
+          const bgColor = isUA ? 'rgba(59, 130, 246, 0.2)' : (isRU ? 'rgba(239, 68, 68, 0.2)' : 'rgba(100, 116, 139, 0.2)');
+          const borderColor = isUA ? '#3b82f6' : (isRU ? '#ef4444' : '#64748b');
+          const flag = isUA ? '🇺🇦' : (isRU ? '🇷🇺' : '🏳️');
+
+          return `
+            <div style="
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              background: ${bgColor};
+              border: 1px solid ${borderColor};
+              padding: 4px 8px;
+              border-radius: 4px;
+              font-size: 0.75rem;
+              color: #f1f5f9;
+              font-family: 'JetBrains Mono', monospace;
+            ">
+              <span style="font-size: 0.9rem;">${flag}</span>
+              <span style="font-weight: 600;">${u.unit_name || u.unit_id}</span>
+              <span style="opacity: 0.6; font-size: 0.7rem;">${u.status || 'ACTIVE'}</span>
+            </div>
+          `;
+        }).join('');
+      } else {
+        unitsContainer.style.display = 'none';
+        unitsList.innerHTML = '';
+      }
+    }
 
     // --- 2. METRICS CARD (Right Column) ---
     const vecK = parseFloat(eventData.vec_k) || 0;

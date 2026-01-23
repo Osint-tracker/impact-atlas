@@ -292,6 +292,9 @@ def main():
                     # Sources (JSON serialized for JS)
                     "sources_list": json.dumps(structured_sources),
                     
+                    # Units
+                    "units": json.dumps(ai_data.get('military_units_detected', [])),
+
                     # Marker Style
                     "marker_radius": radius,
                     "marker_color": color
