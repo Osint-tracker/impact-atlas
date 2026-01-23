@@ -162,7 +162,8 @@ def main():
     for db_row in rows:
         try:
             row = dict(db_row)
-            
+            ai_data = {}  # CRITICAL: Reset for each iteration to avoid stale data
+
             # === DIRECT COLUMN READS (No JSON parsing!) ===
             event_id = row['event_id']
             
@@ -210,7 +211,9 @@ def main():
             
             if row.get('ai_report_json'):
                 try:
-                    ai_data = json.loads(row['ai_report_json'])
+                    if not ai_data: # If not already loaded above
+                        ai_data = json.loads(row['ai_report_json'])
+                    
                     tactics = ai_data.get('tactics', {})
                     geo = tactics.get('geo_location', {}).get('explicit', {})
                     lat = geo.get('lat')
