@@ -1,12 +1,86 @@
 ID,Date,Title,Lat,Lon,TIE,K,T,E,Reliability,Bias,HasVideo,Sources
-fus_332428_1768864389,NaT,Ukrainian Forces Conduct Operations near Lipetsk a,45.7684014,39.0261044,72.0,6.0,6.0,7.0,60,2.6,0,7
-fus_332462_1768864389,NaT,Ukrainian President Warns of Potential Russian Str,50.3984937,30.8816326,100.0,8.0,8.0,7.0,57,1.1,0,4
-fus_332477_1768864389,NaT,Ukrainian Forces Strike Tamanneftegaz Oil Terminal,45.2823609,37.3658235,100.0,7.0,9.0,7.0,55,-1.0,0,6
-fus_332532_1768864389,NaT,Drone Threat Identified in Multiple Regions,47.2222596,39.7198736,0.0,1.0,1.0,1.0,60,-1.2,0,3
-fus_332573_1768864389,NaT,Russian Forces Enter Hrabovske Village,50.6914311,35.460427,10.0,5.0,3.0,4.0,57,2.8,0,3
-fus_332913_1768864390,NaT,Russian Drone Attack on Kryvyi Rih,47.9102734,33.3917703,35.0,8.0,4.0,6.0,55,0.2,0,4
-fus_333030_1768864391,NaT,Ukrainian Forces Conduct Strike on Slavyansk Oil R,45.2590875,38.1244609,100.0,7.0,9.0,6.0,56,1.4,0,8
-fus_333118_1768864391,NaT,Ukrainian Forces Engage Russian Forces near Hryshy,48.3293763,37.0798002,41.0,5.0,5.0,7.0,56,1.5,0,2
-fus_418504_1768864394,NaT,Ukrainian Forces Engage Russian Forces in Kupiansk,49.7132963,37.6141992,55.0,5.0,7.0,5.0,100,-5.2,1,2
-fus_418528_1768864394,NaT,Russian Forces Advance in Severetsk,48.8676267,38.0902435,15.0,3.0,3.0,7.0,78,-5.0,0,1
-fus_462186_1768864395,NaT,Event Processing Error,50.4500336,30.5241361,100.0,7.0,8.0,6.0,60,-1.2,0,3
+fus_332428_1768864389,2026-01-23,Ukrainian Forces Conduct Operations in Lipetsk and,45.7684014,39.0261044,100.0,6.0,8.0,7.0,60,3.8,0,7
+fus_332462_1768864389,2026-01-23,Ukrainian President Warns of Potential Russian Str,50.3984937,30.8816326,99.0,8.0,8.0,7.0,57,2.3,0,4
+fus_332477_1768864389,2026-01-23,Ukrainian Forces Strike Tamanneftegaz Oil Terminal,45.2823609,37.3658235,100.0,7.0,9.0,7.0,55,0.2,0,6
+fus_332573_1768864389,2026-01-23,Russian Forces Enter Hrabovske Village,50.6914311,35.460427,10.0,5.0,3.0,4.0,57,0.4,0,3
+fus_332913_1768864390,2026-01-23,Russian Drone Attack on Kryvyi Rih,50.4500336,30.5241361,100.0,8.0,8.0,6.0,55,-0.5,0,4
+fus_333030_1768864391,2026-01-23,Ukrainian Forces Conduct Strike on Slavyansk Oil R,45.2590875,38.1244609,100.0,7.0,9.0,6.0,56,1.4,0,8
+fus_418441_1768864394,2026-01-23,Russian Forces Intensify Strikes in Odesa Region,46.4843023,30.7322878,66.0,6.0,8.0,5.0,76,-4.8,0,6
+fus_418504_1768864394,2026-01-23,Ukrainian Forces Engage Russian Forces in Kupiansk,49.7132963,37.6141992,55.0,5.0,7.0,5.0,100,-4.0,1,2
+fus_418528_1768864394,2026-01-23,Russian Forces Advance in Severetsk,48.8676267,38.0902435,15.0,3.0,3.0,7.0,78,-5.0,0,1
+fus_462186_1768864395,2026-01-23,Russian Forces Conduct Strikes in Sumy Region,50.4500336,30.5241361,100.0,7.0,8.0,6.0,60,-1.2,0,3
+fus_462192_1768864395,2026-01-23,Russian Forces Conduct Strikes in Ukraine,46.3013422,30.6549271,83.0,7.0,6.0,7.0,80,-2.0,1,6
+fus_462205_1768864395,2026-01-23,Rubicon Operators Conduct Operations in Donbass,48.0279261,37.954765,45.0,5.0,5.0,7.0,80,-3.2,1,5
+fus_467413_1768864395,2026-01-23,Ukrainian Forces Advance in Zaporizhzhia Region,47.8507859,35.1182867,29.0,5.0,5.0,5.0,60,-3.2,0,4
+fus_467435_1768864395,2026-01-23,Ukrainian Drones Intercepted over Russian Regions,53.2423778,34.3668288,0.0,3.0,2.0,1.0,60,-3.2,0,2
+fus_530258_1768864400,2026-01-23,Ukrainian Drone Operations Reported in Donetsk,47.9212914,37.7809825,8.0,3.0,3.0,4.0,52,-3.0,0,1
+fus_564970_1768864402,2026-01-23,Russian Forces Consolidate Positions near Siversk ,48.8676267,38.0902435,0.0,1.0,1.0,1.0,90,-0.7,0,1
+fus_332428_1769034251,2026-01-23,Ukrainian Forces Conduct Operations near Lipetsk a,45.7684014,39.0261044,100.0,6.0,8.0,7.0,60,3.8,0,9
+fus_332462_1769034251,2026-01-23,Ukrainian President Warns of Potential Russian Str,50.3984937,30.8816326,100.0,8.0,8.0,7.0,56,1.7,0,5
+fus_332477_1769034251,2026-01-23,Ukrainian Forces Strike Tamanneftegaz Oil Terminal,45.2823609,37.3658235,100.0,7.0,9.0,7.0,55,0.2,0,6
+fus_332573_1769034251,2026-01-23,Russian Forces Enter Hrabovske Village,50.6914311,35.460427,10.0,5.0,3.0,4.0,57,0.4,0,3
+fus_332575_1769034251,2026-01-23,Ukrainian Forces Conduct Operations near Hrodivka,48.26294,37.37892,59.0,6.0,5.0,7.0,75,1.4,1,8
+fus_333408_1769034260,2026-01-23,Russian Forces Conduct Drone and Missile Strikes A,50.9080532,28.3867504,100.0,8.0,8.0,6.0,57,1.8,0,1
+fus_333409_1769034260,2026-01-23,Russian Forces Strike Odesa Region,46.4843023,30.7322878,100.0,8.0,8.0,6.0,58,1.3,0,8
+fus_418402_1769034265,2026-01-23,Russian Forces Advance in Vylcha Area,50.247,36.93775,41.0,5.0,5.0,7.0,76,-4.8,0,1
+fus_418504_1769034267,2026-01-23,Ukrainian Forces Engage Russian Forces in Kupiansk,49.7132963,37.6141992,55.0,5.0,7.0,5.0,96,-3.6,1,4
+fus_462192_1769034270,2026-01-23,Russian Forces Conduct Strikes in Ukraine,46.3013422,30.6549271,66.0,7.0,6.0,7.0,80,-2.0,1,8
+fus_462205_1769034270,2026-01-23,Rubicon Operators Conduct Operations in Donbass,48.0279261,37.954765,45.0,5.0,5.0,7.0,80,-3.2,1,6
+fus_467413_1769034272,2026-01-23,Ukrainian Forces Advance in Zaporizhzhia Region,47.8507859,35.1182867,29.0,5.0,5.0,5.0,60,-3.2,0,4
+fus_669984_1769034366,2026-01-23,Russian Forces Conduct Missile Strike near Ukraini,50.4500336,30.5241361,100.0,7.0,8.0,6.0,55,-2.8,0,5
+fus_671977_1769034376,2026-01-23,Russian Authorities Claim Ukrainian Drone Targeted,58.5209862,31.2757862,0.0,3.0,10.0,1.0,63,-2.0,0,1
+fus_677561_1769034444,2026-01-08 14:00:00+00:00,Ukrainian Forces Maintain Control of Snake Island,45.2551,30.2037,16.0,1.0,7.0,3.0,50,3.2,0,1
+fus_677614_1769034445,2026-01-08 14:00:00+00:00,Russian Forces Shelling Reported in Dnipro,51.9191343,30.8243039,20.0,5.0,4.0,5.0,50,2.0,0,1
+fus_677690_1769034446,2026-01-08 14:00:00+00:00,USA Seizes Oil Tanker from Russia in Atlantic and ,59.9276212,30.3598584,0.0,1.0,2.0,2.0,50,0.0,0,1
+fus_677697_1769034447,2026-01-08 14:00:00+00:00,Russian Forces Shell Civilian Areas in Kherson,46.5421715,33.4079326,4.0,3.0,2.0,4.0,50,2.0,0,1
+fus_677707_1769034447,2026-01-08 14:00:00+00:00,Unknown Forces Operating near Russian Border,54.3807285,43.8275636,0.0,1.0,1.0,1.0,50,0.8,0,1
+fus_677721_1769034447,2026-01-08 14:00:00+00:00,Fire Incident in Kharkiv,49.9923181,36.2310146,2.0,1.0,2.0,3.0,50,0.0,0,1
+fus_677784_1769034450,2026-01-23,UK Allocates Funds for Troop Preparation in Ukrain,50.4500336,30.5241361,0.0,1.0,1.0,1.0,57,-1.0,0,1
+fus_678233_1769034464,2026-01-10 00:15:00+00:00,Russian Strikes Impact Residential Areas in Kyiv,50.4500336,30.5241361,82.0,6.0,8.0,5.0,50,0.0,0,1
+fus_678312_1769034465,2026-01-10 00:15:00+00:00,Russian Forces Strike on Kryvyi Rih,47.9102734,33.3917703,99.0,6.0,8.0,6.0,50,3.2,0,1
+fus_678373_1769034466,2026-01-10 00:15:00+00:00,Drone Attack Reported in Kyiv,50.4500336,30.5241361,57.0,3.0,10.0,3.0,50,0.0,0,1
+fus_678452_1769034467,2026-01-10 00:00:00+00:00,Unknown Forces Cause Power Outages in Dnipro,51.9191343,30.8243039,100.0,7.0,8.0,6.0,50,0.0,0,1
+fus_678459_1769034467,2026-01-10 00:00:00+00:00,Russian Forces Launch Hypersonic Missile Strike on,49.841952,24.0315921,0.0,7.0,8.0,1.0,50,0.0,0,1
+fus_678489_1769034468,2026-01-10 15:00:00+00:00,Russian Forces Conduct Attacks in Ukraine,50.4500336,30.5241361,10.0,5.0,3.0,4.0,50,0.0,0,1
+fus_678512_1769034468,2026-01-10 15:00:00+00:00,"Kyiv Reduces Supply of Electricity, Water, and Hea",50.4500336,30.5241361,0.0,1.0,1.0,1.0,50,0.0,0,1
+fus_678520_1769034468,2026-01-10 15:00:00+00:00,Russian Strikes Impact Kyiv,50.4500336,30.5241361,100.0,8.0,8.0,6.0,50,0.0,0,1
+fus_678529_1769034469,2026-01-10 15:00:00+00:00,Russian Drone Attack Affects Civilian Population i,51.9191343,30.8243039,5.0,3.0,2.0,4.0,50,2.0,0,1
+fus_678545_1769034469,2026-01-10 15:00:00+00:00,Russian Forces Attack Industrial Infrastructure in,46.4843023,30.7322878,66.0,6.0,8.0,5.0,50,0.0,0,1
+fus_678548_1769034469,2026-01-10 15:00:00+00:00,Russian Forces Strike City of Sloviansk,48.8522691,37.6058241,4.0,3.0,2.0,4.0,70,5.2,0,1
+fus_678566_1769034469,2026-01-10 15:00:00+00:00,Russian Forces Strike Lviv and Attack Kyiv,49.841952,24.0315921,100.0,7.0,8.0,6.0,50,2.0,0,1
+fus_678593_1769034470,2026-01-10 15:00:00+00:00,Explosion Reported in Chernihiv,51.272593,31.7417235,10.0,3.0,4.0,3.0,50,-3.2,0,1
+fus_678602_1769034470,2026-01-10 15:00:00+00:00,Winter Weather Affects Operations in Kiev,50.4500336,30.5241361,0.0,1.0,1.0,1.0,50,-2.0,0,1
+fus_678603_1769034470,2026-01-10 15:00:00+00:00,Unknown Forces Conduct Attack in Kyiv,50.4500336,30.5241361,49.0,6.0,8.0,3.0,50,0.0,0,1
+fus_678698_1769034472,2026-01-10 14:45:00+00:00,Power Outage Management in Kyiv Region,50.4500336,30.5241361,0.0,1.0,1.0,1.0,60,2.0,0,2
+fus_678703_1769034472,2026-01-10 14:45:00+00:00,Ukrainian Forces Strike Belgorod Region,50.645959,36.5676505,100.0,7.0,8.0,6.0,50,0.0,0,1
+fus_680512_1769034513,2026-01-12 00:15:00+00:00,"Russian Forces Attack Drones in Odesa, Sumy, and C",46.4843023,30.7322878,4.0,3.0,2.0,3.0,60,0.8,0,2
+fus_680567_1769034514,2026-01-12 00:15:00+00:00,Russian Bombardment Affects Heating in Kyiv,50.4500336,30.5241361,100.0,8.0,8.0,6.0,50,0.0,0,1
+fus_680592_1769034514,2026-01-12 00:15:00+00:00,Ukrainian Air Defense Engaged in Kyiv,50.4500336,30.5241361,6.0,3.0,3.0,3.0,50,2.0,0,1
+fus_680697_1769034515,2026-01-11 23:00:00+00:00,Power Outages Reported in Kyiv,50.4500336,30.5241361,0.0,1.0,1.0,1.0,50,2.0,0,1
+fus_680712_1769034515,2026-01-11 22:45:00+00:00,Russian Forces Conduct Attack in Kyiv,50.4500336,30.5241361,82.0,6.0,8.0,5.0,50,0.0,0,1
+fus_680734_1769034516,2026-01-11 22:45:00+00:00,Russian Forces Conduct Missile Strikes in Western ,50.4500336,30.5241361,100.0,8.0,8.0,6.0,50,-1.2,0,1
+fus_680859_1769034517,2026-01-13 00:15:00+00:00,Russian Strikes Impact Energy Infrastructure in Ky,50.4500336,30.5241361,100.0,8.0,8.0,9.0,50,-1.2,0,1
+fus_680904_1769034517,2026-01-13 00:00:00+00:00,Unknown Forces Attack Civilian Vessels in Black Se,43.5,34.0,0.0,3.0,2.0,2.0,50,0.0,0,1
+fus_680985_1769034518,2026-01-12 23:45:00+00:00,Explosions Reported in Kyiv,50.4500336,30.5241361,66.0,6.0,8.0,4.0,50,-3.2,0,1
+fus_681088_1769034520,2026-01-14 00:15:00+00:00,Russian Forces Conduct Drone and Missile Strikes i,50.4500336,30.5241361,88.0,8.0,8.0,5.0,50,0.0,0,1
+fus_681172_1769034521,2026-01-14 00:00:00+00:00,Ukrainian Forces Conduct Operations near Sumy,50.9119775,34.8027723,24.0,6.0,3.0,7.0,50,-3.2,0,1
+fus_681173_1769034521,2026-01-14 00:00:00+00:00,Blackout Reported in Kyiv,50.4500336,30.5241361,0.0,1.0,1.0,2.0,50,-2.0,0,1
+fus_681234_1769034522,2026-01-13 23:30:00+00:00,Ukrainian Forces Conduct Drone Strikes in Occupied,47.9212914,37.7809825,53.0,3.0,8.0,4.0,50,2.0,0,1
+fus_681354_1769034523,2026-01-15 00:00:00+00:00,Ukrainian Forces Establish Resilience Points in Ky,50.4500336,30.5241361,0.0,1.0,1.0,1.0,50,0.8,0,1
+fus_681839_1769034529,2026-01-16 20:00:00+00:00,Russian Forces Suffer Casualties in Attempt to Cap,49.5850548,25.9536398,0.0,1.0,1.0,1.0,50,2.0,0,1
+fus_681852_1769034529,2026-01-16 20:00:00+00:00,US Military Analyst Comments on Situation in Kyiv,50.4500336,30.5241361,0.0,1.0,1.0,1.0,50,-3.2,0,1
+fus_681934_1769034530,2026-01-16 20:00:00+00:00,Russian Forces Pressure Gulyaypole,47.6655382,36.2656849,0.0,1.0,1.0,1.0,50,2.8,0,1
+fus_681949_1769034530,2026-01-16 20:00:00+00:00,Russian Forces Claim Control over Kupiansk,49.7132963,37.6141992,0.0,1.0,1.0,1.0,50,0.8,0,1
+fus_683508_1769034573,2026-01-16 22:30:00+00:00,Russian Attacks Prompt Suspension of Classes in Ki,50.4500336,30.5241361,0.0,1.0,1.0,1.0,50,0.0,0,1
+fus_683514_1769034573,2026-01-16 22:15:00+00:00,Agreement on Ceasefire at Zaporizhzhia Nuclear Pow,47.8507859,35.1182867,0.0,1.0,10.0,1.0,50,0.0,0,1
+fus_683587_1769034574,2026-01-18 00:15:00+00:00,Explosion Reported in Kharkiv,49.9923181,36.2310146,0.0,3.0,1.0,2.0,50,-2.0,0,1
+fus_683914_1769034578,2026-01-18 23:45:00+00:00,Russian Forces Attempt to Establish Buffer Zone in,50.425396,35.4835397,0.0,1.0,1.0,1.0,50,2.0,0,1
+fus_683964_1769034579,2026-01-18 23:45:00+00:00,Explosions Reported in Occupied Donetsk,47.9212914,37.7809825,10.0,3.0,4.0,3.0,50,0.0,0,1
+fus_684031_1769034579,2026-01-18 23:15:00+00:00,Russian Forces Attack Resulting in Heating Outage ,50.4500336,30.5241361,0.0,1.0,1.0,1.0,50,2.0,0,1
+fus_684045_1769034579,2026-01-18 23:15:00+00:00,Ukrainian Forces Announce New Offensive Operations,50.4500336,30.5241361,0.0,7.0,1.0,1.0,50,0.0,0,1
+fus_684248_1769034582,2026-01-19 23:45:00+00:00,Russian Forces Continue Operations near Kupiansk,49.7132963,37.6141992,9.0,1.0,5.0,3.0,50,1.2,0,1
+fus_684462_1769034587,2026-01-21 00:00:00+00:00,Kyiv Experiences Cold Weather Impacting Nuclear Fa,50.4500336,30.5241361,0.0,1.0,1.0,1.0,60,0.0,0,2
+fus_684476_1769034587,2026-01-21 00:00:00+00:00,Water Supply Restored in Kyiv,50.4500336,30.5241361,82.0,6.0,8.0,5.0,50,2.0,0,1
+fus_684486_1769034587,2026-01-20 23:45:00+00:00,Power Outage Affects Civilians in Kyiv,50.4500336,30.5241361,0.0,1.0,8.0,2.0,60,0.0,0,2
+fus_684523_1769034588,2026-01-20 23:45:00+00:00,Ukrainian President Reports Power Outage in Kyiv,50.4500336,30.5241361,0.0,1.0,1.0,1.0,50,0.0,0,1
+fus_684548_1769034589,2026-01-20 23:45:00+00:00,Russian Forces Conduct Attack on Kyiv,50.4500336,30.5241361,100.0,8.0,8.0,6.0,50,0.0,0,1

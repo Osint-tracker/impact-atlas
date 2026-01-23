@@ -165,7 +165,22 @@ def main():
             
             # === DIRECT COLUMN READS (No JSON parsing!) ===
             event_id = row['event_id']
+            
+            # Robust date handling - prevent NaT
             date = row['last_seen_date']
+            if not date or str(date).lower() in ['none', 'nat', 'null', '']:
+                # Fallback to ai_report_json timestamp
+                if row.get('ai_report_json'):
+                    try:
+                        ai_data = json.loads(row['ai_report_json'])
+                        date = ai_data.get('timestamp_generated', '')
+                        if date:
+                            # Extract just the date part (YYYY-MM-DD)
+                            date = date[:10] if len(date) >= 10 else date
+                    except:
+                        pass
+                if not date:
+                    date = 'Unknown'
             
             # Title/Description
             title = row.get('title') or ''
@@ -201,15 +216,35 @@ def main():
                     lat = geo.get('lat')
                     lon = geo.get('lon')
                     
-                    # Also fallback other fields
+                    # Fallback for title
                     if not title:
                         editorial = ai_data.get('editorial', {})
                         title = editorial.get('title_en', '')
+                    
+                    # Multiple fallback sources for description
                     if not description:
                         editorial = ai_data.get('editorial', {})
                         description = editorial.get('description_en', '')
-                except:
-                    pass
+                    
+                    # Fallback 2: Use Soldier's summary
+                    if not description:
+                        event_analysis = tactics.get('event_analysis', {})
+                        description = event_analysis.get('summary_en', '')
+                    
+                    # Fallback 3: Use Brain's strategic assessment
+                    if not description:
+                        strategy = ai_data.get('strategy', {})
+                        description = strategy.get('strategic_value_assessment', '')
+                    
+                    # Fallback 4: Use AI summary (strategist output)
+                    if not description and ai_summary:
+                        # Extract just the English part (before [IT])
+                        en_part = ai_summary.split('[IT]')[0].replace('[EN]', '').strip()
+                        if len(en_part) > 20:  # Only use if substantial
+                            description = en_part[:300]
+                            
+                except Exception as e:
+                    print(f"[WARN] Error parsing ai_report_json for {event_id}: {e}")
             
             # Skip if no coordinates
             if not lat or not lon or float(lat) == 0 or float(lon) == 0:
