@@ -876,7 +876,7 @@
         }
       }
     } else if (layerName === 'units') {
-      // ORBAT Units Layer - Military unit positions from Parabellum sync
+      // ORBAT Units Layer - Optimized with marker clustering
       if (isChecked) {
         fetch('assets/data/units.json')
           .then(response => response.json())
@@ -886,124 +886,94 @@
               return;
             }
 
-            unitsLayer = L.layerGroup();
+            // Use marker cluster for performance
+            unitsLayer = L.markerClusterGroup({
+              maxClusterRadius: 50,
+              spiderfyOnMaxZoom: true,
+              showCoverageOnHover: false,
+              zoomToBoundsOnClick: true,
+              iconCreateFunction: function (cluster) {
+                const markers = cluster.getAllChildMarkers();
+                let uaCount = 0, ruCount = 0;
+                markers.forEach(m => {
+                  if (m.options.faction === 'UA') uaCount++;
+                  else ruCount++;
+                });
+                const total = markers.length;
+                const color = uaCount > ruCount ? '#3b82f6' : '#ef4444';
+                return L.divIcon({
+                  html: `<div style="
+                    background: ${color};
+                    color: white;
+                    border-radius: 50%;
+                    width: 36px;
+                    height: 36px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    font-size: 12px;
+                    border: 2px solid white;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+                  ">${total}</div>`,
+                  className: 'unit-cluster-icon',
+                  iconSize: [36, 36]
+                });
+              }
+            });
 
+            let count = 0;
             data.forEach(unit => {
               const lat = unit.last_seen_lat;
               const lon = unit.last_seen_lon;
-
               if (!lat || !lon) return;
 
-              // Faction colors
-              let color = '#64748b'; // Default gray
-              let factionLabel = 'Unknown';
-              if (unit.faction === 'UA') {
-                color = '#3b82f6'; // Blue for Ukraine
-                factionLabel = 'Ukraine';
-              } else if (unit.faction === 'RU' || unit.faction === 'RU_PROXY' || unit.faction === 'RU_PMC') {
-                color = '#ef4444'; // Red for Russia
-                factionLabel = 'Russia';
-              }
+              // Determine faction
+              const isUA = unit.faction === 'UA';
+              const isRU = unit.faction === 'RU' || unit.faction === 'RU_PROXY' || unit.faction === 'RU_PMC';
+              const color = isUA ? '#3b82f6' : (isRU ? '#ef4444' : '#64748b');
+              const factionLabel = isUA ? 'Ukraine' : (isRU ? 'Russia' : 'Unknown');
 
-              // Unit type icon
-              let unitIcon = 'fa-users';
-              const unitType = (unit.type || '').toUpperCase();
-              if (unitType.includes('ARMOR') || unitType.includes('TANK')) unitIcon = 'fa-shield-halved';
-              else if (unitType.includes('ARTILLERY')) unitIcon = 'fa-burst';
-              else if (unitType.includes('AIRBORNE') || unitType.includes('AIR_ASSAULT')) unitIcon = 'fa-parachute-box';
-              else if (unitType.includes('DRONE')) unitIcon = 'fa-drone';
-              else if (unitType.includes('SOF') || unitType.includes('SPECIAL')) unitIcon = 'fa-crosshairs';
-
-              // Flag emoji based on faction
-              let flagEmoji = '🏳️';
-              let bgColor = '#64748b';
-              if (unit.faction === 'UA') {
-                flagEmoji = '🇺🇦';
-                bgColor = '#3b82f6';
-              } else if (unit.faction === 'RU' || unit.faction === 'RU_PROXY' || unit.faction === 'RU_PMC') {
-                flagEmoji = '🇷🇺';
-                bgColor = '#ef4444';
-              }
-
-              // Create a custom div icon with flag
-              const flagIcon = L.divIcon({
+              // Simple circle icon (much faster than emoji)
+              const icon = L.divIcon({
                 html: `<div style="
-                  font-size: 18px;
-                  text-shadow: 0 0 3px rgba(0,0,0,0.8), 0 0 6px rgba(0,0,0,0.5);
-                  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
-                ">${flagEmoji}</div>`,
-                className: 'unit-flag-marker',
-                iconSize: [24, 24],
-                iconAnchor: [12, 12]
+                  width: 12px;
+                  height: 12px;
+                  background: ${color};
+                  border: 2px solid white;
+                  border-radius: 50%;
+                  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+                "></div>`,
+                className: 'unit-marker',
+                iconSize: [16, 16],
+                iconAnchor: [8, 8]
               });
 
-              const marker = L.marker([lat, lon], { icon: flagIcon });
-
-              // Format last seen date
-              let lastSeenStr = 'Unknown';
-              if (unit.last_seen_date) {
-                try {
-                  const d = new Date(unit.last_seen_date);
-                  lastSeenStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                } catch (e) {
-                  lastSeenStr = unit.last_seen_date;
-                }
-              }
-
-              marker.bindPopup(`
-                <div style="
-                  min-width: 220px;
-                  font-family: 'Inter', sans-serif;
-                  background: #0f172a;
-                  border-radius: 8px;
-                  border: 1px solid ${bgColor};
-                ">
-                  <div style="
-                    background: ${bgColor};
-                    padding: 12px;
-                    border-radius: 8px 8px 0 0;
-                  ">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                      <span style="font-size: 1.5rem;">${flagEmoji}</span>
-                      <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">
-                        ${unit.display_name || unit.unit_id}
-                      </div>
-                    </div>
-                    <div style="color: rgba(255,255,255,0.8); font-size: 0.75rem; margin-top: 4px;">
-                      ${factionLabel} • ${unit.echelon || unit.type || 'Unit'}
-                    </div>
-                  </div>
-                  <div style="padding: 12px;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.75rem;">
-                      <div style="background: rgba(30,41,59,0.5); padding: 8px; border-radius: 4px;">
-                        <div style="color: #94a3b8; text-transform: uppercase; font-size: 0.6rem; font-weight: 700;">Type</div>
-                        <div style="color: #f8fafc; font-weight: 600;">${unit.type || 'N/A'}</div>
-                      </div>
-                      <div style="background: rgba(30,41,59,0.5); padding: 8px; border-radius: 4px;">
-                        <div style="color: #94a3b8; text-transform: uppercase; font-size: 0.6rem; font-weight: 700;">Status</div>
-                        <div style="color: ${unit.status === 'ACTIVE' ? '#22c55e' : '#f59e0b'}; font-weight: 600;">${unit.status || 'ACTIVE'}</div>
-                      </div>
-                    </div>
-                    <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #334155; text-align: center;">
-                      <span style="color: #64748b; font-size: 0.65rem;">Last seen: ${lastSeenStr}</span>
-                    </div>
-                    <div style="text-align: center; margin-top: 4px;">
-                      <span style="color: #475569; font-size: 0.6rem; font-family: 'JetBrains Mono', monospace;">
-                        ${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              `, {
-                className: 'unit-popup',
-                maxWidth: 280
+              const marker = L.marker([lat, lon], {
+                icon: icon,
+                faction: unit.faction // Store for cluster icon
               });
+
+              // Simple popup (created on demand)
+              marker.bindPopup(() => {
+                return `<div style="min-width:180px;font-family:Inter,sans-serif;">
+                  <div style="background:${color};padding:10px;border-radius:6px 6px 0 0;color:white;">
+                    <strong>${unit.display_name || unit.unit_id}</strong><br>
+                    <small>${factionLabel} • ${unit.echelon || unit.type || 'Unit'}</small>
+                  </div>
+                  <div style="padding:10px;background:#1e293b;border-radius:0 0 6px 6px;">
+                    <div style="font-size:11px;color:#94a3b8;">Type: <span style="color:#f8fafc;">${unit.type || 'N/A'}</span></div>
+                    <div style="font-size:11px;color:#94a3b8;">Status: <span style="color:${unit.status === 'ACTIVE' ? '#22c55e' : '#f59e0b'};">${unit.status || 'ACTIVE'}</span></div>
+                  </div>
+                </div>`;
+              }, { maxWidth: 250 });
 
               unitsLayer.addLayer(marker);
+              count++;
             });
 
             unitsLayer.addTo(map);
-            console.log(`✅ Units layer loaded: ${data.length} units`);
+            console.log(`✅ Units layer loaded: ${count} markers`);
           })
           .catch(err => {
             console.error("❌ Failed to load units data:", err);
