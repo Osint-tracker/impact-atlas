@@ -50,7 +50,7 @@
                 <div class="user-profile">
                     <div class="avatar"><i class="fa-solid fa-user"></i></div>
                     <div class="user-info">
-                        <span class="rank">MAJOR A. CHEN</span>
+                        <span class="rank">OPERATOR</span>
                         <span class="action">LOGOUT</span>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
             <!-- ROW 1: EXECUTIVE SUMMARY -->
             <section class="card exec-summary-card">
                 <!-- Glowing Red Alert Badge -->
-                <div class="alert-badge-container">
+                <div class="alert-badge-container" id="alertBadge" style="display:none;">
                     <div class="alert-badge">
                         <i class="fa-solid fa-triangle-exclamation"></i>
                         CRITICAL ACTIVITY
@@ -74,11 +74,13 @@
                 <div class="summary-content">
                     <div class="text-col">
                         <h2>EXECUTIVE SUMMARY</h2>
-                        <p><p><b>Executive Summary</b>: As of 10 Jan 2026, there has been a significant lull in reported events, with a delta decrease of 100%. The active sector remains unknown, and the average threat score is at a minimal level of 0/100. This anomaly suggests either a critical intelligence gap or a possible shift in enemy tactics to lower visibility operations. Analysts are advised to enhance surveillance and revisit threat assessments in uncharted sectors to uncover potential covert operations that may not be currently tracked.</p></p>
+                        <div id="execSummaryText">
+                            <p class="placeholder-text">Generating intelligence summary...</p>
+                        </div>
                     </div>
                     <div class="chart-col">
                         <div class="chart-header">
-                            <span>THREAT LEVEL TREND (LAST 24H)</span>
+                            <span>THREAT LEVEL TREND</span>
                             <i class="fa-solid fa-arrow-trend-up"></i>
                         </div>
                         <canvas id="threatChart"></canvas>
@@ -92,14 +94,13 @@
                 <!-- Card 1: Events -->
                 <div class="card metric-card">
                     <div class="card-top">
-                        <span class="label">EVENTS (LAST 24H)</span>
+                        <span class="label">EVENTS (PERIOD)</span>
                         <i class="fa-solid fa-ellipsis-vertical menu-dots"></i>
                     </div>
                     <div class="metric-value-group">
-                        <div class="value">0</div>
-                        <div class="delta negative">
-                            <i class="fa-solid fa-caret-down"></i> -100.0%
-                            <span class="period">from yesterday</span>
+                        <div class="value" id="metricEvents">--</div>
+                        <div class="delta" id="metricEventsDelta">
+                            <span>--</span>
                         </div>
                     </div>
                     <div class="mini-graph-line"></div>
@@ -108,16 +109,16 @@
                 <!-- Card 2: T.I.E. Score -->
                 <div class="card metric-card">
                     <div class="card-top">
-                        <span class="label">T.I.E. SCORE (AVERAGE)</span>
+                        <span class="label">T.I.E. SCORE (AVG)</span>
                         <i class="fa-solid fa-ellipsis-vertical menu-dots"></i>
                     </div>
                     <div class="metric-value-group">
-                        <div class="value">0</div>
+                        <div class="value" id="metricTie">--</div>
                         <div class="gauge-container">
-                            <i class="fa-solid fa-gauge-high gauge-icon" style="color:#f59e0b"></i>
+                            <i class="fa-solid fa-gauge-high gauge-icon" id="metricTieIcon" style="color:#64748b"></i>
                         </div>
                     </div>
-                    <div class="status-text safe">Warning Level: NORMAL</div>
+                    <div class="status-text" id="metricTieLabel">Calculating...</div>
                 </div>
 
                 <!-- Card 3: Active Sector -->
@@ -127,25 +128,25 @@
                         <i class="fa-solid fa-ellipsis-vertical menu-dots"></i>
                     </div>
                     <div class="metric-value-group">
-                        <div class="value text-value">UNKNOWN</div>
+                        <div class="value text-value" id="metricSector">--</div>
                     </div>
-                    <div class="sector-map-bg"></div> <!-- CSS BG Image placeholder -->
-                    <div class="status-text danger">
-                        <i class="fa-solid fa-crosshairs"></i> HIGH CONFLICT ZONE
+                    <div class="sector-map-bg"></div>
+                    <div class="status-text" id="metricSectorLabel">
+                        Analysis Pending
                     </div>
                 </div>
 
                 <!-- Card 4: Signals -->
                 <div class="card metric-card">
                     <div class="card-top">
-                        <span class="label">SIGNALS INTERCEPTED</span>
+                        <span class="label">SOURCES PROCESSED</span>
                         <i class="fa-solid fa-ellipsis-vertical menu-dots"></i>
                     </div>
                     <div class="metric-value-group">
-                        <div class="value">0</div>
+                        <div class="value" id="metricSources">--</div>
                     </div>
                     <div class="status-text safe">
-                        <i class="fa-solid fa-tower-broadcast"></i> ENCRYPTED COMMS SPIKE
+                        <i class="fa-solid fa-tower-broadcast"></i> INTEL INTEGRITY VERIFIED
                     </div>
                 </div>
 
@@ -168,7 +169,14 @@
                 <div class="outlook-content">
                     <div class="outlook-text">
                         <h3>STRATEGIC OUTLOOK</h3>
-                        <p><p><b>Strategic Outlook</b>: Over the next 24-48 hours, it is crucial to focus on enhancing intelligence collection efforts, particularly in the identified active sector which currently remains UNKNOWN. Units should prepare for possible escalation points by increasing readiness levels and conducting preemptive reconnaissance missions. Special attention should be given to cyber and electronic warfare fronts, as these could be the new theaters for adversarial engagements amidst the current operational silence.</p></p>
+                        <p>
+                        <p><b>Strategic Outlook</b>: Over the next 24-48 hours, it is crucial to focus on enhancing
+                            intelligence collection efforts, particularly in the identified active sector which
+                            currently remains UNKNOWN. Units should prepare for possible escalation points by increasing
+                            readiness levels and conducting preemptive reconnaissance missions. Special attention should
+                            be given to cyber and electronic warfare fronts, as these could be the new theaters for
+                            adversarial engagements amidst the current operational silence.</p>
+                        </p>
                     </div>
                     <div class="outlook-map">
                         <!-- Placeholder for Map Visualization -->

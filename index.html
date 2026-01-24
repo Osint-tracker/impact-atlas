@@ -579,10 +579,7 @@
 
           <div class="sidebar-actions" style="flex-wrap: wrap; gap: 10px;">
             <button id="applyFilters" class="action-btn primary" style="flex: 1 1 100%;">Apply Filters</button>
-            <a href="report.html" target="_blank" class="action-btn ghost"
-              style="flex: 1 1 45%; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
-              <i class="fa-solid fa-file-contract"></i> REPORT
-            </a>
+            <!-- Report Button Removed from Sidebar -->
             <button id="exportData" class="action-btn ghost" style="flex: 1 1 45%;">
               <i class="fa-solid fa-download"></i> CSV
             </button>
@@ -706,6 +703,10 @@
         <div class="map-overlay-controls">
           <button id="heatmapToggle" class="map-btn" onclick="toggleVisualMode()">
             <i class="fa-solid fa-layer-group"></i> Heatmap
+          </button>
+          <button id="generateReportBtn" class="map-btn" onclick="openReportModal()"
+            style="margin-right:15px; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.5); color: #f59e0b;">
+            <i class="fa-solid fa-file-contract"></i> GENERATE REPORT
           </button>
 
           <div class="slider-container">
@@ -1112,6 +1113,38 @@
 
               </div>
 
+            </div>
+          </div>
+
+          <!-- REPORT CONFIGURATION MODAL -->
+          <div id="reportModal" class="modal-overlay" onclick="closeReportModal(event)">
+            <div class="modal-content" style="max-width: 500px;">
+              <span class="close-modal" onclick="closeReportModal(event)">&times;</span>
+              <div class="modal-header">
+                <h3><i class="fa-solid fa-file-contract"></i> GENERATE INTELLIGENCE REPORT</h3>
+              </div>
+              <div style="padding: 20px 0; color: #cbd5e1;">
+                <p style="margin-bottom: 20px;">Select the time range for the tactical report.</p>
+
+                <label style="display:block; margin-bottom:8px; font-weight:bold; color:#94a3b8;">REPORT START
+                  DATE</label>
+                <input type="date" id="reportStartDate" class="clean-input" style="width:100%; margin-bottom:20px;">
+
+                <label style="display:block; margin-bottom:8px; font-weight:bold; color:#94a3b8;">REPORT END
+                  DATE</label>
+                <div style="display:flex; gap:10px; align-items:center; margin-bottom:20px;">
+                  <input type="date" id="reportEndDate" class="clean-input" style="flex:1;">
+                  <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+                    <input type="checkbox" id="reportLiveToggle" onchange="toggleReportLiveDate()">
+                    <span style="font-size:0.9rem;">Live (Current)</span>
+                  </label>
+                </div>
+
+                <button onclick="generateReport()" class="action-btn primary"
+                  style="width:100%; justify-content:center; padding: 12px;">
+                  <i class="fa-solid fa-bolt"></i> GENERATE DOSSIER
+                </button>
+              </div>
             </div>
           </div>
 

@@ -1707,6 +1707,71 @@
   };
 
   // ============================================
+  // 11. REPORT GENERATION MODAL
+  // ============================================
+
+  window.openReportModal = function () {
+    console.log("Opening Report Modal...");
+    const modal = document.getElementById('reportModal');
+    if (!modal) return;
+
+    // Set defaults: Start = 30 days ago, End = Today
+    const today = new Date().toISOString().split('T')[0];
+    const past = new Date();
+    past.setDate(past.getDate() - 30);
+    const start = past.toISOString().split('T')[0];
+
+    document.getElementById('reportStartDate').value = start;
+    document.getElementById('reportEndDate').value = today;
+    document.getElementById('reportLiveToggle').checked = true;
+    window.toggleReportLiveDate();
+
+    modal.style.display = 'flex';
+  };
+
+  window.closeReportModal = function (e) {
+    if (e && e.target.id !== 'reportModal' && !e.target.classList.contains('close-modal')) {
+      return;
+    }
+    const modal = document.getElementById('reportModal');
+    if (modal) modal.style.display = 'none';
+  };
+
+  window.toggleReportLiveDate = function () {
+    const isLive = document.getElementById('reportLiveToggle').checked;
+    const endInput = document.getElementById('reportEndDate');
+    if (isLive) {
+      endInput.disabled = true;
+      endInput.style.opacity = '0.5';
+      endInput.value = new Date().toISOString().split('T')[0];
+    } else {
+      endInput.disabled = false;
+      endInput.style.opacity = '1';
+    }
+  };
+
+  window.generateReport = function () {
+    const start = document.getElementById('reportStartDate').value;
+    let end = document.getElementById('reportEndDate').value;
+    const isLive = document.getElementById('reportLiveToggle').checked;
+
+    if (isLive) {
+      end = 'LIVE';
+    }
+
+    if (!start) {
+      alert("Please select a start date.");
+      return;
+    }
+
+    // Redirect to report.html with params
+    const url = `report.html?start=${start}&end=${end}`;
+    window.open(url, '_blank');
+
+    window.closeReportModal();
+  };
+
+  // ============================================
   // 12. APPLICATION START (Sequential Execution)
   // ============================================
 
