@@ -53,15 +53,28 @@ class EventBuilder:
         self.conn.commit()
 
     def fetch_clusters(self):
-        """Recupera i cluster ID pronti. Esclude quelli già processati per permettere resume."""
-        print("[*] Recupero cluster dal DB...")
+        """Recupera i cluster ID pronti IN MODO INCREMENTALE.
+           1. Nuovi Cluster (non presenti in unique_events)
+           2. Cluster Aggiornati (nuovi articoli aggiunti)
+        """
+        print("[*] Recupero cluster dal DB (Modalità Incrementale)...")
 
-        # Ottimizzazione: Prendiamo solo i cluster che non sono già in unique_events
-        # (O se vuoi sovrascrivere tutto, togli la clausola EXCEPT)
+        # Query Avanzata:
+        # Confronta il conteggio attuale in raw_signals con quello salvato in unique_events.
+        # Se raw_signals > unique_events, c'è roba nuova.
+        # Se unique_events è NULL, è un evento nuovo.
+        
         query = """
-            SELECT DISTINCT cluster_id 
-            FROM raw_signals 
-            WHERE is_embedded = 1 AND cluster_id IS NOT NULL
+            SELECT r.cluster_id
+            FROM (
+                SELECT cluster_id, COUNT(*) as curr_count
+                FROM raw_signals
+                WHERE is_embedded = 1 AND cluster_id IS NOT NULL
+                GROUP BY cluster_id
+            ) r
+            LEFT JOIN unique_events u ON r.cluster_id = u.event_id
+            WHERE u.event_id IS NULL 
+               OR r.curr_count > COALESCE(u.article_count, 0)
         """
         try:
             df = pd.read_sql_query(query, self.conn)
