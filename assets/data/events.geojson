@@ -197,6 +197,37 @@
         ]
       },
       "properties": {
+        "id": "fus_418394_1768864393",
+        "title": "Russian Forces Conduct Strikes in Odesa Region",
+        "description": "On December 22, 2025, Russian Forces launched a series of strikes targeting Ukrainian military positions in the Odesa region and hit a railway convoy near Korosten. Ukrainian Forces attacked oil infrastructure in Krasnodar Krai using drones. Russian units advanced in the Burluk direction, displacing adversary forces from Vylchyi and expanding control around Konstantynivka.",
+        "date": "2026-01-24",
+        "tie_total": 82.0,
+        "vec_k": 6.0,
+        "vec_t": 8.0,
+        "vec_e": 5.0,
+        "reliability": 77,
+        "bias_score": -4.9,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 6.0,
+        "ai_reasoning": "[EN] The strikes in Odesa disrupt Ukrainian logistics and military readiness, weakening their defensive posture in the Black Sea region. Targeting railway infrastructure near Korosten further isolates Ukrainian forces, complicating resupply efforts. This aligns with Russia's broader strategy to degrade Ukraine's operational capacity and secure maritime dominance.  \n[IT] Gli attacchi a Odessa compromettono la logistica e la prontezza militare ucraina, indebolendo la loro posizione difens",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76184\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76161\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76038\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/75962\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76138\"}]",
+        "units": "[]",
+        "marker_radius": 12.2,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.7322878,
+          46.4843023
+        ]
+      },
+      "properties": {
         "id": "fus_418441_1768864394",
         "title": "Russian Forces Intensify Strikes in Odesa Region",
         "description": "On December 20, 2025, Russian Forces increased the frequency of strikes in the Odesa region, targeting bridges near Mayaki and Zatoka. The port area experienced missile attacks, leading to power outages in Odesa, Mykolaiv, and Kherson regions. Clashes occurred in various locations, including Svatove and Kupiansk, with Ukrainian Forces continuing operations in multiple areas.",
@@ -750,6 +781,37 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          30.7322878,
+          46.4843023
+        ]
+      },
+      "properties": {
+        "id": "fus_418441_1769034266",
+        "title": "Russian Forces Intensify Strikes in Odesa Region",
+        "description": "On December 20, 2025, Russian Forces increased the frequency of strikes in the Odesa region, targeting bridges near Mayaki and Zatoka. The port area experienced missile attacks, leading to power outages in Odesa, Mykolaiv, and Kherson regions. Clashes occurred in various locations, including Svatove and Kupiansk, with Ukrainian Forces attempting to advance in multiple areas.",
+        "date": "2026-01-24",
+        "tie_total": 66.0,
+        "vec_k": 6.0,
+        "vec_t": 8.0,
+        "vec_e": 5.0,
+        "reliability": 75,
+        "bias_score": -4.6,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 6.0,
+        "ai_reasoning": "[EN] Russian strikes on Odesa's bridges aim to isolate Ukraine's Black Sea logistics, degrading export capacity and military resupply routes. The simultaneous power outages suggest coordinated infrastructure targeting to amplify civilian disruption. This aligns with Russia's winter strategy to weaken Ukraine's economic resilience.  \n\n[IT] I colpi russi sui ponti di Odessa mirano a isolare la logistica ucraina del Mar Nero, riducendo capacità di esportazione e rotte di r",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76121\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76046\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/75992\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/75967\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76017\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/75907\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76079\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/75929\"}]",
+        "units": "[]",
+        "marker_radius": 10.6,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           37.6141992,
           49.7132963
         ]
@@ -866,6 +928,37 @@
         "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/voenkorKotenok/69568\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/voenkorKotenok/69452\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/voenkorKotenok/69450\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/voenkorKotenok/69540\"}]",
         "units": "[]",
         "marker_radius": 6.9,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          39.704876,
+          52.090595
+        ]
+      },
+      "properties": {
+        "id": "fus_669733_1769034365",
+        "title": "Ukrainian Drones Strike Ammunition Depot in Debaltseve",
+        "description": "Ukrainian drones targeted an ammunition depot in Debaltseve, resulting in ongoing secondary explosions. The incident is part of the broader conflict involving Ukrainian and Russian forces.",
+        "date": "2026-01-24",
+        "tie_total": 99.0,
+        "vec_k": 6.0,
+        "vec_t": 8.0,
+        "vec_e": 6.0,
+        "reliability": 59,
+        "bias_score": -0.4,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 6.0,
+        "ai_reasoning": "[EN] The strike on the ammunition depot in Debaltseve disrupts Russian supply lines, potentially weakening their operational capacity in the region. This action underscores Ukraine's increasing reliance on drone warfare to target high-value assets, signaling a shift in tactical approaches. The ongoing secondary explosions amplify the strategic impact, further straining Russian logistics.\n\n[IT] L'attacco al deposito di munizioni di Debaltseve interrompe le linee di rifornimento russe, indebolendo pot",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"english.news.cn\", \"url\": \"https://english.news.cn/20260107/3bbd757ae263478890b35a2e18eb7a80/c.html\"}, {\"name\": \"dailyadvance.com\", \"url\": \"https://www.dailyadvance.com/news/world/ukrainian-drones-set-fire-to-russian-oil-depot-after-moscow-launches-new-hypersonic-missile/article_cfe19599-4bfa-5b51-8532-337bf8bc0254.html\"}, {\"name\": \"latimes.com\", \"url\": \"https://www.latimes.com/world-nation/story/2026-01-11/ukrainian-drone-attack-in-russia-kills-1-thousands-in-kyiv-without-power\"}, {\"name\": \"sconeadvocate.com.au\", \"url\": \"https://www.sconeadvocate.com.au/story/9149063/ukrainian-drone-strike-sets-fire-to-russian-oil-depot/\"}, {\"name\": \"newcastleherald.com.au\", \"url\": \"https://www.newcastleherald.com.au/story/9149063/ukrainian-drone-strike-sets-fire-to-russian-oil-depot/\"}, {\"name\": \"nwemail.co.uk\", \"url\": \"https://www.nwemail.co.uk/news/national/25755402.ukrainian-drones-set-fire-russian-oil-depot-russian-missile-launch/\"}, {\"name\": \"echo-news.co.uk\", \"url\": \"https://www.echo-news.co.uk/news/national/25755402.ukrainian-drones-set-fire-russian-oil-depot-russian-missile-launch/\"}, {\"name\": \"halsteadgazette.co.uk\", \"url\": \"https://www.halsteadgazette.co.uk/news/national/25755402.ukrainian-drones-set-fire-russian-oil-depot-russian-missile-launch/\"}, {\"name\": \"thewestonmercury.co.uk\", \"url\": \"https://www.thewestonmercury.co.uk/news/national/25755402.ukrainian-drones-set-fire-russian-oil-depot-russian-missile-launch/\"}]",
+        "units": "[]",
+        "marker_radius": 13.9,
         "marker_color": "#f59e0b"
       }
     },
@@ -2665,6 +2758,99 @@
         "units": "[{\"unit_name\": \"67th\", \"faction\": \"UA\", \"status\": \"ACTIVE\", \"orbat_id\": \"1183\", \"echelon\": \"Brigade\", \"echelon_symbol\": \"X\", \"type\": \"Infantry Mechanized\", \"branch\": null, \"garrison\": null}]",
         "marker_radius": 12.0,
         "marker_color": "#ef4444"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.8168012,
+          48.9801314
+        ]
+      },
+      "properties": {
+        "id": "18ec77ea-fc0b-425e-8dba-fc5e3298b5c9",
+        "title": "Russian Forces Attempt to Advance towards Lyman",
+        "description": "Reports indicate that isolated groups of Russian Forces are attempting to reach the area of Lyman. The situation remains fluid with ongoing movements of personnel in the region.",
+        "date": "2026-01-21 13:00:00+00:00",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 3.0,
+        "vec_e": 1.0,
+        "reliability": 50,
+        "bias_score": 2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] This attempted advance suggests a probing effort by Russian forces to test Ukrainian defenses in the Lyman area, potentially aiming to regain lost territory or disrupt Ukrainian supply lines. The low kinetic and effect scores indicate minimal immediate impact, but it highlights ongoing Russian operational persistence despite previous setbacks. This aligns with broader Russian efforts to maintain pressure on Ukrainian forces across the frontlines.\n\n[IT] Questo tentativo di avanzata indica uno sforzo esplorativo delle forze russe per testare",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"zn.ua\", \"url\": \"https://zn.ua/ukr/war/hrupi-rosijan-namahajutsja-dokhoditi-do-limana-jaka-tam-situatsija-.html\"}]",
+        "units": "[]",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.3917703,
+          47.9102734
+        ]
+      },
+      "properties": {
+        "id": "7cf11953-ae34-431d-8a5f-e850fc0edd9a",
+        "title": "Russian Forces Conduct Strikes in Central Ukraine",
+        "description": "On January 21, 2026, Russian Forces conducted strikes in central Ukraine, resulting in two civilian fatalities and one injury in Kryvyi Rih, according to Ukrainian authorities. The strikes occurred during ongoing negotiations for a peace plan involving U.S. Special Envoy Steve Witkoff and representatives from Ukraine.",
+        "date": "2026-01-21 13:00:00+00:00",
+        "tie_total": 8.0,
+        "vec_k": 4.0,
+        "vec_t": 2.0,
+        "vec_e": 7.0,
+        "reliability": 50,
+        "bias_score": 0.8,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 4.0,
+        "ai_reasoning": "[EN] The strikes undermine ongoing peace negotiations, signaling Russia's intent to maintain military pressure despite diplomatic efforts. Targeting Kryvyi Rih, a non-strategic location, suggests a focus on psychological warfare rather than tactical gains. This aligns with Russia's broader strategy of destabilizing Ukraine's civilian morale while prolonging conflict.  \n[IT] Gli attacchi minano i negoziati di pace in corso, segnalando l'intenzione russa di mantenere la pressione",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"esaimaa.fi\", \"url\": \"https://www.esaimaa.fi/uutissuomalainen/9151893\"}]",
+        "units": "[]",
+        "marker_radius": 4.8,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.5241361,
+          50.4500336
+        ]
+      },
+      "properties": {
+        "id": "b5876e71-dd43-49a6-bcf1-3aa674c9d35c",
+        "title": "Ukrainian President Reports on Power Outages in Kyiv",
+        "description": "Ukrainian President Volodymyr Zelenskyy provided information regarding the extent of power outages affecting the civilian population in Kyiv. Specific details on the duration and impact of these outages were not disclosed.",
+        "date": "2026-01-21 13:00:00+00:00",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 1.0,
+        "vec_e": 1.0,
+        "reliability": 50,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The reported power outages in Kyiv underscore Russia's continued targeting of civilian infrastructure, aiming to degrade Ukrainian morale and operational resilience. This aligns with Moscow's broader strategy of attrition, seeking to weaken Ukraine's societal cohesion and logistical capabilities. However, the lack of specific details limits immediate tactical insights into the severity or duration of the impact.\n\n[IT] Le interruzioni di corrente segnalate a Kiev evidenziano il continuo targeting russo delle infrastrutture civili, mir",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"korrespondent.net\", \"url\": \"https://korrespondent.net/ukraine/4849182-zelenskyi-nazval-masshtaby-otkluichenyi-v-kyeve\"}]",
+        "units": "[]",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
       }
     }
   ]

@@ -1043,6 +1043,15 @@
   // 10. MODAL FUNCTIONS (DOSSIER UI)
   // ============================================
 
+  window.closeUnitModal = function (e) {
+    // If e is provided, it's an event. Close only if clicking overlay.
+    if (e && e.target.id !== 'unitModal' && !e.target.classList.contains('close-modal')) {
+      return;
+    }
+    const modal = document.getElementById('unitModal');
+    if (modal) modal.style.display = 'none';
+  };
+
   window.openUnitModal = function (unit) {
     console.log("Opening Unit Modal for:", unit.unit_name);
     const modal = document.getElementById('unitModal');

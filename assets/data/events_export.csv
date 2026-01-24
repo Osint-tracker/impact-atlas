@@ -5,6 +5,7 @@ fus_332477_1768864389,2026-01-23,Ukrainian Forces Strike Tamanneftegaz Oil Termi
 fus_332573_1768864389,2026-01-23,Russian Forces Enter Hrabovske Village,50.6914311,35.460427,10.0,5.0,3.0,4.0,57,0.4,0,3
 fus_332913_1768864390,2026-01-23,Russian Drone Attack on Kryvyi Rih,50.4500336,30.5241361,100.0,8.0,8.0,6.0,55,-0.5,0,4
 fus_333030_1768864391,2026-01-23,Ukrainian Forces Conduct Strike on Slavyansk Oil R,45.2590875,38.1244609,100.0,7.0,9.0,6.0,56,1.4,0,8
+fus_418394_1768864393,2026-01-24,Russian Forces Conduct Strikes in Odesa Region,46.4843023,30.7322878,82.0,6.0,8.0,5.0,77,-4.9,0,5
 fus_418441_1768864394,2026-01-23,Russian Forces Intensify Strikes in Odesa Region,46.4843023,30.7322878,66.0,6.0,8.0,5.0,76,-4.8,0,6
 fus_418504_1768864394,2026-01-23,Ukrainian Forces Engage Russian Forces in Kupiansk,49.7132963,37.6141992,55.0,5.0,7.0,5.0,100,-4.0,1,2
 fus_418528_1768864394,2026-01-23,Russian Forces Advance in Severetsk,48.8676267,38.0902435,15.0,3.0,3.0,7.0,78,-5.0,0,1
@@ -23,10 +24,12 @@ fus_332575_1769034251,2026-01-23,Ukrainian Forces Conduct Operations near Hrodiv
 fus_333408_1769034260,2026-01-23,Russian Forces Conduct Drone and Missile Strikes A,50.9080532,28.3867504,100.0,8.0,8.0,6.0,57,1.8,0,1
 fus_333409_1769034260,2026-01-23,Russian Forces Strike Odesa Region,46.4843023,30.7322878,100.0,8.0,8.0,6.0,58,1.3,0,8
 fus_418402_1769034265,2026-01-23,Russian Forces Advance in Vylcha Area,50.247,36.93775,41.0,5.0,5.0,7.0,76,-4.8,0,1
+fus_418441_1769034266,2026-01-24,Russian Forces Intensify Strikes in Odesa Region,46.4843023,30.7322878,66.0,6.0,8.0,5.0,75,-4.6,0,8
 fus_418504_1769034267,2026-01-23,Ukrainian Forces Engage Russian Forces in Kupiansk,49.7132963,37.6141992,55.0,5.0,7.0,5.0,96,-3.6,1,4
 fus_462192_1769034270,2026-01-23,Russian Forces Conduct Strikes in Ukraine,46.3013422,30.6549271,66.0,7.0,6.0,7.0,80,-2.0,1,8
 fus_462205_1769034270,2026-01-23,Rubicon Operators Conduct Operations in Donbass,48.0279261,37.954765,45.0,5.0,5.0,7.0,80,-3.2,1,6
 fus_467413_1769034272,2026-01-23,Ukrainian Forces Advance in Zaporizhzhia Region,47.8507859,35.1182867,29.0,5.0,5.0,5.0,60,-3.2,0,4
+fus_669733_1769034365,2026-01-24,Ukrainian Drones Strike Ammunition Depot in Debalt,52.090595,39.704876,99.0,6.0,8.0,6.0,59,-0.4,0,9
 fus_669984_1769034366,2026-01-23,Russian Forces Conduct Missile Strike near Ukraini,50.4500336,30.5241361,100.0,7.0,8.0,6.0,55,-2.8,0,5
 fus_671977_1769034376,2026-01-23,Russian Authorities Claim Ukrainian Drone Targeted,58.5209862,31.2757862,0.0,3.0,10.0,1.0,63,-2.0,0,1
 fus_677561_1769034444,2026-01-08 14:00:00+00:00,Ukrainian Forces Maintain Control of Snake Island,45.2551,30.2037,16.0,1.0,7.0,3.0,50,3.2,0,1
@@ -85,3 +88,6 @@ fus_684486_1769034587,2026-01-20 23:45:00+00:00,Power Outage Affects Civilians i
 fus_684523_1769034588,2026-01-20 23:45:00+00:00,Ukrainian President Reports Power Outage in Kyiv,50.4500336,30.5241361,0.0,1.0,1.0,1.0,50,0.0,0,1
 fus_684548_1769034589,2026-01-20 23:45:00+00:00,Russian Forces Conduct Attack on Kyiv,50.4500336,30.5241361,100.0,8.0,8.0,6.0,50,0.0,0,1
 verify_66071,2026-01-24,[VERIFY] 67th Brigade Operations,48.094,37.0,80.0,8.0,8.0,8.0,90,0.0,0,1
+18ec77ea-fc0b-425e-8dba-fc5e3298b5c9,2026-01-21 13:00:00+00:00,Russian Forces Attempt to Advance towards Lyman,48.9801314,37.8168012,0.0,1.0,3.0,1.0,50,2.0,0,1
+7cf11953-ae34-431d-8a5f-e850fc0edd9a,2026-01-21 13:00:00+00:00,Russian Forces Conduct Strikes in Central Ukraine,47.9102734,33.3917703,8.0,4.0,2.0,7.0,50,0.8,0,1
+b5876e71-dd43-49a6-bcf1-3aa674c9d35c,2026-01-21 13:00:00+00:00,Ukrainian President Reports on Power Outages in Ky,50.4500336,30.5241361,0.0,1.0,1.0,1.0,50,0.0,0,1

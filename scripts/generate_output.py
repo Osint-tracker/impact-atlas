@@ -112,6 +112,9 @@ def enrich_units(ai_units, orbat_data):
             u['garrison'] = best_match.get('garrison')
             # Keeping AI status and location as they are dynamic
             
+            # Helper to track usage (for merging later)
+            best_match['_used'] = True
+            
     return ai_units
 
 
@@ -174,7 +177,7 @@ def update_unit_stats(stats_acc, unit, event_data):
     entry["tactics_hist"][cls] = entry["tactics_hist"].get(cls, 0) + 1
 
 
-def export_units(unit_stats=None):
+def export_units(unit_stats=None, orbat_data=None):
     print("[DB] Exporting ORBAT Units (with AI Triage)...")
     try:
         conn = sqlite3.connect(DB_PATH)
@@ -220,9 +223,38 @@ def export_units(unit_stats=None):
             
             units.append(u)
         
+        # === MERGE ORBAT UNITS (Unmatched) ===
+        if orbat_data:
+            print(f"[INFO] Merging unmatched ORBAT units...")
+            orbat_count = 0
+            for ob in orbat_data:
+                # If NOT matched in enrich_units (no _used flag), add it now
+                if not ob.get('_used'):
+                    new_u = {
+                        "unit_id": ob.get('orbat_id') or ob.get('unit_name'),
+                        "display_name": ob.get('unit_name'),
+                        "faction": ob.get('faction'),
+                        "type": ob.get('type') or 'UNKNOWN',
+                        "echelon": ob.get('echelon'),
+                        "last_seen_lat": ob.get('lat'),
+                        "last_seen_lon": ob.get('lon'),
+                        "last_seen_date": ob.get('updated_at'),
+                        "status": "ACTIVE", 
+                        "source": "PARABELLUM",
+                        "engagement_count": 0,
+                        "avg_tie": 0
+                    }
+                    if new_u['last_seen_lat'] and new_u['last_seen_lon']:
+                         units.append(new_u)
+                         orbat_count += 1
+            
+            print(f"   [MERGE] Added {orbat_count} unmatched units from Parabellum.")
+
         # Save to JSON
         with open(UNITS_JSON_PATH, 'w', encoding='utf-8') as f:
             json.dump(units, f, indent=2, ensure_ascii=False)
+            
+        print(f"   [DONE] Exported {len(units)} units to {UNITS_JSON_PATH}")
             
         print(f"   [DONE] Exported {len(units)} units to {UNITS_JSON_PATH}")
         conn.close()
@@ -487,7 +519,7 @@ def main():
     print(f"   CSV: {len(csv_rows)} rows -> {CSV_PATH}")
 
     # Export Units
-    export_units(unit_stats_acc)
+    export_units(unit_stats_acc, orbat_data)
 
 
 if __name__ == "__main__":
