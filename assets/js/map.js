@@ -1013,7 +1013,17 @@
   // 10. MODAL FUNCTIONS (FIXED & LINKED)
   // ============================================
 
+  window.closeAllModals = function () {
+    ['videoModal', 'unitModal', 'reportModal'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+  };
+
   window.openModal = function (eventIdOrObj) {
+    // Ensure clean state
+    window.closeAllModals();
+
     console.log("Dossier opening attempt:", eventIdOrObj);
     let eventData = null;
 
@@ -1053,6 +1063,9 @@
   };
 
   window.openUnitModal = function (unit) {
+    // Ensure clean state
+    window.closeAllModals();
+
     console.log("Opening Unit Modal for:", unit.unit_name);
     const modal = document.getElementById('unitModal');
     if (!modal) return;
@@ -1082,10 +1095,16 @@
     document.getElementById('udHeader').style.borderBottomColor = color;
 
     // Left Stats
+    const format = (v) => v || '--';
     document.getElementById('udBranch').innerText = safeText(unit.branch);
-    document.getElementById('udGarrison').innerText = safeText(unit.garrison).replace(/<[^>]*>?/gm, ''); // Strip HTML if any
+    document.getElementById('udGarrison').innerText = safeText(unit.garrison).replace(/<[^>]*>?/gm, '');
     document.getElementById('udStatus').innerText = unit.status || 'ACTIVE';
     document.getElementById('udStatus').style.color = (unit.status === 'destroyed') ? '#ef4444' : '#22c55e';
+
+    // New Fields
+    document.getElementById('udCommander').innerText = format(unit.commander);
+    document.getElementById('udSuperior').innerText = format(unit.superior);
+    document.getElementById('udDistrict').innerText = format(unit.district);
 
     // Calculations: Find related events
     const allEvents = Array.isArray(window.globalEvents) ? window.globalEvents : [];

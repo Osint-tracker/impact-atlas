@@ -2755,7 +2755,7 @@
         "ai_reasoning": "",
         "has_video": false,
         "sources_list": "[{\"name\": \"test.com\", \"url\": \"https://test.com/verify\"}]",
-        "units": "[{\"unit_name\": \"67th\", \"faction\": \"UA\", \"status\": \"ACTIVE\", \"orbat_id\": \"1183\", \"echelon\": \"Brigade\", \"echelon_symbol\": \"X\", \"type\": \"Infantry Mechanized\", \"branch\": null, \"garrison\": null}]",
+        "units": "[{\"unit_name\": \"67th\", \"faction\": \"UA\", \"status\": \"ACTIVE\", \"orbat_id\": \"1183\", \"echelon\": \"Brigade\", \"echelon_symbol\": \"X\", \"type\": \"Infantry Mechanized\", \"branch\": null, \"sub_branch\": null, \"garrison\": null, \"district\": null, \"commander\": null, \"superior\": null}]",
         "marker_radius": 12.0,
         "marker_color": "#ef4444"
       }
@@ -2851,6 +2851,37 @@
         "units": "[]",
         "marker_radius": 4.0,
         "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.5241361,
+          50.4500336
+        ]
+      },
+      "properties": {
+        "id": "c0584969-30e8-45fa-80aa-c33e51dc8b8e",
+        "title": "Russian Forces Attack Causes Water and Heating Outage in Kiev",
+        "description": "A Russian forces attack resulted in 5,600 homes in Kiev losing access to water and heating during temperatures of minus 14 degrees Celsius.",
+        "date": "2026-01-21 13:00:00+00:00",
+        "tie_total": 82.0,
+        "vec_k": 6.0,
+        "vec_t": 8.0,
+        "vec_e": 5.0,
+        "reliability": 50,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 6.0,
+        "ai_reasoning": "[EN] The attack disrupts civilian infrastructure in Kyiv, exacerbating winter hardships and potentially eroding domestic morale, while demonstrating Russia's continued focus on degrading Ukraine's resilience. The high strategic value (TARGET:8) suggests a deliberate effort to pressure Kyiv's population, though moderate EFFECT (5) indicates partial success. This aligns with Russia's broader strategy of attrition by targeting utilities to weaken Ukraine's logistical and societal stability.  \n\n[IT] L'attacco interrompe le infrastrutt",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"elcomercio.es\", \"url\": \"https://www.elcomercio.es/internacional/europa/ataque-ruso-deja-5600-hogares-kiev-agua-20260120122829-ntrc.html\"}]",
+        "units": "[]",
+        "marker_radius": 12.2,
+        "marker_color": "#f59e0b"
       }
     }
   ]

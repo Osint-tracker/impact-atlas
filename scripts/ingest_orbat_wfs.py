@@ -61,13 +61,17 @@ def normalize_unit_entry(feature):
     return {
         "orbat_id": str(props.get('id', '')),
         "unit_name": props.get('unit'),           # e.g. "47th"
-        "full_name_en": props.get('name_en'),     # Sometimes null, check fallback
+        "full_name_en": props.get('name_en'),     # Sometimes null
         "faction": normalize_faction(props.get('insignia_name')),
         "type": props.get('unit_type'),           # e.g. "Infantry Mechanized"
         "echelon": props.get('echelon'),          # e.g. "Brigade"
         "echelon_symbol": props.get('echelon_symbol'), # e.g. "X"
         "branch": props.get('branch'),            # e.g. "National Guard"
+        "sub_branch": props.get('sub_branch'),
         "garrison": props.get('garrison'),
+        "district": props.get('district_of_origin'),
+        "commander": props.get('commander'),
+        "superior": props.get('unit_superior'),
         "lat": lat,
         "lon": lon,
         "updated_at": props.get('modification_date') or datetime.now().isoformat()

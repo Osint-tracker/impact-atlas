@@ -109,8 +109,11 @@ def enrich_units(ai_units, orbat_data):
             u['echelon_symbol'] = best_match.get('echelon_symbol')
             u['type'] = best_match.get('type') # Use standardized type
             u['branch'] = best_match.get('branch')
+            u['sub_branch'] = best_match.get('sub_branch')
             u['garrison'] = best_match.get('garrison')
-            # Keeping AI status and location as they are dynamic
+            u['district'] = best_match.get('district')
+            u['commander'] = best_match.get('commander')
+            u['superior'] = best_match.get('superior')
             
             # Helper to track usage (for merging later)
             best_match['_used'] = True
@@ -236,6 +239,12 @@ def export_units(unit_stats=None, orbat_data=None):
                         "faction": ob.get('faction'),
                         "type": ob.get('type') or 'UNKNOWN',
                         "echelon": ob.get('echelon'),
+                        "branch": ob.get('branch'),
+                        "sub_branch": ob.get('sub_branch'),
+                        "garrison": ob.get('garrison'),
+                        "district": ob.get('district'),
+                        "commander": ob.get('commander'),
+                        "superior": ob.get('superior'),
                         "last_seen_lat": ob.get('lat'),
                         "last_seen_lon": ob.get('lon'),
                         "last_seen_date": ob.get('updated_at'),
