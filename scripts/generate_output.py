@@ -21,6 +21,7 @@ DB_PATH = os.path.join(BASE_DIR, '../war_tracker_v2/data/raw_events.db')
 GEOJSON_PATH = os.path.join(BASE_DIR, '../assets/data/events.geojson')
 CSV_PATH = os.path.join(BASE_DIR, '../assets/data/events_export.csv')
 UNITS_JSON_PATH = os.path.join(BASE_DIR, '../assets/data/units.json')
+ORBAT_JSON_PATH = os.path.join(BASE_DIR, '../assets/data/orbat_units.json')
 
 
 def parse_sources_to_list(sources_str):
@@ -53,6 +54,67 @@ def parse_sources_to_list(sources_str):
     return result
 
 
+def load_orbat_data():
+    """Load external ORBAT data for enrichment."""
+    try:
+        if os.path.exists(ORBAT_JSON_PATH):
+            with open(ORBAT_JSON_PATH, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except Exception as e:
+        print(f"[WARN] Failed to load ORBAT data: {e}")
+    return []
+
+
+def enrich_units(ai_units, orbat_data):
+    """Fuzzy match AI units with ORBAT data to add metadata."""
+    if not ai_units or not orbat_data:
+        return ai_units
+
+    for u in ai_units:
+        # Match logic
+        best_match = None
+        # Heuristic: Name containment + Faction match
+        u_name = (u.get('unit_name') or '').lower()
+        u_id = (u.get('unit_id') or '').lower()
+        u_faction = (u.get('faction') or 'UNKNOWN').upper()
+        
+        # Simple scorer
+        best_score = 0
+        
+        for ob in orbat_data:
+            score = 0
+            # Safe faction check
+            ob_faction = (ob.get('faction') or '').upper()
+            if ob_faction != u_faction:
+                continue
+                
+            ob_name = (ob.get('unit_name') or '').lower()
+            if not ob_name: continue
+            
+            # Exact match
+            if ob_name == u_name or ob_name == u_id:
+                score = 100
+            # Strong containment (e.g. "47th" in "47th Brigade")
+            elif ob_name in u_name or ob_name in u_id:
+                score = 80
+            
+            if score > best_score:
+                best_score = score
+                best_match = ob
+        
+        # Apply enrichment
+        if best_match and best_score >= 80:
+            u['orbat_id'] = best_match.get('orbat_id')
+            u['echelon'] = best_match.get('echelon')
+            u['echelon_symbol'] = best_match.get('echelon_symbol')
+            u['type'] = best_match.get('type') # Use standardized type
+            u['branch'] = best_match.get('branch')
+            u['garrison'] = best_match.get('garrison')
+            # Keeping AI status and location as they are dynamic
+            
+    return ai_units
+
+
 def get_marker_style(tie_score, effect_score):
     """Calculate marker radius and color based on TIE metrics."""
     try:
@@ -76,8 +138,44 @@ def get_marker_style(tie_score, effect_score):
     return radius, color
 
 
-def export_units():
-    print("[DB] Exporting ORBAT Units...")
+
+def update_unit_stats(stats_acc, unit, event_data):
+    """Accumulate statistics for AI Triage."""
+    # Key by ORBAT ID (Priority 1) -> Unit ID -> Unit Name
+    key = unit.get('orbat_id')
+    if not key:
+        key = unit.get('unit_id') or unit.get('unit_name') or 'UNKNOWN'
+    
+    key = str(key).lower()
+    
+    if key not in stats_acc:
+        stats_acc[key] = {
+            "engagement_count": 0,
+            "last_active": "2000-01-01",
+            "total_tie": 0,
+            "tactics_hist": {}, # Histogram of event classifications
+            "roles_hist": {},
+            "orbat_id": unit.get('orbat_id')
+        }
+        
+    entry = stats_acc[key]
+    entry["engagement_count"] += 1
+    
+    # Date Update
+    evt_date = event_data.get('date', '2000-01-01')
+    if evt_date > entry["last_active"]:
+        entry["last_active"] = evt_date
+        
+    # Scores
+    entry["total_tie"] += event_data.get('tie_score', 0)
+    
+    # Tactics (Event Classification)
+    cls = event_data.get('classification', 'UNKNOWN')
+    entry["tactics_hist"][cls] = entry["tactics_hist"].get(cls, 0) + 1
+
+
+def export_units(unit_stats=None):
+    print("[DB] Exporting ORBAT Units (with AI Triage)...")
     try:
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
@@ -90,6 +188,7 @@ def export_units():
             conn.close()
             return
 
+
         cursor.execute("SELECT * FROM units_registry ORDER BY last_seen_date DESC")
         rows = cursor.fetchall()
         
@@ -99,6 +198,26 @@ def export_units():
             # Ensure proper types
             if u.get('last_seen_date'):
                u['last_seen_date'] = str(u['last_seen_date'])
+            
+            # === AI TRIAGE MERGE ===
+            if unit_stats:
+                # Key Match: Registry Unit ID uses orbat_id if available
+                key = (u.get('unit_id') or u.get('unit_name') or '').lower()
+                
+                stats = unit_stats.get(key)
+                
+                if stats:
+                    u['engagement_count'] = stats['engagement_count']
+                    u['last_active'] = stats['last_active']
+                    u['avg_tie'] = round(stats['total_tie'] / stats['engagement_count'], 1)
+                    
+                    # Top Tactic
+                    sorted_tactics = sorted(stats['tactics_hist'].items(), key=lambda x: x[1], reverse=True)
+                    u['primary_tactic'] = sorted_tactics[0][0] if sorted_tactics else 'UNKNOWN'
+                else:
+                    u['engagement_count'] = 0
+                    u['avg_tie'] = 0
+            
             units.append(u)
         
         # Save to JSON
@@ -122,6 +241,11 @@ def main():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
+    
+    # Load ORBAT Data
+    orbat_data = load_orbat_data()
+    print(f"[INFO] Loaded {len(orbat_data)} ORBAT units for enrichment.")
+    sys.stdout.flush()
     
     # Query ALL columns directly
     cursor.execute("""
@@ -151,6 +275,11 @@ def main():
     
     rows = cursor.fetchall()
     print(f"[INFO] Found {len(rows)} completed events")
+    
+    print(f"[INFO] Found {len(rows)} completed events")
+    
+    # 3. AI Triage Accumulator
+    unit_stats_acc = {}
     
     geojson_features = []
     csv_rows = []
@@ -260,6 +389,10 @@ def main():
             # Calculate marker style
             radius, color = get_marker_style(tie_score, e_score)
             
+            # Enrich Units
+            raw_units = ai_data.get('military_units_detected', [])
+            enriched_units = enrich_units(raw_units, orbat_data)
+            
             # Build GeoJSON Feature
             feature = {
                 "type": "Feature",
@@ -295,15 +428,22 @@ def main():
                     # Sources (JSON serialized for JS)
                     "sources_list": json.dumps(structured_sources),
                     
-                    # Units
-                    "units": json.dumps(ai_data.get('military_units_detected', [])),
-
+                    "units": json.dumps(enriched_units),
+                    
                     # Marker Style
                     "marker_radius": radius,
                     "marker_color": color
                 }
             }
             geojson_features.append(feature)
+            
+            # --- AI TRIAGE UPDATE ---
+            for u in enriched_units:
+                update_unit_stats(unit_stats_acc, u, {
+                    "date": date,
+                    "tie_score": tie_score,
+                    "classification": ai_data.get('classification', 'UNKNOWN')
+                })
             
             # Build CSV Row
             csv_rows.append({
@@ -347,7 +487,7 @@ def main():
     print(f"   CSV: {len(csv_rows)} rows -> {CSV_PATH}")
 
     # Export Units
-    export_units()
+    export_units(unit_stats_acc)
 
 
 if __name__ == "__main__":

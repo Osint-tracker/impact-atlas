@@ -957,19 +957,14 @@
                 faction: unit.faction // Store for cluster icon
               });
 
-              // Simple popup (created on demand)
-              marker.bindPopup(() => {
-                return `<div style="min-width:180px;font-family:Inter,sans-serif;">
-                  <div style="background:${color};padding:10px;border-radius:6px 6px 0 0;color:white;">
-                    <strong>${unit.display_name || unit.unit_id}</strong><br>
-                    <small>${factionLabel} • ${unit.echelon || unit.type || 'Unit'}</small>
-                  </div>
-                  <div style="padding:10px;background:#1e293b;border-radius:0 0 6px 6px;">
-                    <div style="font-size:11px;color:#94a3b8;">Type: <span style="color:#f8fafc;">${unit.type || 'N/A'}</span></div>
-                    <div style="font-size:11px;color:#94a3b8;">Status: <span style="color:${unit.status === 'ACTIVE' ? '#22c55e' : '#f59e0b'};">${unit.status || 'ACTIVE'}</span></div>
-                  </div>
-                </div>`;
-              }, { maxWidth: 250 });
+              // Click handler for Unit Dossier
+              marker.on('click', () => {
+                if (typeof window.openUnitModal === 'function') {
+                  window.openUnitModal(unit);
+                } else {
+                  console.warn("openUnitModal not defined");
+                }
+              });
 
               unitsLayer.addLayer(marker);
               count++;
@@ -1048,6 +1043,135 @@
   // 10. MODAL FUNCTIONS (DOSSIER UI)
   // ============================================
 
+  window.openUnitModal = function (unit) {
+    console.log("Opening Unit Modal for:", unit.unit_name);
+    const modal = document.getElementById('unitModal');
+    if (!modal) return;
+
+    modal.style.display = 'flex';
+
+    // Header
+    const safeText = (txt) => txt || 'N/A';
+    document.getElementById('udTitle').innerText = unit.display_name || unit.unit_name || unit.unit_id;
+    document.getElementById('udFaction').innerText = unit.faction === 'UA' ? 'Ukraine' : (unit.faction === 'RU' ? 'Russia' : unit.faction);
+    document.getElementById('udEchelon').innerText = safeText(unit.echelon);
+    document.getElementById('udTypeBadge').innerText = safeText(unit.type);
+
+    // Flag & Header Style
+    const isUA = unit.faction === 'UA';
+    const isRU = unit.faction === 'RU';
+    const color = isUA ? '#3b82f6' : (isRU ? '#ef4444' : '#64748b');
+
+    // Injected Flag
+    const flagSvg = isUA
+      ? `<svg class="ud-flag-large" viewBox="0 0 20 14"><rect width="20" height="7" fill="#005BBB"/><rect y="7" width="20" height="7" fill="#FFD500"/></svg>`
+      : (isRU
+        ? `<svg class="ud-flag-large" viewBox="0 0 20 14"><rect width="20" height="4.67" fill="#fff"/><rect y="4.67" width="20" height="4.67" fill="#0039A6"/><rect y="9.33" width="20" height="4.67" fill="#D52B1E"/></svg>`
+        : `<svg class="ud-flag-large" viewBox="0 0 20 14"><rect width="20" height="14" fill="#64748b"/></svg>`);
+
+    document.getElementById('udFlagContainer').innerHTML = flagSvg;
+    document.getElementById('udHeader').style.borderBottomColor = color;
+
+    // Left Stats
+    document.getElementById('udBranch').innerText = safeText(unit.branch);
+    document.getElementById('udGarrison').innerText = safeText(unit.garrison).replace(/<[^>]*>?/gm, ''); // Strip HTML if any
+    document.getElementById('udStatus').innerText = unit.status || 'ACTIVE';
+    document.getElementById('udStatus').style.color = (unit.status === 'destroyed') ? '#ef4444' : '#22c55e';
+
+    // Calculations: Find related events
+    const allEvents = Array.isArray(window.globalEvents) ? window.globalEvents : [];
+
+    // Normalize unit name for search
+    const unitName = (unit.unit_name || unit.unit_id || '').toLowerCase();
+
+    // Filter events that mention this unit
+    // Note: event.units is a string or array.
+    const relatedEvents = allEvents.filter(e => {
+      if (!e.units) return false;
+      // e.units might be JSON string
+      let uList = [];
+      try {
+        uList = typeof e.units === 'string' ? JSON.parse(e.units) : e.units;
+      } catch (e) { }
+
+      // Check fuzzy match in list
+      return uList.some(u => {
+        const n = (u.unit_name || u.unit_id || '').toLowerCase();
+        const oid = (u.orbat_id || '');
+        return n.includes(unitName) || (unit.orbat_id && oid === unit.orbat_id);
+      });
+    });
+
+    // Update Metrics
+    document.getElementById('udMentions').innerText = relatedEvents.length;
+    document.getElementById('udAvgTie').innerText = unit.avg_tie || '--';
+    document.getElementById('udTactic').innerText = unit.primary_tactic || '--';
+
+    // Engagement Freq (events in last 30 days)
+    // Assuming simple count for now
+    document.getElementById('udEngFreq').innerText = relatedEvents.length > 0
+      ? (relatedEvents.length / 30).toFixed(1) + "/day"
+      : "Low";
+
+    // Related Events List
+    const listEl = document.getElementById('udEventsList');
+    listEl.innerHTML = '';
+
+    if (relatedEvents.length === 0) {
+      listEl.innerHTML = '<div class="ud-event-item" style="cursor:default; color:#64748b; border:none;">No recent activity linked.</div>';
+    } else {
+      // Sort by date desc
+      relatedEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      relatedEvents.slice(0, 50).forEach(e => {
+        const el = document.createElement('div');
+        el.className = 'ud-event-item';
+        el.onclick = () => {
+          // Open event dossier from unit dossier
+          window.openModal(e);
+        };
+        el.innerHTML = `
+             <div style="font-size:0.75rem; color:#f59e0b; margin-bottom:2px;">${e.date}</div>
+             <div style="font-size:0.85rem; font-weight:600; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${e.title}</div>
+           `;
+        listEl.appendChild(el);
+      });
+    }
+
+    // Sparkline (Activity over time)
+    renderSparkline(relatedEvents);
+  };
+
+  function renderSparkline(events) {
+    const container = document.getElementById('udSparkline');
+    container.innerHTML = '';
+    if (!events.length) return;
+
+    // Bucket by date
+    const buckets = {};
+    events.forEach(e => {
+      const d = e.date;
+      buckets[d] = (buckets[d] || 0) + 1;
+    });
+
+    const dates = Object.keys(buckets).sort();
+    if (dates.length < 2) return;
+
+    const maxVal = Math.max(...Object.values(buckets));
+
+    dates.forEach(d => {
+      const val = buckets[d];
+      const h = Math.max(10, (val / maxVal) * 100);
+      const bar = document.createElement('div');
+      bar.style.width = '100%';
+      bar.style.height = h + '%';
+      bar.style.background = '#3b82f6';
+      bar.style.opacity = '0.7';
+      bar.title = `${d}: ${val} events`;
+      container.appendChild(bar);
+    });
+  }
+
   let tieRadarInstance = null; // Global instance for the modal chart
 
   window.openIntelDossier = function (eventData) {
@@ -1106,12 +1230,12 @@
               <span style="font-size: 0.9rem;">${flag}</span>
               <span style="font-weight: 600;">${u.unit_name || u.unit_id}</span>
               <span style="opacity: 0.6; font-size: 0.7rem;">${u.status || 'ACTIVE'}</span>
-            </div>
           `;
         }).join('');
       } else {
-        unitsContainer.style.display = 'none';
-        unitsList.innerHTML = '';
+        // Show section with "No units detected" placeholder
+        unitsContainer.style.display = 'block';
+        unitsList.innerHTML = '<span style="opacity: 0.5; font-style: italic;">No units detected for this event</span>';
       }
     }
 

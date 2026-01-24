@@ -2641,30 +2641,30 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          37.613,
-          48.238
+          37.0,
+          48.094
         ]
       },
       "properties": {
-        "id": "fus_1769205522915",
-        "title": "47th Brigade Repels Assault near Ocheretyne",
-        "description": "The 47th Mechanized Brigade (Magura) successfully repelled a Russian mechanized assault near Ocheretyne. Footage shows Bradley IFVs engaging enemy armor. The Russian 30th Motorized Rifle Brigade reportedly suffered losses including 3 BTR-82A vehicles.",
-        "date": "2026-01-23",
-        "tie_total": 72.0,
-        "vec_k": 7.0,
-        "vec_t": 6.0,
-        "vec_e": 7.0,
-        "reliability": 85,
-        "bias_score": 2.0,
+        "id": "verify_66071",
+        "title": "[VERIFY] 67th Brigade Operations",
+        "description": "This is a test event to verify ORBAT enrichment for the 67th Mechanized Brigade.",
+        "date": "2026-01-24",
+        "tie_total": 80.0,
+        "vec_k": 8.0,
+        "vec_t": 8.0,
+        "vec_e": 8.0,
+        "reliability": 90,
+        "bias_score": 0.0,
         "classification": "UNKNOWN",
-        "target_type": "INFANTRY",
-        "intensity_score": 7.0,
+        "target_type": "UNKNOWN",
+        "intensity_score": 8.0,
         "ai_reasoning": "",
         "has_video": false,
-        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/DeepStateUA/12345\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/ButusovPlus/5678\"}]",
-        "units": "[{\"unit_name\": \"47th Mechanized Brigade\", \"unit_id\": \"UA_47_MECH_BDE\", \"faction\": \"UA\", \"type\": \"MECH_INF\", \"status\": \"ENGAGED\"}, {\"unit_name\": \"30th Motorized Rifle Brigade\", \"unit_id\": \"RU_30_MR_BDE\", \"faction\": \"RU\", \"type\": \"MOT_RIFLE\", \"status\": \"ENGAGED\"}]",
-        "marker_radius": 11.2,
-        "marker_color": "#f59e0b"
+        "sources_list": "[{\"name\": \"test.com\", \"url\": \"https://test.com/verify\"}]",
+        "units": "[{\"unit_name\": \"67th\", \"faction\": \"UA\", \"status\": \"ACTIVE\", \"orbat_id\": \"1183\", \"echelon\": \"Brigade\", \"echelon_symbol\": \"X\", \"type\": \"Infantry Mechanized\", \"branch\": null, \"garrison\": null}]",
+        "marker_radius": 12.0,
+        "marker_color": "#ef4444"
       }
     }
   ]

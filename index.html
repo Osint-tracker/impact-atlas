@@ -193,6 +193,7 @@
       outline: none;
       margin: 10px 0;
       -webkit-appearance: none;
+      appearance: none;
       /* Necessary for Chrome/Safari */
     }
 
@@ -331,6 +332,111 @@
     .unit-locate-btn:hover {
       background: #3b82f6;
       color: white;
+    }
+
+    /* UNIT DOSSIER MODAL STYLES */
+    .unit-dossier-header {
+      background: #0f172a;
+      padding: 20px;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .ud-flag-large {
+      width: 60px;
+      height: 40px;
+      border-radius: 4px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    }
+
+    .ud-title-group h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #f8fafc;
+      font-family: 'Rajdhani', sans-serif;
+      text-transform: uppercase;
+    }
+
+    .ud-subtitle {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .ud-badge {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .ud-content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .ud-panel {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 15px;
+    }
+
+    .ud-stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .ud-stat-label {
+      color: #94a3b8;
+      font-size: 0.85rem;
+    }
+
+    .ud-stat-value {
+      color: #f8fafc;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .timeline-mini-chart {
+      height: 60px;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+      margin-top: 10px;
+      position: relative;
+    }
+
+    .ud-events-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .ud-event-item {
+      background: rgba(15, 23, 42, 0.8);
+      padding: 10px;
+      border-radius: 4px;
+      border-left: 3px solid #64748b;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .ud-event-item:hover {
+      background: rgba(30, 41, 59, 1);
     }
   </style>
 </head>
@@ -928,6 +1034,87 @@
 
 
 
+          <!-- UNIT DOSSIER MODAL -->
+          <div id="unitModal" class="modal-overlay" onclick="closeUnitModal(event)">
+            <div class="modal-content" style="max-width: 800px; overflow: hidden; padding: 0;">
+              <span class="close-modal" onclick="closeUnitModal(event)"
+                style="z-index: 10; margin: 10px;">&times;</span>
+
+              <div class="unit-dossier-header" id="udHeader">
+                <div id="udFlagContainer"></div>
+                <div class="ud-title-group">
+                  <h2 id="udTitle">Unit Name</h2>
+                  <div class="ud-subtitle">
+                    <span id="udFaction">Faction</span> •
+                    <span id="udEchelon">Echelon</span>
+                    <span id="udTypeBadge" class="ud-badge">Type</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ud-content-grid">
+
+                <!-- Left: Metadata & Stats -->
+                <div class="ud-left-col" style="display: flex; flex-direction: column; gap: 15px;">
+                  <div class="ud-panel">
+                    <h4 style="margin:0 0 10px 0; color:#cbd5e1; font-size:0.9rem;">OPERATIONAL PROFILE</h4>
+                    <div class="ud-stat-row">
+                      <span class="ud-stat-label">Branch</span>
+                      <span class="ud-stat-value" id="udBranch">Unknown</span>
+                    </div>
+                    <div class="ud-stat-row">
+                      <span class="ud-stat-label">Garrison</span>
+                      <span class="ud-stat-value" id="udGarrison">N/A</span>
+                    </div>
+                    <div class="ud-stat-row">
+                      <span class="ud-stat-label">Status</span>
+                      <span class="ud-stat-value" id="udStatus">ACTIVE</span>
+                    </div>
+                  </div>
+
+                  <div class="ud-panel">
+                    <h4 style="margin:0 0 10px 0; color:#cbd5e1; font-size:0.9rem;">ACTIVITY METRICS</h4>
+                    <div class="ud-stat-row">
+                      <span class="ud-stat-label">Engagement Freq (30d)</span>
+                      <span class="ud-stat-value" id="udEngFreq">--</span>
+                    </div>
+                    <div class="ud-stat-row">
+                      <span class="ud-stat-label">Mentions</span>
+                      <span class="ud-stat-value" id="udMentions">0</span>
+                    </div>
+                    <div class="ud-stat-row">
+                      <span class="ud-stat-label">Avg Intensity</span>
+                      <span class="ud-stat-value" id="udAvgTie">--</span>
+                    </div>
+                    <div class="ud-stat-row">
+                      <span class="ud-stat-label">Primary Tactic</span>
+                      <span class="ud-stat-value" id="udTactic" style="font-size:0.75rem;">--</span>
+                    </div>
+
+                    <h5 style="margin:10px 0 5px 0; color:#64748b; font-size:0.75rem;">ACTIVITY TREND</h5>
+                    <div class="timeline-mini-chart" id="udSparkline"
+                      style="display:flex; align-items:end; gap:2px; padding:5px;">
+                      <!-- Spans (bars) injected by JS -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right: Related Events -->
+                <div class="ud-right-col">
+                  <div class="ud-panel" style="height: 100%; display: flex; flex-direction: column;">
+                    <h4 style="margin:0 0 10px 0; color:#cbd5e1; font-size:0.9rem;">RECENT ENGAGEMENTS</h4>
+                    <div id="udEventsList" class="ud-events-list">
+                      <!-- Event Items -->
+                      <div class="ud-event-item">Loading events...</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
           <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 
           <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -951,6 +1138,12 @@
                 document.getElementById('videoModal').style.display = 'none';
                 const videoContainer = document.getElementById('modalVideoContainer');
                 if (videoContainer) videoContainer.innerHTML = '';
+              }
+            }
+
+            function closeUnitModal(event) {
+              if (event.target.id === 'unitModal' || event.target.classList.contains('close-modal')) {
+                document.getElementById('unitModal').style.display = 'none';
               }
             }
 
