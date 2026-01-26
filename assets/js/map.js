@@ -1101,6 +1101,7 @@
 
     // Helper must be function-scoped
     const safeText = (txt) => txt || 'N/A';
+    const format = (v) => v || '--';
 
     try {
       const modal = document.getElementById('unitModal');
@@ -1109,15 +1110,14 @@
         return;
       }
 
-      console.log("✅ Modal element found. Making visible...");
-      modal.style.display = 'flex';
-      modal.style.zIndex = '9999'; // Force top
-      modal.style.opacity = '1';  // Force visible
+      console.log("✅ Modal element found. Applying NUCLEAR visibility styles...");
+
+      // NUCLEAR STYLE RESET
+      modal.setAttribute('style', 'display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 9999 !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(15, 23, 42, 0.9) !important; justify-content: center !important; align-items: center !important;');
 
       // Header
       const elTitle = document.getElementById('udTitle');
       if (elTitle) elTitle.innerText = unit.display_name || unit.unit_name || unit.unit_id;
-      else console.warn("Missing element: udTitle");
 
       const elFaction = document.getElementById('udFaction');
       if (elFaction) elFaction.innerText = unit.faction === 'UA' ? 'Ukraine' : (unit.faction === 'RU' ? 'Russia' : unit.faction);
@@ -1127,36 +1127,53 @@
 
       const elBadge = document.getElementById('udTypeBadge');
       if (elBadge) elBadge.innerText = safeText(unit.type);
+
+      // Flag & Header Style
+      const isUA = unit.faction === 'UA';
+      const isRU = unit.faction === 'RU';
+      const color = isUA ? '#3b82f6' : (isRU ? '#ef4444' : '#64748b');
+
+      // Injected Flag
+      const flagSvg = isUA
+        ? `<svg class="ud-flag-large" viewBox="0 0 20 14"><rect width="20" height="7" fill="#005BBB"/><rect y="7" width="20" height="7" fill="#FFD500"/></svg>`
+        : (isRU
+          ? `<svg class="ud-flag-large" viewBox="0 0 20 14"><rect width="20" height="4.67" fill="#fff"/><rect y="4.67" width="20" height="4.67" fill="#0039A6"/><rect y="9.33" width="20" height="4.67" fill="#D52B1E"/></svg>`
+          : `<svg class="ud-flag-large" viewBox="0 0 20 14"><rect width="20" height="14" fill="#64748b"/></svg>`);
+
+      const elFlag = document.getElementById('udFlagContainer');
+      if (elFlag) elFlag.innerHTML = flagSvg;
+
+      const elHeader = document.getElementById('udHeader');
+      if (elHeader) elHeader.style.borderBottomColor = color;
+
+      // Left Stats
+      const elBranch = document.getElementById('udBranch');
+      if (elBranch) elBranch.innerText = safeText(unit.branch);
+
+      const elGarrison = document.getElementById('udGarrison');
+      if (elGarrison) elGarrison.innerText = safeText(unit.garrison).replace(/<[^>]*>?/gm, '');
+
+      const elStatus = document.getElementById('udStatus');
+      if (elStatus) {
+        elStatus.innerText = unit.status || 'ACTIVE';
+        elStatus.style.color = (unit.status === 'destroyed') ? '#ef4444' : '#22c55e';
+      }
+
+      // New Fields
+      const elCmd = document.getElementById('udCommander');
+      if (elCmd) elCmd.innerText = format(unit.commander);
+
+      const elSup = document.getElementById('udSuperior');
+      if (elSup) elSup.innerText = format(unit.superior);
+
+      const elDist = document.getElementById('udDistrict');
+      if (elDist) elDist.innerText = format(unit.district);
+
+      console.log("✅ Unit Modal Content Population Complete.");
+
     } catch (e) {
       console.error("❌ Error generating Unit Modal content:", e);
     }
-
-    // Flag & Header Style
-    const isUA = unit.faction === 'UA';
-    const isRU = unit.faction === 'RU';
-    const color = isUA ? '#3b82f6' : (isRU ? '#ef4444' : '#64748b');
-
-    // Injected Flag
-    const flagSvg = isUA
-      ? `<svg class="ud-flag-large" viewBox="0 0 20 14"><rect width="20" height="7" fill="#005BBB"/><rect y="7" width="20" height="7" fill="#FFD500"/></svg>`
-      : (isRU
-        ? `<svg class="ud-flag-large" viewBox="0 0 20 14"><rect width="20" height="4.67" fill="#fff"/><rect y="4.67" width="20" height="4.67" fill="#0039A6"/><rect y="9.33" width="20" height="4.67" fill="#D52B1E"/></svg>`
-        : `<svg class="ud-flag-large" viewBox="0 0 20 14"><rect width="20" height="14" fill="#64748b"/></svg>`);
-
-    document.getElementById('udFlagContainer').innerHTML = flagSvg;
-    document.getElementById('udHeader').style.borderBottomColor = color;
-
-    // Left Stats
-    const format = (v) => v || '--';
-    document.getElementById('udBranch').innerText = safeText(unit.branch);
-    document.getElementById('udGarrison').innerText = safeText(unit.garrison).replace(/<[^>]*>?/gm, '');
-    document.getElementById('udStatus').innerText = unit.status || 'ACTIVE';
-    document.getElementById('udStatus').style.color = (unit.status === 'destroyed') ? '#ef4444' : '#22c55e';
-
-    // New Fields
-    document.getElementById('udCommander').innerText = format(unit.commander);
-    document.getElementById('udSuperior').innerText = format(unit.superior);
-    document.getElementById('udDistrict').innerText = format(unit.district);
 
     // Calculations: Find related events
     const allEvents = Array.isArray(window.globalEvents) ? window.globalEvents : [];
