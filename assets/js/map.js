@@ -1098,6 +1098,10 @@
     window.closeAllModals();
 
     console.log("Opening Unit Modal for:", unit.display_name);
+
+    // Helper must be function-scoped
+    const safeText = (txt) => txt || 'N/A';
+
     try {
       const modal = document.getElementById('unitModal');
       if (!modal) {
@@ -1111,7 +1115,6 @@
       modal.style.opacity = '1';  // Force visible
 
       // Header
-      const safeText = (txt) => txt || 'N/A';
       const elTitle = document.getElementById('udTitle');
       if (elTitle) elTitle.innerText = unit.display_name || unit.unit_name || unit.unit_id;
       else console.warn("Missing element: udTitle");
