@@ -4,6 +4,7 @@
 
 (function () {
   'use strict';
+  console.log("🚀 MAP.JS UPDATED VERSION LOADED 🚀");
 
   // ============================================
   // 1. GLOBAL STATE (Declared First)
