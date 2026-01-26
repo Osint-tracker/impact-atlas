@@ -7,7 +7,7 @@ class OrbatTracker {
 
     async init() {
         try {
-            const response = await fetch('assets/data/units.json');
+            const response = await fetch(`assets/data/units.json?v=${new Date().getTime()}`);
             this.units = await response.json();
             console.log(`[ORBAT] Loaded ${this.units.length} units.`);
             this.render();
