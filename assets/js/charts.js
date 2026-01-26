@@ -29,8 +29,8 @@ window.initCharts = function (events) {
             if (titleLower.includes(val)) searchParts.push(key);
         }
 
-        let m = moment(e.date);
-        if (!m.isValid()) m = moment(e.date, ["DD/MM/YYYY", "DD-MM-YYYY", "DD.MM.YYYY", "MM/DD/YYYY", "YYYY-MM-DD"]);
+        let m = moment(e.date, ["YYYY-MM-DD", "DD/MM/YYYY", "DD-MM-YYYY", "DD.MM.YYYY", "MM/DD/YYYY"]);
+        if (!m.isValid()) m = moment(e.date); // Fallback to heuristic
         const ts = m.isValid() ? m.valueOf() : moment().valueOf();
 
         return {

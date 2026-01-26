@@ -987,7 +987,7 @@
 
             // CENTRALIZED CLICK LISTENER (Robust)
             unitsLayer.on('click', function (a) {
-              console.log("🎯 UNIT CLICKED via Layer:", a.layer.options.unitData.unit_name);
+              console.log("🎯 UNIT CLICKED via Layer:", a.layer.options.unitData.display_name);
               // alert("DEBUG: Unit Clicked!");
               const unit = a.layer.options.unitData;
               if (unit && typeof window.openUnitModal === 'function') {
@@ -1096,7 +1096,7 @@
     // Ensure clean state
     window.closeAllModals();
 
-    console.log("Opening Unit Modal for:", unit.unit_name);
+    console.log("Opening Unit Modal for:", unit.display_name);
     const modal = document.getElementById('unitModal');
     if (!modal) return;
 
