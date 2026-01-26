@@ -206,6 +206,10 @@ def export_units(unit_stats=None, orbat_data=None):
             if u.get('last_seen_date'):
                u['last_seen_date'] = str(u['last_seen_date'])
             
+            # Fallback for display_name
+            if not u.get('display_name'):
+                u['display_name'] = u.get('unit_id') or 'Unknown Unit'
+            
             # === AI TRIAGE MERGE ===
             if unit_stats:
                 # Key Match: Registry Unit ID uses orbat_id if available

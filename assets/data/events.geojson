@@ -533,6 +533,37 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          37.6141992,
+          49.7132963
+        ]
+      },
+      "properties": {
+        "id": "fus_569880_1768864404",
+        "title": "Ukrainian Drone Engages Russian Personnel near Kupyansk",
+        "description": "A Ukrainian FPV drone equipped with thermal imaging targeted a vehicle containing Russian personnel in the Kupyansk direction. The incident resulted in an engagement with the adversary forces.",
+        "date": "2026-01-26",
+        "tie_total": 8.0,
+        "vec_k": 3.0,
+        "vec_t": 3.0,
+        "vec_e": 4.0,
+        "reliability": 60,
+        "bias_score": 2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 3.0,
+        "ai_reasoning": "[EN] The engagement highlights Ukraine's increasing reliance on precision drone warfare to target Russian personnel, signaling a shift towards asymmetric tactics in contested areas like Kupyansk. While the kinetic impact is limited, the psychological and operational disruption to Russian forces could hinder their mobility and morale. This aligns with Ukraine's broader strategy to degrade Russian logistics and command structures in the region.  \n[IT] L'ingaggio sottolinea la crescente dipendenza dell'Ucraina dalla guerra dei droni",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/parabellumcommunity/335237\"}]",
+        "units": "[]",
+        "marker_radius": 4.8,
+        "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           39.0261044,
           45.7684014
         ]
@@ -743,6 +774,37 @@
         "units": "[]",
         "marker_radius": 14.0,
         "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.7322878,
+          46.4843023
+        ]
+      },
+      "properties": {
+        "id": "fus_418394_1769034265",
+        "title": "Russian Forces Conduct Strikes in Odesa Region and Korosten Area",
+        "description": "On December 22, 2025, Russian Forces targeted Ukrainian military positions in the Odesa region and struck a railway composition near Korosten. Ukrainian Forces launched drone attacks on oil infrastructure in Krasnodar Krai. Russian units advanced in the Burlyk direction, displacing adversary forces from Vylchy and expanding control around Konstantynivka.",
+        "date": "2026-01-26",
+        "tie_total": 66.0,
+        "vec_k": 6.0,
+        "vec_t": 8.0,
+        "vec_e": 4.0,
+        "reliability": 74,
+        "bias_score": -4.6,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 6.0,
+        "ai_reasoning": "[EN] The strikes on Odesa and Korosten disrupt Ukrainian logistics, forcing resource diversion to repair critical rail infrastructure. Krasnodar oil attacks signal Ukraine's capacity for deep strikes, but with limited operational impact (EFFECT:4). Russian advances near Burlyk indicate localized tactical gains, not strategic breakthroughs.  \n\n[IT] I colpi su Odessa e Korosten interrompono la logistica ucraina, costringendo a dirottare risorse per riparare",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76184\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76161\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76038\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/75962\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76138\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/75925\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/75899\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76068\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/75989\"}]",
+        "units": "[]",
+        "marker_radius": 10.6,
+        "marker_color": "#eab308"
       }
     },
     {
