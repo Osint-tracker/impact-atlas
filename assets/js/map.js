@@ -1098,17 +1098,35 @@
     window.closeAllModals();
 
     console.log("Opening Unit Modal for:", unit.display_name);
-    const modal = document.getElementById('unitModal');
-    if (!modal) return;
+    try {
+      const modal = document.getElementById('unitModal');
+      if (!modal) {
+        console.error("❌ CRITICAL: 'unitModal' element NOT FOUND in DOM!");
+        return;
+      }
 
-    modal.style.display = 'flex';
+      console.log("✅ Modal element found. Making visible...");
+      modal.style.display = 'flex';
+      modal.style.zIndex = '9999'; // Force top
+      modal.style.opacity = '1';  // Force visible
 
-    // Header
-    const safeText = (txt) => txt || 'N/A';
-    document.getElementById('udTitle').innerText = unit.display_name || unit.unit_name || unit.unit_id;
-    document.getElementById('udFaction').innerText = unit.faction === 'UA' ? 'Ukraine' : (unit.faction === 'RU' ? 'Russia' : unit.faction);
-    document.getElementById('udEchelon').innerText = safeText(unit.echelon);
-    document.getElementById('udTypeBadge').innerText = safeText(unit.type);
+      // Header
+      const safeText = (txt) => txt || 'N/A';
+      const elTitle = document.getElementById('udTitle');
+      if (elTitle) elTitle.innerText = unit.display_name || unit.unit_name || unit.unit_id;
+      else console.warn("Missing element: udTitle");
+
+      const elFaction = document.getElementById('udFaction');
+      if (elFaction) elFaction.innerText = unit.faction === 'UA' ? 'Ukraine' : (unit.faction === 'RU' ? 'Russia' : unit.faction);
+
+      const elEchelon = document.getElementById('udEchelon');
+      if (elEchelon) elEchelon.innerText = safeText(unit.echelon);
+
+      const elBadge = document.getElementById('udTypeBadge');
+      if (elBadge) elBadge.innerText = safeText(unit.type);
+    } catch (e) {
+      console.error("❌ Error generating Unit Modal content:", e);
+    }
 
     // Flag & Header Style
     const isUA = unit.faction === 'UA';
