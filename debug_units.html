@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEBUG MODE: Unit Loader</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="assets/css/style.css"> <!-- Your main style -->
+
+    <style>
+        body {
+            margin: 0;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            height: 100vh;
+            font-family: monospace;
+        }
+
+        #debug-log {
+            width: 400px;
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            padding: 20px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+        }
+
+        #map {
+            flex: 1;
+            height: 100%;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 2px;
+        }
+
+        .log-error {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .log-success {
+            color: #22c55e;
+        }
+
+        .log-info {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="debug-log">
+        <h3 style="color:#f59e0b; border-bottom:1px solid #f59e0b; padding-bottom:10px;">DEBUG LOGGER</h3>
+        <div id="logs"></div>
+    </div>
+
+    <div id="map"></div>
+
+    <!-- SCRIPTS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+    <script>
+        // LOGGER
+        function log(msg, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `log-entry log-${type}`;
+            div.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            document.getElementById('logs').prepend(div);
+            console.log(msg);
+        }
+
+        log("🚀 Debug Page Initializing...", 'info');
+
+        try {
+            // MAP INIT
+            const map = L.map('map').setView([48.5, 32.0], 6);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: 'Debug Map'
+            }).addTo(map);
+            log("✅ Leaflet Map Created", 'success');
+
+            // FETCH UNITS
+            log("📥 Fetching assets/data/units.json...", 'info');
+
+            // Cache Buster
+            const url = `assets/data/units.json?v=${new Date().getTime()}`;
+
+            fetch(url)
+                .then(response => {
+                    log(`📡 Response Status: ${response.status}`, 'info');
+                    if (!response.ok) throw new Error("HTTP Error " + response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    log(`📦 JSON Parsed. Found ${data.length} items.`, 'success');
+
+                    if (data.length > 0) {
+                        const first = data[0];
+                        log(`🔍 Inspecting First Item Keys: ${Object.keys(first).join(', ')}`, 'info');
+                        if (!first.last_seen_lat) log("⚠️ WARNING: 'last_seen_lat' missing in first item!", 'error');
+                        else log("✅ 'last_seen_lat' present.", 'success');
+                    }
+
+                    // LAYER CREATION
+                    log("🛠 Creating MarkerClusterGroup...", 'info');
+                    const unitsLayer = L.markerClusterGroup();
+
+                    let added = 0;
+                    data.forEach((unit, idx) => {
+                        if (!unit.last_seen_lat || !unit.last_seen_lon) return;
+
+                        // Icon test
+                        const isUA = unit.faction === 'UA';
+                        const color = isUA ? '#3b82f6' : '#ef4444';
+
+                        const icon = L.divIcon({
+                            html: `<div style="width:20px; height:20px; background:${color}; border:2px solid white;"></div>`,
+                            className: 'unit-flag-marker', // Using your class
+                            iconSize: [20, 20]
+                        });
+
+                        const marker = L.marker([unit.last_seen_lat, unit.last_seen_lon], { icon: icon });
+                        marker.bindPopup(`<b>${unit.display_name}</b><br>${unit.last_seen_lat}, ${unit.last_seen_lon}`);
+                        unitsLayer.addLayer(marker);
+                        added++;
+                    });
+
+                    log(`➕ Added ${added} markers to layer.`, 'success');
+
+                    map.addLayer(unitsLayer);
+                    log("✅ Layer added to map. IF YOU SEE THIS, DATA LOADING IS FINE.", 'success');
+                    log("👉 Check if markers are visible on map area.", 'info');
+
+                })
+                .catch(err => {
+                    log(`❌ CRITICAL FAILURE: ${err.message}`, 'error');
+                });
+
+        } catch (e) {
+            log(`❌ SCRIPT CRASH: ${e.message}`, 'error');
+        }
+    </script>
+</body>
+
+</html>

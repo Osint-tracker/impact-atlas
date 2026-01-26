@@ -88,7 +88,7 @@ class OrbatTracker {
                         ${unit.subordination ? `<div class="unit-sub" style="margin-top:4px;">CMD: ${unit.subordination}</div>` : ''}
 
                         <div class="hud-coords" 
-                            onclick="${(unit.last_seen_lat && unit.last_seen_lon) ? `window.flyToUnit(${unit.last_seen_lat}, ${unit.last_seen_lon}, '${unit.unit_id}')` : ''}" 
+                            onclick="${(unit.last_seen_lat && unit.last_seen_lon) ? `window.flyToUnit(${unit.last_seen_lat}, ${unit.last_seen_lon}, '${unit.display_name}')` : ''}" 
                             title="${(unit.last_seen_lat && unit.last_seen_lon) ? 'Locate on Map' : 'Location Unknown'}"
                             style="${(!unit.last_seen_lat || !unit.last_seen_lon) ? 'opacity:0.5; cursor:not-allowed;' : ''}">
                             <i class="fa-solid fa-crosshairs"></i> 

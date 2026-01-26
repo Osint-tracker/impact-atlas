@@ -105,6 +105,7 @@ def enrich_units(ai_units, orbat_data):
         # Apply enrichment
         if best_match and best_score >= 80:
             u['orbat_id'] = best_match.get('orbat_id')
+            u['display_name'] = best_match.get('display_name') # Add this line
             u['echelon'] = best_match.get('echelon')
             u['echelon_symbol'] = best_match.get('echelon_symbol')
             u['type'] = best_match.get('type') # Use standardized type

@@ -397,6 +397,12 @@
     });
     map.addLayer(eventsLayer);
 
+    // DEBUG: Log all clicks
+    map.on('click', function (e) {
+      console.log(`🖱️ MAP CLICK AT: ${e.latlng.lat}, ${e.latlng.lng}`);
+      // alert(`DEBUG: Map clicked at ${e.latlng}`);
+    });
+
     // Load default frontline
     loadFrontlineLayer('assets/data/frontline.geojson', '#f59e0b');
 
@@ -878,13 +884,26 @@
     } else if (layerName === 'units') {
       // ORBAT Units Layer - Optimized with marker clustering
       if (isChecked) {
-        fetch('assets/data/units.json')
-          .then(response => response.json())
+        console.log("🚀 STARTING UNITS FETCH...");
+        // alert("DEBUG: Starting Units Fetch...");
+
+        // Cache busting
+        fetch(`assets/data/units.json?v=${new Date().getTime()}`)
+          .then(response => {
+            if (!response.ok) {
+              alert("❌ ERROR: units.json not found (404)");
+              throw new Error("HTTP 404");
+            }
+            return response.json();
+          })
           .then(data => {
             if (!data || data.length === 0) {
+              alert("⚠️ WARNING: units.json is empty!");
               console.warn("⚠️ No units data available");
               return;
             }
+            // alert(`✅ LOADED ${data.length} UNITS. Rendering now...`);
+            console.log(`✅ Loaded ${data.length} units.`);
 
             // Use marker cluster for performance
             unitsLayer = L.markerClusterGroup({
@@ -954,27 +973,38 @@
 
               const marker = L.marker([lat, lon], {
                 icon: icon,
-                faction: unit.faction // Store for cluster icon
+                faction: unit.faction, // Store for cluster icon
+                unitData: unit,        // Store data for click event
+                zIndexOffset: 1000     // Force ON TOP of everything
               });
 
-              // Click handler for Unit Dossier
-              marker.on('click', () => {
-                if (typeof window.openUnitModal === 'function') {
-                  window.openUnitModal(unit);
-                } else {
-                  console.warn("openUnitModal not defined");
-                }
-              });
+              // REMOVED individual click listener here to use Group listener below
+              // marker.on('click', () => { ... });
 
               unitsLayer.addLayer(marker);
               count++;
             });
 
+            // CENTRALIZED CLICK LISTENER (Robust)
+            unitsLayer.on('click', function (a) {
+              console.log("🎯 UNIT CLICKED via Layer:", a.layer.options.unitData.unit_name);
+              // alert("DEBUG: Unit Clicked!");
+              const unit = a.layer.options.unitData;
+              if (unit && typeof window.openUnitModal === 'function') {
+                window.openUnitModal(unit);
+              } else {
+                console.error("Window.openUnitModal missing or unit data invalid");
+              }
+            });
+
             unitsLayer.addTo(map);
+            // unitsLayer.bringToFront(); // Not always available on ClusterGroup, avoiding error
+
             console.log(`✅ Units layer loaded: ${count} markers`);
           })
           .catch(err => {
             console.error("❌ Failed to load units data:", err);
+            // alert("DEBUG: Fetch Error: " + err.message);
           });
       } else {
         if (unitsLayer) {
@@ -1256,7 +1286,7 @@
               font-family: 'JetBrains Mono', monospace;
             ">
               <span style="font-size: 0.9rem;">${flag}</span>
-              <span style="font-weight: 600;">${u.unit_name || u.unit_id}</span>
+              <span style="font-weight: 600;">${u.display_name || u.unit_name || u.unit_id}</span>
               <span style="opacity: 0.6; font-size: 0.7rem;">${u.status || 'ACTIVE'}</span>
           `;
         }).join('');

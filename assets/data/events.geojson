@@ -2755,7 +2755,7 @@
         "ai_reasoning": "",
         "has_video": false,
         "sources_list": "[{\"name\": \"test.com\", \"url\": \"https://test.com/verify\"}]",
-        "units": "[{\"unit_name\": \"67th\", \"faction\": \"UA\", \"status\": \"ACTIVE\", \"orbat_id\": \"1183\", \"echelon\": \"Brigade\", \"echelon_symbol\": \"X\", \"type\": \"Infantry Mechanized\", \"branch\": null, \"sub_branch\": null, \"garrison\": null, \"district\": null, \"commander\": null, \"superior\": null}]",
+        "units": "[{\"unit_name\": \"67th\", \"faction\": \"UA\", \"status\": \"ACTIVE\", \"orbat_id\": \"1183\", \"display_name\": null, \"echelon\": \"Brigade\", \"echelon_symbol\": \"X\", \"type\": \"Infantry Mechanized\", \"branch\": null, \"sub_branch\": null, \"garrison\": null, \"district\": null, \"commander\": null, \"superior\": null}]",
         "marker_radius": 12.0,
         "marker_color": "#ef4444"
       }
