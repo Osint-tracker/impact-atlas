@@ -46,6 +46,16 @@ class OrbatTracker {
         filtered.forEach(unit => {
             const el = document.createElement('div');
             el.className = 'unit-card';
+            // Make the whole card clickable
+            el.style.cursor = 'pointer';
+            el.onclick = () => {
+                console.log(`[ORBAT] Card clicked for: ${unit.display_name}`);
+                if (window.openUnitModal) {
+                    window.openUnitModal(unit);
+                } else {
+                    console.error("openUnitModal not defined");
+                }
+            };
 
             // Status Logic for CSS class
             let statusClass = 'status-idle';
@@ -65,6 +75,7 @@ class OrbatTracker {
             if (unit.type && unit.type.includes('AIRBORNE')) icon = 'fa-parachute-box';
             if (unit.type && unit.type.includes('RECON')) icon = 'fa-binoculars';
 
+            // Inner HTML Structure
             el.innerHTML = `
                 <div class="hud-card ${statusClass}">
                     
@@ -88,7 +99,6 @@ class OrbatTracker {
                         ${unit.subordination ? `<div class="unit-sub" style="margin-top:4px;">CMD: ${unit.subordination}</div>` : ''}
 
                         <div class="hud-coords" 
-                            onclick="${(unit.last_seen_lat && unit.last_seen_lon) ? `window.flyToUnit(${unit.last_seen_lat}, ${unit.last_seen_lon}, '${unit.display_name}')` : ''}" 
                             title="${(unit.last_seen_lat && unit.last_seen_lon) ? 'Locate on Map' : 'Location Unknown'}"
                             style="${(!unit.last_seen_lat || !unit.last_seen_lon) ? 'opacity:0.5; cursor:not-allowed;' : ''}">
                             <i class="fa-solid fa-crosshairs"></i> 
@@ -97,6 +107,19 @@ class OrbatTracker {
                     </div>
                 </div>
             `;
+
+            // Attach specific listener for "Locate" button to stop propagation
+            const locateBtn = el.querySelector('.hud-coords');
+            if (locateBtn && unit.last_seen_lat && unit.last_seen_lon) {
+                locateBtn.onclick = (e) => {
+                    e.stopPropagation(); // Prevents card click (Modal)
+                    console.log(`[ORBAT] Locate clicked for: ${unit.display_name}`);
+                    if (window.flyToUnit) {
+                        window.flyToUnit(unit.last_seen_lat, unit.last_seen_lon, unit.display_name);
+                    }
+                };
+            }
+
             this.container.appendChild(el);
         });
     }
