@@ -602,7 +602,7 @@ def main():
     
     try:
         pdf.output(str(output_path))
-        logger.info(f"✅ SITREP generated: {output_path}")
+        logger.info(f"SITREP generated: {output_path}")
     except PermissionError:
         logger.error(f"Cannot write to {output_path}. Close any open PDFs.")
     except Exception as e:

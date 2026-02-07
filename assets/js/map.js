@@ -999,13 +999,19 @@
 
             // CENTRALIZED CLICK LISTENER (Robust)
             unitsLayer.on('click', function (a) {
-              console.log("🎯 UNIT CLICKED via Layer:", a.layer.options.unitData.display_name);
-              // alert("DEBUG: Unit Clicked!");
+              console.log("🎯 UNIT CLICKED via Layer:", a.layer.options.unitData);
               const unit = a.layer.options.unitData;
-              if (unit && typeof window.openUnitModal === 'function') {
+              if (!unit) {
+                console.error("❌ Unit data is NULL/undefined in marker options!");
+                return;
+              }
+              console.log("📋 Unit Data:", JSON.stringify(unit, null, 2).slice(0, 500));
+
+              if (typeof window.openUnitModal === 'function') {
+                console.log("✅ openUnitModal function exists, calling it...");
                 window.openUnitModal(unit);
               } else {
-                console.error("Window.openUnitModal missing or unit data invalid");
+                console.error("❌ window.openUnitModal is NOT a function!", typeof window.openUnitModal);
               }
             });
 
@@ -1301,7 +1307,7 @@
     // Ensure clean state
     window.closeAllModals();
 
-    console.log("Opening Unit Modal for:", unit.display_name);
+    console.log("📦 openUnitModal CALLED with:", unit?.display_name || unit?.unit_name || 'unknown');
 
     // Helper must be function-scoped
     const safeText = (txt) => txt || 'N/A';
@@ -1311,13 +1317,18 @@
       const modal = document.getElementById('unitModal');
       if (!modal) {
         console.error("❌ CRITICAL: 'unitModal' element NOT FOUND in DOM!");
+        alert("DEBUG: unitModal element not found in DOM!");
         return;
       }
 
-      console.log("✅ Modal element found. Applying NUCLEAR visibility styles...");
+      console.log("✅ Modal element found. Current display:", modal.style.display);
+      console.log("📐 Modal computed style:", window.getComputedStyle(modal).display);
 
       // NUCLEAR STYLE RESET
       modal.setAttribute('style', 'display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 9999 !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(15, 23, 42, 0.9) !important; justify-content: center !important; align-items: center !important;');
+
+      console.log("🔧 AFTER setAttribute - display:", modal.style.display);
+      console.log("📐 AFTER computed style:", window.getComputedStyle(modal).display);
 
       // Header
       const elTitle = document.getElementById('udTitle');

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-07T17:32:17.543081",
+  "generated_at": "2026-02-07T18:14:12.108763",
   "narratives": [
     {
       "cluster_id": "nar_20260207_91b1",
@@ -283,8 +283,8 @@
         ]
       },
       "meta": {
-        "title": "Zaporizhzhia Flank Offensive and Civilian Evacuation",
-        "summary": "Russian forces conducted a coordinated offensive in the Zaporizhzhia region, expanding bridgeheads and advancing towards Pokrovske while repelling Ukrainian counterattacks near Huliaipole, as evidenced by Ukrainian civilian evacuations from Kushuhum due to increased UAV threats. This operation aimed to secure key positions and disrupt Ukrainian logistics, resulting in territorial gains and heightened local instability.",
+        "title": "Gulyaipole-Gaichur River Offensive",
+        "summary": "Russian forces are conducting a multi-pronged offensive to expand bridgeheads east of Gulyaipole, advancing towards Pokrovske while repelling heavy Ukrainian counterattacks. Concurrent Ukrainian UAV activity targeting civilians in rear areas like Kushugum indicates a shaping operation to disrupt logistics and depopulate the frontline.",
         "primary_tactic": "MANOEUVRE",
         "tactic_color": "#3b82f6",
         "intensity": 5.0,
@@ -575,8 +575,8 @@
         ]
       },
       "meta": {
-        "title": "Kherson Dnipro District Shelling & Psychological Warfare",
-        "summary": "Russian forces conducted a targeted shelling of a medical facility in Kherson's Dnipro district, causing casualties and damage, while simultaneously engaging in psychological operations to demoralize Ukrainian defenders. This combined approach aimed to degrade Ukrainian medical infrastructure and sow fear among personnel, though specific tactical gains remain unclear from these reports.",
+        "title": "Kherson Dnipro District Shelling & Disarray",
+        "summary": "Russian forces conducted indirect fire targeting a medical facility in Kherson, causing civilian casualties and infrastructure damage. Concurrently, reports indicate a Russian soldier in a state of panic and hiding, suggesting poor morale and disorganized rear-area security.",
         "primary_tactic": "ATTRITION",
         "tactic_color": "#f59e0b",
         "intensity": 5.0,
@@ -867,17 +867,17 @@
         ]
       },
       "meta": {
-        "title": "Lyman Forest Infiltration and Counter-Attrition",
-        "summary": "Russian forces conducted infiltration operations through forested terrain around Svjhatohirsk, Yarova, and Oleksandrivka, exploiting the area's cover to advance positions. Ukrainian units responded with aggressive counter-attrition tactics, inflicting significant casualties and capturing prisoners while declaring intent to hunt down infiltrators across all terrain types.",
-        "primary_tactic": "ATTRITION",
-        "tactic_color": "#f59e0b",
+        "title": "Tactical Activity Cluster (6 events)",
+        "summary": "Multiple correlated military events detected in this area.",
+        "primary_tactic": "UNKNOWN",
+        "tactic_color": "#94a3b8",
         "intensity": 5.0,
         "event_count": 6,
         "date_range": [
           "2026-01-09",
           "2026-01-10"
         ],
-        "strategic_context": "DEFENSIVE_HOLD"
+        "strategic_context": "UNKNOWN"
       },
       "event_ids": [
         "fus_677821_1768864485",
@@ -1162,8 +1162,8 @@
         ]
       },
       "meta": {
-        "title": "Redkino Precision Strike",
-        "summary": "Ukrainian forces conducted a long-range UAV strike on a Russian defense industry facility in Redkino, Tver region, targeting production of missile fuel components to degrade enemy offensive capabilities. The attack successfully ignited a large-scale fire, disrupting critical military supply chains deep within Russian territory.",
+        "title": "Redkino Chemical Plant Strike",
+        "summary": "Ukrainian forces conducted a long-range UAV strike against a Russian defense industry facility producing critical missile fuel components, successfully igniting a major fire and disrupting a key logistics node for Russian cruise missile production. The operation demonstrates an extension of Ukraine's capacity to project force and shape the strategic depth of the conflict.",
         "primary_tactic": "LOGISTICS",
         "tactic_color": "#22c55e",
         "intensity": 5.0,
@@ -1454,8 +1454,8 @@
         ]
       },
       "meta": {
-        "title": "Nighttime Drone Strike on Yahotyn Logistics Hub",
-        "summary": "Russian forces conducted a coordinated drone attack targeting the Roshen warehouse logistics center in Yahotyn, Kyiv region, aiming to disrupt Ukrainian supply chains and industrial capacity. The operation successfully ignited a major fire at the facility, requiring emergency response teams to contain the damage.",
+        "title": "Night Strike on Yahotyn Logistics Hub",
+        "summary": "Russian forces conducted a precision drone strike targeting the Roshen corporation's key warehouse and logistics center in Yahotyn, Kyiv region, with the strategic intent of degrading Ukrainian commercial and potential military supply chains. The operation successfully ignited a major fire, causing significant material damage and forcing a large-scale emergency response.",
         "primary_tactic": "LOGISTICS",
         "tactic_color": "#22c55e",
         "intensity": 5.0,
@@ -1746,10 +1746,10 @@
         ]
       },
       "meta": {
-        "title": "Winter Missile and Drone Barrage Against Western Ukraine",
-        "summary": "Russia launched a coordinated large-scale attack targeting Ukraine's power grid infrastructure across multiple western regions, employing a mix of cruise missiles and drones with countermeasure tactics to degrade Ukrainian air defenses. The operation caused significant damage to electrical substations and civilian structures, demonstrating a systematic effort to disrupt energy supplies and civilian life.",
-        "primary_tactic": "ATTRITION",
-        "tactic_color": "#f59e0b",
+        "title": "Coordinated Strike on Western Ukrainian Infrastructure",
+        "summary": "Russia launched a large-scale, coordinated missile and drone attack targeting Ukraine's western power grid and critical infrastructure, aiming to degrade energy generation and distribution capabilities during winter. The attack employed advanced missile countermeasures and caused widespread damage across multiple regions, indicating a successful shaping operation to strain Ukrainian logistics and civilian morale.",
+        "primary_tactic": "SHAPING",
+        "tactic_color": "#8b5cf6",
         "intensity": 5.0,
         "event_count": 3,
         "date_range": [
@@ -2055,9 +2055,9 @@
       },
       "meta": {
         "title": "Lyman-Kramatorsk Shaping Offensive",
-        "summary": "Russian forces executed a coordinated multi-axis offensive to envelop Ukrainian positions around Lyman while simultaneously advancing toward Kramatorsk and Druzkovka, supported by precision strikes on Slovyansk to disrupt rear areas. This combined arms pressure forced Ukrainian partial withdrawals from threatened encirclements west of Chasiv Yar, achieving tactical gains across the front.",
-        "primary_tactic": "MANOEUVRE",
-        "tactic_color": "#3b82f6",
+        "summary": "Russian forces are conducting a multi-pronged offensive to envelop Lyman and pressure Ukrainian defenses west of Chasiv Yar, while simultaneously using heavy ordnance to degrade rear-area logistics and morale in Slovyansk. The operation aims to create tactical encirclements and force Ukrainian withdrawals by applying pressure across a broad front and striking key urban nodes.",
+        "primary_tactic": "SHAPING",
+        "tactic_color": "#8b5cf6",
         "intensity": 5.0,
         "event_count": 7,
         "date_range": [
@@ -2350,8 +2350,8 @@
         ]
       },
       "meta": {
-        "title": "Kupyansk Sector Infiltration and Containment",
-        "summary": "Russian forces conducted probing infiltrations and DRG activities north of Kupyansk while Ukrainian forces maintained airstrikes and careful clearing operations against blocked Russian elements. The outcome suggests Ukrainian defensive containment succeeded in preventing Russian restoration of access to Kupyansk despite continued infiltration attempts.",
+        "title": "Kupyansk Urban Clearing Operation",
+        "summary": "Ukrainian forces conducted a methodical clearing operation in Kupyansk, employing airstrikes and FPV drones to target and isolate Russian elements attempting infiltration and assaults. The operation successfully neutralized infiltration corridors and maintained pressure, preventing Russian forces from restoring access to the city.",
         "primary_tactic": "ATTRITION",
         "tactic_color": "#f59e0b",
         "intensity": 5.0,
@@ -2646,8 +2646,8 @@
         ]
       },
       "meta": {
-        "title": "Donetsk Region Disruption and Raid Operations",
-        "summary": "Ukrainian forces executed coordinated shaping operations targeting Russian logistics and command in occupied Donetsk, disrupting energy infrastructure with drone strikes and conducting special forces raids to degrade enemy observation and morale. These actions aimed to weaken Russian operational capabilities and force surrenders in harsh winter conditions.",
+        "title": "Winter Disruption in Occupied Donetsk",
+        "summary": "Ukrainian forces executed coordinated shaping operations targeting rear-area energy infrastructure and forward Russian logistics and observation posts to degrade enemy capabilities and morale. The combined effects of drone strikes on the power grid and special forces raids in harsh winter conditions successfully disrupted Russian command and sustainment.",
         "primary_tactic": "SHAPING",
         "tactic_color": "#8b5cf6",
         "intensity": 5.0,
@@ -2946,8 +2946,8 @@
         ]
       },
       "meta": {
-        "title": "Kyiv Missile Barrage",
-        "summary": "Russia launched a coordinated missile and drone attack on Kyiv, targeting residential areas and causing significant civilian casualties and infrastructure damage. The operation aimed to terrorize the population and degrade Ukrainian morale, resulting in multiple strikes across the city with minimal immediate military gain.",
+        "title": "Kyiv Urban Terror Bombardment",
+        "summary": "Russian forces conducted a large-scale, multi-wave missile and drone strike targeting residential infrastructure in Kyiv, aiming to inflict civilian casualties and terrorize the population. The operation resulted in significant civilian deaths, injuries, and the destruction of residential buildings, including a second strike targeting first responders.",
         "primary_tactic": "ATTRITION",
         "tactic_color": "#f59e0b",
         "intensity": 5.0,
@@ -3298,10 +3298,10 @@
         ]
       },
       "meta": {
-        "title": "Black Sea Maritime Interdiction Campaign",
-        "summary": "Ukraine conducted coordinated UAV strikes against civilian oil tankers in the Black Sea to disrupt Russian energy exports and maritime logistics, prompting international concern and revealing Russian countermeasures including GPS spoofing to protect their shadow fleet.",
-        "primary_tactic": "LOGISTICS",
-        "tactic_color": "#22c55e",
+        "title": "Black Sea Tanker Drone Campaign",
+        "summary": "Ukraine conducted a sustained UAV campaign targeting civilian oil tankers in the Black Sea to disrupt Russian energy exports and maritime logistics, damaging multiple vessels and prompting international concern over regional security and oil transit. The operation was complemented by Russian electronic warfare efforts using GPS spoofing to conceal the movements of its sanctioned 'shadow fleet'.",
+        "primary_tactic": "SHAPING",
+        "tactic_color": "#8b5cf6",
         "intensity": 5.0,
         "event_count": 4,
         "date_range": [
@@ -3599,8 +3599,8 @@
         ]
       },
       "meta": {
-        "title": "Kharkiv Air Defense and Black Sea Infrastructure Development",
-        "summary": "Ukraine demonstrates improved air defense capabilities in Kharkiv by successfully intercepting a ballistic missile for the first time, while the EU plans to establish a maritime security hub in Constanta to enhance regional military presence. This represents a dual approach of strengthening defensive systems and building long-term logistical infrastructure to counter Russian threats.",
+        "title": "Kharkiv Air Defense & Black Sea Infrastructure Shaping",
+        "summary": "Ukrainian forces demonstrated a significant improvement in air defense capabilities by intercepting a ballistic missile over Kharkiv for the first time, while NATO/EU allies moved to solidify long-term logistical and strategic presence in the Black Sea region by planning a new security hub in Constanța, Romania. These events represent a dual-track effort to degrade Russian strike options in the north and secure allied lines of communication in the south.",
         "primary_tactic": "SHAPING",
         "tactic_color": "#8b5cf6",
         "intensity": 5.0,
@@ -3609,7 +3609,7 @@
           "2026-01-09",
           "2026-01-11"
         ],
-        "strategic_context": "DEFENSIVE_HOLD"
+        "strategic_context": "SHAPING_OPERATION"
       },
       "event_ids": [
         "fus_677955_1768864487",
@@ -3902,8 +3902,8 @@
         ]
       },
       "meta": {
-        "title": "Belgorod Energy Infrastructure Strike",
-        "summary": "Ukrainian forces conducted a precision missile strike targeting critical energy infrastructure in Russia's Belgorod region, destroying transformers, pipelines, and substations to disrupt civilian services and logistical support. The attack left over 550,000 residents without electricity, heating, or water, forcing Russian emergency services to prioritize restoration efforts over military operations.",
+        "title": "HIMARS Strike on Belgorod Energy Grid",
+        "summary": "Ukrainian forces conducted a precision long-range strike against critical energy infrastructure in Russia's Belgorod Oblast, targeting a combined heat and power plant and a major substation to degrade civilian and potential military support capacity. The attack successfully disrupted power, water, and heating for over half a million residents, forcing Russian emergency services into a large-scale crisis response.",
         "primary_tactic": "SHAPING",
         "tactic_color": "#8b5cf6",
         "intensity": 5.0,
@@ -4199,10 +4199,10 @@
         ]
       },
       "meta": {
-        "title": "Taman Port Sabotage Operation",
-        "summary": "Ukrainian forces conducted a coordinated sabotage attack on the Volna oil terminal in Taman, Russia, targeting fuel storage tanks and pipelines to disrupt Russian logistics and energy exports. The operation successfully ignited multiple tanks, causing significant damage and casualties while demonstrating Ukraine's ability to strike deep behind enemy lines.",
-        "primary_tactic": "LOGISTICS",
-        "tactic_color": "#22c55e",
+        "title": "Taman Terminal Sabotage",
+        "summary": "Ukrainian special forces or partisans conducted a coordinated sabotage operation against the Taman oil terminal in Russia's Krasnodar Krai, targeting storage tanks and loading infrastructure during a fuel transfer operation. The attack resulted in significant material damage, multiple fires, and casualties, degrading Russian fuel logistics.",
+        "primary_tactic": "PARTISAN_ACTIVITY",
+        "tactic_color": "#94a3b8",
         "intensity": 5.0,
         "event_count": 3,
         "date_range": [
@@ -4499,8 +4499,8 @@
         ]
       },
       "meta": {
-        "title": "Winter Defense of Chasiv Yar",
-        "summary": "Ukrainian forces are conducting a defensive hold operation in the Chasiv Yar area, utilizing winter conditions and terrain to disrupt Russian consolidation attempts near Bakhmut. The 24th Mechanized Brigade and other units are employing sniper and small unit tactics to inflict attrition on advancing Russian elements while maintaining control of key urban sectors.",
+        "title": "Chasiv Yar Defense & Bakhmut Consolidation",
+        "summary": "Ukrainian forces are conducting a deliberate defense in Chasiv Yar, leveraging urban terrain and winter conditions to inflict attrition on Russian assault groups, while Russian forces consolidate recent minor gains in the southern Bakhmut sector around Maiske and Markove.",
         "primary_tactic": "ATTRITION",
         "tactic_color": "#f59e0b",
         "intensity": 5.0,
@@ -4801,8 +4801,8 @@
         ]
       },
       "meta": {
-        "title": "Deep Strike Operation in Penza and Crimea",
-        "summary": "Ukraine executed coordinated long-range drone strikes targeting critical Russian fuel infrastructure in Penza, causing sustained damage to a key oil depot, while simultaneously degrading radar capabilities in Crimea. This shaping operation aimed to disrupt Russian logistics and command systems ahead of potential defensive actions at the front.",
+        "title": "Deep Strike on Penza Fuel Infrastructure",
+        "summary": "Ukrainian forces executed a coordinated long-range drone strike against the Penzanefteprodukt oil depot in Penza, Russia, successfully igniting a major fire that burned for multiple days and crippling a key logistical node. The operation was part of a broader shaping campaign that simultaneously targeted a radar station in Crimea and troop concentrations in Donetsk and Belgorod.",
         "primary_tactic": "LOGISTICS",
         "tactic_color": "#22c55e",
         "intensity": 5.0,
@@ -5095,10 +5095,10 @@
         ]
       },
       "meta": {
-        "title": "Black Sea and Odesa Maritime & Infrastructure Strikes",
-        "summary": "Russia conducted a coordinated campaign targeting civilian maritime traffic and industrial infrastructure in the Black Sea region, particularly near Odesa, to disrupt Ukrainian logistics and economic resilience. This was followed by expanded drone attacks on multiple cities, indicating a broader effort to degrade Ukraine's defensive and industrial capabilities through sustained aerial and naval pressure.",
-        "primary_tactic": "ATTRITION",
-        "tactic_color": "#f59e0b",
+        "title": "Black Sea Maritime & Odesa Infrastructure Campaign",
+        "summary": "Russian forces conducted a coordinated campaign targeting civilian maritime traffic near Odesa and striking industrial infrastructure in the port city, followed by drone attacks across multiple regions. This represents a strategic effort to degrade Ukraine's economic and logistical hubs while applying pressure across a broad front.",
+        "primary_tactic": "SHAPING",
+        "tactic_color": "#8b5cf6",
         "intensity": 5.0,
         "event_count": 5,
         "date_range": [
@@ -5398,7 +5398,7 @@
       },
       "meta": {
         "title": "Partisan Sabotage in Moscow Region & Venezuelan Air Defense Degradation",
-        "summary": "Ukrainian partisans conducted a sabotage operation against a key Russian air defense communications node in the Moscow region, while simultaneous reports indicate systemic failures and losses of Russian-made air defense systems in Venezuela, suggesting a coordinated effort to degrade Russian air defense capabilities globally. These actions appear aimed at disrupting command and control while exposing vulnerabilities in exported Russian military hardware.",
+        "summary": "Ukrainian partisans conducted a precision sabotage operation against a key Russian air defense command node in Moscow, degrading C2 capabilities. Concurrently, intelligence revealed systemic failures and losses of Russian-made air defense systems in Venezuela, exposing vulnerabilities in exported equipment and operational procedures.",
         "primary_tactic": "SHAPING",
         "tactic_color": "#8b5cf6",
         "intensity": 5.0,
@@ -5689,8 +5689,8 @@
         ]
       },
       "meta": {
-        "title": "Winter Strikes on Kryvyi Rih and Kyiv",
-        "summary": "Russian forces conducted a coordinated, multi-day aerial campaign targeting critical energy infrastructure in Kryvyi Rih and Kyiv, aiming to degrade Ukraine's power grid and civilian morale during harsh winter conditions. The sustained attacks have caused widespread blackouts, fires, and significant disruption to electricity restoration efforts, compounding logistical and humanitarian challenges.",
+        "title": "Winter Strikes on Kryvyi Rih",
+        "summary": "Russian forces conducted a sustained, multi-day drone campaign targeting critical energy infrastructure in Kryvyi Rih, aiming to degrade civilian morale and industrial capacity by inducing widespread blackouts during severe winter conditions. The attacks successfully caused significant power outages and fires, overwhelming repair efforts and creating a protracted humanitarian and logistical crisis.",
         "primary_tactic": "ATTRITION",
         "tactic_color": "#f59e0b",
         "intensity": 5.0,
@@ -6286,7 +6286,7 @@
       },
       "meta": {
         "title": "Drone Campaign Against Mariupol's Critical Infrastructure",
-        "summary": "Ukrainian forces conducted a coordinated drone campaign targeting critical power infrastructure in occupied Mariupol and Donetsk region, disrupting energy supply to military-industrial facilities and degrading Russian air defense capabilities through precision strikes. The operation successfully disabled key substations, destroyed a missile/artillery depot, and eliminated multiple SAM/radar systems, demonstrating a systematic approach to weakening Russian logistical and defensive networks.",
+        "summary": "Ukrainian forces conducted a coordinated drone campaign targeting critical power infrastructure in occupied Mariupol and Donetsk region, disrupting energy supply to military-industrial facilities and degrading Russian air defense capabilities through precision strikes on SAM systems. The operation successfully created widespread blackouts, damaged key substations and warehouses, and systematically weakened regional air defense networks over a multi-day period.",
         "primary_tactic": "SHAPING",
         "tactic_color": "#8b5cf6",
         "intensity": 5.0,
@@ -6580,7 +6580,7 @@
       },
       "meta": {
         "title": "Shahed Drone Strike on Dnipro",
-        "summary": "Russian forces conducted a coordinated drone strike targeting civilian infrastructure in Dnipro, causing widespread power outages and structural damage. The attack disrupted electricity for over 50,000 residents and damaged multiple residential buildings, indicating a deliberate effort to degrade Ukrainian civilian morale and logistical stability.",
+        "summary": "Russian forces conducted a coordinated drone strike targeting civilian infrastructure in Dnipro, using Shahed drones to damage residential buildings and disrupt electricity supply for over 50,000 people. The attack caused significant collateral damage to high-rise buildings and vehicles while achieving temporary disruption of essential services in the city.",
         "primary_tactic": "ATTRITION",
         "tactic_color": "#f59e0b",
         "intensity": 5.0,
@@ -6891,8 +6891,8 @@
         ]
       },
       "meta": {
-        "title": "Ballistic Strike on Lviv Infrastructure",
-        "summary": "Russian forces conducted a high-speed ballistic missile strike targeting critical infrastructure in Lviv, likely to degrade Ukrainian energy and logistical capabilities deep in western Ukraine. The attack prompted urgent international diplomatic responses from Ukraine, highlighting its strategic impact beyond immediate tactical damage.",
+        "title": "Oreshnik Missile Strike on Lviv",
+        "summary": "Russian forces conducted a high-speed ballistic missile strike targeting infrastructure in Lviv, likely to degrade Ukrainian energy and logistical capabilities while testing Western responses. The attack prompted urgent diplomatic actions from Ukraine, including calls for UN and NATO meetings, indicating its strategic impact beyond immediate tactical damage.",
         "primary_tactic": "ATTRITION",
         "tactic_color": "#f59e0b",
         "intensity": 5.0,
@@ -7219,7 +7219,7 @@
       },
       "meta": {
         "title": "Kapustin Yar Missile Strike on Lviv",
-        "summary": "Russian forces launched a high-value Oreshnik missile from the Kapustin Yar test site, targeting the western Ukrainian city of Lviv in a long-range precision strike. The operation demonstrates Russia's continued capability to project force deep into Ukrainian territory using expensive, specialized munitions.",
+        "summary": "Russian forces launched a high-value Oreshnik missile from the Kapustin Yar test site, targeting Lviv in western Ukraine to degrade Ukrainian infrastructure and morale. The strike represents a long-range precision attack aimed at disrupting rear areas and demonstrating strategic reach.",
         "primary_tactic": "ATTRITION",
         "tactic_color": "#f59e0b",
         "intensity": 5.0,
@@ -7803,10 +7803,10 @@
         ]
       },
       "meta": {
-        "title": "Caspian Sea Drone and Sabotage Campaign",
-        "summary": "Ukrainian forces executed a coordinated campaign targeting Russian energy infrastructure and suspected Iranian arms shipments in the Caspian Sea, aiming to disrupt Russian logistics and economic resources. The operation successfully damaged Lukoil drilling platforms and likely sank an Iranian cargo vessel, demonstrating an expansion of Ukrainian reach into maritime domains.",
-        "primary_tactic": "LOGISTICS",
-        "tactic_color": "#22c55e",
+        "title": "Caspian Sea Drone & Sabotage Campaign",
+        "summary": "Ukrainian forces executed a coordinated shaping operation targeting Russian energy infrastructure and suspected arms supply routes in the Caspian Sea, culminating in the sinking of an Iranian cargo ship used for weapons transport. This campaign aimed to disrupt Russian logistics and economic assets, demonstrating Ukraine's extended reach and asymmetric capabilities in a peripheral theater.",
+        "primary_tactic": "SHAPING",
+        "tactic_color": "#8b5cf6",
         "intensity": 5.0,
         "event_count": 3,
         "date_range": [
@@ -8096,7 +8096,7 @@
       },
       "meta": {
         "title": "Deep Strike Campaign in Rostov Region",
-        "summary": "Ukrainian forces conducted a coordinated deep-strike operation targeting critical Russian energy and military infrastructure in the Rostov region, aiming to degrade logistical support and air capabilities. The repeated attacks on the Novocherkassk power plant and Primorsko-Akhtarsk airbase indicate a sustained effort to disrupt Russian operational sustainment in southern Russia.",
+        "summary": "Ukrainian forces conducted a coordinated deep-strike operation targeting critical Russian energy and military infrastructure in the Rostov region, aiming to degrade logistical support and air capabilities. The repeated attacks on the Novocherkassk power plant and Primorsko-Akhtarsk airbase indicate a sustained effort to disrupt Russian operational stability in southern Russia.",
         "primary_tactic": "SHAPING",
         "tactic_color": "#8b5cf6",
         "intensity": 5.0,
@@ -8388,7 +8388,7 @@
       },
       "meta": {
         "title": "Southern Flank Push in Eastern Zaporizhzhia",
-        "summary": "Russian forces resumed offensive operations on the southern flank of the Eastern Zaporizhzhia direction following the capture of Huliaipole and subsequent regrouping, exploiting Ukrainian units weakened by failed counterattacks near Dobropillia. The advance includes river crossings and expansion of control zones, indicating a coordinated push to gain territory westward.",
+        "summary": "Russian forces resumed offensive operations on the southern flank of the Eastern Zaporizhzhia direction following the capture of Huliaipole and subsequent regrouping, exploiting Ukrainian units weakened by failed counterattacks near Dobropillia. The advance includes river crossings and expansion of control zones, indicating a coordinated effort to push westward against diminished Ukrainian resistance.",
         "primary_tactic": "MANOEUVRE",
         "tactic_color": "#3b82f6",
         "intensity": 5.0,

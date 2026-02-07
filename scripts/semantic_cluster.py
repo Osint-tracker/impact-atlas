@@ -416,7 +416,7 @@ Rules:
         Main orchestrator: Load events, cluster, generate narratives, save output.
         """
         print("\n" + "="*60)
-        print("🚀 NARRATIVE ENGINE - Starting Analysis")
+        print("NARRATIVE ENGINE - Starting Analysis")
         print("="*60)
         
         # Step 1: Load events
@@ -480,7 +480,7 @@ Rules:
             }
             
             narratives.append(narrative)
-            print(f"   ✅ '{narrative_meta['title']}' ({tactic})")
+            print(f"   - '{narrative_meta['title']}' ({tactic})")
             
         # Step 4: Save output
         output = {
@@ -491,7 +491,7 @@ Rules:
         self._save_output(output)
         
         print("\n" + "="*60)
-        print(f"✅ COMPLETE: Generated {len(narratives)} strategic narratives")
+        print(f"COMPLETE: Generated {len(narratives)} strategic narratives")
         print("="*60)
         
         return output

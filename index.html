@@ -532,7 +532,7 @@
               <h3>External Sources</h3>
               <button onclick="openExternalMap()" class="action-btn"
                 style="width:100%; padding:10px; background:#444; color:white; border:1px solid #666; cursor:pointer;">
-                🗺️ Open Playfra Map
+                Open Playfra Map
               </button>
               <small style="color:#aaa; font-size:0.8em;">Data curated by @Playfra</small>
             </div>
@@ -658,6 +658,14 @@
                 ORBAT Units (Live)
               </span>
               <input type="checkbox" onchange="toggleTechLayer('units', this)">
+              <div class="tech-switch"></div>
+            </label>
+
+            <label class="tech-toggle-row">
+              <span class="tech-toggle-label">
+                Strategic Context (AI)
+              </span>
+              <input type="checkbox" onchange="toggleTechLayer('narratives', this)">
               <div class="tech-switch"></div>
             </label>
 
@@ -1032,210 +1040,209 @@
             </div>
 
           </div>
+        </div>
+      </div>
 
+      <!-- UNIT DOSSIER MODAL -->
+      <div id="unitModal" class="modal-overlay" onclick="closeUnitModal(event)">
+        <div class="modal-content" style="max-width: 800px; overflow: hidden; padding: 0;">
+          <span class="close-modal" onclick="closeUnitModal(event)" style="z-index: 10; margin: 10px;">&times;</span>
 
-
-          <!-- UNIT DOSSIER MODAL -->
-          <div id="unitModal" class="modal-overlay" onclick="closeUnitModal(event)">
-            <div class="modal-content" style="max-width: 800px; overflow: hidden; padding: 0;">
-              <span class="close-modal" onclick="closeUnitModal(event)"
-                style="z-index: 10; margin: 10px;">&times;</span>
-
-              <div class="unit-dossier-header" id="udHeader">
-                <div id="udFlagContainer"></div>
-                <div class="ud-title-group">
-                  <h2 id="udTitle">Unit Name</h2>
-                  <div class="ud-subtitle">
-                    <span id="udFaction">Faction</span> •
-                    <span id="udEchelon">Echelon</span>
-                    <span id="udTypeBadge" class="ud-badge">Type</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="ud-content-grid">
-
-                <!-- Left: Metadata & Stats -->
-                <div class="ud-left-col" style="display: flex; flex-direction: column; gap: 15px;">
-                  <div class="ud-panel">
-                    <h4 style="margin:0 0 10px 0; color:#cbd5e1; font-size:0.9rem;">OPERATIONAL PROFILE</h4>
-                    <div class="ud-stat-row">
-                      <span class="ud-stat-label">Branch</span>
-                      <span class="ud-stat-value" id="udBranch">Unknown</span>
-                    </div>
-                    <div class="ud-stat-row">
-                      <span class="ud-stat-label">Garrison</span>
-                      <span class="ud-stat-value" id="udGarrison">N/A</span>
-                    </div>
-                    <div class="ud-stat-row">
-                      <span class="ud-stat-label">Status</span>
-                      <span class="ud-stat-value" id="udStatus">ACTIVE</span>
-                    </div>
-                    <div class="ud-stat-row">
-                      <span class="ud-stat-label">Commander</span>
-                      <span class="ud-stat-value" id="udCommander">--</span>
-                    </div>
-                    <div class="ud-stat-row">
-                      <span class="ud-stat-label">Superior Unit</span>
-                      <span class="ud-stat-value" id="udSuperior">--</span>
-                    </div>
-                    <div class="ud-stat-row">
-                      <span class="ud-stat-label">District</span>
-                      <span class="ud-stat-value" id="udDistrict">--</span>
-                    </div>
-                  </div>
-
-                  <div class="ud-panel">
-                    <h4 style="margin:0 0 10px 0; color:#cbd5e1; font-size:0.9rem;">ACTIVITY METRICS</h4>
-                    <div class="ud-stat-row">
-                      <span class="ud-stat-label">Engagement Freq (30d)</span>
-                      <span class="ud-stat-value" id="udEngFreq">--</span>
-                    </div>
-                    <div class="ud-stat-row">
-                      <span class="ud-stat-label">Mentions</span>
-                      <span class="ud-stat-value" id="udMentions">0</span>
-                    </div>
-                    <div class="ud-stat-row">
-                      <span class="ud-stat-label">Avg Intensity</span>
-                      <span class="ud-stat-value" id="udAvgTie">--</span>
-                    </div>
-                    <div class="ud-stat-row">
-                      <span class="ud-stat-label">Primary Tactic</span>
-                      <span class="ud-stat-value" id="udTactic" style="font-size:0.75rem;">--</span>
-                    </div>
-
-                    <h5 style="margin:10px 0 5px 0; color:#64748b; font-size:0.75rem;">ACTIVITY TREND</h5>
-                    <div class="timeline-mini-chart" id="udSparkline"
-                      style="display:flex; align-items:end; gap:2px; padding:5px;">
-                      <!-- Spans (bars) injected by JS -->
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Right: Related Events -->
-                <div class="ud-right-col">
-                  <div class="ud-panel" style="height: 100%; display: flex; flex-direction: column;">
-                    <h4 style="margin:0 0 10px 0; color:#cbd5e1; font-size:0.9rem;">RECENT ENGAGEMENTS</h4>
-                    <div id="udEventsList" class="ud-events-list">
-                      <!-- Event Items -->
-                      <div class="ud-event-item">Loading events...</div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-            </div>
-          </div>
-
-          <!-- REPORT CONFIGURATION MODAL -->
-          <div id="reportModal" class="modal-overlay" onclick="closeReportModal(event)">
-            <div class="modal-content" style="max-width: 500px;">
-              <span class="close-modal" onclick="closeReportModal(event)">&times;</span>
-              <div class="modal-header">
-                <h3><i class="fa-solid fa-file-contract"></i> GENERATE INTELLIGENCE REPORT</h3>
-              </div>
-              <div style="padding: 20px 0; color: #cbd5e1;">
-                <p style="margin-bottom: 20px;">Select the time range for the tactical report.</p>
-
-                <label style="display:block; margin-bottom:8px; font-weight:bold; color:#94a3b8;">REPORT START
-                  DATE</label>
-                <input type="date" id="reportStartDate" class="clean-input" style="width:100%; margin-bottom:20px;">
-
-                <label style="display:block; margin-bottom:8px; font-weight:bold; color:#94a3b8;">REPORT END
-                  DATE</label>
-                <div style="display:flex; gap:10px; align-items:center; margin-bottom:20px;">
-                  <input type="date" id="reportEndDate" class="clean-input" style="flex:1;">
-                  <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
-                    <input type="checkbox" id="reportLiveToggle" onchange="toggleReportLiveDate()">
-                    <span style="font-size:0.9rem;">Live (Current)</span>
-                  </label>
-                </div>
-
-                <button onclick="generateReport()" class="action-btn primary"
-                  style="width:100%; justify-content:center; padding: 12px;">
-                  <i class="fa-solid fa-bolt"></i> GENERATE DOSSIER
-                </button>
+          <div class="unit-dossier-header" id="udHeader">
+            <div id="udFlagContainer"></div>
+            <div class="ud-title-group">
+              <h2 id="udTitle">Unit Name</h2>
+              <div class="ud-subtitle">
+                <span id="udFaction">Faction</span> •
+                <span id="udEchelon">Echelon</span>
+                <span id="udTypeBadge" class="ud-badge">Type</span>
               </div>
             </div>
           </div>
 
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+          <div class="ud-content-grid">
 
-          <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-          <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+            <!-- Left: Metadata & Stats -->
+            <div class="ud-left-col" style="display: flex; flex-direction: column; gap: 15px;">
+              <div class="ud-panel">
+                <h4 style="margin:0 0 10px 0; color:#cbd5e1; font-size:0.9rem;">OPERATIONAL PROFILE</h4>
+                <div class="ud-stat-row">
+                  <span class="ud-stat-label">Branch</span>
+                  <span class="ud-stat-value" id="udBranch">Unknown</span>
+                </div>
+                <div class="ud-stat-row">
+                  <span class="ud-stat-label">Garrison</span>
+                  <span class="ud-stat-value" id="udGarrison">N/A</span>
+                </div>
+                <div class="ud-stat-row">
+                  <span class="ud-stat-label">Status</span>
+                  <span class="ud-stat-value" id="udStatus">ACTIVE</span>
+                </div>
+                <div class="ud-stat-row">
+                  <span class="ud-stat-label">Commander</span>
+                  <span class="ud-stat-value" id="udCommander">--</span>
+                </div>
+                <div class="ud-stat-row">
+                  <span class="ud-stat-label">Superior Unit</span>
+                  <span class="ud-stat-value" id="udSuperior">--</span>
+                </div>
+                <div class="ud-stat-row">
+                  <span class="ud-stat-label">District</span>
+                  <span class="ud-stat-value" id="udDistrict">--</span>
+                </div>
+              </div>
 
-          <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+              <div class="ud-panel">
+                <h4 style="margin:0 0 10px 0; color:#cbd5e1; font-size:0.9rem;">ACTIVITY METRICS</h4>
+                <div class="ud-stat-row">
+                  <span class="ud-stat-label">Engagement Freq (30d)</span>
+                  <span class="ud-stat-value" id="udEngFreq">--</span>
+                </div>
+                <div class="ud-stat-row">
+                  <span class="ud-stat-label">Mentions</span>
+                  <span class="ud-stat-value" id="udMentions">0</span>
+                </div>
+                <div class="ud-stat-row">
+                  <span class="ud-stat-label">Avg Intensity</span>
+                  <span class="ud-stat-value" id="udAvgTie">--</span>
+                </div>
+                <div class="ud-stat-row">
+                  <span class="ud-stat-label">Primary Tactic</span>
+                  <span class="ud-stat-value" id="udTactic" style="font-size:0.75rem;">--</span>
+                </div>
 
-          <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-          <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
+                <h5 style="margin:10px 0 5px 0; color:#64748b; font-size:0.75rem;">ACTIVITY TREND</h5>
+                <div class="timeline-mini-chart" id="udSparkline"
+                  style="display:flex; align-items:end; gap:2px; padding:5px;">
+                  <!-- Spans (bars) injected by JS -->
+                </div>
+              </div>
+            </div>
 
-          <script src="assets/js/charts.js"></script>
+            <!-- Right: Related Events -->
+            <div class="ud-right-col">
+              <div class="ud-panel" style="height: 100%; display: flex; flex-direction: column;">
+                <h4 style="margin:0 0 10px 0; color:#cbd5e1; font-size:0.9rem;">RECENT ENGAGEMENTS</h4>
+                <div id="udEventsList" class="ud-events-list">
+                  <!-- Event Items -->
+                  <div class="ud-event-item">Loading events...</div>
+                </div>
+              </div>
+            </div>
 
-          <script src="assets/js/map.js"></script>
-          <script src="assets/js/orbat_tracker.js"></script>
+          </div>
 
-          <script>
-            // --- UI SUPPORT FUNCTIONS ---
+        </div>
+      </div>
 
-            function closeModal(event) {
-              if (event.target.id === 'videoModal' || event.target.classList.contains('close-modal')) {
-                document.getElementById('videoModal').style.display = 'none';
-                const videoContainer = document.getElementById('modalVideoContainer');
-                if (videoContainer) videoContainer.innerHTML = '';
-              }
-            }
+      <!-- REPORT CONFIGURATION MODAL -->
+      <div id="reportModal" class="modal-overlay" onclick="closeReportModal(event)">
+        <div class="modal-content" style="max-width: 500px;">
+          <span class="close-modal" onclick="closeReportModal(event)">&times;</span>
+          <div class="modal-header">
+            <h3><i class="fa-solid fa-file-contract"></i> GENERATE INTELLIGENCE REPORT</h3>
+          </div>
+          <div style="padding: 20px 0; color: #cbd5e1;">
+            <p style="margin-bottom: 20px;">Select the time range for the tactical report.</p>
 
-            // closeUnitModal removed - using definition in map.js
+            <label style="display:block; margin-bottom:8px; font-weight:bold; color:#94a3b8;">REPORT START
+              DATE</label>
+            <input type="date" id="reportStartDate" class="clean-input" style="width:100%; margin-bottom:20px;">
 
-            function switchView(viewName, btn) {
-              // UI Button Update
-              document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-              btn.classList.add('active');
+            <label style="display:block; margin-bottom:8px; font-weight:bold; color:#94a3b8;">REPORT END
+              DATE</label>
+            <div style="display:flex; gap:10px; align-items:center; margin-bottom:20px;">
+              <input type="date" id="reportEndDate" class="clean-input" style="flex:1;">
+              <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+                <input type="checkbox" id="reportLiveToggle" onchange="toggleReportLiveDate()">
+                <span style="font-size:0.9rem;">Live (Current)</span>
+              </label>
+            </div>
 
-              // View Container Update
-              document.querySelectorAll('.view-container').forEach(c => c.classList.remove('active'));
-              document.getElementById('view-' + viewName).classList.add('active');
-            }
+            <button onclick="generateReport()" class="action-btn primary"
+              style="width:100%; justify-content:center; padding: 12px;">
+              <i class="fa-solid fa-bolt"></i> GENERATE DOSSIER
+            </button>
+          </div>
+        </div>
+      </div>
 
-            // --- SIDEBAR TAB LOGIC (NEW) ---
-            function switchSidebarTab(tabName) {
-              // 1. Reset buttons
-              document.querySelectorAll('.s-tab-btn').forEach(btn => btn.classList.remove('active'));
-              // 2. Activate clicked button
-              const activeBtn = document.querySelector(`.s-tab-btn[onclick="switchSidebarTab('${tabName}')"]`);
-              if (activeBtn) activeBtn.classList.add('active');
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 
-              // 3. Reset content
-              document.querySelectorAll('.s-tab-content').forEach(content => content.classList.remove('active'));
-              // 4. Show right content
-              document.getElementById(`sidebar-tab-${tabName}`).classList.add('active');
-            }
+      <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+      <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
-            // --- MAP SELECTION LOGIC (VISUAL ONLY FOR NOW) ---
-            function selectMapSource(card, sourceName) {
-              // Reset active cards
-              document.querySelectorAll('.map-layer-card').forEach(c => {
-                c.classList.remove('active');
-                const icon = c.querySelector('.status-dot');
-                icon.classList.remove('fa-circle-dot');
-                icon.classList.remove('fa-solid');
-                icon.classList.add('fa-circle');
-                icon.classList.add('fa-regular');
-              });
+      <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 
-              // Activate new card
-              card.classList.add('active');
-              const activeIcon = card.querySelector('.status-dot');
-              activeIcon.classList.remove('fa-circle');
-              activeIcon.classList.remove('fa-regular');
-              activeIcon.classList.add('fa-circle-dot');
-              activeIcon.classList.add('fa-solid');
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+      <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
 
-              console.log(`Map changed to: ${sourceName}`);
-              // TODO: Real Leaflet call to change GeoJSON
-            }
-          </script>
+      <script src="assets/js/charts.js"></script>
+
+      <script src="assets/js/map.js"></script>
+      <script src="assets/js/orbat_tracker.js"></script>
+
+      <script>
+        // --- UI SUPPORT FUNCTIONS ---
+
+        function closeModal(event) {
+          if (event.target.id === 'videoModal' || event.target.classList.contains('close-modal')) {
+            document.getElementById('videoModal').style.display = 'none';
+            const videoContainer = document.getElementById('modalVideoContainer');
+            if (videoContainer) videoContainer.innerHTML = '';
+          }
+        }
+
+        // closeUnitModal removed - using definition in map.js
+
+        function switchView(viewName, btn) {
+          // UI Button Update
+          document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          // View Container Update
+          document.querySelectorAll('.view-container').forEach(c => c.classList.remove('active'));
+          document.getElementById('view-' + viewName).classList.add('active');
+        }
+
+        // --- SIDEBAR TAB LOGIC (NEW) ---
+        function switchSidebarTab(tabName) {
+          // 1. Reset buttons
+          document.querySelectorAll('.s-tab-btn').forEach(btn => btn.classList.remove('active'));
+          // 2. Activate clicked button
+          const activeBtn = document.querySelector(`.s-tab-btn[onclick="switchSidebarTab('${tabName}')"]`);
+          if (activeBtn) activeBtn.classList.add('active');
+
+          // 3. Reset content
+          document.querySelectorAll('.s-tab-content').forEach(content => content.classList.remove('active'));
+          // 4. Show right content
+          document.getElementById(`sidebar-tab-${tabName}`).classList.add('active');
+        }
+
+        // --- MAP SELECTION LOGIC (VISUAL ONLY FOR NOW) ---
+        function selectMapSource(card, sourceName) {
+          // Reset active cards
+          document.querySelectorAll('.map-layer-card').forEach(c => {
+            c.classList.remove('active');
+            const icon = c.querySelector('.status-dot');
+            icon.classList.remove('fa-circle-dot');
+            icon.classList.remove('fa-solid');
+            icon.classList.add('fa-circle');
+            icon.classList.add('fa-regular');
+          });
+
+          // Activate new card
+          card.classList.add('active');
+          const activeIcon = card.querySelector('.status-dot');
+          activeIcon.classList.remove('fa-circle');
+          activeIcon.classList.remove('fa-regular');
+          activeIcon.classList.add('fa-circle-dot');
+          activeIcon.classList.add('fa-solid');
+
+          console.log(`Map changed to: ${sourceName}`);
+          // TODO: Real Leaflet call to change GeoJSON
+        }
+      </script>
 
 </body>
 
