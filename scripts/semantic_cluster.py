@@ -39,7 +39,7 @@ OUTPUT_PATH = os.path.join(BASE_DIR, '../assets/data/narratives.json')
 load_dotenv()
 
 # Clustering Parameters
-WINDOW_DAYS = 5                    # Rolling window for event ingestion
+WINDOW_DAYS = 30                   # Rolling window for event ingestion (increased for more data)
 DBSCAN_EPS = 0.15                  # ~15-20km in degrees
 DBSCAN_MIN_SAMPLES = 3             # Minimum events per cluster
 SEMANTIC_THRESHOLD = 0.75          # Cosine similarity threshold
@@ -99,10 +99,12 @@ class NarrativeEngine:
         """
         Load events from the last N days with required columns.
         Uses rolling window to avoid cutting off ongoing battles.
+        Embeddings are now optional to support spatial-only clustering.
         """
         cutoff_date = (datetime.now() - timedelta(days=window_days)).isoformat()
         
         cursor = self.conn.cursor()
+        # Note: embedding_vector is now optional (removed from WHERE clause)
         cursor.execute("""
             SELECT 
                 event_id,
@@ -112,8 +114,8 @@ class NarrativeEngine:
                 ai_report_json
             FROM unique_events 
             WHERE ai_analysis_status = 'COMPLETED'
-              AND embedding_vector IS NOT NULL
               AND last_seen_date >= ?
+              AND last_seen_date != 'NaT'
             ORDER BY last_seen_date DESC
         """, (cutoff_date,))
         
@@ -122,10 +124,17 @@ class NarrativeEngine:
         
         for row in rows:
             try:
-                # Parse embedding vector
-                embedding = json.loads(row['embedding_vector'])
-                if not embedding or len(embedding) < 100:
-                    continue
+                # Parse embedding vector (now optional)
+                embedding = None
+                if row['embedding_vector']:
+                    try:
+                        embedding = json.loads(row['embedding_vector'])
+                        if embedding and len(embedding) >= 100:
+                            embedding = np.array(embedding)
+                        else:
+                            embedding = None
+                    except:
+                        embedding = None
                     
                 # Parse AI report for coordinates and intensity
                 ai_data = {}
@@ -150,10 +159,13 @@ class NarrativeEngine:
                 if not lat or not lon or float(lat) == 0 or float(lon) == 0:
                     continue
                     
-                # Parse date
+                # Parse date (normalize to naive datetime for comparisons)
                 date_str = row['last_seen_date']
                 try:
                     event_date = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                    # Strip timezone to make it naive for consistent comparisons
+                    if event_date.tzinfo is not None:
+                        event_date = event_date.replace(tzinfo=None)
                 except:
                     event_date = datetime.now()
                 
@@ -164,7 +176,7 @@ class NarrativeEngine:
                     'date': event_date,
                     'date_str': date_str[:10] if date_str else 'Unknown',
                     'text': row['full_text_dossier'] or '',
-                    'embedding': np.array(embedding),
+                    'embedding': embedding,  # Can be None now
                     'intensity_score': float(intensity_score),
                     'classification': classification
                 })
@@ -174,6 +186,8 @@ class NarrativeEngine:
                 continue
                 
         print(f"[DATA] Loaded {len(events)} events from last {window_days} days")
+        emb_count = len([e for e in events if e['embedding'] is not None])
+        print(f"[DATA] Events with embeddings: {emb_count}/{len(events)}")
         return events
         
     def _compute_cosine_similarity(self, vec_a: np.ndarray, vec_b: np.ndarray) -> float:
@@ -238,10 +252,16 @@ class NarrativeEngine:
             if len(cluster_events) < DBSCAN_MIN_SAMPLES:
                 continue
                 
-            # Calculate mean pairwise semantic similarity
-            embeddings = [e['embedding'] for e in cluster_events]
-            similarities = []
+            # Calculate mean pairwise semantic similarity (only if embeddings exist)
+            embeddings = [e['embedding'] for e in cluster_events if e['embedding'] is not None]
             
+            # If no embeddings, skip semantic refinement and accept spatial cluster as-is
+            if len(embeddings) < 2:
+                final_clusters.append(cluster_events)
+                print(f"   Cluster {cluster_id}: {len(cluster_events)} events (spatial-only, no embeddings)")
+                continue
+                
+            similarities = []
             for i in range(len(embeddings)):
                 for j in range(i + 1, len(embeddings)):
                     sim = self._compute_cosine_similarity(embeddings[i], embeddings[j])
@@ -259,12 +279,16 @@ class NarrativeEngine:
                 centroid_embedding = np.mean(embeddings, axis=0)
                 coherent_events = [
                     e for e in cluster_events 
-                    if self._compute_cosine_similarity(e['embedding'], centroid_embedding) >= SEMANTIC_THRESHOLD
+                    if e['embedding'] is not None and self._compute_cosine_similarity(e['embedding'], centroid_embedding) >= SEMANTIC_THRESHOLD
                 ]
                 
+                # If no coherent events after filtering, keep original cluster (spatial-only)
                 if len(coherent_events) >= DBSCAN_MIN_SAMPLES:
                     final_clusters.append(coherent_events)
                     print(f"   Cluster {cluster_id}: Split -> {len(coherent_events)} coherent events")
+                else:
+                    final_clusters.append(cluster_events)
+                    print(f"   Cluster {cluster_id}: {len(cluster_events)} events (sem={mean_similarity:.2f}, kept despite low coherence)")
                     
         print(f"[CLUSTER] Final: {len(final_clusters)} narrative clusters")
         return final_clusters
