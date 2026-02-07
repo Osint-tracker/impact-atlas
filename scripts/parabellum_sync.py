@@ -138,19 +138,27 @@ def ensure_table(conn):
             last_seen_date DATETIME,
             status TEXT DEFAULT 'ACTIVE',
             source TEXT DEFAULT 'PARABELLUM',
-            linked_event_id TEXT
+            linked_event_id TEXT,
+            commander TEXT,
+            garrison TEXT,
+            district TEXT,
+            branch TEXT
         )
     """)
     
     # Add missing columns if they don't exist
-    try:
-        cursor.execute("ALTER TABLE units_registry ADD COLUMN echelon TEXT")
-    except:
-        pass
-    try:
-        cursor.execute("ALTER TABLE units_registry ADD COLUMN source TEXT DEFAULT 'MANUAL'")
-    except:
-        pass
+    for col_def in [
+        "echelon TEXT",
+        "source TEXT DEFAULT 'MANUAL'",
+        "commander TEXT",
+        "garrison TEXT", 
+        "district TEXT",
+        "branch TEXT"
+    ]:
+        try:
+            cursor.execute(f"ALTER TABLE units_registry ADD COLUMN {col_def}")
+        except:
+            pass
     
     conn.commit()
 
@@ -196,6 +204,13 @@ def sync_units(features, conn, dry_run=False):
         echelon = props.get('echelon')
         unit_type = props.get('unit_type')
         date_update = props.get('date_update')
+        
+        # Extract additional enrichment fields
+        commander = props.get('commander')
+        garrison = props.get('garrison')
+        district = props.get('district_of_origin')
+        branch = props.get('branch')
+        subordination = props.get('unit_superior')
         
         # Normalize
         faction_code = normalize_faction(faction_raw)
@@ -243,15 +258,22 @@ def sync_units(features, conn, dry_run=False):
             cursor.execute("""
                 INSERT INTO units_registry 
                     (unit_id, display_name, faction, type, echelon, 
-                     last_seen_lat, last_seen_lon, last_seen_date, source, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'PARABELLUM', 'ACTIVE')
+                     last_seen_lat, last_seen_lon, last_seen_date, source, status,
+                     commander, garrison, district, branch, subordination)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'PARABELLUM', 'ACTIVE', ?, ?, ?, ?, ?)
                 ON CONFLICT(unit_id) DO UPDATE SET
                     display_name = excluded.display_name,
                     last_seen_lat = excluded.last_seen_lat,
                     last_seen_lon = excluded.last_seen_lon,
                     last_seen_date = excluded.last_seen_date,
-                    source = 'PARABELLUM'
-            """, (unit_id, unit_name, faction_code, type_code, echelon, lat, lon, last_seen.isoformat()))
+                    source = 'PARABELLUM',
+                    commander = COALESCE(excluded.commander, units_registry.commander),
+                    garrison = COALESCE(excluded.garrison, units_registry.garrison),
+                    district = COALESCE(excluded.district, units_registry.district),
+                    branch = COALESCE(excluded.branch, units_registry.branch),
+                    subordination = COALESCE(excluded.subordination, units_registry.subordination)
+            """, (unit_id, unit_name, faction_code, type_code, echelon, lat, lon, last_seen.isoformat(),
+                  commander, garrison, district, branch, subordination))
             
             if cursor.rowcount > 0:
                 stats['updated'] += 1

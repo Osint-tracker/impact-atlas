@@ -229,10 +229,10 @@ class SuperSquadAgent:
         # MODIFICA: Carichiamo Serper
         self.serper_api_key = os.getenv("SERPER_API_KEY")
         if not self.serper_api_key:
-            print("⚠️ ATTENZIONE: Manca SERPER_API_KEY nel file .env")
+            print("ATTENZIONE: Manca SERPER_API_KEY nel file .env")
 
         if not self.openai_api_key or not self.openrouter_api_key:
-            raise ValueError("❌ ERROR: API Keys missing")
+            raise ValueError("ERROR: API Keys missing")
 
         # 2. Initialize Clients
         self.openai_client = OpenAI(api_key=self.openai_api_key)
@@ -271,7 +271,7 @@ class SuperSquadAgent:
         self.GEO_MAX_RETRIES = 3
         self.KINETIC_MAX_RETRIES = 2  # Max retries for kinetic validation
 
-        print("✅ Super Squad Agent Initialized (Engine: Google Serper Time-Machine).")
+        print("Super Squad Agent Initialized (Engine: Google Serper Time-Machine).")
 
     # =========================================================================
     # 🗺️ ACLED FULL SOURCE MAP (180+ SOURCES)
@@ -517,7 +517,7 @@ class SuperSquadAgent:
             return {}
 
     # =========================================================================
-    # 🛡️ STEP 0: THE BOUNCER v2.0 (Hybrid: Regex + AI)
+    # STEP 0: THE BOUNCER v2.0 (Hybrid: Regex + AI)
     # =========================================================================
 
     def _is_obvious_junk(self, text):
@@ -562,12 +562,12 @@ class SuperSquadAgent:
         return False, None
 
     def _step_0_the_bouncer(self, text):
-        print("   🛡️ Step 0: The Bouncer v2.0 analyzing...")
+        print("   Step 0: The Bouncer v2.0 analyzing...")
 
         # --- FASE 1: FILTRO MECCANICO (Gratis) ---
         is_junk, reason = self._is_obvious_junk(text)
         if is_junk:
-            print(f"      🗑️ REJECTED by Regex Sentry: {reason}")
+            print(f"      REJECTED by Regex Sentry: {reason}")
             return {"is_relevant": False, "reason": reason}
 
         # --- FASE 2: FILTRO SEMANTICO (AI) ---
@@ -641,7 +641,7 @@ class SuperSquadAgent:
             return data
 
         except Exception as e:
-            print(f"      ⚠️ BOUNCER EXCEPTION: {e}")
+            print(f"      BOUNCER EXCEPTION: {e}")
             # In caso di dubbio (errore API), lasciamo passare per non perdere dati
             return {"is_relevant": True, "reason": "Error Fallback"}
 
@@ -649,7 +649,7 @@ class SuperSquadAgent:
         """
         Chiama il modello Fine-Tuned per ottenere la classificazione precisa.
         """
-        print("   ⚡ Step 1.5: Titan Fine-Tuned is classifying...")
+        print("   Step 1.5: Titan Fine-Tuned is classifying...")
 
         # System Prompt Rinforzato (Quello validato prima)
         system_prompt = """You are a military intelligence analyst. Output strict JSON.
@@ -696,14 +696,14 @@ OUTPUT FORMAT:
             return {"classification": "UNKNOWN", "reasoning": "Error", "confidence": 0}
 
     # =========================================================================
-    # 🧠 STEP 1: THE BRAIN (DeepSeek V3 via OpenRouter)
+    # STEP 1: THE BRAIN (DeepSeek V3 via OpenRouter)
     # =========================================================================
     def _step_1_the_brain(self, text, metadata):
         """
         Role: Strategy & Context.
         Analysis of raw clusters to determine relevance, actors, and bias.
         """
-        print("   🧠 Step 1: The Brain (DeepSeek V3) analyzing strategy...")
+        print("   Step 1: The Brain (DeepSeek V3) analyzing strategy...")
 
         brain_prompt = f"""
 ### SYSTEM INSTRUCTIONS: INTELLIGENCE JUDGE & CORRECTOR
