@@ -1035,133 +1035,174 @@
       // STRATEGIC CONTEXT LAYER (Narrative Polygons)
       // ============================================
       if (isChecked) {
-        console.log("🎯 Loading Strategic Context layer...");
+        console.log("Loading Strategic Context layer...");
 
         fetch(`assets/data/narratives.json?v=${new Date().getTime()}`)
           .then(response => {
             if (!response.ok) {
-              console.warn("⚠️ narratives.json not found (run semantic_cluster.py first)");
+              console.warn("narratives.json not found (run semantic_cluster.py first)");
               throw new Error("HTTP 404");
             }
             return response.json();
           })
           .then(data => {
             if (!data.narratives || data.narratives.length === 0) {
-              console.warn("⚠️ No narratives available");
+              console.warn("No narratives available");
               return;
             }
 
-            console.log(`✅ Loaded ${data.narratives.length} strategic narratives`);
+            console.log(`Loaded ${data.narratives.length} strategic narratives`);
             narrativesLayer = L.layerGroup();
+
+            // Minimum radius in degrees (~5km at Ukraine's latitude)
+            const MIN_RADIUS_DEG = 0.05;
 
             data.narratives.forEach(narrative => {
               const meta = narrative.meta;
               const geometry = narrative.geometry;
+              const centroid = narrative.centroid;
 
-              if (!geometry || !geometry.coordinates) return;
+              if (!geometry || !geometry.coordinates || !centroid) return;
 
               // Convert GeoJSON coordinates to Leaflet format [lat, lng]
-              const coords = geometry.coordinates[0].map(c => [c[1], c[0]]);
+              let coords = geometry.coordinates[0].map(c => [c[1], c[0]]);
+
+              // Calculate bounding box to check if polygon is too small
+              const lats = coords.map(c => c[0]);
+              const lngs = coords.map(c => c[1]);
+              const latSpan = Math.max(...lats) - Math.min(...lats);
+              const lngSpan = Math.max(...lngs) - Math.min(...lngs);
+
+              // If polygon is too small, create a circle-like polygon around centroid
+              if (latSpan < MIN_RADIUS_DEG && lngSpan < MIN_RADIUS_DEG) {
+                const centerLat = centroid[0];
+                const centerLng = centroid[1];
+                const numPoints = 32;
+                coords = [];
+                for (let i = 0; i < numPoints; i++) {
+                  const angle = (i / numPoints) * 2 * Math.PI;
+                  const lat = centerLat + MIN_RADIUS_DEG * Math.sin(angle);
+                  const lng = centerLng + MIN_RADIUS_DEG * Math.cos(angle) * 1.5; // Adjust for lat
+                  coords.push([lat, lng]);
+                }
+              }
 
               // Create styled polygon
               const polygon = L.polygon(coords, {
                 color: meta.tactic_color || '#94a3b8',
-                weight: 1,
-                opacity: 0.8,
+                weight: 2,
+                opacity: 0.9,
                 fillColor: meta.tactic_color || '#94a3b8',
-                fillOpacity: 0.15,
+                fillOpacity: 0.2,
                 className: 'narrative-polygon'
               });
 
               // Hover effects
               polygon.on('mouseover', function (e) {
-                this.setStyle({ weight: 3, fillOpacity: 0.25 });
+                this.setStyle({ weight: 3, fillOpacity: 0.35 });
               });
               polygon.on('mouseout', function (e) {
-                this.setStyle({ weight: 1, fillOpacity: 0.15 });
+                this.setStyle({ weight: 2, fillOpacity: 0.2 });
               });
 
               // Click: Open Intelligence Brief card
               polygon.on('click', function (e) {
                 L.DomEvent.stopPropagation(e);
 
-                const intensityClass = meta.intensity >= 7 ? 'critical' :
-                  meta.intensity >= 5 ? 'high' :
-                    meta.intensity >= 3 ? 'medium' : 'low';
+                const intensityClass = meta.intensity >= 7 ? 'CRITICAL' :
+                  meta.intensity >= 5 ? 'HIGH' :
+                    meta.intensity >= 3 ? 'MODERATE' : 'LOW';
                 const intensityColor = meta.intensity >= 7 ? '#ef4444' :
                   meta.intensity >= 5 ? '#f97316' :
                     meta.intensity >= 3 ? '#eab308' : '#64748b';
 
+                // Build events preview (show up to 5 event IDs)
+                const eventIds = narrative.event_ids || [];
+                const eventsPreview = eventIds.slice(0, 5).map(id => {
+                  const shortId = id.split('_').slice(-1)[0];
+                  return `<div style="font-size: 0.7rem; color: #94a3b8; font-family: 'JetBrains Mono', monospace; padding: 2px 0;">• ${shortId}</div>`;
+                }).join('');
+                const moreEvents = eventIds.length > 5 ? `<div style="font-size: 0.65rem; color: #64748b; font-style: italic;">+${eventIds.length - 5} more events</div>` : '';
+
                 const popupContent = `
                   <div class="intel-brief-card" style="
-                    min-width: 300px;
-                    max-width: 380px;
+                    min-width: 320px;
+                    max-width: 400px;
                     font-family: 'Inter', sans-serif;
                     background: #0f172a;
-                    border-radius: 10px;
+                    border-radius: 8px;
                     overflow: hidden;
                     border: 1px solid #334155;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
                   ">
                     <!-- Header -->
                     <div style="
-                      background: linear-gradient(135deg, ${meta.tactic_color}88, ${meta.tactic_color}44);
+                      background: linear-gradient(135deg, ${meta.tactic_color}55, ${meta.tactic_color}22);
                       padding: 16px;
-                      border-bottom: 1px solid ${meta.tactic_color}44;
+                      border-bottom: 1px solid #334155;
                     ">
-                      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
                         <div style="flex: 1;">
                           <div style="
-                            font-size: 0.65rem;
+                            font-size: 0.6rem;
                             text-transform: uppercase;
-                            letter-spacing: 0.1em;
-                            color: ${meta.tactic_color};
-                            font-weight: 700;
+                            letter-spacing: 0.15em;
+                            color: #94a3b8;
+                            font-weight: 600;
                             margin-bottom: 6px;
-                          ">⚔️ INTELLIGENCE BRIEF</div>
+                          ">STRATEGIC ASSESSMENT</div>
                           <div style="
-                            font-size: 1.1rem;
+                            font-size: 1.05rem;
                             font-weight: 700;
                             color: #f8fafc;
                             line-height: 1.3;
                           ">${meta.title}</div>
                         </div>
                         <div style="
-                          background: ${intensityColor}22;
+                          background: ${intensityColor}15;
                           border: 1px solid ${intensityColor};
                           border-radius: 6px;
                           padding: 8px 12px;
                           text-align: center;
-                          min-width: 50px;
+                          min-width: 55px;
                         ">
-                          <div style="font-size: 1.2rem; font-weight: 800; color: ${intensityColor}; font-family: 'JetBrains Mono', monospace;">${meta.intensity.toFixed(1)}</div>
-                          <div style="font-size: 0.55rem; color: #94a3b8; text-transform: uppercase;">T.I.E.</div>
+                          <div style="font-size: 1.3rem; font-weight: 800; color: ${intensityColor}; font-family: 'JetBrains Mono', monospace;">${meta.intensity.toFixed(1)}</div>
+                          <div style="font-size: 0.5rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">T.I.E. Score</div>
                         </div>
                       </div>
                     </div>
                     
                     <!-- Body -->
                     <div style="padding: 16px;">
-                      <!-- Tactic Badge -->
-                      <div style="margin-bottom: 12px;">
+                      <!-- Classification Badges -->
+                      <div style="margin-bottom: 14px; display: flex; flex-wrap: wrap; gap: 6px;">
                         <span style="
-                          background: ${meta.tactic_color}22;
+                          background: ${meta.tactic_color}20;
                           color: ${meta.tactic_color};
                           padding: 4px 10px;
-                          border-radius: 12px;
-                          font-size: 0.7rem;
+                          border-radius: 4px;
+                          font-size: 0.65rem;
                           font-weight: 700;
                           text-transform: uppercase;
                           letter-spacing: 0.05em;
                         ">${meta.primary_tactic}</span>
+                        <span style="
+                          background: ${intensityColor}15;
+                          color: ${intensityColor};
+                          padding: 4px 10px;
+                          border-radius: 4px;
+                          font-size: 0.65rem;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                        ">${intensityClass}</span>
                         ${meta.strategic_context && meta.strategic_context !== 'UNKNOWN' ? `
                         <span style="
                           background: #1e293b;
                           color: #94a3b8;
                           padding: 4px 10px;
-                          border-radius: 12px;
-                          font-size: 0.7rem;
+                          border-radius: 4px;
+                          font-size: 0.65rem;
                           font-weight: 600;
-                          margin-left: 6px;
                         ">${meta.strategic_context.replace(/_/g, ' ')}</span>
                         ` : ''}
                       </div>
@@ -1170,35 +1211,64 @@
                       <div style="
                         color: #cbd5e1;
                         font-size: 0.85rem;
-                        line-height: 1.6;
+                        line-height: 1.55;
                         margin-bottom: 16px;
                       ">${meta.summary}</div>
                       
-                      <!-- Footer Stats -->
+                      <!-- Metrics Grid -->
                       <div style="
                         display: grid;
-                        grid-template-columns: 1fr 1fr;
-                        gap: 10px;
-                        padding-top: 12px;
-                        border-top: 1px solid #334155;
+                        grid-template-columns: 1fr 1fr 1fr;
+                        gap: 8px;
+                        margin-bottom: 14px;
                       ">
-                        <div style="background: #1e293b; padding: 10px; border-radius: 6px;">
-                          <div style="color: #64748b; font-size: 0.6rem; text-transform: uppercase; font-weight: 700;">Events Correlated</div>
-                          <div style="color: #f8fafc; font-size: 1rem; font-weight: 700; font-family: 'JetBrains Mono', monospace;">${meta.event_count}</div>
+                        <div style="background: #1e293b; padding: 10px; border-radius: 6px; text-align: center;">
+                          <div style="color: #64748b; font-size: 0.55rem; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Events</div>
+                          <div style="color: #f8fafc; font-size: 1.1rem; font-weight: 700; font-family: 'JetBrains Mono', monospace;">${meta.event_count}</div>
                         </div>
-                        <div style="background: #1e293b; padding: 10px; border-radius: 6px;">
-                          <div style="color: #64748b; font-size: 0.6rem; text-transform: uppercase; font-weight: 700;">Date Range</div>
-                          <div style="color: #f8fafc; font-size: 0.75rem; font-weight: 600;">${meta.date_range ? meta.date_range.join(' → ') : 'N/A'}</div>
+                        <div style="background: #1e293b; padding: 10px; border-radius: 6px; text-align: center;">
+                          <div style="color: #64748b; font-size: 0.55rem; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Duration</div>
+                          <div style="color: #f8fafc; font-size: 0.8rem; font-weight: 600;">${meta.date_range ? Math.ceil((new Date(meta.date_range[1]) - new Date(meta.date_range[0])) / (1000 * 60 * 60 * 24)) + 'd' : 'N/A'}</div>
+                        </div>
+                        <div style="background: #1e293b; padding: 10px; border-radius: 6px; text-align: center;">
+                          <div style="color: #64748b; font-size: 0.55rem; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Cluster</div>
+                          <div style="color: #f8fafc; font-size: 0.7rem; font-weight: 600; font-family: 'JetBrains Mono', monospace;">${narrative.cluster_id.split('_').pop()}</div>
                         </div>
                       </div>
+
+                      <!-- Date Range -->
+                      <div style="
+                        background: #1e293b;
+                        padding: 10px 12px;
+                        border-radius: 6px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 14px;
+                      ">
+                        <div style="color: #64748b; font-size: 0.65rem; text-transform: uppercase; font-weight: 700;">Time Window</div>
+                        <div style="color: #f8fafc; font-size: 0.8rem; font-weight: 600; font-family: 'JetBrains Mono', monospace;">
+                          ${meta.date_range ? meta.date_range[0] + ' to ' + meta.date_range[1] : 'N/A'}
+                        </div>
+                      </div>
+
+                      <!-- Related Events (Collapsible) -->
+                      ${eventIds.length > 0 ? `
+                      <div style="border-top: 1px solid #334155; padding-top: 12px;">
+                        <div style="color: #64748b; font-size: 0.6rem; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Correlated Event IDs</div>
+                        ${eventsPreview}
+                        ${moreEvents}
+                      </div>
+                      ` : ''}
                     </div>
                   </div>
                 `;
 
                 L.popup({
-                  maxWidth: 400,
-                  minWidth: 300,
-                  className: 'intel-brief-popup'
+                  maxWidth: 420,
+                  minWidth: 320,
+                  className: 'intel-brief-popup',
+                  closeButton: true
                 })
                   .setLatLng(e.latlng)
                   .setContent(popupContent)
@@ -1212,7 +1282,7 @@
             // Send to back so event markers stay on top
             narrativesLayer.bringToBack();
 
-            console.log(`✅ Strategic Context layer rendered: ${data.narratives.length} polygons`);
+            console.log(`Strategic Context layer rendered: ${data.narratives.length} polygons`);
           })
           .catch(err => {
             console.error("Failed to load narratives:", err);
