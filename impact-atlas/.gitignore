@@ -1,0 +1,52 @@
+# --- SICUREZZA ---
+.env
+osint_session
+osint_session.session
+**/*.session
+scripts/service_account.json
+scripts_una_tantum
+training_finetuning
+scripts/orbat_ua.csv
+scripts/orbat_ru.json   
+scripts/parabellum_sync.py
+scripts/orbat_seeder.py
+scripts_una_tantum/reset_status.py
+# assets/data/events.geojson removed
+
+# --- Log e file temporanei ---
+tracker_log.txt
+*.log
+
+# --- Python ---
+__pycache__/
+*.pyc
+
+# --- DATABASE PESANTI (DA IGNORARE ASSOLUTAMENTE) ---
+*.db
+*.sqlite3
+*.sqlite
+chroma.sqlite3
+raw_events.db
+osint_records.db
+war_tracker_v2/data/
+war_tracker_v2/data/chroma_store/
+*.bin
+
+# --- PYTHON & LIBRERIE ---
+__pycache__/
+*.py[cod]
+venv/
+env/
+.env
+.vscode/
+.idea/
+
+# --- FILE DI SISTEMA ---
+.DS_Store
+Thumbs.db
+
+# --- LOGS ---
+*.log
+
+# --- WHITELIST ---
+!war_tracker_v2/data/gazetteer_places.txt
