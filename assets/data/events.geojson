@@ -254,6 +254,37 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          37.8168012,
+          48.9801314
+        ]
+      },
+      "properties": {
+        "id": "fus_418485_1768864394",
+        "title": "Russian Forces Engage in Combat near Lyman",
+        "description": "Russian Forces continue combat operations around the city of Lyman and the Siverskyi Donets River. Units are attempting to encircle the city by attacking Ukrainian Forces positions in Drobysheve and advancing southwest. Fighting persists at multiple locations, including the area south of Lyman and near Ozerny. Control over these areas is strategic for supply routes across the river.",
+        "date": "2026-01-28",
+        "tie_total": 23.0,
+        "vec_k": 5.0,
+        "vec_t": 5.0,
+        "vec_e": 4.0,
+        "reliability": 78,
+        "bias_score": -3.8,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 5.0,
+        "ai_reasoning": "[EN] Russian attempts to encircle Lyman threaten Ukrainian supply routes across the Siverskyi Donets, potentially isolating defenses and disrupting logistics. Moderate kinetic activity suggests probing attacks rather than a decisive offensive, but sustained pressure could force Ukrainian redeployments. This aligns with Russia's broader operational goal of securing river crossings to enable deeper advances in Donetsk Oblast.  \n\n[IT] I tentativi russi di accerchiare Lyman minacciano le rotte di rifornimento",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76064\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76025\"}]",
+        "units": "[]",
+        "marker_radius": 6.3,
+        "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           37.6141992,
           49.7132963
         ]
@@ -874,6 +905,37 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          37.8168012,
+          48.9801314
+        ]
+      },
+      "properties": {
+        "id": "fus_418485_1769034267",
+        "title": "Russian Forces Engage in Combat near Lyman",
+        "description": "Russian Forces continue combat operations around the city of Lyman and the Siverskyi Donets River. Clashes are reported in Drobysheve and the surrounding areas, with Russian units attempting to encircle the city. Fighting also persists at the Yaryova-Drobysheve line and near Ozernoye, impacting supply routes. Control over these areas is strategic for further operations in the region.",
+        "date": "2026-02-07",
+        "tie_total": 23.0,
+        "vec_k": 5.0,
+        "vec_t": 5.0,
+        "vec_e": 4.0,
+        "reliability": 75,
+        "bias_score": -4.6,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 5.0,
+        "ai_reasoning": "[EN] The ongoing combat near Lyman underscores Russia's persistent efforts to secure key terrain, particularly around the Siverskyi Donets River, which is critical for controlling supply lines and enabling further advances in eastern Ukraine. The moderate T.I.E. scores indicate a stalemate with limited tactical gains, suggesting prolonged attritional warfare in the region. This aligns with Russia's broader strategy of grinding down Ukrainian defenses through localized offensives, despite limited operational success.  \n[IT] I comb",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76064\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76025\"}]",
+        "units": "[]",
+        "marker_radius": 6.3,
+        "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           37.6141992,
           49.7132963
         ]
@@ -998,6 +1060,37 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          44.5153353,
+          48.7081906
+        ]
+      },
+      "properties": {
+        "id": "fus_467510_1769034273",
+        "title": "Ukrainian Forces Drone Operations Intercepted in Multiple Regions",
+        "description": "On December 16, 2025, air defense systems intercepted 64 Ukrainian drones over Bryansk Oblast. Additional interceptions included 9 drones over Kaluga Oblast, 5 over Smolensk, 2 each over Moscow Oblast and Crimea, and 1 over Tver Oblast.",
+        "date": "2026-02-07",
+        "tie_total": 49.0,
+        "vec_k": 6.0,
+        "vec_t": 8.0,
+        "vec_e": 3.0,
+        "reliability": 60,
+        "bias_score": -3.2,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 6.0,
+        "ai_reasoning": "[EN] The interception of 64 Ukrainian drones in Bryansk Oblast underscores a significant escalation in Ukrainian drone operations, targeting critical Russian regions. The high strategic value (8) indicates Ukraine's intent to disrupt Russian logistics and morale, though the low effect score (3) suggests limited success. This aligns with Ukraine's broader strategy to stretch Russian defenses and exploit vulnerabilities in rear areas.  \n[IT] L'intercettazione di 64 droni ucraini nell'Oblast di Bryansk eviden",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/voenkorKotenok/69454\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/voenkorKotenok/69407\"}]",
+        "units": "[]",
+        "marker_radius": 8.9,
+        "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           39.704876,
           52.090595
         ]
@@ -1084,6 +1177,1060 @@
         "units": "[]",
         "marker_radius": 4.0,
         "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          32.57755,
+          52.17853
+        ]
+      },
+      "properties": {
+        "id": "fus_674929_1769034395",
+        "title": "Russian Forces Attack Hospital in Semenivka, Chernihiv Region",
+        "description": "On January 1, 2026, Russian Forces conducted an attack on a hospital located in Semenivka, Chernihiv Region. The incident resulted in damage to the facility. Further details regarding casualties or operational impacts were not provided.",
+        "date": "2026-01-02 00:15:00+00:00",
+        "tie_total": 3.0,
+        "vec_k": 4.0,
+        "vec_t": 2.0,
+        "vec_e": 3.0,
+        "reliability": 50,
+        "bias_score": 3.2,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 4.0,
+        "ai_reasoning": "[EN] The attack on a low-value civilian target (TARGET: 2) signals a potential shift toward indiscriminate strikes to degrade Ukrainian morale, despite limited kinetic impact (KINETIC: 4). This aligns with Russia's broader attrition strategy, though the lack of casualties or severe damage (EFFECT: 3) reduces immediate operational gains. Such actions risk further international condemnation without proportional battlefield advantages.  \n\n[IT] L'attacco a un obiettivo civile di scarso",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"24tv.ua\", \"url\": \"https://24tv.ua/ataka-semenivku-1-sichnya-okupanti-vdarili-po-likarni-chernigivshhini_n2981394\"}]",
+        "units": "[]",
+        "marker_radius": 4.3,
+        "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.8674006,
+          47.4311003
+        ]
+      },
+      "properties": {
+        "id": "fus_674949_1769034395",
+        "title": "Ukrainian Forces Attack in Occupied Kherson Region",
+        "description": "At least 24 personnel were reported killed following an attack by Ukrainian Forces in the Kherson region, which is currently under the control of Russian Forces.",
+        "date": "2026-01-02 00:00:00+00:00",
+        "tie_total": 9.0,
+        "vec_k": 4.0,
+        "vec_t": 3.0,
+        "vec_e": 4.0,
+        "reliability": 50,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 4.0,
+        "ai_reasoning": "[EN] The attack underscores Ukraine's persistent pressure on Russian-held territories, aiming to degrade morale and logistical stability despite moderate kinetic impact. This aligns with Kyiv's broader strategy of attrition to exhaust Russian forces in secondary theaters. The low strategic value (TARGET: 3) suggests limited immediate operational gains but reinforces psychological warfare.  \n\n[IT] L'attacco evidenzia la pressione costante dell'Ucraina sui territori occupati dalla Russia, mirando a logorare il morale",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"top24.mk\", \"url\": \"https://top24.mk/te-pakten-24-te-vrare-pas-sulmit-ukrainas-ne-rajonin-e-pushtuar-ne-kherson/\"}]",
+        "units": "[]",
+        "marker_radius": 4.9,
+        "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.8674006,
+          47.4311003
+        ]
+      },
+      "properties": {
+        "id": "fus_674962_1769034395",
+        "title": "Ukrainian Forces Deny Claims of Attack on Village in Kherson Region",
+        "description": "Ukrainian Forces have refuted statements made by the occupying administration regarding an alleged strike by Ukrainian military units on a village in the Kherson region. No further details on the incident were provided.",
+        "date": "2026-01-02 00:00:00+00:00",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 1.0,
+        "vec_e": 1.0,
+        "reliability": 50,
+        "bias_score": 0.8,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The low T.I.E. scores indicate minimal immediate impact, but the denial suggests ongoing information warfare, potentially to discredit Ukrainian forces and sow distrust among local populations. This aligns with broader Russian efforts to undermine Ukrainian legitimacy in occupied territories.  \n\n[IT] I bassi punteggi T.I.E. indicano un impatto immediato minimo, ma la smentita suggerisce una guerra dell'informazione in corso, probabilmente per screditare le forze",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"radiosvoboda.org\", \"url\": \"https://www.radiosvoboda.org/a/news-henshtab-khersonshchyna-saldo-khorly/33637974.html\"}]",
+        "units": "[]",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.6141992,
+          49.7132963
+        ]
+      },
+      "properties": {
+        "id": "fus_674963_1769034395",
+        "title": "Ukrainian Forces Complete Clearance Operations near Kupiansk",
+        "description": "Ukrainian Forces have concluded clearance operations in the Kupiansk area. Russian Forces are reportedly preparing for new assaults in the region.",
+        "date": "2026-01-02 00:00:00+00:00",
+        "tie_total": 23.0,
+        "vec_k": 5.0,
+        "vec_t": 5.0,
+        "vec_e": 4.0,
+        "reliability": 50,
+        "bias_score": 2.7,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 5.0,
+        "ai_reasoning": "[EN] The clearance operations near Kupiansk indicate Ukrainian efforts to consolidate gains and disrupt Russian offensive preparations, but the moderate T.I.E. scores suggest limited immediate strategic impact. This aligns with broader Ukrainian defensive strategies to degrade Russian momentum ahead of potential winter offensives. The region remains a focal point for both sides, signaling continued attritional warfare.  \n\n[IT] Le operazioni di bonifica vicino a Kupiansk dimostrano gli sforzi ucraini per consolidare i",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"tsn.ua\", \"url\": \"https://tsn.ua/ukrayina/sytuatsiia-bilia-kupianska-zsu-zavershuiut-zachystku-voroh-hotuye-novi-shturmy-ohliadach-2990963.html\"}]",
+        "units": "[]",
+        "marker_radius": 6.3,
+        "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.4558968,
+          50.429608
+        ]
+      },
+      "properties": {
+        "id": "fus_674965_1769034395",
+        "title": "Ukrainian Drone Strike Reported in Occupied Ukraine",
+        "description": "A drone strike attributed to Ukrainian forces reportedly resulted in 24 casualties among Russian personnel in an area of occupied Ukraine. This incident occurs amid ongoing peace talks and rising tensions between the two sides.",
+        "date": "2026-01-02 00:00:00+00:00",
+        "tie_total": 15.0,
+        "vec_k": 3.0,
+        "vec_t": 3.0,
+        "vec_e": 7.0,
+        "reliability": 50,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 3.0,
+        "ai_reasoning": "[EN] The strike demonstrates Ukraine's continued capability to conduct precision operations in occupied territories, undermining Russian morale and logistical stability. The high casualty count (24) suggests effective targeting of personnel concentrations, likely to force Russian forces to disperse, reducing their operational cohesion. This aligns with Kyiv's broader strategy of attrition while peace talks remain fragile.  \n\n[IT] L'attacco dimostra la capacità ucraina di condurre operazioni di precisione nei territori occupati, minando il morale e",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"journalgazette.net\", \"url\": \"https://www.journalgazette.net/news/world/russia-says-ukrainian-drone-strike-kills-24-in-occupied-ukraine-as-tensions-grow-amid-peace/article_75799ac2-78e8-529e-bb72-76857aefb5b1.html\"}]",
+        "units": "[]",
+        "marker_radius": 5.5,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.6141992,
+          49.7132963
+        ]
+      },
+      "properties": {
+        "id": "fus_674973_1769034395",
+        "title": "Russian Forces Attack Kupiansk",
+        "description": "On January 2, 2026, Russian Forces conducted operations in Kupiansk, resulting in significant damage to the city. The situation remains under assessment regarding control of the area.",
+        "date": "2026-01-02 00:00:00+00:00",
+        "tie_total": 51.0,
+        "vec_k": 8.0,
+        "vec_t": 5.0,
+        "vec_e": 7.0,
+        "reliability": 70,
+        "bias_score": 3.2,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 8.0,
+        "ai_reasoning": "[EN] The attack on Kupiansk underscores Russia's continued focus on destabilizing key logistical hubs in eastern Ukraine, aiming to disrupt Ukrainian supply lines and weaken defensive capabilities.  \n[IT] L'attacco a Kupiansk evidenzia l'obiettivo russo di destabilizzare i nodi logistici chiave nell'est dell'Ucraina, mirando a interrompere le linee di rifornimento e indebolire le difese ucraine.  \n\n[EN] The high",
+        "has_video": true,
+        "sources_list": "[{\"name\": \"war.obozrevatel.com\", \"url\": \"https://war.obozrevatel.com/rossijskie-okkupantyi-razbili-kupyansk-vsu-pokazali-kak-vyiglyadit-gorod-foto.htm\"}]",
+        "units": "[]",
+        "marker_radius": 9.1,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          39.6263678,
+          54.7767678
+        ]
+      },
+      "properties": {
+        "id": "fus_674985_1769034395",
+        "title": "Russian Drone Attack Targeting Civilian Areas in Volyn",
+        "description": "On January 1, 2026, Russian forces conducted drone attacks in Volyn throughout the New Year's night. The attacks targeted civilian areas, resulting in unspecified damage and potential casualties. Further details on the impact of these attacks are currently under investigation.",
+        "date": "2026-01-01 23:45:00+00:00",
+        "tie_total": 3.0,
+        "vec_k": 3.0,
+        "vec_t": 2.0,
+        "vec_e": 3.0,
+        "reliability": 50,
+        "bias_score": 2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 3.0,
+        "ai_reasoning": "[EN] The attack demonstrates Russia's continued willingness to target civilian infrastructure, likely aiming to degrade Ukrainian morale and disrupt New Year celebrations. Low T.I.E. scores suggest limited operational impact, but such strikes normalize terror tactics, eroding long-term stability. This aligns with Russia's broader strategy of attritional warfare, though it risks further international condemnation.  \n\n[IT] L'attacco dimostra la continua volontà russa di colpire infrastrutture civili, probabilmente per log",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"24tv.ua\", \"url\": \"https://24tv.ua/ataka-dronami-1-sichnya-chomu-rosiyani-vsyu-novorichnu-nich-atakuvali_n2981372\"}]",
+        "units": "[]",
+        "marker_radius": 4.3,
+        "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.6063916,
+          55.625578
+        ]
+      },
+      "properties": {
+        "id": "fus_675018_1769034396",
+        "title": "Unknown Forces Transfer Material to United States",
+        "description": "Reports indicate that material has been transferred from Moscow to the United States. The context of this transfer is related to an alleged attack on a residence associated with President Putin. Further details on the nature of the material and the circumstances surrounding the transfer are not specified.",
+        "date": "2026-01-01 23:45:00+00:00",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 10.0,
+        "vec_e": 1.0,
+        "reliability": 60,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The transfer of material from Moscow to the U.S. suggests a potential escalation in intelligence or diplomatic exchanges, possibly linked to high-level geopolitical tensions. Given the association with President Putin, this could indicate a strategic maneuver to influence or de-escalate bilateral relations. The high target score underscores the significance of this event in shaping U.S.-Russia dynamics.\n\n[IT] Il trasferimento di materiale da Mosca agli Stati Uniti suggerisce una potenziale escalation negli scambi",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"volksstimme.de\", \"url\": \"https://www.volksstimme.de/deutschland-und-welt/politik/angriff-auf-putin-residenz-moskau-ubergibt-usa-material-4173904\"}, {\"name\": \"t-online.de\", \"url\": \"https://www.t-online.de/nachrichten/ausland/id_101063920/angriff-auf-putin-residenz-moskau-uebergibt-usa-material.html\"}, {\"name\": \"nw.de\", \"url\": \"https://www.nw.de/nachrichten/politik/24242955_Angriff-auf-Putin-Residenz-Moskau-uebergibt-USA-Material.html\"}, {\"name\": \"nw.de\", \"url\": \"https://www.nw.de/nachrichten/nachrichten/24242955_Angriff-auf-Putin-Residenz-Moskau-uebergibt-USA-Material.html\"}]",
+        "units": "[]",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.1182867,
+          47.8507859
+        ]
+      },
+      "properties": {
+        "id": "fus_675026_1769034396",
+        "title": "Russian Forces Attack Zaporizhzhia",
+        "description": "On January 2, 2026, Russian Forces conducted an attack on Zaporizhzhia. The incident resulted in damage to infrastructure and civilian areas. Further details regarding casualties and specific impacts are pending.",
+        "date": "2026-01-01 23:45:00+00:00",
+        "tie_total": 41.0,
+        "vec_k": 6.0,
+        "vec_t": 5.0,
+        "vec_e": 6.0,
+        "reliability": 70,
+        "bias_score": 3.2,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 6.0,
+        "ai_reasoning": "[EN] The attack on Zaporizhzhia underscores Russia's continued focus on destabilizing Ukraine's critical infrastructure, aiming to weaken logistical and energy capabilities. This aligns with broader Russian strategy to degrade Ukraine's resilience and prolong the conflict. The moderate T.I.E. scores suggest a calculated escalation rather than a decisive breakthrough.  \n[IT] L'attacco a Zaporizhzhia evidenzia l'obiettivo russo di destabilizzare le infrastrutture critiche ucraine,",
+        "has_video": true,
+        "sources_list": "[{\"name\": \"24tv.ua\", \"url\": \"https://24tv.ua/ataka-zaporizhzhya-vnochi-2-sichnya-kadri-naslidkiv-rosiyskogo_n2981387\"}]",
+        "units": "[]",
+        "marker_radius": 8.1,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.8674006,
+          47.4311003
+        ]
+      },
+      "properties": {
+        "id": "fus_675071_1769034396",
+        "title": "Ukrainian Drone Unit Suspected in Attack on Kherson Region Governor",
+        "description": "An attack occurred in the Kherson Region, with reports suggesting involvement of a Ukrainian elite drone unit targeting the governor. Details regarding casualties or damage remain unconfirmed.",
+        "date": "2026-01-02 11:30:00+00:00",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 7.0,
+        "vec_e": 1.0,
+        "reliability": 60,
+        "bias_score": -7.2,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The suspected involvement of a Ukrainian elite drone unit underscores Kyiv's focus on high-value targets, potentially aiming to destabilize Russian-appointed leadership in occupied territories. This aligns with Ukraine's broader strategy of asymmetric warfare to disrupt Russian administrative control. However, the low kinetic and effect scores suggest limited immediate impact, raising questions about operational execution or intelligence accuracy.  \n[IT] Il presunto coinvolgimento di un'unità d'élite di droni ucraini evidenzia l",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"tass.com\", \"url\": \"https://tass.com/defense/2067745\"}, {\"name\": \"tass.com\", \"url\": \"https://tass.com/politics/2067673\"}]",
+        "units": "[]",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.8674006,
+          47.4311003
+        ]
+      },
+      "properties": {
+        "id": "fus_675082_1769034397",
+        "title": "Ukrainian Drone Attack during New Year Celebrations in Kherson Region",
+        "description": "A drone attack conducted by Ukrainian forces resulted in 24 civilian casualties during New Year celebrations in the Kherson region. The incident occurred in an area affected by Russian military operations.",
+        "date": "2026-01-01 23:30:00+00:00",
+        "tie_total": 8.0,
+        "vec_k": 3.0,
+        "vec_t": 2.0,
+        "vec_e": 7.0,
+        "reliability": 50,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 3.0,
+        "ai_reasoning": "[EN] The attack underscores Ukraine's willingness to escalate civilian-targeted operations in contested regions, potentially eroding international sympathy and complicating future diplomatic negotiations.  \n[IT] L'attacco evidenzia la volontà dell'Ucraina di intensificare operazioni contro obiettivi civili nelle regioni contese, rischiando di erodere la simpatia internazionale e complicare i negoziati diplomatici futuri.  \n\n[EN] High civilian casualties in",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"maalaimalar.com:443\", \"url\": \"https://www.maalaimalar.com:443/news/world/24-killed-in-ukrainian-drone-attack-on-new-year-celebrations-in-kherson-region-803668\"}]",
+        "units": "[]",
+        "marker_radius": 4.8,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.8674006,
+          47.4311003
+        ]
+      },
+      "properties": {
+        "id": "fus_675084_1769034397",
+        "title": "Leader of Occupation Police Killed in Kherson Region",
+        "description": "On January 1, 2026, in the Kherson region, a leader of the occupation police, Sergey Bogan, was reported killed. The incident occurred in the village of Khorly.",
+        "date": "2026-01-01 23:30:00+00:00",
+        "tie_total": 10.0,
+        "vec_k": 1.0,
+        "vec_t": 3.0,
+        "vec_e": 7.0,
+        "reliability": 70,
+        "bias_score": 6.4,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The killing of Sergey Bogan disrupts Russian administrative control in Kherson, potentially weakening local collaborationist structures and morale. This event signals persistent resistance activity, complicating Moscow's efforts to stabilize occupied territories. It underscores the ongoing volatility in southern Ukraine, despite Russian claims of consolidation.  \n[IT] L'uccisione di Sergey Bogan compromette il controllo amministrativo russo nella regione di Kherson, indebolendo potenzialmente le strutt",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"ukrinform.ua\", \"url\": \"https://www.ukrinform.ua/rubric-regions/4075858-na-tot-hersonsini-u-horlah-vbitij-kerivnik-okupacijnoi-policii-kalancaka-sergij-bogan-czr.html\"}]",
+        "units": "[]",
+        "marker_radius": 5.0,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.6063916,
+          55.625578
+        ]
+      },
+      "properties": {
+        "id": "fus_675097_1769034397",
+        "title": "Ukrainian Drone Destroyed by Russian Air Defense near Moscow",
+        "description": "A drone approaching Moscow was intercepted and destroyed by the air defense forces of the Ministry of Defense of Russia. The incident occurred on January 1, 2026.",
+        "date": "2026-01-01 23:30:00+00:00",
+        "tie_total": 100.0,
+        "vec_k": 3.0,
+        "vec_t": 9.0,
+        "vec_e": 7.0,
+        "reliability": 50,
+        "bias_score": -2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 3.0,
+        "ai_reasoning": "[EN] This incident demonstrates Ukraine's capability and willingness to strike deep into Russian territory, despite Moscow's air defenses. The high strategic value (9) suggests psychological warfare aimed at undermining Russian domestic confidence in their military's protective capabilities. This aligns with Kyiv's broader strategy of stretching Russian defenses and forcing resource reallocation from frontline areas.  \n\n[IT] Questo incidente dimostra la capacità e la volontà dell'Ucraina di colpire in profondità nel territorio russo,",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"vm.ru\", \"url\": \"https://vm.ru/news/1292595-sobyanin-sily-pvo-otrazili-ataku-eshe-odnogo-ukrainskogo-drona-letevshego-na-moskvu\"}]",
+        "units": "[]",
+        "marker_radius": 14.0,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.1182867,
+          47.8507859
+        ]
+      },
+      "properties": {
+        "id": "fus_675110_1769034397",
+        "title": "Russian Forces Sentenced for Coordination of Airstrikes on Energy Facilities in Zaporizhzhia and Dnipro",
+        "description": "A coordinator of Russian airstrikes targeting energy facilities in Zaporizhzhia and Dnipro has been sentenced to 15 years in prison. The individual was involved in directing attacks that affected critical infrastructure in these regions.",
+        "date": "2026-01-01 23:30:00+00:00",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 8.0,
+        "vec_e": 1.0,
+        "reliability": 70,
+        "bias_score": 6.4,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The sentencing highlights Ukraine's judicial efforts to hold Russian operatives accountable, but the low EFFECT score suggests limited deterrence against future strikes. Targeting energy infrastructure (TARGET: 8) underscores Russia's strategy to degrade Ukraine's resilience, though the KINETIC score indicates minimal immediate escalation. This aligns with Moscow's broader campaign to cripple Ukraine's industrial and civilian capacity.  \n\n[IT] La condanna evidenzia gli sforzi giudiziari dell'Ucra",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"ukrinform.ua\", \"url\": \"https://www.ukrinform.ua/rubric-society/4075771-do-15-rokiv-turmi-zasudili-koriguvalnika-aviaudariv-rf-po-energoobektah-zaporizza-ta-dnipra.html\"}]",
+        "units": "[]",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.8622574,
+          47.997797
+        ]
+      },
+      "properties": {
+        "id": "fus_675120_1769034397",
+        "title": "Foreign National Killed in Donetsk Region",
+        "description": "Russell Allan Wilson, a foreign national, was reported killed while engaged in combat operations in the Donetsk region. The circumstances surrounding the incident remain under investigation.",
+        "date": "2026-01-01 23:30:00+00:00",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 1.0,
+        "vec_e": 1.0,
+        "reliability": 50,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The death of a foreign national in Donetsk underscores the ongoing internationalization of the conflict, potentially escalating diplomatic tensions and complicating foreign policy responses.  \n[IT] La morte di un cittadino straniero a Donetsk evidenzia l'internazionalizzazione del conflitto, rischiando di inasprire le tensioni diplomatiche e complicare le risposte di politica estera.",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"focus.ua\", \"url\": \"https://focus.ua/voennye-novosti/738883-pogib-rassel-allan-uilson-inostranec-voeval-v-doneckoy-oblasti\"}]",
+        "units": "[]",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.6063916,
+          55.625578
+        ]
+      },
+      "properties": {
+        "id": "fus_675127_1769034397",
+        "title": "Ukrainian Drone Targeted Russian Presidential Residence",
+        "description": "A Ukrainian drone reportedly targeted a residence associated with Russian leadership. Russian forces have claimed to have decrypted data related to the incident. Further details regarding the operational context and outcomes remain unspecified.",
+        "date": "2026-01-01 23:30:00+00:00",
+        "tie_total": 0.0,
+        "vec_k": 3.0,
+        "vec_t": 10.0,
+        "vec_e": 1.0,
+        "reliability": 50,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 3.0,
+        "ai_reasoning": "[EN] The targeting of a Russian presidential residence underscores Ukraine's intent to escalate psychological and symbolic warfare, aiming to destabilize Russian leadership morale despite minimal kinetic impact. This aligns with Ukraine's broader strategy of leveraging asymmetric tactics to counter Russian military superiority. The incident may provoke heightened Russian defensive measures, potentially diverting resources from frontline operations.\n\n[IT] Il targeting di una residenza presidenziale russa evidenzia l'intenzione dell'Ucraina di intensificare la guerra psicologica e",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"alo.rs\", \"url\": \"https://www.alo.rs/vesti/ukrajina/539686/ukrajinski-dron-je-ciljao-putinovu-rezidenciju-rusi-desifrovali-podatke.html\"}]",
+        "units": "[]",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.8674006,
+          47.4311003
+        ]
+      },
+      "properties": {
+        "id": "fus_675184_1769034398",
+        "title": "Ukrainian Forces Deny Claims of Civilian Strike in Kherson Region",
+        "description": "Ukrainian Forces have refuted allegations made by Russian Forces regarding an attack on civilians in the Kherson region. The situation remains under assessment, with no confirmed civilian casualties reported.",
+        "date": "2026-01-02 11:45:00+00:00",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 2.0,
+        "vec_e": 1.0,
+        "reliability": 70,
+        "bias_score": 5.7,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The denial underscores ongoing information warfare, complicating verification efforts and potentially eroding trust in both sides' narratives. This fits into Russia's broader strategy to discredit Ukrainian operations internationally.  \n[IT] La negazione evidenzia la continua guerra dell'informazione, complicando gli sforzi di verifica e potenzialmente erodendo la fiducia nelle narrazioni di entrambe le parti. Questo si inserisce nella più ampia strategia russa per",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"unian.ua\", \"url\": \"https://www.unian.ua/war/udar-po-horlah-u-zsu-sprostuvali-zayavi-okupantiv-pro-udar-po-civilnih-na-hersonshchini-13243665.html\"}]",
+        "units": "[]",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          28.8023,
+          45.1768
+        ]
+      },
+      "properties": {
+        "id": "fus_675188_1769034398",
+        "title": "Unknown Objects Reported Falling in Tulcea Region",
+        "description": "On January 2, 2026, authorities in Tulcea issued an alert regarding possible unidentified objects falling from the sky. The Romanian Air Forces reported the presence of moving targets approaching the border area between Romania and Ukraine.",
+        "date": "2026-01-02 11:45:00+00:00",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 1.0,
+        "vec_e": 1.0,
+        "reliability": 50,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The event in Tulcea, while causing local alarm, has minimal immediate strategic impact due to low kinetic activity and unclear targets. However, it underscores the need for enhanced surveillance and readiness along the Romania-Ukraine border, as even minor incidents can escalate tensions in a volatile region.\n[IT] L'evento a Tulcea, pur causando allarme locale, ha un impatto strategico immediato minimo a causa della bassa attività cinetica e degli obiett",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"ziare.com\", \"url\": \"https://ziare.com/tulcea/sub-alerta-ro-alert-posibile-obiecte-cazute-cer-autoritati-recomanda-adapostirea-1985706\"}]",
+        "units": "[]",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.4079326,
+          46.5421715
+        ]
+      },
+      "properties": {
+        "id": "fus_675201_1769034398",
+        "title": "Russian Forces Conduct Strikes on Heating Infrastructure in Kherson",
+        "description": "On January 2, 2026, Russian Forces conducted strikes targeting heating generation facilities in Kherson, leading to potential disruptions in heating services. Additionally, parts of the city experienced power outages.",
+        "date": "2026-01-02 11:45:00+00:00",
+        "tie_total": 66.0,
+        "vec_k": 6.0,
+        "vec_t": 8.0,
+        "vec_e": 5.0,
+        "reliability": 50,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 6.0,
+        "ai_reasoning": "[EN] The strikes on heating infrastructure in Kherson aim to degrade civilian morale and strain local governance during winter, potentially forcing displacement and weakening Ukrainian resilience. This aligns with Russia's broader strategy of targeting critical infrastructure to destabilize Ukraine's rear areas. The moderate EFFECT score suggests partial success, but Ukrainian repair capabilities may mitigate long-term impact.  \n[IT] Gli attacchi alle infrastrutture di riscaldamento a Kherson mirano a minare il morale civile e a met",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"riasv.ru\", \"url\": \"https://riasv.ru/obshhestvo/2026/01/02/v-hersone-vozmojny-pereboi-s-otopleniem-na-fone-ydarov-rf-po-teplogeneracii-s-ytra-v-chasti-goroda-net-sveta/\"}]",
+        "units": "[]",
+        "marker_radius": 10.6,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.1182867,
+          47.8507859
+        ]
+      },
+      "properties": {
+        "id": "fus_675209_1769034398",
+        "title": "Russian Forces Conduct Air Strikes in Zaporizhzhia",
+        "description": "On January 2, 2026, Russian forces targeted the city of Zaporizhzhia with air strikes. No casualties have been reported as a result of these attacks.",
+        "date": "2026-01-02 11:45:00+00:00",
+        "tie_total": 11.0,
+        "vec_k": 6.0,
+        "vec_t": 4.0,
+        "vec_e": 2.0,
+        "reliability": 70,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 6.0,
+        "ai_reasoning": "[EN] The Russian air strikes on Zaporizhzhia indicate a deliberate escalation in kinetic operations, targeting a strategically significant location. The moderate kinetic score reflects the intensity of the attack, while the target score underscores the city's importance in the broader conflict. The low effect score suggests limited immediate success, but the strike serves as a psychological tactic to destabilize Ukrainian morale and infrastructure. This aligns with Russia's broader strategy of applying pressure on key Ukrainian strongholds to weaken their defensive capabilities.\n\n[",
+        "has_video": true,
+        "sources_list": "[{\"name\": \"parsi.euronews.com\", \"url\": \"https://parsi.euronews.com/video/2026/01/02/russian-forces-have-targeted-zaporizhzhia-with-air-strikes-but-no-casualties-have-been-rep\"}]",
+        "units": "[]",
+        "marker_radius": 5.1,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.4831471,
+          50.4254374
+        ]
+      },
+      "properties": {
+        "id": "fus_675225_1769034398",
+        "title": "Russian Forces Operations Reported in Sumy Region",
+        "description": "Reports indicate ongoing operations involving Russian Forces in the Sumy region. Details regarding specific movements, engagements, or casualties have not been disclosed.",
+        "date": "2026-01-02 11:45:00+00:00",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 1.0,
+        "vec_e": 1.0,
+        "reliability": 70,
+        "bias_score": 5.2,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The low T.I.E. scores suggest minimal immediate tactical impact, but Russian operations in Sumy could signal probing or diversionary tactics to stretch Ukrainian defenses. This aligns with broader Russian efforts to maintain pressure across multiple fronts, complicating Ukrainian resource allocation.  \n\n[IT] I bassi punteggi T.I.E. indicano un impatto tattico immediato limitato, ma le operazioni russe a Sumy potrebbero segnalare tattiche esplorative o",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"unian.ua\", \"url\": \"https://www.unian.ua/war/grabovske-situaciya-demchenko-rozpoviv-chi-mayut-rosiyani-uspih-na-sumshchini-13243644.html\"}]",
+        "units": "[]",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.5727774,
+          49.5375676
+        ]
+      },
+      "properties": {
+        "id": "fus_675231_1769034398",
+        "title": "Unknown Group Attack in Crimea",
+        "description": "Following an attack in Khorly, the number of individuals hospitalized in Crimea has increased. Details regarding the nature of the attack and the involved parties remain unclear.",
+        "date": "2026-01-02 11:45:00+00:00",
+        "tie_total": 4.0,
+        "vec_k": 3.0,
+        "vec_t": 2.0,
+        "vec_e": 4.0,
+        "reliability": 50,
+        "bias_score": -1.2,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 3.0,
+        "ai_reasoning": "[EN] The attack underscores Crimea's vulnerability to asymmetric threats, potentially forcing Russia to divert resources to bolster regional security, thereby straining its broader military posture in Ukraine.  \n[IT] L'attacco evidenzia la vulnerabilità della Crimea alle minacce asimmetriche, costringendo potenzialmente la Russia a dirottare risorse per rafforzare la sicurezza regionale, mettendo sotto pressione la sua postura militare complessiva in Ucraina.",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"ria.ru\", \"url\": \"https://ria.ru/20260102/postradavshie-2066061613.html\"}]",
+        "units": "[]",
+        "marker_radius": 4.4,
+        "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.5873394,
+          50.5955595
+        ]
+      },
+      "properties": {
+        "id": "fus_675249_1769034399",
+        "title": "Ukrainian Forces Conduct Missile Strike in Belgorod",
+        "description": "On January 2, 2026, Ukrainian Forces launched a missile strike targeting the center of Belgorod. The incident resulted in damage to infrastructure. Further details regarding casualties or operational impact were not provided.",
+        "date": "2026-01-02 11:30:00+00:00",
+        "tie_total": 39.0,
+        "vec_k": 6.0,
+        "vec_t": 7.0,
+        "vec_e": 3.0,
+        "reliability": 50,
+        "bias_score": -2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 6.0,
+        "ai_reasoning": "[EN] The strike signals Ukraine's willingness to escalate cross-border operations, potentially opening a new front to divert Russian resources. The moderate kinetic score (6) suggests calculated risk-taking, while the low effect score (3) indicates limited immediate impact. This aligns with Kyiv's broader strategy of asymmetric pressure to degrade Russian morale and logistics.  \n\n[IT] L'attacco segnala la volontà dell'Ucraina di intensificare le operazioni transfrontaliere, potenzial",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"vm.ru\", \"url\": \"https://vm.ru/news/1292666-po-centru-belgoroda-vsu-nanesli-raketnyj-udar\"}]",
+        "units": "[]",
+        "marker_radius": 7.9,
+        "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.2310146,
+          49.9923181
+        ]
+      },
+      "properties": {
+        "id": "fus_675269_1769034399",
+        "title": "Polish Volunteer Dies from Wounds Sustained in Kharkiv Region",
+        "description": "A Polish volunteer has died in a hospital after being wounded in combat in the Kharkiv region. The incident highlights the involvement of foreign personnel in the ongoing conflict.",
+        "date": "2026-01-02 11:30:00+00:00",
+        "tie_total": 7.0,
+        "vec_k": 2.0,
+        "vec_t": 3.0,
+        "vec_e": 4.0,
+        "reliability": 50,
+        "bias_score": 2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 2.0,
+        "ai_reasoning": "[EN] The death of a foreign volunteer underscores the persistent reliance on international personnel in Ukraine's defense, potentially straining diplomatic relations with Poland if casualties mount. The low kinetic score suggests this was an isolated incident, but the moderate effect score indicates it may galvanize further foreign volunteer recruitment. This aligns with Ukraine's broader strategy to internationalize the conflict and sustain morale.  \n\n    [IT] La morte di un volontario straniero sottolinea la continua dipendenza da personale internazionale",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"eurointegration.com.ua\", \"url\": \"https://www.eurointegration.com.ua/rus/news/2026/01/2/7228242/\"}]",
+        "units": "[]",
+        "marker_radius": 4.7,
+        "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.6063916,
+          55.625578
+        ]
+      },
+      "properties": {
+        "id": "fus_675307_1769034399",
+        "title": "Unknown Actors Allegedly Attack Residence of Russian Leader",
+        "description": "Reports indicate an alleged attack on the residence of the Russian leader. Sources claim that this incident may have been fabricated to create discord between the United States and Ukraine. No confirmed details regarding casualties or specific actions have been provided.",
+        "date": "2026-01-02 11:30:00+00:00",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 10.0,
+        "vec_e": 1.0,
+        "reliability": 60,
+        "bias_score": 2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The alleged attack, if fabricated, serves as a potential disinformation tactic to destabilize U.S.-Ukraine relations, leveraging the high strategic value of the target to amplify its psychological impact. This aligns with broader Russian strategies to sow discord among Western allies and undermine Ukraine's international support. The low kinetic and effect scores suggest minimal physical impact but significant potential for strategic manipulation.\n\n[IT] L'attacco presunto, se fabbricato, rappresenta una tattica di disinform",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"unn.ua\", \"url\": \"https://unn.ua/news/ataka-na-rezydentsiiu-putina-kreml-orhanizuvav-prymityvnyi-feik-shchob-posvaryty-ssha-i-ukrainu-tspd\"}, {\"name\": \"pressorg24.com\", \"url\": \"http://pressorg24.com/news?id=812519\"}, {\"name\": \"unn.ua\", \"url\": \"https://unn.ua/ru/news/ataka-na-rezidentsiyu-putina-kreml-organizoval-primitivnii-feik-chtobi-possorit-ssha-i-ukrainu-tspd\"}]",
+        "units": "[]",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.4079326,
+          46.5421715
+        ]
+      },
+      "properties": {
+        "id": "fus_675324_1769034399",
+        "title": "Russian Forces Attack Thermal Generation Facility in Kherson",
+        "description": "On January 2, 2026, Russian Forces conducted an attack on a thermal generation facility in Kherson, Ukraine. The incident involved continuous strikes on energy infrastructure, impacting local power supply.",
+        "date": "2026-01-02 11:30:00+00:00",
+        "tie_total": 66.0,
+        "vec_k": 6.0,
+        "vec_t": 8.0,
+        "vec_e": 5.0,
+        "reliability": 50,
+        "bias_score": 2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 6.0,
+        "ai_reasoning": "[EN] The attack on Kherson's thermal generation facility underscores Russia's strategy to cripple Ukraine's energy infrastructure, aiming to weaken civilian morale and disrupt logistical support for Ukrainian forces. This aligns with broader Russian efforts to degrade Ukraine's resilience and operational capacity during winter. The moderate kinetic score (6) and high target value (8) indicate a calculated escalation in targeting critical civilian infrastructure.  \n[IT] L'attacco alla centrale termica di Kherson evidenzia la strategia russa di",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"tsn.ua\", \"url\": \"https://tsn.ua/ukrayina/rosiiany-vid-ranku-bezperervno-hatiat-po-obyektakh-teploheneratsiyi-u-khersoni-2991185.html\"}]",
+        "units": "[]",
+        "marker_radius": 10.6,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.4079326,
+          46.5421715
+        ]
+      },
+      "properties": {
+        "id": "fus_675332_1769034400",
+        "title": "Unknown Actor Conducts Drone Strike in Kherson",
+        "description": "A drone strike occurred on New Year's Day in the occupied region of Kherson, resulting in casualties. Ukrainian authorities have denied any involvement in the incident. The identity of the aggressor remains undetermined.",
+        "date": "2026-01-02 11:30:00+00:00",
+        "tie_total": 44.0,
+        "vec_k": 3.0,
+        "vec_t": 5.0,
+        "vec_e": 7.0,
+        "reliability": 50,
+        "bias_score": 0.8,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 3.0,
+        "ai_reasoning": "[EN] The ambiguity of responsibility creates deniability for Ukraine while maintaining pressure on Russian occupation forces, forcing Moscow to divert resources to investigate and secure rear areas. The strike's timing on New Year's Day signals a psychological warfare element, exploiting holiday vulnerabilities. This aligns with Ukraine's broader campaign of asymmetric attacks to degrade Russian morale and logistics in occupied territories.  \n\n[IT] L'ambiguità della responsabilità crea plausibile negazione per l'Ucraina mantenendo pressione",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"kyivpost.com\", \"url\": \"https://www.kyivpost.com/post/67296\"}]",
+        "units": "[]",
+        "marker_radius": 8.4,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.4079326,
+          46.5421715
+        ]
+      },
+      "properties": {
+        "id": "fus_675371_1769034400",
+        "title": "Unknown Forces Conduct Attack in Kherson",
+        "description": "An attack occurred in Kherson. It has been reported that the assault was not carried out by Ukrainian Forces. Further details regarding the identity of the attacking forces remain unclear.",
+        "date": "2026-01-02 11:30:00+00:00",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 1.0,
+        "vec_e": 1.0,
+        "reliability": 50,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The ambiguity of the attacker's identity creates deniability but undermines Ukraine's narrative of control, potentially signaling Russian proxy operations or internal dissent. Low T.I.E. metrics suggest a probing action rather than a decisive strike, consistent with Russia's hybrid warfare playbook in contested regions. This aligns with broader Russian efforts to destabilize Ukrainian-held territories without direct attribution.  \n\n[IT] L'ambiguità sull'identità dell'attaccante crea plausibile negabilità",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"kathimerini.gr\", \"url\": \"https://www.kathimerini.gr/world/564002926/kievo-i-epithesi-sti-chersona-den-egine-apo-oykranikes-dynameis/\"}]",
+        "units": "[]",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.1182867,
+          47.8507859
+        ]
+      },
+      "properties": {
+        "id": "fus_675381_1769034400",
+        "title": "Unknown Forces Conduct Drone Attack in Zaporizhzhia",
+        "description": "A drone attack occurred in Zaporizhzhia, resulting in damage to residential buildings and infrastructure. The specific identity of the attacking forces remains undetermined.",
+        "date": "2026-01-02 11:30:00+00:00",
+        "tie_total": 5.0,
+        "vec_k": 6.0,
+        "vec_t": 2.0,
+        "vec_e": 4.0,
+        "reliability": 50,
+        "bias_score": 2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 6.0,
+        "ai_reasoning": "[EN] The attack underscores the persistent vulnerability of civilian infrastructure in contested regions, potentially escalating local tensions and humanitarian concerns. The ambiguity of the perpetrator complicates attribution and retaliation, fostering an environment of uncertainty. This aligns with broader patterns of asymmetric warfare in the Ukraine conflict, where non-state or unidentified actors exploit low-cost, high-impact tactics.  \n[IT] L'attacco evidenzia la persistente vulnerabilità delle infrastrutture civili nelle regioni contese, rischiando di in",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"pravda.com.ua\", \"url\": \"https://www.pravda.com.ua/rus/news/2026/01/02/8014355/\"}]",
+        "units": "[]",
+        "marker_radius": 4.5,
+        "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.5241361,
+          50.4500336
+        ]
+      },
+      "properties": {
+        "id": "fus_677042_1769034436",
+        "title": "Russian Forces Strike Clinic in Kyiv",
+        "description": "On January 6, 2026, Russian Forces conducted airstrikes that impacted a clinic in Kyiv, resulting in damage to the facility. The incident is part of ongoing military actions in the region.",
+        "date": "2026-01-06 00:15:00+00:00",
+        "tie_total": 8.0,
+        "vec_k": 6.0,
+        "vec_t": 2.0,
+        "vec_e": 5.0,
+        "reliability": 50,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 6.0,
+        "ai_reasoning": "[EN] The strike on a low-strategic-value clinic suggests a potential shift toward indiscriminate targeting, undermining Russian claims of precision strikes and risking further international condemnation. The moderate kinetic score (6) indicates continued escalation in urban areas, straining civilian infrastructure. This aligns with broader Russian efforts to degrade Ukrainian morale through attrition.  \n\n[IT] L'attacco a una clinica di scarso valore strategico indica un possibile passaggio a obiettivi indiscriminati, minando le aff",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"ledevoir.com\", \"url\": \"https://www.ledevoir.com/monde/europe/945648/clinique-ukrainienne-touchee-frappes-russes-kiev\"}]",
+        "units": "[]",
+        "marker_radius": 4.8,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.6141992,
+          49.7132963
+        ]
+      },
+      "properties": {
+        "id": "fus_677090_1769034437",
+        "title": "Ukrainian Forces Engage Colombian Personnel near Kupiansk",
+        "description": "On January 6, 2026, Ukrainian Forces reported the destruction of Colombian personnel near Kupiansk. The engagement resulted in casualties among the Colombian group. Further details regarding the incident remain unspecified.",
+        "date": "2026-01-06 00:15:00+00:00",
+        "tie_total": 45.0,
+        "vec_k": 7.0,
+        "vec_t": 5.0,
+        "vec_e": 7.0,
+        "reliability": 50,
+        "bias_score": -2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 7.0,
+        "ai_reasoning": "[EN] This engagement signals Ukraine's continued pressure on foreign auxiliary forces, potentially degrading Colombia's willingness to deploy personnel. The Kupiansk sector remains a kinetic flashpoint, drawing in non-traditional actors.  \n\n[IT] Questo scontro indica la pressione ucraina sulle forze ausiliarie straniere, con possibile impatto sulla disponibilità colombiana a schierare personale. Il settore di Kupiansk rimane un punto caldo, attirando att",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"aif.ru\", \"url\": \"https://aif.ru/politics/russia/opyt-ne-pomog-pod-kupyanskom-unichtozheny-kolumbiyskie-naemniki\"}]",
+        "units": "[]",
+        "marker_radius": 8.5,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.6063916,
+          55.625578
+        ]
+      },
+      "properties": {
+        "id": "fus_677141_1769034437",
+        "title": "Ukrainian Forces Attack on Ten Russian Regions",
+        "description": "On January 6, 2026, Ukrainian Forces conducted an attack affecting ten regions in Russia. The operation involved coordinated strikes targeting military installations. Casualty figures and damage assessments are currently being compiled.",
+        "date": "2026-01-06 00:00:00+00:00",
+        "tie_total": 0.0,
+        "vec_k": 8.0,
+        "vec_t": 8.0,
+        "vec_e": 1.0,
+        "reliability": 50,
+        "bias_score": -2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 8.0,
+        "ai_reasoning": "[EN] This operation marks a significant escalation in Ukraine's strategy, shifting from defensive to offensive actions deep within Russian territory, potentially destabilizing Russian military logistics and morale. The high kinetic and target scores indicate a bold, high-risk maneuver, though the low effect score suggests limited immediate success. This aligns with Ukraine's broader war strategy to stretch Russian resources and force defensive postures.\n\n[IT] Questa operazione rappresenta un'escalation significativa nella strategia ucraina, passando",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"fedpress.ru\", \"url\": \"https://fedpress.ru/news/77/incidents/3419532\"}]",
+        "units": "[]",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.8243039,
+          51.9191343
+        ]
+      },
+      "properties": {
+        "id": "fus_677151_1769034437",
+        "title": "Russian Drone Strike Affects American Facility in Dnipro",
+        "description": "On January 5, 2026, a drone strike attributed to Russian forces impacted the Bunge factory in Dnipro, resulting in the spillage of approximately 300 tons of oil. The incident highlights ongoing hostilities in the region.",
+        "date": "2026-01-06 00:00:00+00:00",
+        "tie_total": 21.0,
+        "vec_k": 3.0,
+        "vec_t": 4.0,
+        "vec_e": 6.0,
+        "reliability": 50,
+        "bias_score": -1.2,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 3.0,
+        "ai_reasoning": "[EN] The strike on an American-linked facility escalates U.S.-Russia tensions, potentially drawing Washington deeper into the conflict. The environmental damage from the oil spill complicates Ukraine's recovery efforts, straining local resources. This incident underscores Russia's willingness to target foreign assets, signaling broader geopolitical risks.  \n[IT] L'attacco a una struttura legata agli Stati Uniti aumenta le tensioni tra Washington e Mosca, rischiando un maggiore coinvolgimento americano nel conflitto.",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"kavpolit.com\", \"url\": \"https://kavpolit.com/society-ru/2026/01/05/rossijskie-drony-atakovali-amerikanskij-zavod-bunge-v-dnepre-razliv-300-tonn-masla/\"}]",
+        "units": "[]",
+        "marker_radius": 6.1,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.5676505,
+          50.645959
+        ]
+      },
+      "properties": {
+        "id": "fus_677181_1769034438",
+        "title": "Ukrainian Forces Drone Attack in Belgorod Region",
+        "description": "On January 6, 2026, a drone attack attributed to Ukrainian Forces resulted in the deaths of two individuals in the Belgorod region. The incident highlights ongoing hostilities in the area.",
+        "date": "2026-01-06 00:00:00+00:00",
+        "tie_total": 10.0,
+        "vec_k": 3.0,
+        "vec_t": 2.0,
+        "vec_e": 7.0,
+        "reliability": 50,
+        "bias_score": -2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 3.0,
+        "ai_reasoning": "[EN] The drone attack underscores Ukraine's capability to conduct precision strikes deep into Russian territory, potentially escalating cross-border tensions and forcing Russia to allocate more resources to border defense. This aligns with Ukraine's broader strategy of stretching Russian military logistics and morale. The high effectiveness score (7) indicates successful execution despite low strategic value (2).  \n[IT] L'attacco con droni evidenzia la capacità dell'Ucraina di condurre attacchi di precisione in profondità nel territorio",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"5-tv.ru\", \"url\": \"https://www.5-tv.ru/news/5052090/dva-celoveka-pogibli-vbelgorodskoj-oblasti-izza-atak-dronov-vsu/\"}]",
+        "units": "[]",
+        "marker_radius": 5.0,
+        "marker_color": "#f59e0b"
       }
     },
     {

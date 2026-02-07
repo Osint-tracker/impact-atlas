@@ -17,6 +17,7 @@
   let historicalFrontlineLayer = null;
   let firmsLayer = null;
   let unitsLayer = null;
+  let narrativesLayer = null; // Strategic Context layer
 
   window.allEventsData = [];
   window.globalEvents = [];
@@ -467,7 +468,7 @@
 
         console.log(`✅ Events processed: ${window.globalEvents.length}`);
 
-        // 3. FILTER DEFINITION (CIVILIAN + ACTORS + SMART SEARCH)
+        // 3. FILTER DEFINITION (CIVILIAN + ACTORS + SMART SEARCH + HIGH IMPACT)
         window._applyMapFiltersImpl = function () {
           // A. Retrieve Input (Safe handling if elements missing)
           const toggle = document.getElementById('civilianToggle');
@@ -478,6 +479,10 @@
 
           const actorSelect = document.getElementById('actorFilter');
           const selectedActor = actorSelect ? actorSelect.value : '';
+
+          // NEW: High Impact Filter (TIE > 50)
+          const highImpactToggle = document.getElementById('highImpactToggle');
+          const showHighImpactOnly = highImpactToggle ? highImpactToggle.checked : false;
 
           // B. Filtering Cycle
           const filtered = window.globalEvents.filter(e => {
@@ -492,6 +497,12 @@
             // If an actor is selected in the menu, the event must match
             if (selectedActor && e.actor !== selectedActor) {
               return false;
+            }
+
+            // 2.5 HIGH IMPACT FILTER (TIE > 50)
+            if (showHighImpactOnly) {
+              const tieScore = e.tie_total || e.tie_score || 0;
+              if (tieScore < 50) return false;
             }
 
             // 3. Smart Text Search (NEW)
@@ -529,7 +540,7 @@
 
         // --- LIVE ACTIVATION (FUNDAMENTAL) ---
         // Connects filters to HTML inputs to update map in real time
-        const inputsToCheck = ['textSearch', 'actorFilter', 'civilianToggle'];
+        const inputsToCheck = ['textSearch', 'actorFilter', 'civilianToggle', 'highImpactToggle'];
         inputsToCheck.forEach(id => {
           const el = document.getElementById(id);
           if (el) {
@@ -1011,6 +1022,199 @@
         if (unitsLayer) {
           map.removeLayer(unitsLayer);
           unitsLayer = null;
+        }
+      }
+    } else if (layerName === 'narratives') {
+      // ============================================
+      // STRATEGIC CONTEXT LAYER (Narrative Polygons)
+      // ============================================
+      if (isChecked) {
+        console.log("🎯 Loading Strategic Context layer...");
+
+        fetch(`assets/data/narratives.json?v=${new Date().getTime()}`)
+          .then(response => {
+            if (!response.ok) {
+              console.warn("⚠️ narratives.json not found (run semantic_cluster.py first)");
+              throw new Error("HTTP 404");
+            }
+            return response.json();
+          })
+          .then(data => {
+            if (!data.narratives || data.narratives.length === 0) {
+              console.warn("⚠️ No narratives available");
+              return;
+            }
+
+            console.log(`✅ Loaded ${data.narratives.length} strategic narratives`);
+            narrativesLayer = L.layerGroup();
+
+            data.narratives.forEach(narrative => {
+              const meta = narrative.meta;
+              const geometry = narrative.geometry;
+
+              if (!geometry || !geometry.coordinates) return;
+
+              // Convert GeoJSON coordinates to Leaflet format [lat, lng]
+              const coords = geometry.coordinates[0].map(c => [c[1], c[0]]);
+
+              // Create styled polygon
+              const polygon = L.polygon(coords, {
+                color: meta.tactic_color || '#94a3b8',
+                weight: 1,
+                opacity: 0.8,
+                fillColor: meta.tactic_color || '#94a3b8',
+                fillOpacity: 0.15,
+                className: 'narrative-polygon'
+              });
+
+              // Hover effects
+              polygon.on('mouseover', function (e) {
+                this.setStyle({ weight: 3, fillOpacity: 0.25 });
+              });
+              polygon.on('mouseout', function (e) {
+                this.setStyle({ weight: 1, fillOpacity: 0.15 });
+              });
+
+              // Click: Open Intelligence Brief card
+              polygon.on('click', function (e) {
+                L.DomEvent.stopPropagation(e);
+
+                const intensityClass = meta.intensity >= 7 ? 'critical' :
+                  meta.intensity >= 5 ? 'high' :
+                    meta.intensity >= 3 ? 'medium' : 'low';
+                const intensityColor = meta.intensity >= 7 ? '#ef4444' :
+                  meta.intensity >= 5 ? '#f97316' :
+                    meta.intensity >= 3 ? '#eab308' : '#64748b';
+
+                const popupContent = `
+                  <div class="intel-brief-card" style="
+                    min-width: 300px;
+                    max-width: 380px;
+                    font-family: 'Inter', sans-serif;
+                    background: #0f172a;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    border: 1px solid #334155;
+                  ">
+                    <!-- Header -->
+                    <div style="
+                      background: linear-gradient(135deg, ${meta.tactic_color}88, ${meta.tactic_color}44);
+                      padding: 16px;
+                      border-bottom: 1px solid ${meta.tactic_color}44;
+                    ">
+                      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="flex: 1;">
+                          <div style="
+                            font-size: 0.65rem;
+                            text-transform: uppercase;
+                            letter-spacing: 0.1em;
+                            color: ${meta.tactic_color};
+                            font-weight: 700;
+                            margin-bottom: 6px;
+                          ">⚔️ INTELLIGENCE BRIEF</div>
+                          <div style="
+                            font-size: 1.1rem;
+                            font-weight: 700;
+                            color: #f8fafc;
+                            line-height: 1.3;
+                          ">${meta.title}</div>
+                        </div>
+                        <div style="
+                          background: ${intensityColor}22;
+                          border: 1px solid ${intensityColor};
+                          border-radius: 6px;
+                          padding: 8px 12px;
+                          text-align: center;
+                          min-width: 50px;
+                        ">
+                          <div style="font-size: 1.2rem; font-weight: 800; color: ${intensityColor}; font-family: 'JetBrains Mono', monospace;">${meta.intensity.toFixed(1)}</div>
+                          <div style="font-size: 0.55rem; color: #94a3b8; text-transform: uppercase;">T.I.E.</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Body -->
+                    <div style="padding: 16px;">
+                      <!-- Tactic Badge -->
+                      <div style="margin-bottom: 12px;">
+                        <span style="
+                          background: ${meta.tactic_color}22;
+                          color: ${meta.tactic_color};
+                          padding: 4px 10px;
+                          border-radius: 12px;
+                          font-size: 0.7rem;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.05em;
+                        ">${meta.primary_tactic}</span>
+                        ${meta.strategic_context && meta.strategic_context !== 'UNKNOWN' ? `
+                        <span style="
+                          background: #1e293b;
+                          color: #94a3b8;
+                          padding: 4px 10px;
+                          border-radius: 12px;
+                          font-size: 0.7rem;
+                          font-weight: 600;
+                          margin-left: 6px;
+                        ">${meta.strategic_context.replace(/_/g, ' ')}</span>
+                        ` : ''}
+                      </div>
+                      
+                      <!-- Summary -->
+                      <div style="
+                        color: #cbd5e1;
+                        font-size: 0.85rem;
+                        line-height: 1.6;
+                        margin-bottom: 16px;
+                      ">${meta.summary}</div>
+                      
+                      <!-- Footer Stats -->
+                      <div style="
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 10px;
+                        padding-top: 12px;
+                        border-top: 1px solid #334155;
+                      ">
+                        <div style="background: #1e293b; padding: 10px; border-radius: 6px;">
+                          <div style="color: #64748b; font-size: 0.6rem; text-transform: uppercase; font-weight: 700;">Events Correlated</div>
+                          <div style="color: #f8fafc; font-size: 1rem; font-weight: 700; font-family: 'JetBrains Mono', monospace;">${meta.event_count}</div>
+                        </div>
+                        <div style="background: #1e293b; padding: 10px; border-radius: 6px;">
+                          <div style="color: #64748b; font-size: 0.6rem; text-transform: uppercase; font-weight: 700;">Date Range</div>
+                          <div style="color: #f8fafc; font-size: 0.75rem; font-weight: 600;">${meta.date_range ? meta.date_range.join(' → ') : 'N/A'}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `;
+
+                L.popup({
+                  maxWidth: 400,
+                  minWidth: 300,
+                  className: 'intel-brief-popup'
+                })
+                  .setLatLng(e.latlng)
+                  .setContent(popupContent)
+                  .openOn(map);
+              });
+
+              narrativesLayer.addLayer(polygon);
+            });
+
+            narrativesLayer.addTo(map);
+            // Send to back so event markers stay on top
+            narrativesLayer.bringToBack();
+
+            console.log(`✅ Strategic Context layer rendered: ${data.narratives.length} polygons`);
+          })
+          .catch(err => {
+            console.error("Failed to load narratives:", err);
+          });
+      } else {
+        if (narrativesLayer) {
+          map.removeLayer(narrativesLayer);
+          narrativesLayer = null;
         }
       }
     }

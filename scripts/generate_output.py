@@ -22,6 +22,7 @@ GEOJSON_PATH = os.path.join(BASE_DIR, '../assets/data/events.geojson')
 CSV_PATH = os.path.join(BASE_DIR, '../assets/data/events_export.csv')
 UNITS_JSON_PATH = os.path.join(BASE_DIR, '../assets/data/units.json')
 ORBAT_JSON_PATH = os.path.join(BASE_DIR, '../assets/data/orbat_units.json')
+STRATEGIC_TRENDS_PATH = os.path.join(BASE_DIR, '../assets/data/strategic_trends.json')
 
 
 def parse_sources_to_list(sources_str):
@@ -143,6 +144,50 @@ def get_marker_style(tie_score, effect_score):
         color = "#64748b"  # Gray - Minor/Unknown
     
     return radius, color
+
+
+def classify_sector(lat, lon, target_type):
+    """
+    Classify event into strategic sector based on geography and target.
+    
+    Sectors:
+    - ENERGY_COERCION: Attacks on power/energy infrastructure
+    - DEEP_STRIKES_RU: Strikes into Russian rear areas
+    - EASTERN_FRONT: Donbas/Kharkiv axis
+    - SOUTHERN_FRONT: Zaporizhzhia/Kherson axis
+    """
+    target_type_lower = (target_type or '').lower()
+    
+    # Priority 1: Energy infrastructure (can be anywhere)
+    energy_keywords = ['power', 'grid', 'dam', 'plant', 'refinery', 'substation', 'transformer', 'energy']
+    if any(kw in target_type_lower for kw in energy_keywords):
+        return 'ENERGY_COERCION'
+    
+    # Priority 2: Deep Strikes into Russia
+    # Rough heuristic: lat > 50.0 AND lon > 36.0 (Russian rear/Belgorod/Kursk)
+    # Also includes airfield strikes anywhere
+    if 'airfield' in target_type_lower or 'airbase' in target_type_lower:
+        return 'DEEP_STRIKES_RU'
+    if lat and lon and float(lat) > 50.0 and float(lon) > 36.0:
+        return 'DEEP_STRIKES_RU'
+    
+    # Geographic sectors based on coordinates
+    try:
+        lat_f = float(lat) if lat else 0
+        lon_f = float(lon) if lon else 0
+    except:
+        return 'EASTERN_FRONT'  # Default fallback
+    
+    # Southern Front: lon <= 36.0 AND lat < 48.0 (Zaporizhzhia/Kherson)
+    if lon_f <= 36.0 and lat_f < 48.0:
+        return 'SOUTHERN_FRONT'
+    
+    # Eastern Front: lon > 36.0 AND lat < 50.0 (Donbas/Kharkiv)
+    if lon_f > 36.0 and lat_f < 50.0:
+        return 'EASTERN_FRONT'
+    
+    # Default to Eastern Front for unclassified
+    return 'EASTERN_FRONT'
 
 
 
@@ -534,6 +579,83 @@ def main():
 
     # Export Units
     export_units(unit_stats_acc, orbat_data)
+    
+    # Generate Strategic Trends
+    generate_strategic_trends(geojson_features)
+
+
+def generate_strategic_trends(features):
+    """
+    Generate strategic_trends.json for sector-based intensity analysis.
+    Aggregates TIE scores by date and strategic sector.
+    """
+    from collections import defaultdict
+    
+    print("\n[TRENDS] Generating strategic trends...")
+    
+    # Aggregate: {date: {sector: sum_tie}}
+    daily_sectors = defaultdict(lambda: defaultdict(float))
+    
+    for feature in features:
+        props = feature.get('properties', {})
+        
+        # Extract date (YYYY-MM-DD)
+        date_str = props.get('date', '')
+        if not date_str or date_str == 'Unknown':
+            continue
+        # Normalize date format
+        if '/' in date_str:
+            # DD/MM/YYYY -> YYYY-MM-DD
+            parts = date_str.split('/')
+            if len(parts) == 3:
+                date_str = f"{parts[2]}-{parts[1].zfill(2)}-{parts[0].zfill(2)}"
+        date_str = date_str[:10]  # Just YYYY-MM-DD
+        
+        # Get coordinates
+        coords = feature.get('geometry', {}).get('coordinates', [])
+        lon = coords[0] if len(coords) > 0 else None
+        lat = coords[1] if len(coords) > 1 else None
+        
+        # Get target type and TIE score
+        target_type = props.get('target_type', '')
+        tie_score = props.get('tie_total', 0)
+        
+        # Fallback calculation if TIE missing
+        if not tie_score or tie_score == 0:
+            intensity = props.get('intensity_score', 0) or props.get('vec_k', 0)
+            reliability = props.get('reliability', 50)
+            try:
+                tie_score = float(intensity) * float(reliability) / 10
+            except:
+                tie_score = 0
+        
+        # Classify sector
+        sector = classify_sector(lat, lon, target_type)
+        
+        # Aggregate
+        daily_sectors[date_str][sector] += float(tie_score)
+    
+    # Sort dates and build output
+    sorted_dates = sorted(daily_sectors.keys())
+    
+    # Initialize datasets
+    sectors = ['ENERGY_COERCION', 'DEEP_STRIKES_RU', 'EASTERN_FRONT', 'SOUTHERN_FRONT']
+    datasets = {sector: [] for sector in sectors}
+    
+    for date in sorted_dates:
+        for sector in sectors:
+            datasets[sector].append(round(daily_sectors[date].get(sector, 0), 1))
+    
+    output = {
+        "dates": sorted_dates,
+        "datasets": datasets
+    }
+    
+    # Save
+    with open(STRATEGIC_TRENDS_PATH, 'w', encoding='utf-8') as f:
+        json.dump(output, f, indent=2, ensure_ascii=False)
+    
+    print(f"   [DONE] Strategic trends: {len(sorted_dates)} days -> {STRATEGIC_TRENDS_PATH}")
 
 
 if __name__ == "__main__":

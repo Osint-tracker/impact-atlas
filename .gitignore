@@ -11,7 +11,6 @@ scripts/orbat_ru.json
 scripts/parabellum_sync.py
 scripts/orbat_seeder.py
 scripts_una_tantum/reset_status.py
-# assets/data/events.geojson removed
 
 # --- Log e file temporanei ---
 tracker_log.txt

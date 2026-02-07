@@ -1,10 +1,12 @@
-from ingestion.fetch_telegram import run_telegram_scraper
-from ingestion.fetch_gdelt import fetch_gdelt_news
 import sys
 import os
 from datetime import datetime, timedelta, timezone
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# Add project root to path BEFORE importing local modules
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+from ingestion.fetch_telegram import run_telegram_scraper
+from ingestion.fetch_gdelt import fetch_gdelt_news
 
 
 def main():

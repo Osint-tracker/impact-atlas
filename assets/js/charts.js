@@ -109,6 +109,7 @@ function updateDashboard(data) {
     renderTimelineChart(data);
     renderTypeChart(data);
     renderRadarChart(data);
+    renderSectorTrendChart(); // NEW: Strategic Sector Chart
 
     // RENDERING OF THE 3 VIEWS
     renderKanban(data);
@@ -116,6 +117,131 @@ function updateDashboard(data) {
     renderIntelFeed(data);
 
     if (document.getElementById('eventCount')) document.getElementById('eventCount').innerText = data.length;
+}
+
+// ===========================================
+// STRATEGIC SECTOR TREND CHART (SciPol)
+// ===========================================
+let sectorChart = null;
+
+function renderSectorTrendChart() {
+    const ctx = document.getElementById('sectorTrendChart');
+    if (!ctx) return; // Chart element not in DOM yet
+
+    fetch(`assets/data/strategic_trends.json?v=${new Date().getTime()}`)
+        .then(response => {
+            if (!response.ok) {
+                console.warn('⚠️ strategic_trends.json not found');
+                return null;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data || !data.dates || data.dates.length === 0) {
+                console.warn('⚠️ No sector trend data available');
+                return;
+            }
+
+            // Limit to last 30 days
+            const maxDays = 30;
+            const startIdx = Math.max(0, data.dates.length - maxDays);
+            const dates = data.dates.slice(startIdx);
+
+            // Sector colors (SciPol theme)
+            const SECTOR_COLORS = {
+                ENERGY_COERCION: { border: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
+                DEEP_STRIKES_RU: { border: '#ef4444', bg: 'rgba(239, 68, 68, 0.15)' },
+                EASTERN_FRONT: { border: '#3b82f6', bg: 'rgba(59, 130, 246, 0.15)' },
+                SOUTHERN_FRONT: { border: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' }
+            };
+
+            const SECTOR_LABELS = {
+                ENERGY_COERCION: '⚡ Energy Coercion',
+                DEEP_STRIKES_RU: '🎯 Deep Strikes (RU)',
+                EASTERN_FRONT: '🔵 Eastern Front',
+                SOUTHERN_FRONT: '🟢 Southern Front'
+            };
+
+            const datasets = Object.keys(data.datasets).map(sector => ({
+                label: SECTOR_LABELS[sector] || sector,
+                data: data.datasets[sector].slice(startIdx),
+                borderColor: SECTOR_COLORS[sector]?.border || '#94a3b8',
+                backgroundColor: SECTOR_COLORS[sector]?.bg || 'rgba(148, 163, 184, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 2,
+                pointHoverRadius: 6,
+                borderWidth: 2
+            }));
+
+            if (sectorChart) sectorChart.destroy();
+
+            sectorChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates.map(d => {
+                        const parts = d.split('-');
+                        return `${parts[2]}/${parts[1]}`; // DD/MM format
+                    }),
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#94a3b8',
+                                font: { size: 11 },
+                                boxWidth: 12,
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                title: function (ctx) {
+                                    return `📅 ${ctx[0].label}`;
+                                },
+                                label: function (ctx) {
+                                    return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)} T.I.E.`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#334155', drawBorder: false },
+                            ticks: { color: '#64748b', font: { size: 10 } }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#334155', drawBorder: false },
+                            ticks: { color: '#64748b' },
+                            title: {
+                                display: true,
+                                text: 'Aggregate T.I.E. Sum',
+                                color: '#64748b',
+                                font: { size: 11 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            console.log('✅ Sector Trend Chart rendered');
+        })
+        .catch(err => console.error('Failed to load sector trends:', err));
 }
 
 // ===========================================
