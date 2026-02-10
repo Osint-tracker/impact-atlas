@@ -1,13 +1,13 @@
 """
-Impact Atlas - Military Intelligence SITREP Generator (v6.0)
+Impact Atlas - Military Intelligence SITREP Generator (v7.0)
 ------------------------------------------------------------
-A professional-grade intelligence briefing generator for the Impact Atlas platform.
-Produces multi-page PDF reports with:
-- Slate & Amber design system (Dark Mode)
-- TIE (Target-Kinetic-Effect) vector analysis
-- Strategic sector classification
-- Matplotlib-based tactical analytics
-- Flash Traffic & Operational Timeline
+NATO-grade intelligence briefing with actionable analysis.
+
+4-page structure:
+  1. SITUATION OVERVIEW - KPIs, Operational Tempo, TIE Distribution
+  2. STRATEGIC ASSESSMENT - Sectors, Deep Strikes, Target Types, Bias
+  3. FLASH TRAFFIC - Critical events with strategic value assessments
+  4. SIGNIFICANT EVENTS LOG - Compact table of high-impact events
 
 Author: Impact Atlas Team
 Date: February 2026
@@ -16,403 +16,284 @@ Date: February 2026
 import sqlite3
 import datetime
 import os
-import re
-import math
 import json
 import logging
 import tempfile
 from pathlib import Path
-from collections import defaultdict, Counter
+from collections import Counter
 
 from fpdf import FPDF
 from fpdf.enums import XPos, YPos
 
-# Optional: Matplotlib for charts
 try:
     import matplotlib
-    matplotlib.use('Agg')  # Non-interactive backend
+    matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    import matplotlib.font_manager as fm
     import numpy as np
-    MATPLOTLIB_AVAILABLE = True
+    HAS_MPL = True
 except ImportError:
-    MATPLOTLIB_AVAILABLE = False
-    print("WARNING: Matplotlib not found. Charts will be disabled.")
+    HAS_MPL = False
 
 # =============================================================================
-# CONFIGURATION
+# CONFIG
 # =============================================================================
 
-class Config:
-    """Centralized configuration aligned with Slate & Amber Design System."""
-    
-    # Paths
-    SCRIPT_DIR = Path(__file__).parent.absolute()
-    DB_PATH = SCRIPT_DIR.parent / 'data' / 'raw_events.db'
-    FONTS_DIR = SCRIPT_DIR / 'fonts'
-    REPORTS_DIR = SCRIPT_DIR / 'reports'
-    
-    # Color Palette (RGB)
-    C_BG_DARK = (15, 23, 42)     # #0f172a (Slate 900)
-    C_BG_CARD = (30, 41, 59)     # #1e293b (Slate 800)
-    C_TEXT_PRI = (241, 245, 249) # #f1f5f9 (Slate 100)
-    C_TEXT_SEC = (148, 163, 184) # #94a3b8 (Slate 400)
-    C_TEXT_MUTED = (100, 116, 139) # #64748b (Slate 500)
-    
-    C_ACCENT   = (245, 158, 11)  # #f59e0b (Amber 500)
-    C_CRIT     = (239, 68, 68)   # #ef4444 (Red 500)
-    C_HIGH     = (249, 115, 22)  # #f97316 (Orange 500)
-    C_MED      = (234, 179, 8)   # #eab308 (Yellow 500)
-    C_LOW      = (100, 116, 139) # #64748b (Slate 500)
-    
-    # Hex Colors for Matplotlib
-    HEX_BG      = '#0f172a'
-    HEX_ACCENT  = '#f59e0b'
-    HEX_TEXT    = '#f1f5f9'
-    HEX_GRID    = '#334155'
-    
+class C:
+    """Slate & Amber palette + layout constants."""
+    DIR      = Path(__file__).parent.absolute()
+    DB       = DIR.parent / 'data' / 'raw_events.db'
+    FONTS    = DIR / 'fonts'
+    OUT      = DIR / 'reports'
+
+    # RGB
+    BG       = (15, 23, 42)
+    CARD     = (30, 41, 59)
+    TEXT     = (241, 245, 249)
+    TEXT2    = (148, 163, 184)
+    MUTED    = (100, 116, 139)
+    AMBER    = (245, 158, 11)
+    RED      = (239, 68, 68)
+    ORANGE   = (249, 115, 22)
+    YELLOW   = (234, 179, 8)
+    SLATE5   = (100, 116, 139)
+    GREEN    = (34, 197, 94)
+    WHITE    = (255, 255, 255)
+
+    # Hex (matplotlib)
+    H_BG     = '#0f172a'
+    H_AMBER  = '#f59e0b'
+    H_TEXT   = '#f1f5f9'
+    H_GRID   = '#334155'
+
     # Fonts
-    FONT_HEAD = 'Roboto'
-    FONT_BODY = 'Roboto'
-    FONT_MONO = 'JBM'  # JetBrains Mono
-    
-    # Layout
-    PAGE_MARGIN = 15
-    FOOTER_HEIGHT = 15
+    F_H = 'Roboto'
+    F_M = 'JBM'
+
+logging.basicConfig(level=logging.WARNING)
+log = logging.getLogger('SITREP')
 
 # =============================================================================
-# LOGGING
-# =============================================================================
-
-logging.basicConfig(level=logging.INFO, format='%(asctime)s | %(levelname)s | %(message)s')
-logger = logging.getLogger('SITREP')
-
-# =============================================================================
-# ANALYTICS HELPERS
+# SECTOR CLASSIFIER
 # =============================================================================
 
 def classify_sector(lat, lon, target_type):
-    """Derive strategic sector from geography and target (Project Standard)."""
-    target_type = (target_type or '').lower()
-    
-    # Priority 1: Energy
-    if any(k in target_type for k in ['power', 'grid', 'dam', 'plant', 'energy']):
-        return 'ENERGY_COERCION'
-        
-    # Priority 2: Deep Strikes
+    tt = (target_type or '').lower()
+    if any(k in tt for k in ['power', 'grid', 'dam', 'plant', 'energy', 'refinery', 'oil']):
+        return 'ENERGY'
     if lat and lon:
         try:
-            flat, flon = float(lat), float(lon)
-            if flat > 50.0 and flon > 36.0: return 'DEEP_STRIKES_RU'
+            la, lo = float(lat), float(lon)
+            if la > 50.0 and lo > 36.0: return 'DEEP STRIKE'
+            if lo <= 36.0 and la < 48.0: return 'SOUTHERN'
+            if lo > 36.0 and la < 50.0: return 'EASTERN'
         except: pass
-        
-    # Priority 3: Geography
-    if lat and lon:
-        try:
-            flat, flon = float(lat), float(lon)
-            if flon <= 36.0 and flat < 48.0: return 'SOUTHERN_FRONT'
-            if flon > 36.0 and flat < 50.0: return 'EASTERN_FRONT'
-        except: pass
-        
-    return 'EASTERN_FRONT' # Detailed fallback
+    return 'EASTERN'
 
 # =============================================================================
-# INTELLIGENCE ENGINE
+# INTEL ENGINE
 # =============================================================================
 
 class IntelEngine:
-    """Fetches and processes intelligence data with full TIE integration."""
-    
-    def __init__(self, db_path):
-        self.db_path = db_path
-        
-    def fetch_data(self, days=14):
-        """Fetch completed events from the last N days."""
-        if not self.db_path.exists():
-            logger.error(f"DB not found at {self.db_path}")
+    def __init__(self, db):
+        self.db = db
+
+    def fetch(self, days=7):
+        if not self.db.exists():
+            log.error(f"DB missing: {self.db}")
             return None
-            
-        conn = sqlite3.connect(self.db_path)
+
+        conn = sqlite3.connect(str(self.db))
         conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
-        
-        # Calculate date threshold
         cutoff = (datetime.datetime.now() - datetime.timedelta(days=days)).strftime("%Y-%m-%d")
-        
-        query = f"""
-            SELECT 
-                event_id, last_seen_date, title, description,
-                tie_score, kinetic_score, target_score, effect_score,
-                reliability, bias_score, ai_report_json,
-                ai_summary, urls_list
-            FROM unique_events
-            WHERE ai_analysis_status = 'COMPLETED'
-            AND last_seen_date >= '{cutoff}'
-            ORDER BY tie_score DESC, last_seen_date DESC
-        """
-        
+
         try:
-            cur.execute(query)
-            rows = cur.fetchall()
+            rows = conn.execute(f"""
+                SELECT event_id, last_seen_date, title, description,
+                       tie_score, kinetic_score, target_score, effect_score,
+                       reliability, bias_score, ai_report_json, ai_summary
+                FROM unique_events
+                WHERE ai_analysis_status = 'COMPLETED'
+                  AND last_seen_date >= '{cutoff}'
+                ORDER BY tie_score DESC, last_seen_date DESC
+            """).fetchall()
         except sqlite3.Error as e:
-            logger.error(f"SQL Error: {e}")
+            log.error(f"SQL: {e}")
             conn.close()
             return None
-            
+
         events = []
         for r in rows:
-            # Parse JSON for deep metrics
-            ai_data = {}
+            ai = {}
             if r['ai_report_json']:
-                try: ai_data = json.loads(r['ai_report_json'])
+                try: ai = json.loads(r['ai_report_json'])
                 except: pass
-            
-            # Extract Geo
+
+            strat = ai.get('strategy', {})
+            if not isinstance(strat, dict): strat = {}
+            tactics = ai.get('tactics', {})
+            if not isinstance(tactics, dict): tactics = {}
+            titan = ai.get('titan_metrics', tactics.get('titan_assessment', {}))
+            if not isinstance(titan, dict): titan = {}
+            scores = ai.get('scores', {})
+            if not isinstance(scores, dict): scores = {}
+
+            # Geo
             lat, lon = None, None
             try:
-                geo = ai_data.get('tactics', {}).get('geo_location', {}).get('explicit', {})
-                lat, lon = geo.get('lat'), geo.get('lon')
+                geo = tactics.get('geo_location', strat.get('geo_location', {}))
+                if isinstance(geo, dict):
+                    exp = geo.get('explicit', {})
+                    if isinstance(exp, dict):
+                        lat, lon = exp.get('lat'), exp.get('lon')
             except: pass
-            
-            # Determine Classification
-            cls = ai_data.get('classification') or 'UNKNOWN'
-            
-            # Determine Sector
-            tgt = ai_data.get('target_type') or ''
-            sector = classify_sector(lat, lon, tgt)
-            
-            # Clean Metrics
-            tie = float(r['tie_score'] or 0)
-            k = float(r['kinetic_score'] or 0)
-            t = float(r['target_score'] or 0)
-            e = float(r['effect_score'] or 0)
-            rel = int(r['reliability'] or 50)
-            
+
+            # Target type
+            tgt_cat = titan.get('target_type_category', '')
+            if isinstance(tgt_cat, list): tgt_cat = ', '.join(tgt_cat)
+
+            # Actors
+            actors = tactics.get('actors', strat.get('actors', {}))
+            aggressor = ''
+            if isinstance(actors, dict):
+                agg = actors.get('aggressor', {})
+                if isinstance(agg, dict): aggressor = agg.get('side', '')
+
+            # Units
+            units_raw = tactics.get('military_units_detected', strat.get('military_units_detected', []))
+            units = []
+            if isinstance(units_raw, list):
+                for u in units_raw[:5]:
+                    if isinstance(u, dict):
+                        units.append(f"{u.get('unit_name','?')} ({u.get('faction','?')})")
+
+            # Event category
+            ea = tactics.get('event_analysis', strat.get('event_analysis', {}))
+            if not isinstance(ea, dict): ea = {}
+            evt_cat = strat.get('event_category', ea.get('event_category', ''))
+
             events.append({
-                'id': r['event_id'],
-                'date': str(r['last_seen_date'])[:16],
-                'title': r['title'] or 'Unknown Event',
-                'desc': r['description'] or r['ai_summary'] or '',
-                'tie': tie,
-                'k': k, 't': t, 'e': e,
-                'rel': rel,
-                'bias': r['bias_score'],
-                'cls': cls,
-                'sector': sector,
-                'lat': lat, 'lon': lon,
-                'sources': r['urls_list']
+                'id':       r['event_id'],
+                'date':     str(r['last_seen_date'] or '')[:16],
+                'title':    r['title'] or 'Unknown Event',
+                'desc':     r['description'] or r['ai_summary'] or '',
+                'tie':      float(r['tie_score'] or 0),
+                'k':        float(r['kinetic_score'] or 0),
+                't':        float(r['target_score'] or 0),
+                'e':        float(r['effect_score'] or 0),
+                'rel':      int(r['reliability'] or 50),
+                'sector':   classify_sector(lat, lon, tgt_cat),
+                'tgt_cat':  tgt_cat or 'UNKNOWN',
+                'deep':     bool(titan.get('is_deep_strike', False)),
+                'aggressor': aggressor,
+                'units':    units,
+                'evt_cat':  evt_cat or 'UNKNOWN',
+                'strat_val': strat.get('strategic_value_assessment', ''),
+                'signal':   strat.get('implicit_signal', ''),
+                'bias':     scores.get('dominant_bias', ''),
             })
-            
+
         conn.close()
-        
-        # Compute Stats
+
+        if not events: return None
+
         total = len(events)
-        crit_count = len([e for e in events if e['tie'] >= 70])
-        avg_tie = sum(e['tie'] for e in events) / total if total else 0
-        avg_rel = sum(e['rel'] for e in events) / total if total else 0
-        
-        # Distributions
-        cls_dist = Counter(e['cls'] for e in events)
-        sector_dist = Counter(e['sector'] for e in events)
-        tie_dist = {
-            'CRIT': len([e for e in events if e['tie'] >= 70]),
-            'HIGH': len([e for e in events if 40 <= e['tie'] < 70]),
-            'MED': len([e for e in events if 20 <= e['tie'] < 40]),
-            'LOW': len([e for e in events if e['tie'] < 20]),
-        }
+        crit = [e for e in events if e['tie'] >= 70]
+        if not crit: crit = sorted(events, key=lambda x: x['tie'], reverse=True)[:3]
 
-        # Separating Critical and Timeline
-        critical_events = [e for e in events if e['tie'] >= 70]
-        if not critical_events and events:
-            critical_events = sorted(events, key=lambda x: x['tie'], reverse=True)[:3]
+        high_events = [e for e in events if e['tie'] >= 40]
+        if len(high_events) < 5:
+            high_events = sorted(events, key=lambda x: x['tie'], reverse=True)[:20]
+        high_events.sort(key=lambda x: x['date'], reverse=True)
 
-        # Timeline: Filter noise. Show High+ (TIE>=40). If too few, show Med+ (TIE>=20).
-        timeline_events = [e for e in events if e['tie'] >= 40]
-        if len(timeline_events) < 10:
-            timeline_events = [e for e in events if e['tie'] >= 20]
-        
-        # Sort by date and cap at 50 to prevent huge reports
-        timeline_events.sort(key=lambda x: x['date'], reverse=True)
-        
         return {
-            'events': events,
-            'critical': critical_events[:5], # Top 5 critical
-            'timeline': timeline_events[:50],
+            'events':   events,
+            'critical': crit[:5],
+            'timeline': high_events[:30],
             'stats': {
-                'total': total,
-                'critical_count': crit_count,
-                'avg_tie': avg_tie,
-                'avg_reliability': avg_rel,
-                'cls_dist': cls_dist,
-                'sector_dist': sector_dist,
-                'tie_dist': tie_dist
+                'total':      total,
+                'crit_count': len([e for e in events if e['tie'] >= 70]),
+                'deep_count': len([e for e in events if e['deep']]),
+                'avg_tie':    sum(e['tie'] for e in events) / total,
+                'avg_rel':    sum(e['rel'] for e in events) / total,
+                'tie_dist': {
+                    'CRITICAL': len([e for e in events if e['tie'] >= 70]),
+                    'HIGH':     len([e for e in events if 40 <= e['tie'] < 70]),
+                    'MEDIUM':   len([e for e in events if 20 <= e['tie'] < 40]),
+                    'LOW':      len([e for e in events if e['tie'] < 20]),
+                },
+                'sectors':   Counter(e['sector'] for e in events),
+                'tgt_types': Counter(e['tgt_cat'] for e in events),
+                'evt_cats':  Counter(e['evt_cat'] for e in events),
+                'bias':      Counter(e['bias'] for e in events if e['bias']),
+                'aggressors': Counter(e['aggressor'] for e in events if e['aggressor']),
             }
         }
 
 # =============================================================================
-# CHART GENERATION
+# CHARTS (compact, inline)
 # =============================================================================
 
-class ChartGenerator:
-    """Generates analytics charts using Matplotlib with Slate & Amber theme."""
-    
+class Charts:
     @staticmethod
-    def _setup_plot():
-        """Apply global style settings."""
+    def _style():
         plt.style.use('dark_background')
-        plt.rcParams['axes.facecolor'] = Config.HEX_BG
-        plt.rcParams['figure.facecolor'] = Config.HEX_BG
-        plt.rcParams['text.color'] = Config.HEX_TEXT
-        plt.rcParams['axes.labelcolor'] = Config.HEX_TEXT
-        plt.rcParams['xtick.color'] = Config.HEX_TEXT
-        plt.rcParams['ytick.color'] = Config.HEX_TEXT
-        plt.rcParams['axes.edgecolor'] = Config.HEX_GRID
-        plt.rcParams['grid.color'] = Config.HEX_GRID
-        plt.rcParams['font.family'] = 'sans-serif'
-        plt.rcParams['font.sans-serif'] = ['Arial', 'Roboto', 'DejaVu Sans']
-        
-    @staticmethod
-    def generate_threat_gauge(stats):
-        """Donut chart for Threat Level."""
-        if not MATPLOTLIB_AVAILABLE: return None
-        
-        ChartGenerator._setup_plot()
-        fig, ax = plt.subplots(figsize=(3, 3))
-        
-        # Data
-        val = stats['avg_tie']
-        
-        # Gauge background and value
-        wedges, _ = ax.pie([val, 100-val], startangle=90, colors=[Config.HEX_ACCENT, '#1e293b'],
-                           wedgeprops={'width': 0.3, 'edgecolor': Config.HEX_BG})
-        
-        # Center Text
-        ax.text(0, 0, f"{int(val)}", ha='center', va='center', fontsize=24, fontweight='bold', color=Config.HEX_TEXT)
-        ax.text(0, -0.25, "AVG TIE", ha='center', va='center', fontsize=8, color='#94a3b8')
-        
-        tmp = tempfile.mktemp(suffix='.png')
-        plt.savefig(tmp, dpi=150, bbox_inches='tight', transparent=True)
-        plt.close(fig)
-        return tmp
+        for k, v in {
+            'axes.facecolor': C.H_BG, 'figure.facecolor': C.H_BG,
+            'text.color': C.H_TEXT, 'axes.labelcolor': C.H_TEXT,
+            'xtick.color': C.H_TEXT, 'ytick.color': C.H_TEXT,
+            'axes.edgecolor': C.H_GRID, 'grid.color': C.H_GRID,
+        }.items():
+            plt.rcParams[k] = v
 
     @staticmethod
-    def generate_tie_distribution(stats):
-        """Horizontal bar chart for TIE levels."""
-        if not MATPLOTLIB_AVAILABLE: return None
-        
-        ChartGenerator._setup_plot()
-        fig, ax = plt.subplots(figsize=(5, 3))
-        
-        dist = stats['tie_dist']
-        labels = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']
-        values = [dist['CRIT'], dist['HIGH'], dist['MED'], dist['LOW']]
-        colors = ['#ef4444', '#f97316', '#eab308', '#64748b']
-        
-        y_pos = np.arange(len(labels))
-        bars = ax.barh(y_pos, values, color=colors, height=0.6)
-        ax.set_yticks(y_pos)
-        ax.set_yticklabels(labels, fontsize=8)
-        ax.invert_yaxis()
-        ax.set_xlabel('Events Count', fontsize=8)
-        
-        # Value labels
-        for i, v in enumerate(values):
-            ax.text(v + 1, i, str(v), va='center', fontsize=8, color=Config.HEX_TEXT)
-        
-        # Remove spines
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        
-        tmp = tempfile.mktemp(suffix='.png')
-        plt.savefig(tmp, dpi=150, bbox_inches='tight', transparent=True)
-        plt.close(fig)
-        return tmp
+    def tempo(events):
+        """7-day operational tempo bar chart. Compact."""
+        if not HAS_MPL: return None
+        Charts._style()
+        fig, ax = plt.subplots(figsize=(4.5, 1.5))
 
-    @staticmethod
-    def generate_sector_pie(stats):
-        """Donut chart for Strategic Sectors."""
-        if not MATPLOTLIB_AVAILABLE: return None
-        
-        ChartGenerator._setup_plot()
-        fig, ax = plt.subplots(figsize=(4, 4))
-        
-        data = stats['sector_dist']
-        labels = list(data.keys()) or ['No Data']
-        values = list(data.values()) or [1]
-        
-        # Custom colors for sectors
-        colors = ['#f59e0b', '#3b82f6', '#ef4444', '#10b981', '#8b5cf6']
-        
-        wedges, texts, autotexts = ax.pie(values, labels=labels, autopct='%1.1f%%',
-                                          startangle=140, colors=colors[:len(labels)],
-                                          wedgeprops={'width': 0.4, 'edgecolor': Config.HEX_BG},
-                                          textprops={'color': Config.HEX_TEXT, 'fontsize': 8},
-                                          pctdistance=0.85)
-        
-        tmp = tempfile.mktemp(suffix='.png')
-        plt.savefig(tmp, dpi=150, bbox_inches='tight', transparent=True)
-        plt.close(fig)
-        return tmp
-        
-    @staticmethod
-    def generate_classification_bar(stats):
-        """Horizontal bar for Classifications."""
-        if not MATPLOTLIB_AVAILABLE: return None
-        
-        ChartGenerator._setup_plot()
-        fig, ax = plt.subplots(figsize=(5, 3))
-        
-        data = stats['cls_dist']
-        # Sort by value
-        sorted_items = sorted(data.items(), key=lambda x: x[1], reverse=False) # Ascending for horiz bar
-        labels = [k.replace('_', ' ') for k, v in sorted_items]
-        values = [v for k, v in sorted_items]
-        
-        y_pos = np.arange(len(labels))
-        ax.barh(y_pos, values, color=Config.HEX_ACCENT, alpha=0.9, height=0.6)
-        
-        ax.set_yticks(y_pos)
-        ax.set_yticklabels(labels, fontsize=7)
-        ax.set_xlabel('Count', fontsize=8)
-        
-        # Remove spines
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        
-        tmp = tempfile.mktemp(suffix='.png')
-        plt.savefig(tmp, dpi=150, bbox_inches='tight', transparent=True)
-        plt.close(fig)
-        return tmp
-
-    @staticmethod
-    def generate_timeline(events):
-        """Bar chart for last 14 days."""
-        if not MATPLOTLIB_AVAILABLE: return None
-        
-        ChartGenerator._setup_plot()
-        fig, ax = plt.subplots(figsize=(10, 3))
-        
-        # Aggregate by date
-        dates = [e['date'][:10] for e in events]
+        dates = [e['date'][:10] for e in events if len(e['date']) >= 10]
         counts = Counter(dates)
-        
-        # Sort dates
-        sorted_dates = sorted(counts.keys())
-        sorted_counts = [counts[d] for d in sorted_dates]
-        
-        if not sorted_dates:
-             return None
+        sd = sorted(counts.keys())[-7:] if len(counts) > 7 else sorted(counts.keys())
+        vals = [counts.get(d, 0) for d in sd]
 
-        x_pos = np.arange(len(sorted_dates))
-        ax.bar(x_pos, sorted_counts, color=Config.HEX_ACCENT, alpha=0.8)
-        
-        ax.set_xticks(x_pos)
-        ax.set_xticklabels([d[5:] for d in sorted_dates], rotation=45, fontsize=8)
-        
+        if not sd: plt.close(fig); return None
+
+        ax.bar(range(len(sd)), vals, color=C.H_AMBER, alpha=0.85)
+        ax.set_xticks(range(len(sd)))
+        ax.set_xticklabels([d[5:] for d in sd], fontsize=6, rotation=30)
+        ax.set_ylabel('Events', fontsize=7)
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
-        ax.set_ylabel('Events', fontsize=8)
-        
+        ax.tick_params(axis='y', labelsize=6)
+
+        tmp = tempfile.mktemp(suffix='.png')
+        plt.savefig(tmp, dpi=150, bbox_inches='tight', transparent=True)
+        plt.close(fig)
+        return tmp
+
+    @staticmethod
+    def tie_dist(stats):
+        """TIE distribution horizontal bar. Compact."""
+        if not HAS_MPL: return None
+        Charts._style()
+        fig, ax = plt.subplots(figsize=(4.5, 1.5))
+
+        d = stats['tie_dist']
+        labels = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']
+        vals = [d[l] for l in labels]
+        colors = ['#ef4444', '#f97316', '#eab308', '#64748b']
+
+        ax.barh(range(4), vals, color=colors, height=0.55)
+        ax.set_yticks(range(4))
+        ax.set_yticklabels(labels, fontsize=7)
+        ax.invert_yaxis()
+        for i, v in enumerate(vals):
+            ax.text(v + 0.5, i, str(v), va='center', fontsize=7, color=C.H_TEXT)
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.tick_params(axis='x', labelsize=6)
+
         tmp = tempfile.mktemp(suffix='.png')
         plt.savefig(tmp, dpi=150, bbox_inches='tight', transparent=True)
         plt.close(fig)
@@ -422,370 +303,380 @@ class ChartGenerator:
 # PDF RENDERER
 # =============================================================================
 
-class BriefingDoc(FPDF):
-    """Custom FPDF class for Impact Atlas SITREPs."""
-    
+class Doc(FPDF):
     def __init__(self):
         super().__init__()
-        self.set_auto_page_break(auto=True, margin=Config.FOOTER_HEIGHT + 5)
-        self.set_margins(Config.PAGE_MARGIN, Config.PAGE_MARGIN, Config.PAGE_MARGIN)
-        self._total_pages = '{nb}'
-        self._load_fonts()
-    
-    def _load_fonts(self):
-        """Load custom fonts."""
-        # Clean up font handling
-        fonts = [
-            ('Roboto', '', 'Roboto-Regular.ttf'),
-            ('Roboto', 'B', 'Roboto-Bold.ttf'),
-            ('JBM', '', 'JetBrainsMono-Regular.ttf'),
-            ('JBM', 'B', 'JetBrainsMono-Bold.ttf'),
-        ]
-        
-        for family, style, filename in fonts:
-            font_path = Config.FONTS_DIR / filename
-            if font_path.exists():
-                try:
-                    self.add_font(family, style, str(font_path))
-                except Exception as e:
-                    logger.warning(f"Font Load Error {filename}: {e}")
-            else:
-                logger.warning(f"Font Missing: {font_path}")
-        
+        self.set_auto_page_break(True, margin=18)
+        self.set_margins(15, 15, 15)
+        for fam, sty, fn in [
+            (C.F_H, '', 'Roboto-Regular.ttf'), (C.F_H, 'B', 'Roboto-Bold.ttf'),
+            (C.F_M, '', 'JetBrainsMono-Regular.ttf'), (C.F_M, 'B', 'JetBrainsMono-Bold.ttf'),
+        ]:
+            p = C.FONTS / fn
+            if p.exists():
+                try: self.add_font(fam, sty, str(p))
+                except: pass
+
     def header(self):
-        """Header for Pages 2+"""
         if self.page_no() == 1: return
-        
-        # Dark Background Strip
-        self.set_fill_color(*Config.C_BG_DARK)
-        self.rect(0, 0, 210, 15, 'F')
-        
-        self.set_y(5)
-        self.set_font(Config.FONT_HEAD, 'B', 10)
-        self.set_text_color(*Config.C_ACCENT)
-        self.cell(0, 5, "IMPACT ATLAS // SITREP", align='L')
-        
-        self.set_xy(0, 5)
-        self.set_font(Config.FONT_HEAD, '', 8)
-        self.set_text_color(*Config.C_TEXT_SEC)
-        dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M Z")
-        self.cell(200, 5, f"{dt}", align='R')
-        self.ln(15)
+        self.set_fill_color(*C.BG)
+        self.rect(0, 0, 210, 12, 'F')
+        self.set_fill_color(*C.AMBER)
+        self.rect(0, 12, 210, 0.6, 'F')
+        self.set_y(3)
+        self.set_font(C.F_H, 'B', 8)
+        self.set_text_color(*C.AMBER)
+        self.cell(90, 5, "IMPACT ATLAS // SITREP")
+        self.set_font(C.F_M, '', 7)
+        self.set_text_color(*C.TEXT2)
+        self.cell(90, 5, datetime.datetime.now().strftime("%Y-%m-%d %H:%M Z"), align='R')
+        self.set_y(18)
 
     def footer(self):
-        """Footer with Disclaimer."""
-        self.set_y(-Config.FOOTER_HEIGHT)
-        self.set_font(Config.FONT_HEAD, '', 8)
-        self.set_text_color(*Config.C_TEXT_MUTED)
-        
-        self.cell(0, 4, f"Page {self.page_no()}/{{nb}}", align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        self.set_font(Config.FONT_HEAD, '', 7)
-        self.cell(0, 4, "ACADEMIC USE ONLY. IMPACT ATLAS.", align='C')
+        self.set_y(-12)
+        self.set_font(C.F_H, '', 7)
+        self.set_text_color(*C.MUTED)
+        self.cell(0, 4, f"Page {self.page_no()}/{{nb}}  |  ACADEMIC USE ONLY. IMPACT ATLAS.", align='C')
 
-    def draw_badge(self, text, bg_color, text_color=(255,255,255), x=None, y=None, w=20, h=6):
-        """Draws a rounded badge."""
-        if x is None: x = self.get_x()
-        if y is None: y = self.get_y()
-        
-        self.set_fill_color(*bg_color)
-        self.rect(x, y, w, h, 'F')
-        
-        self.set_xy(x, y+1)
-        self.set_font(Config.FONT_HEAD, 'B', 7)
-        self.set_text_color(*text_color)
-        self.cell(w, 4, text, align='C')
-        self.set_text_color(*Config.C_TEXT_PRI) # Reset
+    # ── Helpers ──────────────────────────────────────────────────
 
-    def page_cover(self, data, charts):
-        """Render Page 1: Executive Summary & Metrics."""
-        self.add_page()
-        
-        # --- HERO HEADER ---
-        self.set_fill_color(*Config.C_BG_DARK)
-        self.rect(0, 0, 210, 60, 'F')
-        
-        # Border Accent
-        self.set_fill_color(*Config.C_ACCENT)
-        self.rect(0, 58, 210, 2, 'F')
-        
-        self.set_y(20)
-        self.set_font(Config.FONT_HEAD, 'B', 24)
-        self.set_text_color(*Config.C_ACCENT)
-        self.cell(0, 10, "IMPACT ATLAS", align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        
-        self.set_font(Config.FONT_HEAD, '', 14)
-        self.set_text_color(*Config.C_TEXT_PRI)
-        self.cell(0, 10, "DAILY INTELLIGENCE BRIEFING", align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        
-        self.set_font(Config.FONT_MONO, '', 9)
-        self.set_text_color(*Config.C_TEXT_SEC)
-        dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M Zulu")
-        self.cell(0, 6, f"GENERATED: {dt} | CLEARANCE: EYES ONLY", align='C')
-        
-        self.set_y(70)
-        
-        # --- METRICS GRID ---
-        col_width = 85
-        spacing = 10
-        
-        # LEFT: Threat Gauge
-        if charts.get('threat'):
-            self.image(charts['threat'], x=25, y=70, w=60)
-        
-        # RIGHT: Key Stats
-        x_start = 110
-        y_start = 75
-        self.set_xy(x_start, y_start)
-        
-        stats = data['stats']
-        
-        def stat_row(label, value, color=Config.C_TEXT_PRI):
-            self.set_x(x_start)
-            self.set_font(Config.FONT_HEAD, '', 10)
-            self.set_text_color(*Config.C_TEXT_SEC)
-            self.cell(40, 8, label)
-            self.set_font(Config.FONT_MONO, 'B', 10)
-            self.set_text_color(*color)
-            self.cell(30, 8, str(value), align='R', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-            
-        stat_row("Total Events", stats['total'])
-        stat_row("Critical Events", stats['critical_count'], Config.C_CRIT)
-        stat_row("Avg TIE Score", f"{stats['avg_tie']:.1f}", Config.C_ACCENT)
-        stat_row("Avg Reliability", f"{stats['avg_reliability']:.1f}%")
-        
-        # --- EXECUTIVE SUMMARY ---
-        self.set_y(135)
-        self.set_font(Config.FONT_HEAD, 'B', 14)
-        self.set_text_color(*Config.C_BG_DARK) # Black for header? No, dark slate.
-        self.set_text_color(20, 30, 40)
-        self.cell(0, 10, "/// EXECUTIVE SUMMARY", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        
-        self.set_draw_color(*Config.C_ACCENT)
+    def section_title(self, text, color=C.BG):
+        self.set_font(C.F_H, 'B', 12)
+        self.set_text_color(*color)
+        self.cell(0, 8, f"/// {text}", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        self.set_draw_color(*C.AMBER)
         self.line(15, self.get_y(), 195, self.get_y())
-        self.ln(5)
-        
-        self.set_font(Config.FONT_BODY, '', 11)
-        self.set_text_color(40, 40, 40)
-        
-        # Auto-generate summary text
-        crit_txt = f"{stats['critical_count']} CRITICAL EVENTS detected in the last 14 days."
-        sector_top = stats['sector_dist'].most_common(1)
-        sector_txt = f"Primary activity concentrated in {sector_top[0][0]}" if sector_top else ""
-        class_top = stats['cls_dist'].most_common(1)
-        class_txt = f"dominated by {class_top[0][0]} operations." if class_top else ""
-        
-        summary_text = (
-            f"This SITREP covers operational developments across the theater. {crit_txt} "
-            f"{sector_txt} {class_txt} "
-            "Analysis indicates continued high kinetic intensity in contested zones. "
-            "Reliability of incoming intelligence remains stable. "
-        )
-        self.multi_cell(0, 6, summary_text)
-        
-        # --- CHARTS ROW ---
-        y_charts = 180
-        if charts.get('sector'):
-            self.set_xy(20, y_charts)
-            self.set_font(Config.FONT_HEAD, 'B', 9)
-            self.cell(80, 5, "STRATEGIC SECTORS", align='C')
-            self.image(charts['sector'], x=25, y=y_charts+5, w=70)
-            
-        if charts.get('classification'):
+        self.ln(4)
+
+    def kpi_card(self, x, y, label, value, color=C.AMBER):
+        """Draw a small KPI card at absolute position."""
+        w, h = 40, 22
+        self.set_fill_color(*C.CARD)
+        self.rect(x, y, w, h, 'F')
+        # Amber top stripe
+        self.set_fill_color(*color)
+        self.rect(x, y, w, 2, 'F')
+        # Value
+        self.set_xy(x, y + 4)
+        self.set_font(C.F_M, 'B', 14)
+        self.set_text_color(*C.TEXT)
+        self.cell(w, 8, str(value), align='C', new_x=XPos.LEFT, new_y=YPos.NEXT)
+        # Label
+        self.set_x(x)
+        self.set_font(C.F_H, '', 7)
+        self.set_text_color(*C.TEXT2)
+        self.cell(w, 5, label, align='C')
+
+    # ── PAGE 1: SITUATION OVERVIEW ───────────────────────────────
+
+    def page_overview(self, data, charts):
+        self.add_page()
+        s = data['stats']
+
+        # Hero Banner
+        self.set_fill_color(*C.BG)
+        self.rect(0, 0, 210, 50, 'F')
+        self.set_fill_color(*C.AMBER)
+        self.rect(0, 48, 210, 2, 'F')
+
+        self.set_y(14)
+        self.set_font(C.F_H, 'B', 22)
+        self.set_text_color(*C.AMBER)
+        self.cell(0, 10, "IMPACT ATLAS", align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        self.set_font(C.F_H, '', 11)
+        self.set_text_color(*C.TEXT)
+        self.cell(0, 7, "SITUATION REPORT  //  DAILY INTELLIGENCE BRIEFING", align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        self.set_font(C.F_M, '', 7)
+        self.set_text_color(*C.TEXT2)
+        dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M Zulu")
+        self.cell(0, 5, f"GENERATED {dt}  |  EYES ONLY", align='C')
+
+        # KPI Cards (2x2)
+        y0 = 56
+        gap = 44
+        x0 = 15
+        self.kpi_card(x0,          y0, "TOTAL EVENTS",    s['total'])
+        self.kpi_card(x0 + gap,    y0, "CRITICAL",        s['crit_count'], C.RED)
+        self.kpi_card(x0 + gap*2,  y0, "DEEP STRIKES",   s['deep_count'], C.ORANGE)
+        self.kpi_card(x0 + gap*3,  y0, "AVG RELIABILITY", f"{s['avg_rel']:.0f}%", C.GREEN)
+
+        # Charts Row
+        y_charts = 84
+        if charts.get('tempo'):
+            self.set_xy(15, y_charts)
+            self.set_font(C.F_H, 'B', 8)
+            self.set_text_color(*C.BG)
+            self.cell(85, 5, "OPERATIONAL TEMPO (7 DAYS)")
+            self.image(charts['tempo'], x=15, y=y_charts + 5, w=85)
+
+        if charts.get('tie'):
             self.set_xy(110, y_charts)
-            self.cell(80, 5, "TACTICAL CLASSIFICATION", align='C')
-            self.image(charts['classification'], x=115, y=y_charts+5, w=80)
+            self.set_font(C.F_H, 'B', 8)
+            self.set_text_color(*C.BG)
+            self.cell(85, 5, "THREAT LEVEL DISTRIBUTION")
+            self.image(charts['tie'], x=110, y=y_charts + 5, w=85)
+
+        # ----- EXECUTIVE SUMMARY (data-driven) -----
+        self.set_y(120)
+        self.section_title("EXECUTIVE SUMMARY")
+
+        self.set_font(C.F_H, '', 10)
+        self.set_text_color(40, 40, 40)
+
+        # Build dynamic summary from actual data
+        lines = []
+        lines.append(f"This SITREP covers {s['total']} intelligence events detected in the reporting period.")
+
+        if s['crit_count']:
+            lines.append(f"{s['crit_count']} events assessed as CRITICAL (TIE >= 70), requiring immediate attention.")
+
+        if s['deep_count']:
+            lines.append(f"{s['deep_count']} deep strike operations detected against targets inside Russian territory.")
+
+        # Top sectors
+        top_sectors = s['sectors'].most_common(3)
+        if top_sectors:
+            sec_str = ', '.join([f"{k} ({v})" for k, v in top_sectors])
+            lines.append(f"Primary activity by sector: {sec_str}.")
+
+        # Top target types
+        top_tgt = [(k,v) for k,v in s['tgt_types'].most_common(5) if k != 'UNKNOWN']
+        if top_tgt:
+            tgt_str = ', '.join([f"{k.replace('_',' ')} ({v})" for k, v in top_tgt[:3]])
+            lines.append(f"Most targeted categories: {tgt_str}.")
+
+        # Bias
+        top_bias = s['bias'].most_common(2)
+        if top_bias:
+            bias_str = ', '.join([f"{k} ({v})" for k, v in top_bias])
+            lines.append(f"Source bias profile: {bias_str}.")
+
+        # Avg TIE
+        lines.append(f"Average Threat Index: {s['avg_tie']:.1f}/100. Average Source Reliability: {s['avg_rel']:.0f}%.")
+
+        self.multi_cell(0, 5.5, '\n'.join(lines))
+
+        # ----- SECTOR BREAKDOWN TABLE -----
+        self.ln(4)
+        self.section_title("SECTOR ACTIVITY")
+
+        # Table header
+        self.set_fill_color(230, 232, 236)
+        self.rect(15, self.get_y(), 180, 7, 'F')
+        self.set_font(C.F_M, 'B', 7)
+        self.set_text_color(50, 50, 50)
+        self.cell(45, 7, "SECTOR", 0, 0)
+        self.cell(25, 7, "EVENTS", 0, 0, 'C')
+        self.cell(25, 7, "CRITICAL", 0, 0, 'C')
+        self.cell(25, 7, "DEEP STRIKE", 0, 0, 'C')
+        self.cell(30, 7, "AVG TIE", 0, 0, 'C')
+        self.cell(30, 7, "KEY TARGET", 0, 1, 'C')
+
+        # Group stats by sector
+        sector_data = {}
+        for e in data['events']:
+            sec = e['sector']
+            if sec not in sector_data:
+                sector_data[sec] = {'count': 0, 'crit': 0, 'deep': 0, 'tie_sum': 0, 'tgts': []}
+            sector_data[sec]['count'] += 1
+            if e['tie'] >= 70: sector_data[sec]['crit'] += 1
+            if e['deep']: sector_data[sec]['deep'] += 1
+            sector_data[sec]['tie_sum'] += e['tie']
+            if e['tgt_cat'] != 'UNKNOWN': sector_data[sec]['tgts'].append(e['tgt_cat'])
+
+        for sec in sorted(sector_data, key=lambda x: sector_data[x]['count'], reverse=True):
+            sd = sector_data[sec]
+            avg = sd['tie_sum'] / sd['count'] if sd['count'] else 0
+            top_tgt = Counter(sd['tgts']).most_common(1)
+            tgt_label = top_tgt[0][0].replace('_', ' ')[:15] if top_tgt else '-'
+
+            self.set_font(C.F_M, '', 7)
+            self.set_text_color(30, 30, 30)
+            self.cell(45, 6, sec, 0, 0)
+            self.cell(25, 6, str(sd['count']), 0, 0, 'C')
+
+            self.set_text_color(*C.RED if sd['crit'] > 0 else C.MUTED)
+            self.cell(25, 6, str(sd['crit']), 0, 0, 'C')
+
+            self.set_text_color(*C.ORANGE if sd['deep'] > 0 else C.MUTED)
+            self.cell(25, 6, str(sd['deep']), 0, 0, 'C')
+
+            # Color avg TIE
+            if avg >= 70: tc = C.RED
+            elif avg >= 40: tc = C.ORANGE
+            else: tc = C.MUTED
+            self.set_text_color(*tc)
+            self.cell(30, 6, f"{avg:.1f}", 0, 0, 'C')
+
+            self.set_text_color(60, 60, 60)
+            self.cell(30, 6, tgt_label, 0, 1, 'C')
+
+    # ── PAGE 2: FLASH TRAFFIC ────────────────────────────────────
 
     def page_flash(self, data):
-        """Render Page 2: Flash Traffic (Critical Events)."""
         self.add_page()
-        
-        self.set_font(Config.FONT_HEAD, 'B', 14)
-        self.set_text_color(*Config.C_CRIT)
-        self.cell(0, 10, "/// FLASH TRAFFIC - PRIORITY INTERCEPTS", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        self.set_draw_color(*Config.C_CRIT)
-        self.line(15, self.get_y(), 195, self.get_y())
-        self.ln(5)
-        
+        self.section_title("FLASH TRAFFIC  -  PRIORITY INTERCEPTS", C.RED)
+
         for item in data['critical']:
-            # Card Background
-            y_start = self.get_y()
-            if y_start > 250: 
+            y0 = self.get_y()
+            if y0 > 240:
                 self.add_page()
-                y_start = self.get_y()
-                
-            # Left Stripe
-            self.set_fill_color(*Config.C_CRIT)
-            self.rect(15, y_start, 2, 35, 'F')
-            
-            # Content
-            self.set_xy(20, y_start)
-            
-            # Header: TIE Score | Date
-            self.set_font(Config.FONT_MONO, 'B', 10)
-            self.set_text_color(*Config.C_CRIT)
-            self.cell(25, 5, f"TIE: {int(item['tie'])}")
-            
-            self.set_font(Config.FONT_MONO, '', 8)
-            self.set_text_color(*Config.C_TEXT_MUTED)
-            self.cell(0, 5, f" | {item['date']} | {item['sector']}", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-            
+                y0 = self.get_y()
+
+            # Left accent stripe
+            self.set_fill_color(*C.RED)
+            self.rect(15, y0, 2, 42, 'F')
+
+            # Header line
+            self.set_xy(20, y0)
+            self.set_font(C.F_M, 'B', 9)
+            self.set_text_color(*C.RED)
+            self.cell(20, 5, f"TIE {int(item['tie'])}")
+            self.set_font(C.F_M, '', 7)
+            self.set_text_color(*C.MUTED)
+            self.cell(0, 5, f" | {item['date']} | {item['sector']} | {item['evt_cat'].replace('_',' ')}",
+                      new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+
             # Title
             self.set_x(20)
-            self.set_font(Config.FONT_HEAD, 'B', 11)
+            self.set_font(C.F_H, 'B', 10)
             self.set_text_color(20, 20, 20)
-            self.cell(0, 6, item['title'].upper()[:75], new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-            
-            # Vectors
-            self.set_x(20)
-            self.set_font(Config.FONT_MONO, 'B', 8)
-            self.set_text_color(*Config.C_BG_DARK)
-            self.cell(30, 5, f"K:{int(item['k'])} T:{int(item['t'])} E:{int(item['e'])}")
-            self.set_font(Config.FONT_MONO, '', 7)
-            self.set_text_color(*Config.C_TEXT_MUTED)
-            self.cell(0, 5, f"Reliability: {item['rel']}%", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-            
-            # Description
-            self.set_x(20)
-            self.set_font(Config.FONT_BODY, '', 9)
-            self.set_text_color(50, 50, 50)
-            self.multi_cell(0, 5, item['desc'][:250] + "...")
-            
-            self.ln(5)
+            self.cell(0, 6, item['title'][:80], new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
-    def page_timeline(self, data):
-        """Render Page 3+: Operational Timeline."""
+            # Vectors + Reliability
+            self.set_x(20)
+            self.set_font(C.F_M, 'B', 7)
+            self.set_text_color(*C.BG)
+            self.cell(25, 4, f"K:{int(item['k'])} T:{int(item['t'])} E:{int(item['e'])}")
+            self.set_font(C.F_M, '', 7)
+            self.set_text_color(*C.MUTED)
+            rel_txt = f"REL:{item['rel']}%"
+            if item['bias']:
+                rel_txt += f"  BIAS:{item['bias']}"
+            self.cell(0, 4, rel_txt, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+
+            # Strategic Value Assessment - THE KEY INTEL
+            strat_val = item.get('strat_val', '')
+            if strat_val:
+                self.set_x(20)
+                self.set_font(C.F_H, '', 8)
+                self.set_text_color(40, 50, 60)
+                # Truncate to fit
+                self.multi_cell(170, 4, strat_val[:300])
+
+            self.ln(4)
+
+    # ── PAGE 3: SIGNIFICANT EVENTS LOG ───────────────────────────
+
+    def page_log(self, data):
         self.add_page()
-        
-        self.set_font(Config.FONT_HEAD, 'B', 14)
-        self.set_text_color(*Config.C_BG_DARK)
-        self.cell(0, 10, "/// OPERATIONAL TIMELINE", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        self.set_draw_color(*Config.C_BG_DARK)
-        self.line(15, self.get_y(), 195, self.get_y())
-        self.ln(5)
-        
-        # Table Header
-        self.set_fill_color(240, 240, 240)
-        self.rect(15, self.get_y(), 180, 8, 'F')
-        self.set_font(Config.FONT_MONO, 'B', 8)
+        self.section_title("SIGNIFICANT EVENTS LOG")
+
+        # Header
+        self.set_fill_color(230, 232, 236)
+        self.rect(15, self.get_y(), 180, 7, 'F')
+        self.set_font(C.F_M, 'B', 7)
         self.set_text_color(50, 50, 50)
-        self.cell(30, 8, "TIME", 0, 0)
-        self.cell(15, 8, "TIE", 0, 0) # Score
-        self.cell(25, 8, "VECTORS", 0, 0) # K/T/E
-        self.cell(110, 8, "EVENT / SECTOR", 0, 1)
-        
-        # Rows
-        for i, item in enumerate(data['timeline']):
+        self.cell(22, 7, "DATE", 0, 0)
+        self.cell(12, 7, "TIE", 0, 0, 'C')
+        self.cell(22, 7, "K/T/E", 0, 0, 'C')
+        self.cell(30, 7, "CATEGORY", 0, 0)
+        self.cell(94, 7, "EVENT", 0, 1)
+
+        for item in data['timeline']:
             if self.get_y() > 270:
                 self.add_page()
-                # Redraw Header
-                self.set_fill_color(240, 240, 240)
-                self.rect(15, self.get_y(), 180, 8, 'F')
-                self.set_font(Config.FONT_MONO, 'B', 8)
-                self.cell(30, 8, "TIME", 0, 0)
-                self.cell(15, 8, "TIE", 0, 0)
-                self.cell(25, 8, "VECTORS", 0, 0)
-                self.cell(110, 8, "EVENT / SECTOR", 0, 1)
+                self.set_fill_color(230, 232, 236)
+                self.rect(15, self.get_y(), 180, 7, 'F')
+                self.set_font(C.F_M, 'B', 7)
+                self.set_text_color(50, 50, 50)
+                self.cell(22, 7, "DATE", 0, 0)
+                self.cell(12, 7, "TIE", 0, 0, 'C')
+                self.cell(22, 7, "K/T/E", 0, 0, 'C')
+                self.cell(30, 7, "CATEGORY", 0, 0)
+                self.cell(94, 7, "EVENT", 0, 1)
 
             # Date
-            self.set_font(Config.FONT_MONO, '', 7)
-            self.set_text_color(*Config.C_TEXT_MUTED)
-            self.cell(30, 6, item['date'][5:16], 0, 0)
-            
-            # TIE Badge
+            self.set_font(C.F_M, '', 6)
+            self.set_text_color(*C.MUTED)
+            self.cell(22, 5, item['date'][5:16] if len(item['date']) > 5 else item['date'], 0, 0)
+
+            # TIE (color coded)
             tie = int(item['tie'])
-            if tie >= 70: col = Config.C_CRIT
-            elif tie >= 40: col = Config.C_HIGH
-            elif tie >= 20: col = Config.C_MED
-            else: col = Config.C_LOW
-            
-            self.set_font(Config.FONT_MONO, 'B', 8)
-            self.set_text_color(*col)
-            self.cell(15, 6, f"{tie}", 0, 0)
-            
-            # Vectors
-            self.set_font(Config.FONT_MONO, '', 7)
-            self.set_text_color(*Config.C_TEXT_MUTED)
-            self.cell(25, 6, f"K{int(item['k'])}/T{int(item['t'])}/E{int(item['e'])}", 0, 0)
-            
-            # Title & Sector
-            self.set_font(Config.FONT_HEAD, '', 8)
+            if tie >= 70: tc = C.RED
+            elif tie >= 40: tc = C.ORANGE
+            elif tie >= 20: tc = C.YELLOW
+            else: tc = C.MUTED
+            self.set_font(C.F_M, 'B', 7)
+            self.set_text_color(*tc)
+            self.cell(12, 5, str(tie), 0, 0, 'C')
+
+            # K/T/E
+            self.set_font(C.F_M, '', 6)
+            self.set_text_color(*C.MUTED)
+            self.cell(22, 5, f"{int(item['k'])}/{int(item['t'])}/{int(item['e'])}", 0, 0, 'C')
+
+            # Category
+            cat = item['evt_cat'].replace('_', ' ')[:18]
+            self.set_font(C.F_M, '', 6)
+            self.set_text_color(60, 60, 60)
+            self.cell(30, 5, cat, 0, 0)
+
+            # Title
+            self.set_font(C.F_H, '', 7)
             self.set_text_color(20, 20, 20)
-            title = item['title'][:55]
-            sector = item['sector'].replace('_', ' ')
-            self.cell(110, 6, f"{title} [{sector}]", 0, 1)
-            
-            # Thin separator
-            self.set_draw_color(240, 240, 240)
+            self.cell(94, 5, item['title'][:60], 0, 1)
+
+            # Separator
+            self.set_draw_color(230, 232, 236)
             self.line(15, self.get_y(), 195, self.get_y())
 
 # =============================================================================
-# MAIN EXECUTION
+# MAIN
 # =============================================================================
 
 def main():
-    print("="*60)
-    print("IMPACT ATLAS SITREP GENERATOR v6.0")
-    print("="*60)
-    
-    # 1. Initialize Engine
-    engine = IntelEngine(Config.DB_PATH)
-    print("[1/4] Fetching intelligence data...")
-    # Default to 7 days for a concise weekly/daily SITREP
-    data = engine.fetch_data(days=7) 
-    
-    if not data or not data['events']:
-        # Fallback to 30 days if no recent events (e.g. dev environment)
-        print("      No recent events found. Extending search to 30 days...")
-        data = engine.fetch_data(days=30)
+    print("=" * 60)
+    print("IMPACT ATLAS SITREP GENERATOR v7.0")
+    print("=" * 60)
 
-    if not data or not data['events']:
-        print("ERROR: No data found.")
+    engine = IntelEngine(C.DB)
+    print("[1/4] Fetching intelligence...")
+    data = engine.fetch(days=7)
+    if not data:
+        print("      No recent data. Extending to 30 days...")
+        data = engine.fetch(days=30)
+    if not data:
+        print("ERROR: No data available.")
         return
-        
-    print(f"      Found {data['stats']['total']} events ({data['stats']['critical_count']} critical)")
-    
-    # 2. Generate Charts
-    print("[2/4] Generating tactical analytics...")
-    charts = {}
-    charts['threat'] = ChartGenerator.generate_threat_gauge(data['stats'])
-    charts['tie_dist'] = ChartGenerator.generate_tie_distribution(data['stats'])
-    charts['sector'] = ChartGenerator.generate_sector_pie(data['stats'])
-    charts['classification'] = ChartGenerator.generate_classification_bar(data['stats'])
-    charts['timeline'] = ChartGenerator.generate_timeline(data['events'])
-    
-    # 3. Render PDF
-    print("[3/4] Rendering briefing document...")
-    pdf = BriefingDoc()
-    
-    # Page 1: Cover
-    pdf.page_cover(data, charts)
-    
-    # Page 2: Flash Traffic
-    if data['critical']:
-        pdf.page_flash(data)
-    
-    # Page 3: Timeline
-    pdf.page_timeline(data)
-    
-    # 4. Save
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_path = Config.REPORTS_DIR / f"sitrep_{timestamp}.pdf"
-    
-    # Ensure dir exists
-    Config.REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-    
+
+    s = data['stats']
+    print(f"      {s['total']} events | {s['crit_count']} critical | {s['deep_count']} deep strikes")
+
+    print("[2/4] Generating charts...")
+    ch = {}
+    ch['tempo'] = Charts.tempo(data['events'])
+    ch['tie']   = Charts.tie_dist(s)
+
+    print("[3/4] Rendering PDF...")
+    pdf = Doc()
+    pdf.page_overview(data, ch)
+    pdf.page_flash(data)
+    pdf.page_log(data)
+
+    ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    out = C.OUT / f"sitrep_{ts}.pdf"
+    C.OUT.mkdir(parents=True, exist_ok=True)
+
     try:
-        pdf.output(str(output_path))
-        print(f"[4/4] SUCCESS: Report saved to {output_path}")
-    except PermissionError:
-        print("ERROR: Permission denied. Close the PDF and try again.")
+        pdf.output(str(out))
+        print(f"[4/4] SUCCESS: {out}")
     except Exception as e:
-        print(f"ERROR: PDF Generation failed: {e}")
-        
-    # Cleanup Charts
-    for path in charts.values():
-        if path and os.path.exists(path):
-            try: os.remove(path)
+        print(f"ERROR: {e}")
+
+    for p in ch.values():
+        if p and os.path.exists(p):
+            try: os.remove(p)
             except: pass
 
 if __name__ == "__main__":
