@@ -530,6 +530,102 @@
       color: #f1f5f9;
       text-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
     }
+
+    /* --- TACTICAL MAP MARKERS (NANO STYLE) --- */
+    .narrative-marker-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* The Central Hexagon */
+    .narrative-marker-hex {
+      width: 36px;
+      height: 40px;
+      background: rgba(15, 23, 42, 0.95);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .narrative-marker-hex::before {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      background: #0f172a;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      z-index: -1;
+    }
+
+    /* Inner Details */
+    .hex-icon {
+      font-size: 12px;
+      margin-bottom: -2px;
+    }
+
+    .hex-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    /* The Tactical Ring */
+    .narrative-marker-ring {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border: 1px dashed;
+      color: inherit;
+      /* Inherits color from inline style */
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: spin-tactical 10s linear infinite;
+      z-index: 1;
+    }
+
+    /* High Intensity Pulse */
+    .pulse-emitter {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+
+    @keyframes spin-tactical {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes pulse-ring {
+      0% {
+        transform: scale(0.8);
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
+
+    .narrative-polygon {
+      stroke-dasharray: 5, 10;
+      stroke-linecap: square;
+    }
   </style>
 </head>
 

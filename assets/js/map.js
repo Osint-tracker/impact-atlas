@@ -1087,26 +1087,49 @@
                 }
               }
 
-              // Create styled polygon
+              // Create styled polygon (Wireframe Zone)
               const polygon = L.polygon(coords, {
                 color: meta.tactic_color || '#94a3b8',
-                weight: 2,
-                opacity: 0.9,
+                weight: 1,
+                opacity: 0.6,
                 fillColor: meta.tactic_color || '#94a3b8',
-                fillOpacity: 0.2,
-                className: 'narrative-polygon'
+                fillOpacity: 0.05,
+                className: 'narrative-polygon', // Dashed line via CSS
+                dashArray: '4, 8'
+              });
+
+              // Create Tactical Hex Marker at Centroid
+              const markerHtml = `
+                ${meta.intensity >= 7 ? `<div class="pulse-emitter" style="background: ${meta.tactic_color};"></div>` : ''}
+                ${meta.intensity >= 4 ? `<div class="narrative-marker-ring" style="border-color: ${meta.tactic_color}; box-shadow: 0 0 10px ${meta.tactic_color}44;"></div>` : ''}
+                <div class="narrative-marker-hex" style="border: 1px solid ${meta.tactic_color}; color: ${meta.tactic_color}; box-shadow: 0 0 10px ${meta.tactic_color}66;">
+                  <div class="hex-icon" style="font-size: 10px;">➜</div>
+                  <div class="hex-score">${meta.intensity.toFixed(1)}</div>
+                </div>
+              `;
+
+              const markerIcon = L.divIcon({
+                className: 'narrative-marker-container',
+                html: markerHtml,
+                iconSize: [50, 50],
+                iconAnchor: [25, 25]
+              });
+
+              const marker = L.marker(centroid, {
+                icon: markerIcon,
+                zIndexOffset: 1000 // Always on top
               });
 
               // Hover effects
               polygon.on('mouseover', function (e) {
-                this.setStyle({ weight: 3, fillOpacity: 0.35 });
+                this.setStyle({ weight: 2, fillOpacity: 0.15 });
               });
               polygon.on('mouseout', function (e) {
-                this.setStyle({ weight: 2, fillOpacity: 0.2 });
+                this.setStyle({ weight: 1, fillOpacity: 0.05 });
               });
 
-              // Click: Open Intelligence Brief card
-              polygon.on('click', function (e) {
+              // Shared Popup Logic
+              const openPopup = (e) => {
                 L.DomEvent.stopPropagation(e);
 
                 const intensityClass = meta.intensity >= 7 ? 'CRITICAL' :
@@ -1273,9 +1296,13 @@
                   .setLatLng(e.latlng)
                   .setContent(popupContent)
                   .openOn(map);
-              });
+              };
+
+              polygon.on('click', openPopup);
+              marker.on('click', openPopup);
 
               narrativesLayer.addLayer(polygon);
+              narrativesLayer.addLayer(marker);
             });
 
             narrativesLayer.addTo(map);
