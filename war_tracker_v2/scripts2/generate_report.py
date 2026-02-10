@@ -223,16 +223,21 @@ class IntelEngine:
 
         # Separating Critical and Timeline
         critical_events = [e for e in events if e['tie'] >= 70]
-        # Fallback if no critical events
         if not critical_events and events:
             critical_events = sorted(events, key=lambda x: x['tie'], reverse=True)[:3]
 
-        timeline_events = [e for e in events if e['id'] not in [c['id'] for c in critical_events]]
+        # Timeline: Filter noise. Show High+ (TIE>=40). If too few, show Med+ (TIE>=20).
+        timeline_events = [e for e in events if e['tie'] >= 40]
+        if len(timeline_events) < 10:
+            timeline_events = [e for e in events if e['tie'] >= 20]
+        
+        # Sort by date and cap at 50 to prevent huge reports
+        timeline_events.sort(key=lambda x: x['date'], reverse=True)
         
         return {
             'events': events,
             'critical': critical_events[:5], # Top 5 critical
-            'timeline': timeline_events,
+            'timeline': timeline_events[:50],
             'stats': {
                 'total': total,
                 'critical_count': crit_count,
@@ -725,8 +730,14 @@ def main():
     # 1. Initialize Engine
     engine = IntelEngine(Config.DB_PATH)
     print("[1/4] Fetching intelligence data...")
-    data = engine.fetch_data(days=30) # Fetch last 30 days for better context
+    # Default to 7 days for a concise weekly/daily SITREP
+    data = engine.fetch_data(days=7) 
     
+    if not data or not data['events']:
+        # Fallback to 30 days if no recent events (e.g. dev environment)
+        print("      No recent events found. Extending search to 30 days...")
+        data = engine.fetch_data(days=30)
+
     if not data or not data['events']:
         print("ERROR: No data found.")
         return
