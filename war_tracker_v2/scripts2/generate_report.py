@@ -465,12 +465,12 @@ class Doc(FPDF):
         self.rect(15, self.get_y(), 180, 7, 'F')
         self.set_font(C.F_M, 'B', 7)
         self.set_text_color(50, 50, 50)
-        self.cell(45, 7, "SECTOR", 0, 0)
-        self.cell(25, 7, "EVENTS", 0, 0, 'C')
-        self.cell(25, 7, "CRITICAL", 0, 0, 'C')
-        self.cell(25, 7, "DEEP STRIKE", 0, 0, 'C')
-        self.cell(30, 7, "AVG TIE", 0, 0, 'C')
-        self.cell(30, 7, "KEY TARGET", 0, 1, 'C')
+        self.cell(45, 7, "SECTOR", new_x=XPos.RIGHT, new_y=YPos.TOP)
+        self.cell(25, 7, "EVENTS", align='C', new_x=XPos.RIGHT, new_y=YPos.TOP)
+        self.cell(25, 7, "CRITICAL", align='C', new_x=XPos.RIGHT, new_y=YPos.TOP)
+        self.cell(25, 7, "DEEP STRIKE", align='C', new_x=XPos.RIGHT, new_y=YPos.TOP)
+        self.cell(30, 7, "AVG TIE", align='C', new_x=XPos.RIGHT, new_y=YPos.TOP)
+        self.cell(30, 7, "KEY TARGET", align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
         # Group stats by sector
         sector_data = {}
@@ -492,24 +492,24 @@ class Doc(FPDF):
 
             self.set_font(C.F_M, '', 7)
             self.set_text_color(30, 30, 30)
-            self.cell(45, 6, sec, 0, 0)
-            self.cell(25, 6, str(sd['count']), 0, 0, 'C')
+            self.cell(45, 6, sec, new_x=XPos.RIGHT, new_y=YPos.TOP)
+            self.cell(25, 6, str(sd['count']), align='C', new_x=XPos.RIGHT, new_y=YPos.TOP)
 
             self.set_text_color(*C.RED if sd['crit'] > 0 else C.MUTED)
-            self.cell(25, 6, str(sd['crit']), 0, 0, 'C')
+            self.cell(25, 6, str(sd['crit']), align='C', new_x=XPos.RIGHT, new_y=YPos.TOP)
 
             self.set_text_color(*C.ORANGE if sd['deep'] > 0 else C.MUTED)
-            self.cell(25, 6, str(sd['deep']), 0, 0, 'C')
+            self.cell(25, 6, str(sd['deep']), align='C', new_x=XPos.RIGHT, new_y=YPos.TOP)
 
             # Color avg TIE
             if avg >= 70: tc = C.RED
             elif avg >= 40: tc = C.ORANGE
             else: tc = C.MUTED
             self.set_text_color(*tc)
-            self.cell(30, 6, f"{avg:.1f}", 0, 0, 'C')
+            self.cell(30, 6, f"{avg:.1f}", align='C', new_x=XPos.RIGHT, new_y=YPos.TOP)
 
             self.set_text_color(60, 60, 60)
-            self.cell(30, 6, tgt_label, 0, 1, 'C')
+            self.cell(30, 6, tgt_label, align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
     # ── PAGE 2: FLASH TRAFFIC ────────────────────────────────────
 
@@ -577,11 +577,11 @@ class Doc(FPDF):
         self.rect(15, self.get_y(), 180, 7, 'F')
         self.set_font(C.F_M, 'B', 7)
         self.set_text_color(50, 50, 50)
-        self.cell(22, 7, "DATE", 0, 0)
-        self.cell(12, 7, "TIE", 0, 0, 'C')
-        self.cell(22, 7, "K/T/E", 0, 0, 'C')
-        self.cell(30, 7, "CATEGORY", 0, 0)
-        self.cell(94, 7, "EVENT", 0, 1)
+        self.cell(22, 7, "DATE", new_x=XPos.RIGHT, new_y=YPos.TOP)
+        self.cell(12, 7, "TIE", align='C', new_x=XPos.RIGHT, new_y=YPos.TOP)
+        self.cell(22, 7, "K/T/E", align='C', new_x=XPos.RIGHT, new_y=YPos.TOP)
+        self.cell(30, 7, "CATEGORY", new_x=XPos.RIGHT, new_y=YPos.TOP)
+        self.cell(94, 7, "EVENT", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
         for item in data['timeline']:
             if self.get_y() > 270:
@@ -590,16 +590,16 @@ class Doc(FPDF):
                 self.rect(15, self.get_y(), 180, 7, 'F')
                 self.set_font(C.F_M, 'B', 7)
                 self.set_text_color(50, 50, 50)
-                self.cell(22, 7, "DATE", 0, 0)
-                self.cell(12, 7, "TIE", 0, 0, 'C')
-                self.cell(22, 7, "K/T/E", 0, 0, 'C')
-                self.cell(30, 7, "CATEGORY", 0, 0)
-                self.cell(94, 7, "EVENT", 0, 1)
+                self.cell(22, 7, "DATE", new_x=XPos.RIGHT, new_y=YPos.TOP)
+                self.cell(12, 7, "TIE", align='C', new_x=XPos.RIGHT, new_y=YPos.TOP)
+                self.cell(22, 7, "K/T/E", align='C', new_x=XPos.RIGHT, new_y=YPos.TOP)
+                self.cell(30, 7, "CATEGORY", new_x=XPos.RIGHT, new_y=YPos.TOP)
+                self.cell(94, 7, "EVENT", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
             # Date
             self.set_font(C.F_M, '', 6)
             self.set_text_color(*C.MUTED)
-            self.cell(22, 5, item['date'][5:16] if len(item['date']) > 5 else item['date'], 0, 0)
+            self.cell(22, 5, item['date'][5:16] if len(item['date']) > 5 else item['date'], new_x=XPos.RIGHT, new_y=YPos.TOP)
 
             # TIE (color coded)
             tie = int(item['tie'])
@@ -609,23 +609,23 @@ class Doc(FPDF):
             else: tc = C.MUTED
             self.set_font(C.F_M, 'B', 7)
             self.set_text_color(*tc)
-            self.cell(12, 5, str(tie), 0, 0, 'C')
+            self.cell(12, 5, str(tie), align='C', new_x=XPos.RIGHT, new_y=YPos.TOP)
 
             # K/T/E
             self.set_font(C.F_M, '', 6)
             self.set_text_color(*C.MUTED)
-            self.cell(22, 5, f"{int(item['k'])}/{int(item['t'])}/{int(item['e'])}", 0, 0, 'C')
+            self.cell(22, 5, f"{int(item['k'])}/{int(item['t'])}/{int(item['e'])}", align='C', new_x=XPos.RIGHT, new_y=YPos.TOP)
 
             # Category
             cat = item['evt_cat'].replace('_', ' ')[:18]
             self.set_font(C.F_M, '', 6)
             self.set_text_color(60, 60, 60)
-            self.cell(30, 5, cat, 0, 0)
+            self.cell(30, 5, cat, new_x=XPos.RIGHT, new_y=YPos.TOP)
 
             # Title
             self.set_font(C.F_H, '', 7)
             self.set_text_color(20, 20, 20)
-            self.cell(94, 5, item['title'][:60], 0, 1)
+            self.cell(94, 5, item['title'][:60], new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
             # Separator
             self.set_draw_color(230, 232, 236)

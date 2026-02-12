@@ -1,7 +1,7 @@
 {
   "type": "FeatureCollection",
   "metadata": {
-    "generated": "2026-02-10T17:21:21.434160",
+    "generated": "2026-02-11T18:16:42.070000",
     "source": "NASA FIRMS (Multi-satellite)",
     "satellites": [
       "VIIRS_SNPP",
@@ -12,24 +12,6 @@
     "days": 3
   },
   "features": [
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          34.55931,
-          50.2981
-        ]
-      },
-      "properties": {
-        "brightness": 367.0,
-        "confidence": "h",
-        "acq_date": "2026-02-08",
-        "acq_time": "2233",
-        "satellite": "VIIRS_SNPP",
-        "frp": 14.15
-      }
-    },
     {
       "type": "Feature",
       "geometry": {
@@ -449,17 +431,17 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          34.56612,
-          50.29541
+          37.9305,
+          51.13887
         ]
       },
       "properties": {
-        "brightness": 321.72,
+        "brightness": 323.7,
         "confidence": "n",
-        "acq_date": "2026-02-08",
-        "acq_time": "2254",
-        "satellite": "VIIRS_NOAA20",
-        "frp": 21.26
+        "acq_date": "2026-02-10",
+        "acq_time": "2335",
+        "satellite": "VIIRS_SNPP",
+        "frp": 2.74
       }
     },
     {
@@ -467,35 +449,17 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          34.561,
-          50.29558
+          33.82875,
+          52.14737
         ]
       },
       "properties": {
-        "brightness": 367.0,
-        "confidence": "h",
-        "acq_date": "2026-02-08",
-        "acq_time": "2254",
-        "satellite": "VIIRS_NOAA20",
-        "frp": 21.26
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          34.56588,
-          50.29758
-        ]
-      },
-      "properties": {
-        "brightness": 333.69,
+        "brightness": 325.24,
         "confidence": "n",
-        "acq_date": "2026-02-08",
-        "acq_time": "2254",
-        "satellite": "VIIRS_NOAA20",
-        "frp": 28.61
+        "acq_date": "2026-02-10",
+        "acq_time": "2335",
+        "satellite": "VIIRS_SNPP",
+        "frp": 5.25
       }
     },
     {
@@ -503,35 +467,17 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          34.5607,
-          50.29778
+          33.71584,
+          52.17467
         ]
       },
       "properties": {
-        "brightness": 367.0,
-        "confidence": "h",
-        "acq_date": "2026-02-08",
-        "acq_time": "2254",
-        "satellite": "VIIRS_NOAA20",
-        "frp": 35.3
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          29.33214,
-          51.89201
-        ]
-      },
-      "properties": {
-        "brightness": 326.93,
+        "brightness": 325.56,
         "confidence": "n",
-        "acq_date": "2026-02-08",
-        "acq_time": "2254",
-        "satellite": "VIIRS_NOAA20",
-        "frp": 4.48
+        "acq_date": "2026-02-10",
+        "acq_time": "2335",
+        "satellite": "VIIRS_SNPP",
+        "frp": 4.01
       }
     },
     {
@@ -539,17 +485,143 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          29.33371,
-          51.89531
+          33.70848,
+          52.17544
         ]
       },
       "properties": {
-        "brightness": 320.77,
+        "brightness": 331.38,
         "confidence": "n",
-        "acq_date": "2026-02-08",
-        "acq_time": "2254",
-        "satellite": "VIIRS_NOAA20",
-        "frp": 4.23
+        "acq_date": "2026-02-10",
+        "acq_time": "2335",
+        "satellite": "VIIRS_SNPP",
+        "frp": 4.01
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.6752,
+          45.25706
+        ]
+      },
+      "properties": {
+        "brightness": 323.12,
+        "confidence": "n",
+        "acq_date": "2026-02-10",
+        "acq_time": "2337",
+        "satellite": "VIIRS_SNPP",
+        "frp": 4.86
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.66885,
+          45.25776
+        ]
+      },
+      "properties": {
+        "brightness": 324.27,
+        "confidence": "n",
+        "acq_date": "2026-02-10",
+        "acq_time": "2337",
+        "satellite": "VIIRS_SNPP",
+        "frp": 5.46
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.90137,
+          45.35453
+        ]
+      },
+      "properties": {
+        "brightness": 322.44,
+        "confidence": "n",
+        "acq_date": "2026-02-10",
+        "acq_time": "2337",
+        "satellite": "VIIRS_SNPP",
+        "frp": 3.24
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.92676,
+          45.37563
+        ]
+      },
+      "properties": {
+        "brightness": 308.88,
+        "confidence": "n",
+        "acq_date": "2026-02-10",
+        "acq_time": "2337",
+        "satellite": "VIIRS_SNPP",
+        "frp": 1.39
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          38.77286,
+          48.45899
+        ]
+      },
+      "properties": {
+        "brightness": 332.47,
+        "confidence": "n",
+        "acq_date": "2026-02-10",
+        "acq_time": "2337",
+        "satellite": "VIIRS_SNPP",
+        "frp": 13.77
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.82825,
+          52.14693
+        ]
+      },
+      "properties": {
+        "brightness": 327.73,
+        "confidence": "n",
+        "acq_date": "2026-02-11",
+        "acq_time": "115",
+        "satellite": "VIIRS_SNPP",
+        "frp": 2.61
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          24.17966,
+          46.01869
+        ]
+      },
+      "properties": {
+        "brightness": 325.2,
+        "confidence": "n",
+        "acq_date": "2026-02-11",
+        "acq_time": "1104",
+        "satellite": "VIIRS_SNPP",
+        "frp": 2.26
       }
     },
     {
@@ -935,17 +1007,17 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          31.81463,
-          50.24335
+          33.43386,
+          47.86802
         ]
       },
       "properties": {
-        "brightness": 332.62,
+        "brightness": 331.76,
         "confidence": "n",
-        "acq_date": "2026-02-08",
-        "acq_time": "5",
-        "satellite": "VIIRS_NOAA21",
-        "frp": 7.34
+        "acq_date": "2026-02-10",
+        "acq_time": "2358",
+        "satellite": "VIIRS_NOAA20",
+        "frp": 4.75
       }
     },
     {
@@ -953,17 +1025,17 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          31.81593,
-          50.24658
+          38.77396,
+          48.45908
         ]
       },
       "properties": {
-        "brightness": 318.46,
+        "brightness": 327.99,
         "confidence": "n",
-        "acq_date": "2026-02-08",
-        "acq_time": "5",
-        "satellite": "VIIRS_NOAA21",
-        "frp": 2.25
+        "acq_date": "2026-02-10",
+        "acq_time": "2358",
+        "satellite": "VIIRS_NOAA20",
+        "frp": 5.64
       }
     },
     {
@@ -971,17 +1043,17 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          34.5679,
-          50.29552
+          38.7733,
+          48.46036
         ]
       },
       "properties": {
-        "brightness": 324.11,
+        "brightness": 335.64,
         "confidence": "n",
-        "acq_date": "2026-02-08",
-        "acq_time": "2343",
-        "satellite": "VIIRS_NOAA21",
-        "frp": 6.48
+        "acq_date": "2026-02-10",
+        "acq_time": "2358",
+        "satellite": "VIIRS_NOAA20",
+        "frp": 8.06
       }
     },
     {
@@ -989,17 +1061,179 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          34.56253,
-          50.2963
+          37.92913,
+          51.14124
         ]
       },
       "properties": {
-        "brightness": 329.87,
+        "brightness": 329.02,
         "confidence": "n",
-        "acq_date": "2026-02-08",
-        "acq_time": "2343",
-        "satellite": "VIIRS_NOAA21",
-        "frp": 8.73
+        "acq_date": "2026-02-10",
+        "acq_time": "2358",
+        "satellite": "VIIRS_NOAA20",
+        "frp": 3.7
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.82848,
+          52.14783
+        ]
+      },
+      "properties": {
+        "brightness": 329.92,
+        "confidence": "n",
+        "acq_date": "2026-02-10",
+        "acq_time": "2358",
+        "satellite": "VIIRS_NOAA20",
+        "frp": 4.06
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.82986,
+          52.15107
+        ]
+      },
+      "properties": {
+        "brightness": 324.9,
+        "confidence": "n",
+        "acq_date": "2026-02-10",
+        "acq_time": "2358",
+        "satellite": "VIIRS_NOAA20",
+        "frp": 4.06
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.71022,
+          52.17375
+        ]
+      },
+      "properties": {
+        "brightness": 331.19,
+        "confidence": "n",
+        "acq_date": "2026-02-10",
+        "acq_time": "2358",
+        "satellite": "VIIRS_NOAA20",
+        "frp": 3.71
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.71159,
+          52.17699
+        ]
+      },
+      "properties": {
+        "brightness": 325.21,
+        "confidence": "n",
+        "acq_date": "2026-02-10",
+        "acq_time": "2358",
+        "satellite": "VIIRS_NOAA20",
+        "frp": 3.71
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.90446,
+          45.35556
+        ]
+      },
+      "properties": {
+        "brightness": 326.48,
+        "confidence": "n",
+        "acq_date": "2026-02-11",
+        "acq_time": "0",
+        "satellite": "VIIRS_NOAA20",
+        "frp": 1.65
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.93118,
+          45.37527
+        ]
+      },
+      "properties": {
+        "brightness": 298.04,
+        "confidence": "n",
+        "acq_date": "2026-02-11",
+        "acq_time": "0",
+        "satellite": "VIIRS_NOAA20",
+        "frp": 0.55
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.92634,
+          45.37604
+        ]
+      },
+      "properties": {
+        "brightness": 297.33,
+        "confidence": "n",
+        "acq_date": "2026-02-11",
+        "acq_time": "0",
+        "satellite": "VIIRS_NOAA20",
+        "frp": 0.51
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          38.77608,
+          48.45755
+        ]
+      },
+      "properties": {
+        "brightness": 337.66,
+        "confidence": "n",
+        "acq_date": "2026-02-11",
+        "acq_time": "943",
+        "satellite": "VIIRS_NOAA20",
+        "frp": 9.02
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          24.34039,
+          46.06333
+        ]
+      },
+      "properties": {
+        "brightness": 325.08,
+        "confidence": "n",
+        "acq_date": "2026-02-11",
+        "acq_time": "1125",
+        "satellite": "VIIRS_NOAA20",
+        "frp": 2.16
       }
     },
     {
@@ -1306,6 +1540,186 @@
         "acq_time": "1053",
         "satellite": "VIIRS_NOAA21",
         "frp": 2.63
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.93024,
+          51.14035
+        ]
+      },
+      "properties": {
+        "brightness": 324.89,
+        "confidence": "n",
+        "acq_date": "2026-02-10",
+        "acq_time": "2305",
+        "satellite": "VIIRS_NOAA21",
+        "frp": 3.8
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.66959,
+          45.25919
+        ]
+      },
+      "properties": {
+        "brightness": 306.23,
+        "confidence": "n",
+        "acq_date": "2026-02-10",
+        "acq_time": "2307",
+        "satellite": "VIIRS_NOAA21",
+        "frp": 4.1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.89955,
+          45.35564
+        ]
+      },
+      "properties": {
+        "brightness": 301.0,
+        "confidence": "n",
+        "acq_date": "2026-02-10",
+        "acq_time": "2307",
+        "satellite": "VIIRS_NOAA21",
+        "frp": 1.79
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.901,
+          45.35575
+        ]
+      },
+      "properties": {
+        "brightness": 330.29,
+        "confidence": "n",
+        "acq_date": "2026-02-10",
+        "acq_time": "2307",
+        "satellite": "VIIRS_NOAA21",
+        "frp": 2.86
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.93,
+          45.37548
+        ]
+      },
+      "properties": {
+        "brightness": 308.85,
+        "confidence": "n",
+        "acq_date": "2026-02-10",
+        "acq_time": "2307",
+        "satellite": "VIIRS_NOAA21",
+        "frp": 1.81
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.93107,
+          51.13982
+        ]
+      },
+      "properties": {
+        "brightness": 323.22,
+        "confidence": "n",
+        "acq_date": "2026-02-11",
+        "acq_time": "45",
+        "satellite": "VIIRS_NOAA21",
+        "frp": 3.68
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.83165,
+          52.1465
+        ]
+      },
+      "properties": {
+        "brightness": 333.68,
+        "confidence": "n",
+        "acq_date": "2026-02-11",
+        "acq_time": "45",
+        "satellite": "VIIRS_NOAA21",
+        "frp": 7.91
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.71263,
+          52.17454
+        ]
+      },
+      "properties": {
+        "brightness": 321.88,
+        "confidence": "n",
+        "acq_date": "2026-02-11",
+        "acq_time": "45",
+        "satellite": "VIIRS_NOAA21",
+        "frp": 3.92
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.67516,
+          45.25843
+        ]
+      },
+      "properties": {
+        "brightness": 367.0,
+        "confidence": "h",
+        "acq_date": "2026-02-11",
+        "acq_time": "49",
+        "satellite": "VIIRS_NOAA21",
+        "frp": 5.93
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          38.77363,
+          48.45959
+        ]
+      },
+      "properties": {
+        "brightness": 328.87,
+        "confidence": "n",
+        "acq_date": "2026-02-11",
+        "acq_time": "1034",
+        "satellite": "VIIRS_NOAA21",
+        "frp": 4.38
       }
     },
     {

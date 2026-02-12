@@ -914,17 +914,32 @@
       </div>
 
       <div class="charts-section">
-        <div class="chart-card">
-          <h4>Time Trend</h4>
-          <div class="chart-wrapper"><canvas id="timelineChart"></canvas></div>
+        <div class="chart-card" style="width: 100%;">
+          <h4 style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-crosshairs" style="color: #f59e0b;"></i> IMPACT MATRIX
+            <span style="font-size: 0.7rem; color: #64748b; font-weight: 400; letter-spacing: 1px;">T.I.E. SCATTER
+              ANALYSIS</span>
+          </h4>
+          <div class="chart-wrapper" style="height: 340px; position: relative;">
+            <canvas id="impactMatrixChart"></canvas>
+          </div>
         </div>
-        <div class="chart-card half">
-          <h4>Distribution by Type</h4>
-          <div class="chart-wrapper"><canvas id="typeDistributionChart"></canvas></div>
+      </div>
+
+      <!-- HVT CAROUSEL: High Value Targets Feed -->
+      <div id="hvt-carousel-section" class="hvt-carousel-section">
+        <div class="hvt-header">
+          <div class="hvt-header-left">
+            <i class="fa-solid fa-bullseye" style="color: #f59e0b;"></i>
+            <span class="hvt-title">HIGH VALUE TARGETS</span>
+            <span class="hvt-subtitle">PRIORITY EVENTS FEED</span>
+          </div>
+          <span class="hvt-count" id="hvtCount">0</span>
         </div>
-        <div class="chart-card half">
-          <h4>Intensity Index</h4>
-          <div class="chart-wrapper"><canvas id="intensityRadarChart"></canvas></div>
+        <div id="hvt-carousel" class="hvt-carousel-track">
+          <!-- JS injects HVT cards here -->
+          <div class="hvt-placeholder" style="color: #64748b; padding: 20px; font-size: 0.85rem;">Loading threat feed...
+          </div>
         </div>
       </div>
 
@@ -1361,7 +1376,6 @@
       <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 
       <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-      <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
 
       <script src="assets/js/charts.js"></script>
 

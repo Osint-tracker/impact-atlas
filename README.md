@@ -143,4 +143,4 @@ Private repository. All rights reserved.
 
 ---
 
-*Maintained by Luca Sanfilippo | Last Updated: January 2026*
+*Maintained by Osint tracker | Last Updated: January 2026*

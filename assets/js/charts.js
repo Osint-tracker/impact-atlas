@@ -106,10 +106,9 @@ function executeFilter() {
 }
 
 function updateDashboard(data) {
-    renderTimelineChart(data);
-    renderTypeChart(data);
-    renderRadarChart(data);
-    renderSectorTrendChart(); // NEW: Strategic Sector Chart
+    // T.I.E. Situational Awareness
+    renderImpactMatrix(data);
+    renderHVTCarousel(data);
 
     // RENDERING OF THE 3 VIEWS
     renderKanban(data);
@@ -120,128 +119,212 @@ function updateDashboard(data) {
 }
 
 // ===========================================
-// STRATEGIC SECTOR TREND CHART (SciPol)
+// IMPACT MATRIX (T.I.E. Bubble Chart)
 // ===========================================
-let sectorChart = null;
+let impactMatrixChart = null;
 
-function renderSectorTrendChart() {
-    const ctx = document.getElementById('sectorTrendChart');
-    if (!ctx) return; // Chart element not in DOM yet
+function renderImpactMatrix(data) {
+    const ctx = document.getElementById('impactMatrixChart');
+    if (!ctx) return;
 
-    fetch(`assets/data/strategic_trends.json?v=${new Date().getTime()}`)
-        .then(response => {
-            if (!response.ok) {
-                console.warn('⚠️ strategic_trends.json not found');
-                return null;
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (!data || !data.dates || data.dates.length === 0) {
-                console.warn('⚠️ No sector trend data available');
-                return;
-            }
+    // Performance: last 7 days or max 100 items
+    const now = Date.now();
+    const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000);
+    let filtered = data.filter(e => e.timestamp && e.timestamp >= sevenDaysAgo);
+    if (filtered.length > 100) filtered = filtered.slice(0, 100);
+    // Fallback: if no events in last 7 days, show most recent 100
+    if (filtered.length === 0) filtered = data.slice(0, 100);
 
-            // Limit to last 30 days
-            const maxDays = 30;
-            const startIdx = Math.max(0, data.dates.length - maxDays);
-            const dates = data.dates.slice(startIdx);
-
-            // Sector colors (SciPol theme)
-            const SECTOR_COLORS = {
-                ENERGY_COERCION: { border: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
-                DEEP_STRIKES_RU: { border: '#ef4444', bg: 'rgba(239, 68, 68, 0.15)' },
-                EASTERN_FRONT: { border: '#3b82f6', bg: 'rgba(59, 130, 246, 0.15)' },
-                SOUTHERN_FRONT: { border: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' }
+    const bubbles = filtered
+        .filter(e => e.vec_t && e.vec_e && e.vec_k)
+        .map(e => {
+            const tieTotal = e.tie_total || 0;
+            // Opacity: 0.3 (low impact) to 0.95 (high impact)
+            const opacity = 0.3 + (Math.min(tieTotal, 100) / 100) * 0.65;
+            return {
+                x: parseFloat(e.vec_t) || 1,
+                y: parseFloat(e.vec_e) || 1,
+                r: Math.max(4, (parseFloat(e.vec_k) || 1) * 3.5),
+                _title: e.title || 'Unknown',
+                _date: e.date || '--',
+                _t: e.vec_t,
+                _k: e.vec_k,
+                _e: e.vec_e,
+                _opacity: opacity,
+                _tieTotal: tieTotal
             };
+        });
 
-            const SECTOR_LABELS = {
-                ENERGY_COERCION: '⚡ Energy Coercion',
-                DEEP_STRIKES_RU: '🎯 Deep Strikes (RU)',
-                EASTERN_FRONT: '🔵 Eastern Front',
-                SOUTHERN_FRONT: '🟢 Southern Front'
-            };
+    if (impactMatrixChart) impactMatrixChart.destroy();
 
-            const datasets = Object.keys(data.datasets).map(sector => ({
-                label: SECTOR_LABELS[sector] || sector,
-                data: data.datasets[sector].slice(startIdx),
-                borderColor: SECTOR_COLORS[sector]?.border || '#94a3b8',
-                backgroundColor: SECTOR_COLORS[sector]?.bg || 'rgba(148, 163, 184, 0.1)',
-                fill: true,
-                tension: 0.4,
-                pointRadius: 2,
-                pointHoverRadius: 6,
-                borderWidth: 2
-            }));
-
-            if (sectorChart) sectorChart.destroy();
-
-            sectorChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: dates.map(d => {
-                        const parts = d.split('-');
-                        return `${parts[2]}/${parts[1]}`; // DD/MM format
-                    }),
-                    datasets: datasets
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                color: '#94a3b8',
-                                font: { size: 11 },
-                                boxWidth: 12,
-                                padding: 15
-                            }
+    impactMatrixChart = new Chart(ctx, {
+        type: 'bubble',
+        data: {
+            datasets: [{
+                label: 'Events',
+                data: bubbles,
+                backgroundColor: bubbles.map(b => `rgba(245, 158, 11, ${b._opacity})`),
+                borderColor: bubbles.map(b => b._tieTotal >= 60 ? '#fbbf24' : 'rgba(245, 158, 11, 0.4)'),
+                borderWidth: bubbles.map(b => b._tieTotal >= 60 ? 2 : 1),
+                hoverBackgroundColor: 'rgba(251, 191, 36, 0.9)',
+                hoverBorderColor: '#fbbf24',
+                hoverBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    titleColor: '#f8fafc',
+                    bodyColor: '#cbd5e1',
+                    borderColor: '#f59e0b',
+                    borderWidth: 1,
+                    padding: 14,
+                    titleFont: { family: 'Inter, sans-serif', size: 13, weight: 'bold' },
+                    bodyFont: { family: 'JetBrains Mono, monospace', size: 11 },
+                    cornerRadius: 4,
+                    displayColors: false,
+                    callbacks: {
+                        title: function (ctx) {
+                            const d = ctx[0].raw;
+                            return d._title.length > 50 ? d._title.substring(0, 50) + '…' : d._title;
                         },
-                        tooltip: {
-                            backgroundColor: '#1e293b',
-                            titleColor: '#f8fafc',
-                            bodyColor: '#cbd5e1',
-                            borderColor: '#334155',
-                            borderWidth: 1,
-                            padding: 12,
-                            callbacks: {
-                                title: function (ctx) {
-                                    return `📅 ${ctx[0].label}`;
-                                },
-                                label: function (ctx) {
-                                    return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)} T.I.E.`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: { color: '#334155', drawBorder: false },
-                            ticks: { color: '#64748b', font: { size: 10 } }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#334155', drawBorder: false },
-                            ticks: { color: '#64748b' },
-                            title: {
-                                display: true,
-                                text: 'Aggregate T.I.E. Sum',
-                                color: '#64748b',
-                                font: { size: 11 }
-                            }
+                        label: function (ctx) {
+                            const d = ctx.raw;
+                            return [
+                                `📅 ${d._date}`,
+                                `T:${d._t} | K:${d._k} | E:${d._e}`,
+                                `TIE Total: ${d._tieTotal}`
+                            ];
                         }
                     }
                 }
-            });
+            },
+            scales: {
+                x: {
+                    min: 0,
+                    max: 11,
+                    title: {
+                        display: true,
+                        text: 'STRATEGIC VALUE (T)',
+                        color: '#94a3b8',
+                        font: { family: 'JetBrains Mono, monospace', size: 11, weight: 'bold' }
+                    },
+                    grid: { color: '#1e293b', drawBorder: false },
+                    ticks: {
+                        color: '#64748b',
+                        font: { family: 'JetBrains Mono, monospace', size: 10 },
+                        stepSize: 1
+                    }
+                },
+                y: {
+                    min: 0,
+                    max: 11,
+                    title: {
+                        display: true,
+                        text: 'DAMAGE ASSESSMENT (E)',
+                        color: '#94a3b8',
+                        font: { family: 'JetBrains Mono, monospace', size: 11, weight: 'bold' }
+                    },
+                    grid: { color: '#1e293b', drawBorder: false },
+                    ticks: {
+                        color: '#64748b',
+                        font: { family: 'JetBrains Mono, monospace', size: 10 },
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
 
-            console.log('✅ Sector Trend Chart rendered');
-        })
-        .catch(err => console.error('Failed to load sector trends:', err));
+    console.log(`✅ Impact Matrix rendered: ${bubbles.length} events`);
+}
+
+// ===========================================
+// HVT CAROUSEL (High Value Targets Feed)
+// ===========================================
+function renderHVTCarousel(data) {
+    const container = document.getElementById('hvt-carousel');
+    const countEl = document.getElementById('hvtCount');
+    if (!container) return;
+
+    // Doctrinal HVT Filter: Strategic Impact, not just loud explosions
+    const hvtEvents = data.filter(e => {
+        const tieTotal = parseFloat(e.tie_total) || 0;
+        const vecT = parseFloat(e.vec_t) || 0;
+        const classification = (e.classification || '').toUpperCase();
+        return (tieTotal >= 60) || (vecT >= 8) || (['SHAPING_OFFENSIVE', 'MANOEUVRE'].includes(classification));
+    }).slice(0, 30); // Cap at 30 cards for performance
+
+    if (countEl) countEl.textContent = hvtEvents.length;
+
+    container.innerHTML = '';
+
+    if (hvtEvents.length === 0) {
+        container.innerHTML = '<div style="color:#64748b; padding:20px; font-size:0.85rem;">No high-value targets in current dataset.</div>';
+        return;
+    }
+
+    // Classification badge colors
+    const BADGE_COLORS = {
+        'SHAPING_OFFENSIVE': { bg: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', label: 'SHAPING' },
+        'MANOEUVRE': { bg: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6', label: 'MANOEUVRE' },
+        'ATTRITION': { bg: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b', label: 'ATTRITION' },
+        'DEEP_STRIKE': { bg: 'rgba(168, 85, 247, 0.2)', color: '#a855f7', label: 'DEEP STRIKE' },
+        'DEFAULT': { bg: 'rgba(148, 163, 184, 0.15)', color: '#94a3b8', label: 'INTEL' }
+    };
+
+    hvtEvents.forEach(e => {
+        const card = document.createElement('div');
+        card.className = 'hvt-card';
+
+        const classification = (e.classification || '').toUpperCase();
+        const badge = BADGE_COLORS[classification] || BADGE_COLORS['DEFAULT'];
+        const tieTotal = Math.round(parseFloat(e.tie_total) || 0);
+        const title = (e.title || 'Unknown Event');
+        const truncTitle = title.length > 60 ? title.substring(0, 57) + '…' : title;
+        const dateStr = e.date || '--';
+
+        // TIE color intensity
+        let tieColor = '#64748b';
+        if (tieTotal >= 80) tieColor = '#ef4444';
+        else if (tieTotal >= 60) tieColor = '#f59e0b';
+        else if (tieTotal >= 40) tieColor = '#eab308';
+
+        card.innerHTML = `
+            <div class="hvt-card-header">
+                <span class="hvt-date">${dateStr}</span>
+                <span class="hvt-badge" style="background:${badge.bg}; color:${badge.color};">${badge.label}</span>
+            </div>
+            <div class="hvt-card-body">
+                <div class="hvt-card-title" title="${title.replace(/"/g, '&quot;')}">${truncTitle}</div>
+            </div>
+            <div class="hvt-card-footer">
+                <span class="hvt-tie-label">T.I.E.</span>
+                <span class="hvt-tie-value" style="color:${tieColor};">${tieTotal}</span>
+                <span class="hvt-vectors">T:${e.vec_t || '-'} K:${e.vec_k || '-'} E:${e.vec_e || '-'}</span>
+            </div>
+        `;
+
+        // Click to fly to event on map
+        if (e.lat && e.lon) {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => {
+                if (typeof window.flyToUnit === 'function') {
+                    window.flyToUnit(e.lat, e.lon, e.title || 'HVT Event');
+                } else if (window.map) {
+                    window.map.flyTo([e.lat, e.lon], 10, { animate: true, duration: 1.5 });
+                }
+            });
+        }
+
+        container.appendChild(card);
+    });
+
+    console.log(`✅ HVT Carousel rendered: ${hvtEvents.length} targets`);
 }
 
 // ===========================================
@@ -422,106 +505,8 @@ function getNormalizedType(rawType) {
 }
 
 
-// Standard Chart Functions (Timeline, Type, Radar) - Unchanged
-function renderTimelineChart(data) { const ctx = document.getElementById('timelineChart'); if (!ctx) return; const aggregated = {}; data.forEach(e => { if (!e.timestamp) return; const key = moment(e.timestamp).format('YYYY-MM'); aggregated[key] = (aggregated[key] || 0) + 1; }); const labels = Object.keys(aggregated).sort(); if (charts.timeline) charts.timeline.destroy(); charts.timeline = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Events', data: Object.values(aggregated), backgroundColor: THEME.primary, borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { color: THEME.grid } } } } }); }
-
-function renderTypeChart(data) {
-    const ctx = document.getElementById('typeDistributionChart');
-    if (!ctx) return;
-
-    const counts = {};
-
-    // Define what to EXCLUDE from statistical charts
-    const EXCLUDED_FROM_CHARTS = ['POLITICAL / UNREST', 'CIVIL / ACCIDENT'];
-
-    data.forEach(e => {
-        const cleanType = getNormalizedType(e.type);
-        // Count only if valid AND if not in blacklist
-        if (cleanType && !EXCLUDED_FROM_CHARTS.includes(cleanType)) {
-            counts[cleanType] = (counts[cleanType] || 0) + 1;
-        }
-    });
-
-    if (charts.type) charts.type.destroy();
-
-    charts.type = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(counts),
-            datasets: [{
-                data: Object.values(counts),
-                backgroundColor: THEME.palette,
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'right',
-                    labels: { color: THEME.text, boxWidth: 12 }
-                }
-            },
-            cutout: '70%'
-        }
-    });
-}
-
-function renderRadarChart(data) {
-    const ctx = document.getElementById('intensityRadarChart');
-    if (!ctx) return;
-
-    if (data.length === 0) {
-        if (charts.radar) charts.radar.destroy();
-        return;
-    }
-
-    const stats = {};
-    const EXCLUDED_FROM_CHARTS = ['POLITICAL / UNREST', 'CIVIL / ACCIDENT'];
-
-    data.forEach(e => {
-        const cleanType = getNormalizedType(e.type);
-        // Filter out non-military categories for intensity calculation
-        if (cleanType && !EXCLUDED_FROM_CHARTS.includes(cleanType)) {
-            if (!stats[cleanType]) stats[cleanType] = { sum: 0, count: 0 };
-            stats[cleanType].sum += e._intensityNorm;
-            stats[cleanType].count++;
-        }
-    });
-
-    const labels = Object.keys(stats);
-
-    if (charts.radar) charts.radar.destroy();
-
-    charts.radar = new Chart(ctx, {
-        type: 'radar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Average Intensity',
-                data: labels.map(k => (stats[k].sum / stats[k].count).toFixed(2)),
-                backgroundColor: 'rgba(245, 158, 11, 0.2)',
-                borderColor: THEME.primary,
-                pointBackgroundColor: THEME.primary
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                r: {
-                    grid: { color: THEME.grid },
-                    pointLabels: { color: THEME.text, font: { size: 10 } },
-                    ticks: { display: false, backdropColor: 'transparent' }
-                }
-            },
-            plugins: {
-                legend: { display: false }
-            }
-        }
-    });
-}
+// Legacy chart functions removed (Timeline, Type Distribution, Radar, Sector Trend)
+// Replaced by: renderImpactMatrix() and renderHVTCarousel() above
 
 function populateFilters(data) {
     const select = document.getElementById('chartTypeFilter');
