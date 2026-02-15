@@ -1547,6 +1547,45 @@
       });
     }
 
+    // === VERIFIED CASUALTIES (UALosses enrichment) ===
+    const casualtiesPanel = document.getElementById('udCasualtiesPanel');
+    const casualtiesList = document.getElementById('udCasualtiesList');
+    const casualtyBadge = document.getElementById('udCasualtyBadge');
+
+    if (casualtiesPanel && casualtiesList) {
+      const casualties = unit.verified_casualties || [];
+      const casualtyCount = unit.casualty_count || 0;
+
+      if (casualtyCount > 0 && casualties.length > 0) {
+        casualtiesPanel.style.display = 'block';
+        casualtyBadge.innerText = casualtyCount;
+        casualtiesList.innerHTML = '';
+
+        casualties.forEach(c => {
+          const item = document.createElement('div');
+          item.style.cssText = 'display:flex; align-items:center; gap:8px; padding:6px 8px; background:rgba(239,68,68,0.06); border-radius:6px; border-left:2px solid #ef444444;';
+
+          const rankBadge = c.rank && c.rank !== 'Unknown'
+            ? `<span style="font-size:0.65rem; color:#f59e0b; background:#f59e0b22; padding:1px 5px; border-radius:3px; font-weight:600; white-space:nowrap;">${c.rank}</span>`
+            : '';
+
+          const sourceLink = c.source_url
+            ? `<a href="${c.source_url}" target="_blank" rel="noopener" style="color:#64748b; font-size:0.7rem; margin-left:auto; white-space:nowrap;" title="Source"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>`
+            : '';
+
+          item.innerHTML = `
+            <i class="fa-solid fa-skull" style="color:#ef4444; font-size:0.65rem; opacity:0.6;"></i>
+            ${rankBadge}
+            <span style="font-size:0.8rem; color:#cbd5e1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${c.name || 'Unknown'}</span>
+            ${sourceLink}
+          `;
+          casualtiesList.appendChild(item);
+        });
+      } else {
+        casualtiesPanel.style.display = 'none';
+      }
+    }
+
     // Sparkline (Activity over time)
     renderSparkline(relatedEvents);
   };

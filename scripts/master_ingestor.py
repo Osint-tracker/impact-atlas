@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 """
-master_ingestor.py — Production-Grade OSINT Multi-Source Ingestor
+master_ingestor.py -- Production-Grade OSINT Multi-Source Ingestor
 =================================================================
 Ingests data from 10 OSINT sources into a local SQLite database (impact_atlas.db).
 Critical feature: Entity Resolution via UnitResolver class.
 
 Sources:
-  1. WarSpotting     (API)   — Equipment losses
-  2. MilitaryLand    (HTML)  — ORBAT / force structure
-  3. DeepState       (API)   — GeoJSON frontline snapshots
-  4. LostArmour      (HTML)  — Lancet/FPV strike targets
-  5. Oryx            (HTML)  — Verified equipment losses
-  6. UkrDailyUpdate  (HTML)  — Frontline change events
-  7. TopCargo200     (HTML)  — RU senior officer casualties
-  8. UALosses        (HTML)  — UA soldier records
-  9. Motolko         (HTML)  — Belarus military intel
- 10. GeoConfirmed    (KML)   — Geolocated conflict events
- 11. Parabellum      (WFS)   — Geolocated military data
+  1. WarSpotting     (API)   -- Equipment losses
+  2. MilitaryLand    (HTML)  -- ORBAT / force structure
+  3. DeepState       (API)   -- GeoJSON frontline snapshots
+  4. LostArmour      (HTML)  -- Lancet/FPV strike targets
+  5. Oryx            (HTML)  -- Verified equipment losses
+  6. UkrDailyUpdate  (HTML)  -- Frontline change events
+  7. TopCargo200     (HTML)  -- RU senior officer casualties
+  8. UALosses        (HTML)  -- UA soldier records
+  9. Motolko         (HTML)  -- Belarus military intel
+ 10. GeoConfirmed    (KML)   -- Geolocated conflict events
+ 11. Parabellum      (WFS)   -- Geolocated military data
 
 Usage:
   python scripts/master_ingestor.py                # Full run (all sources)
@@ -85,9 +85,9 @@ logger.addHandler(fh)
 logger.addHandler(ch)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# UNIT RESOLVER — Entity Resolution Engine
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
+# UNIT RESOLVER -- Entity Resolution Engine
+# ===========================================================================
 class UnitResolver:
     """
     Resolves diverse unit naming conventions into a canonical unit_id.
@@ -147,7 +147,7 @@ class UnitResolver:
         """Lowercase, strip punctuation, collapse whitespace, normalize ordinals."""
         text = text.lower().strip()
         # Remove common punctuation
-        text = re.sub(r"[''\".,;:!?()\[\]{}/\\—–-]", " ", text)
+        text = re.sub(r"[''\".,;:!?()\[\]{}/\\-]", " ", text)
         # Normalize ordinals: "93rd" -> "93", "1st" -> "1", "2nd" -> "2"
         text = re.sub(r"(\d+)(?:st|nd|rd|th)\b", r"\1", text)
         # Collapse whitespace
@@ -194,13 +194,13 @@ class UnitResolver:
                                 return canonical_id
 
         # ── No match ──
-        logger.warning("UnitResolver: UNRESOLVED unit '%s' — needs human review", raw_name)
+        logger.warning("UnitResolver: UNRESOLVED unit '%s' -- needs human review", raw_name)
         return None
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # DATABASE MANAGER
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 class DatabaseManager:
     """SQLite wrapper with schema init and upsert helpers."""
 
@@ -291,9 +291,9 @@ class DatabaseManager:
         return {"units_registry": units, "kinetic_events": events}
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # HTTP HELPER
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 def safe_request(url: str, method: str = "GET", retries: int = MAX_RETRIES,
                  **kwargs) -> requests.Response | None:
     """Execute an HTTP request with retry logic, rate limiting, and error handling."""
@@ -316,7 +316,7 @@ def safe_request(url: str, method: str = "GET", retries: int = MAX_RETRIES,
                 time.sleep(attempt * 2)
                 continue
             else:
-                logger.error("HTTP %d on %s — not retrying", resp.status_code, url)
+                logger.error("HTTP %d on %s -- not retrying", resp.status_code, url)
                 return None
         except requests.exceptions.RequestException as e:
             logger.error("Request failed for %s (attempt %d/%d): %s",
@@ -327,9 +327,9 @@ def safe_request(url: str, method: str = "GET", retries: int = MAX_RETRIES,
     return None
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # NORMALIZATION HELPERS
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 def normalize_date(raw_date: str | None) -> str | None:
     """Convert various date formats to ISO-8601 (YYYY-MM-DD)."""
     if not raw_date:
@@ -388,12 +388,12 @@ def hash_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # SOURCE 1: WARSPOTTING (API)
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 def ingest_warspotting(db: DatabaseManager, resolver: UnitResolver):
     """Fetch WarSpotting /api/releases/all and upsert into kinetic_events."""
-    logger.info("═══ SOURCE 1: WarSpotting — Starting ingestion ═══")
+    logger.info("=== SOURCE 1: WarSpotting -- Starting ingestion ===")
     url = "https://ukr.warspotting.net/api/releases/all"
     resp = safe_request(url)
     if not resp:
@@ -451,12 +451,12 @@ def ingest_warspotting(db: DatabaseManager, resolver: UnitResolver):
     logger.info("WarSpotting: upserted %d events", count)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # SOURCE 2: MILITARYLAND (HTML CRAWLER)
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 def ingest_militaryland(db: DatabaseManager, resolver: UnitResolver):
     """Crawl MilitaryLand /ukraine/armed-forces/ to extract brigade ORBAT data."""
-    logger.info("═══ SOURCE 2: MilitaryLand — Starting ingestion ═══")
+    logger.info("=== SOURCE 2: MilitaryLand -- Starting ingestion ===")
     root_url = "https://www.militaryland.net/ukraine/armed-forces/"
     resp = safe_request(root_url)
     if not resp:
@@ -527,12 +527,12 @@ def ingest_militaryland(db: DatabaseManager, resolver: UnitResolver):
     logger.info("MilitaryLand: upserted %d units", count)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# SOURCE 3: DEEPSTATE (GeoJSON API — Save to Disk Only)
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
+# SOURCE 3: DEEPSTATE (GeoJSON API -- Save to Disk Only)
+# ===========================================================================
 def ingest_deepstate(db: DatabaseManager, resolver: UnitResolver):
     """Fetch DeepState GeoJSON and save raw JSON to disk (no DB parse)."""
-    logger.info("═══ SOURCE 3: DeepState — Starting ingestion ═══")
+    logger.info("=== SOURCE 3: DeepState -- Starting ingestion ===")
     DEEPSTATE_DIR.mkdir(parents=True, exist_ok=True)
 
     # Use current timestamp rounded to the day
@@ -563,12 +563,12 @@ def ingest_deepstate(db: DatabaseManager, resolver: UnitResolver):
     logger.error("DeepState: all endpoints failed")
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # SOURCE 4: LOSTARMOUR (HTML Parsing)
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 def ingest_lostarmour(db: DatabaseManager, resolver: UnitResolver):
     """Scrape LostArmour /tags/lancet and /tags/fpv for strike data."""
-    logger.info("═══ SOURCE 4: LostArmour — Starting ingestion ═══")
+    logger.info("=== SOURCE 4: LostArmour -- Starting ingestion ===")
     tag_pages = [
         "https://lostarmour.info/tags/lancet",
         "https://lostarmour.info/tags/fpv",
@@ -631,12 +631,12 @@ def ingest_lostarmour(db: DatabaseManager, resolver: UnitResolver):
     logger.info("LostArmour: upserted %d events", total_count)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# SOURCE 5: ORYX (HTML Parsing — Equipment Losses)
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
+# SOURCE 5: ORYX (HTML Parsing -- Equipment Losses)
+# ===========================================================================
 def ingest_oryx(db: DatabaseManager, resolver: UnitResolver):
     """Scrape Oryx Blogspot page for verified equipment losses."""
-    logger.info("═══ SOURCE 5: Oryx — Starting ingestion ═══")
+    logger.info("=== SOURCE 5: Oryx -- Starting ingestion ===")
     url = "https://www.oryxspioenkop.com/2022/02/attack-on-europe-documenting-equipment.html"
     resp = safe_request(url)
     if not resp:
@@ -649,37 +649,54 @@ def ingest_oryx(db: DatabaseManager, resolver: UnitResolver):
         logger.error("Oryx: could not find post body")
         return
 
-    # Parse category headers and items
+    # Parse category headers and list items ONLY (no <a> tags)
     current_category = "Unknown"
     count = 0
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
-    for element in content.find_all(["h3", "h2", "li", "a"]):
+    for element in content.find_all(["h3", "h2", "li"]):
         tag_name = element.name
 
         if tag_name in ("h3", "h2"):
             header_text = element.get_text(strip=True)
             if header_text and len(header_text) > 3:
-                current_category = header_text
+                # Extract category name before parenthetical stats
+                # e.g. "Tanks (1234, of which ...)" -> "Tanks"
+                cat_match = re.match(r"^([A-Za-z\s\-/]+)", header_text)
+                current_category = cat_match.group(1).strip() if cat_match else header_text
             continue
 
-        if tag_name in ("li", "a"):
+        if tag_name == "li":
             text = element.get_text(strip=True)
             if not text or len(text) < 5:
                 continue
 
-            # Extract model and status from Oryx format
-            # Typical: "1 T-72B3: destroyed" or links with status text
+            # FILTER: Must contain a status keyword
             status_match = re.search(
                 r"(destroyed|damaged|abandoned|captured)",
                 text, re.IGNORECASE
             )
-            status = status_match.group(1).title() if status_match else "Unknown"
+            if not status_match:
+                continue
+
+            # FILTER: Entry must start with a number (Oryx format: "1 T-72B3: destroyed")
+            if not re.match(r"^\d+", text):
+                continue
+
+            status = status_match.group(1).title()
+
+            # Extract model name: "1 T-72B3: destroyed, ..." -> "T-72B3"
+            parts = text.split(":")
+            if len(parts) < 2:
+                continue
+            raw_model = parts[0].strip()
+            model = re.sub(r"^\d+\s+", "", raw_model)  # Remove leading count
 
             event_id = make_event_id("ox", hash_text(f"{current_category}_{text}"))
 
             raw_data = json.dumps({
                 "category": current_category,
-                "entry": text[:300],
+                "entry": model,
                 "status": status,
             }, ensure_ascii=False)
 
@@ -687,7 +704,7 @@ def ingest_oryx(db: DatabaseManager, resolver: UnitResolver):
                 event_id=event_id,
                 unit_id=None,
                 source="Oryx",
-                date=None,
+                date=today,
                 raw_data=raw_data,
             )
             count += 1
@@ -695,12 +712,12 @@ def ingest_oryx(db: DatabaseManager, resolver: UnitResolver):
     logger.info("Oryx: upserted %d equipment loss entries", count)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # SOURCE 6: UKRDAILYUPDATE (Frontline Map)
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 def ingest_ukrdailyupdate(db: DatabaseManager, resolver: UnitResolver):
     """Scrape UkrDailyUpdate map for frontline change events."""
-    logger.info("═══ SOURCE 6: UkrDailyUpdate — Starting ingestion ═══")
+    logger.info("=== SOURCE 6: UkrDailyUpdate -- Starting ingestion ===")
     # The map is JS-rendered; try known API/data endpoints
     data_urls = [
         "https://map.ukrdailyupdate.com/api/events",
@@ -773,12 +790,12 @@ def ingest_ukrdailyupdate(db: DatabaseManager, resolver: UnitResolver):
     logger.warning("UkrDailyUpdate: no parseable data found (JS-rendered map)")
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # SOURCE 7: TOPCARGO200 (RU Officer Casualties)
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 def ingest_topcargo200(db: DatabaseManager, resolver: UnitResolver):
     """Scrape TopCargo200 for confirmed Russian senior officer casualties."""
-    logger.info("═══ SOURCE 7: TopCargo200 — Starting ingestion ═══")
+    logger.info("=== SOURCE 7: TopCargo200 -- Starting ingestion ===")
     url = "https://topcargo200.com/"
     resp = safe_request(url)
     if not resp:
@@ -788,7 +805,7 @@ def ingest_topcargo200(db: DatabaseManager, resolver: UnitResolver):
     soup = BeautifulSoup(resp.text, "html.parser")
     count = 0
 
-    # Find officer cards/entries — they're typically <a> links to individual pages
+    # Find officer cards/entries -- they're typically <a> links to individual pages
     officer_links = []
     for a_tag in soup.find_all("a", href=True):
         href = a_tag["href"]
@@ -870,9 +887,9 @@ def ingest_topcargo200(db: DatabaseManager, resolver: UnitResolver):
     logger.info("TopCargo200: upserted %d officer casualty records", count)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # SOURCE 8: UALOSSES (UA Soldier Records)
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 def _parse_ualosses_slug(slug: str) -> dict:
     """Extract name, unit, and rank from a UALosses soldier URL slug.
     Example slug: 'koval-oleksandr-dmytrovych-1975-04-13-47-krushynivka-lieutenant'
@@ -929,7 +946,7 @@ def ingest_ualosses(db: DatabaseManager, resolver: UnitResolver):
     base_url = "https://ualosses.org/en/soldiers/"
     count = 0
     page = 1
-    max_pages = 50  # Safety cap — site has ~1861 pages
+    max_pages = 50  # Safety cap -- site has ~1861 pages
 
     while page <= max_pages:
         url = f"{base_url}?page={page}" if page > 1 else base_url
@@ -1024,12 +1041,12 @@ def ingest_ualosses(db: DatabaseManager, resolver: UnitResolver):
     logger.info("UALosses: upserted %d soldier records across %d pages", count, page)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # SOURCE 9: MOTOLKO (Belarus Military Intel)
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 def ingest_motolko(db: DatabaseManager, resolver: UnitResolver):
     """Scrape Motolko.help for Belarus military intelligence articles."""
-    logger.info("═══ SOURCE 9: Motolko — Starting ingestion ═══")
+    logger.info("=== SOURCE 9: Motolko -- Starting ingestion ===")
     url = "https://motolko.help/en-news/"
     resp = safe_request(url)
     if not resp:
@@ -1091,9 +1108,9 @@ def ingest_motolko(db: DatabaseManager, resolver: UnitResolver):
     logger.info("Motolko: upserted %d articles", count)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # SOURCE 10: GEOCONFIRMED (Geolocated Conflict Events)
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 def _parse_kml_placemarks(kml_content: bytes, db: DatabaseManager):
     """Parse KML XML content for Placemark elements and upsert events."""
     import xml.etree.ElementTree as ET
@@ -1167,7 +1184,7 @@ def ingest_geoconfirmed(db: DatabaseManager, resolver: UnitResolver):
     GEOCONFIRMED_DIR.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(timezone.utc).strftime("%Y%m%d")
 
-    # Strategy 1: The CDN KML is a NetworkLink redirect — follow it to get the real KML
+    # Strategy 1: The CDN KML is a NetworkLink redirect -- follow it to get the real KML
     real_kml_url = "https://geoconfirmed.org/api/map/ExportAsKml/Ukraine"
     stub_kml_url = "https://cdn.geoconfirmed.org/geoconfirmed/kmls/ukraine-google-earth.kml"
 
@@ -1262,14 +1279,14 @@ def ingest_geoconfirmed(db: DatabaseManager, resolver: UnitResolver):
     logger.info("GeoConfirmed: total upserted %d events", total_count)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# SOURCE 11: PARABELLUM THINK TANK (Lizmap WFS — Geolocated Military Data)
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
+# SOURCE 11: PARABELLUM THINK TANK (Lizmap WFS -- Geolocated Military Data)
+# ===========================================================================
 PARABELLUM_DIR = DATA_DIR / "parabellum"
 
 def ingest_parabellum(db: DatabaseManager, resolver: UnitResolver):
     """Fetch Parabellum Think Tank conflict map data via Lizmap WFS endpoint."""
-    logger.info("═══ SOURCE 11: Parabellum Think Tank — Starting ingestion ═══")
+    logger.info("=== SOURCE 11: Parabellum Think Tank -- Starting ingestion ===")
     PARABELLUM_DIR.mkdir(parents=True, exist_ok=True)
 
     # Lizmap exposes a standard OGC WFS endpoint.
@@ -1283,7 +1300,7 @@ def ingest_parabellum(db: DatabaseManager, resolver: UnitResolver):
     resp = safe_request(capabilities_url)
     layer_names: list[str] = []
     if resp:
-        # WFS GetCapabilities returns XML — use xml.etree.ElementTree
+        # WFS GetCapabilities returns XML -- use xml.etree.ElementTree
         import xml.etree.ElementTree as ET
         try:
             root = ET.fromstring(resp.content)
@@ -1312,10 +1329,8 @@ def ingest_parabellum(db: DatabaseManager, resolver: UnitResolver):
         except ET.ParseError as e:
             logger.error("Parabellum: XML parse error on GetCapabilities: %s", e)
 
-        logger.info("Parabellum: discovered %d WFS layers: %s",
-                    len(layer_names), layer_names[:15])
-    else:
-        logger.warning("Parabellum: GetCapabilities failed — falling back to known layer names")
+    if not layer_names:
+        logger.warning("Parabellum: No WFS layers discovered -- falling back to known layer names")
         # Fallback: common layer names observed on Parabellum maps
         layer_names = [
             "russian_invasion_of_ukraine",
@@ -1324,6 +1339,9 @@ def ingest_parabellum(db: DatabaseManager, resolver: UnitResolver):
             "positions",
             "units",
         ]
+
+    logger.info("Parabellum: discovered %d WFS layers: %s",
+                len(layer_names), layer_names[:15])
 
     total_count = 0
     for layer in layer_names:
@@ -1425,15 +1443,15 @@ def ingest_parabellum(db: DatabaseManager, resolver: UnitResolver):
                 logger.error("Parabellum: error processing feature in '%s': %s", layer, e)
 
         total_count += layer_count
-        logger.info("Parabellum: layer '%s' — upserted %d features", layer, layer_count)
+        logger.info("Parabellum: layer '%s' -- upserted %d features", layer, layer_count)
 
     logger.info("Parabellum: total upserted %d events across %d layers",
                 total_count, len(layer_names))
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # ORCHESTRATOR
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 SOURCE_REGISTRY = {
     "ws":   ("WarSpotting",       ingest_warspotting),
     "ml":   ("MilitaryLand",      ingest_militaryland),
@@ -1462,10 +1480,10 @@ def run_pipeline(sources: list[str] | None = None, dry_run: bool = False):
     if dry_run:
         stats = db.get_stats()
         logger.info("DRY RUN: Schema initialized successfully.")
-        logger.info("DRY RUN: Current DB state — %s", stats)
+        logger.info("DRY RUN: Current DB state -- %s", stats)
         logger.info("DRY RUN: All %d source modules registered.", len(SOURCE_REGISTRY))
         for key, (name, _) in SOURCE_REGISTRY.items():
-            logger.info("  [%s] %s — READY", key, name)
+            logger.info("  [%s] %s -- READY", key, name)
         db.close()
         return
 
@@ -1494,11 +1512,11 @@ def run_pipeline(sources: list[str] | None = None, dry_run: bool = False):
 
     for key, (name, func) in targets.items():
         try:
-            logger.info("─── Starting source: %s [%s] ───", name, key)
+            logger.info("--- Starting source: %s [%s] ---", name, key)
             start_time = time.time()
             func(db, resolver)
             elapsed = time.time() - start_time
-            logger.info("─── Completed %s in %.1fs ───", name, elapsed)
+            logger.info("--- Completed %s in %.1fs ---", name, elapsed)
         except Exception as e:
             logger.error("CRITICAL: Source %s failed with unhandled exception: %s", name, e,
                          exc_info=True)
@@ -1514,12 +1532,12 @@ def run_pipeline(sources: list[str] | None = None, dry_run: bool = False):
     db.close()
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # CLI ENTRYPOINT
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 def main():
     parser = argparse.ArgumentParser(
-        description="OSINT Master Ingestor — Multi-source data pipeline",
+        description="OSINT Master Ingestor -- Multi-source data pipeline",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Source codes:

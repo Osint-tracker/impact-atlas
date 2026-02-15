@@ -19697,7 +19697,16 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Muljarchuk Mykola Oleksandrovych",
+        "rank": "Major",
+        "source_url": "https://ualosses.org/en/soldier/muljarchuk-mykola-oleksandrovych-1981-04-11-41-novyj-kalyniv-12th-separate-army-aviation-brigade-major/",
+        "context": "Muljarchuk Mykola Oleksandrovych"
+      }
+    ],
+    "casualty_count": 1
   },
   {
     "unit_id": "1256",
@@ -19737,7 +19746,238 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Chadovych Anton Mykhajlovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/chadovych-anton-mykhajlovych-1992-05-16-32-izjaslav-5th-separate-assault-brigade/",
+        "context": "Chadovych Anton Mykhajlovych"
+      },
+      {
+        "name": "Poljachenko Bohdan Jurijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/poljachenko-bohdan-jurijovych-1978-12-14-kharkiv-5th-separate-ng-brigade/",
+        "context": "Poljachenko Bohdan Jurijovych"
+      },
+      {
+        "name": "Dubrovskyj Ruslan Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/dubrovskyj-ruslan-oleksandrovych-1991-02-27-kharkiv-5th-separate-ng-brigade/",
+        "context": "Dubrovs'kyj Ruslan Oleksandrovych"
+      },
+      {
+        "name": "Sobachynskyj Bohdan Olehovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/sobachynskyj-bohdan-olehovych-1998-09-17-25-pjatnychany-5th-separate-assault-brigade-junior-sergeant/",
+        "context": "Sobachyns'kyj Bohdan Olehovych"
+      },
+      {
+        "name": "Rudnytskyj Anatolij Frantsovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/rudnytskyj-anatolij-frantsovych-1991-12-21-30-kupjansk-5th-separate-ng-brigade-senior-soldier/",
+        "context": "Rudnyts'kyj Anatolij Frantsovych"
+      },
+      {
+        "name": "Nechyporuk Bohdan Vitalijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/nechyporuk-bohdan-vitalijovych-1996-07-26-28-khomutyntsi-5th-separate-tank-brigade/",
+        "context": "Nechyporuk Bohdan Vitalijovych"
+      },
+      {
+        "name": "Myndjuk Roman Jurijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/myndjuk-roman-jurijovych-1981-03-31-44-tsineva-5th-separate-tank-brigade-soldier/",
+        "context": "Myndjuk Roman Jurijovych"
+      },
+      {
+        "name": "Sakhno Oleh Anatolijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/sakhno-oleh-anatolijovych-2000-02-06-24-pershotravensk-5th-separate-assault-brigade/",
+        "context": "Sakhno Oleh Anatolijovych"
+      },
+      {
+        "name": "Veselyk Dmytro Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/veselyk-dmytro-oleksandrovych-1990-10-09-34-razine-5th-separate-tank-brigade/",
+        "context": "Veselyk Dmytro Oleksandrovych"
+      },
+      {
+        "name": "Zjabchenko Serhij Oleksandrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/zjabchenko-serhij-oleksandrovych-2002-08-22-22-jaltushkiv-5th-separate-assault-brigade-soldier/",
+        "context": "Zjabchenko Serhij Oleksandrovych"
+      },
+      {
+        "name": "Kushka Vasyl Vasylovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/kushka-vasyl-vasylovych-1985-12-16-39-vykhopni-5th-separate-tank-brigade/",
+        "context": "Kushka Vasyl' Vasyl'ovych"
+      },
+      {
+        "name": "Barda Roman Vasylovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/barda-roman-vasylovych-1979-06-27-45-vinnytsja-5th-separate-tank-brigade-senior-soldier/",
+        "context": "Barda Roman Vasyl'ovych"
+      },
+      {
+        "name": "Kiku Serhij Valerijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/kiku-serhij-valerijovych-1999-04-04-25-syrotynka-5th-separate-assault-brigade/",
+        "context": "Kiku Serhij Valerijovych"
+      },
+      {
+        "name": "Chyhura Andrij Ihorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/chyhura-andrij-ihorovych-1999-09-23-23-teklivka-5th-separate-ng-brigade-soldier/",
+        "context": "Chyhura Andrij Ihorovych"
+      },
+      {
+        "name": "Mykhajlenko Serhij Viktorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/mykhajlenko-serhij-viktorovych-1985-08-18-40-brovary-5th-separate-assault-brigade/",
+        "context": "Mykhajlenko Serhij Viktorovych"
+      },
+      {
+        "name": "Shamotij Pavlo Pavlovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/shamotij-pavlo-pavlovych-1972-03-09-odesa-5th-separate-tank-brigade/",
+        "context": "Shamotij Pavlo Pavlovych"
+      },
+      {
+        "name": "Haponjuk Ruslan Vitalijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/haponjuk-ruslan-vitalijovych-1983-09-17-41-dubrivka-5th-separate-tank-brigade/",
+        "context": "Haponjuk Ruslan Vitalijovych"
+      },
+      {
+        "name": "Ohar Vitalij Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/ohar-vitalij-volodymyrovych-1986-06-14-36-berezhnivka-5th-separate-assault-brigade/",
+        "context": "Ohar' Vitalij Volodymyrovych"
+      },
+      {
+        "name": "Kosvintsev Oleksij Serhijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kosvintsev-oleksij-serhijovych-1985-07-29-37-poltava-5th-separate-assault-brigade-soldier/",
+        "context": "Kosvintsev Oleksij Serhijovych"
+      },
+      {
+        "name": "Herasikov Yevhen Mykhajlovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/herasikov-yevhen-mykhajlovych-1980-04-27-43-kolomak-5th-separate-ng-brigade-chief-sergeant/",
+        "context": "Herasikov Yevhen Mykhajlovych"
+      },
+      {
+        "name": "Herasymov Vjacheslav Viktorovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/herasymov-vjacheslav-viktorovych-1972-04-15-51-hajsyn-5th-separate-assault-brigade-senior-soldier/",
+        "context": "Herasymov V'jacheslav Viktorovych"
+      },
+      {
+        "name": "Tsjura Andrij Mykolajovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/tsjura-andrij-mykolajovych-1980-10-12-44-kulchyn-5th-separate-assault-brigade-soldier/",
+        "context": "Tsjura Andrij Mykolajovych"
+      },
+      {
+        "name": "Sharko Oleh Oleksijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/sharko-oleh-oleksijovych-1983-01-21-42-prydnistrjanske-5th-separate-tank-brigade-soldier/",
+        "context": "Sharko Oleh Oleksijovych"
+      },
+      {
+        "name": "Novak Oleksandr Oleksandrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/novak-oleksandr-oleksandrovych-1986-08-03-37-rudnja-5th-separate-assault-brigade-senior-soldier/",
+        "context": "Novak Oleksandr Oleksandrovych"
+      },
+      {
+        "name": "Mazurkevych Nazar Mykhajlovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/mazurkevych-nazar-mykhajlovych-1996-04-17-27-hradivka-5th-separate-assault-brigade-soldier/",
+        "context": "Mazurkevych Nazar Mykhajlovych"
+      },
+      {
+        "name": "Karlijchuk Vasyl Vasylovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/karlijchuk-vasyl-vasylovych-2001-12-24-21-staryj-vovchynets-5th-separate-assault-brigade-junior-sergeant/",
+        "context": "Karlijchuk Vasyl' Vasyl'ovych"
+      },
+      {
+        "name": "Tsepukh Pavlo Mykolajovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/tsepukh-pavlo-mykolajovych-1980-02-07-43-kharkiv-5th-separate-assault-brigade-soldier/",
+        "context": "Tsepukh Pavlo Mykolajovych"
+      },
+      {
+        "name": "Snihur Jurij Jurijovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/snihur-jurij-jurijovych-1984-07-12-40-zaporizhzhja-5th-separate-assault-brigade-junior-sergeant/",
+        "context": "Snihur Jurij Jurijovych"
+      },
+      {
+        "name": "Skobalo Taras Ihorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/skobalo-taras-ihorovych-1989-08-02-35-rudne-5th-separate-assault-brigade/",
+        "context": "Skobalo Taras Ihorovych"
+      },
+      {
+        "name": "Holovko Roman Pavlovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/holovko-roman-pavlovych-1984-11-07-40-lviv-5th-separate-assault-brigade/",
+        "context": "Holovko Roman Pavlovych"
+      },
+      {
+        "name": "Muzychenko Jaroslav Valerijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/muzychenko-jaroslav-valerijovych-1992-08-21-32-kyiv-5th-separate-assault-brigade-senior-soldier/",
+        "context": "Muzychenko Jaroslav Valerijovych"
+      },
+      {
+        "name": "Kalynjuk Vasyl Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kalynjuk-vasyl-volodymyrovych-1999-02-26-24-harasymiv-5th-separate-assault-brigade-soldier/",
+        "context": "Kalynjuk Vasyl' Volodymyrovych"
+      },
+      {
+        "name": "Bilenkyj Ruslan Stepanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/bilenkyj-ruslan-stepanovych-1990-08-28-33-horodyshche-5th-separate-assault-brigade-soldier/",
+        "context": "Bilen'kyj Ruslan Stepanovych"
+      },
+      {
+        "name": "Tretjakov Vadym Oleksandrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/tretjakov-vadym-oleksandrovych-1987-12-26-29-bezruky-5th-separate-ng-brigade-soldier/",
+        "context": "Tretjakov Vadym Oleksandrovych"
+      },
+      {
+        "name": "Podibka Nazar Vasylovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/podibka-nazar-vasylovych-2000-04-14-23-nove-selo-5th-separate-assault-brigade-soldier/",
+        "context": "Podibka Nazar Vasyl'ovych"
+      },
+      {
+        "name": "Predeus Ihor Anatolijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/predeus-ihor-anatolijovych-1985-06-06-37-drohobych-5th-separate-assault-brigade-soldier/",
+        "context": "Predeus Ihor Anatolijovych"
+      },
+      {
+        "name": "Dyerhousov Bohdan Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/dyerhousov-bohdan-volodymyrovych-2000-03-02-25-krasnohorivka-5th-separate-assault-brigade/",
+        "context": "Dyerhousov Bohdan Volodymyrovych"
+      },
+      {
+        "name": "Nesterenko Oleksandr Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/nesterenko-oleksandr-oleksandrovych-1984-05-01-40-kunye-5th-separate-assault-brigade/",
+        "context": "Nesterenko Oleksandr Oleksandrovych"
+      }
+    ],
+    "casualty_count": 38
   },
   {
     "unit_id": "7",
@@ -19757,7 +19997,244 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Kutepov Jurij Andrijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kutepov-jurij-andrijovych-1988-01-07-34-dubovets-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Kutepov Jurij Andrijovych"
+      },
+      {
+        "name": "Mykhajlov Vitalij Anatolijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/mykhajlov-vitalij-anatolijovych-1982-10-30-31-tsentralne-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Mykhajlov Vitalij Anatolijovych"
+      },
+      {
+        "name": "Popovych Viktor Ivanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/popovych-viktor-ivanovych-1975-09-07-48-svaljava-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Popovych Viktor Ivanovych"
+      },
+      {
+        "name": "Rjabokin Anatolij Ihorovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/rjabokin-anatolij-ihorovych-1986-08-09-36-vyshnopil-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Rjabokin' Anatolij Ihorovych"
+      },
+      {
+        "name": "Hrebenjuk Oleksij Mykhajlovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/hrebenjuk-oleksij-mykhajlovych-1969-04-03-49-krolevets-72nd-separate-mechanized-brigade-sergeant/",
+        "context": "Hrebenjuk Oleksij Mykhajlovych"
+      },
+      {
+        "name": "Stepanenko Mykola Petrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/stepanenko-mykola-petrovych-1972-01-31-50-ozirna-72nd-separate-mechanized-brigade-staff-sergeant/",
+        "context": "Stepanenko Mykola Petrovych"
+      },
+      {
+        "name": "Krupskyj Volodymyr Volodymyrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/krupskyj-volodymyr-volodymyrovych-1970-04-14-48-hadjach-72nd-separate-mechanized-brigade-sergeant/",
+        "context": "Krups'kyj Volodymyr Volodymyrovych"
+      },
+      {
+        "name": "Knysh Ivan Mykolajovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/knysh-ivan-mykolajovych-1976-01-20-kupjansk-72nd-separate-mechanized-brigade/",
+        "context": "Knysh Ivan Mykolajovych"
+      },
+      {
+        "name": "Yemets Oleksandr Petrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/yemets-oleksandr-petrovych-1993-08-07-28-cherepyn-72nd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Yemets' Oleksandr Petrovych"
+      },
+      {
+        "name": "Mokhonko Jaroslav Oleksandrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/mokhonko-jaroslav-oleksandrovych-1991-10-20-30-karapyshi-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Mokhon'ko Jaroslav Oleksandrovych"
+      },
+      {
+        "name": "Nazarenko Oleksandr Viktorovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/nazarenko-oleksandr-viktorovych-1979-03-18-43-bila-tserkva-72nd-separate-mechanized-brigade-sergeant/",
+        "context": "Nazarenko Oleksandr Viktorovych"
+      },
+      {
+        "name": "Matvijchuk Serhij Petrovych",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/matvijchuk-serhij-petrovych-1987-04-21-35-katjuzhanka-72nd-separate-mechanized-brigade-senior-lieutenant/",
+        "context": "Matvijchuk Serhij Petrovych"
+      },
+      {
+        "name": "Zinchenko Oleksandr Vasylovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/zinchenko-oleksandr-vasylovych-1977-11-18-37-fastiv-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Zinchenko Oleksandr Vasyl'ovych"
+      },
+      {
+        "name": "Siljava Maksym Viktorovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/siljava-maksym-viktorovych-1981-10-27-41-ivankiv-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Siljava Maksym Viktorovych"
+      },
+      {
+        "name": "Zamojskyj Roman Ivanovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/zamojskyj-roman-ivanovych-1973-12-20-48-vyspa-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Zamojs'kyj Roman Ivanovych"
+      },
+      {
+        "name": "Bursa Yevhen Oleksijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/bursa-yevhen-oleksijovych-1989-08-22-32-velyka-rublivka-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Bursa Yevhen Oleksijovych"
+      },
+      {
+        "name": "Vyshnjak Maksym Vjacheslavovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/vyshnjak-maksym-vjacheslavovych-1999-07-11-22-bojarka-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Vyshnjak Maksym V’jacheslavovych"
+      },
+      {
+        "name": "Orlov Mykhajlo Viktorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/orlov-mykhajlo-viktorovych-1985-05-23-39-zdolbuniv-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Orlov Mykhajlo Viktorovych"
+      },
+      {
+        "name": "Pushych Valentyna Mykhajlivna",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/pushych-valentyna-mykhajlivna-1980-08-18-41-kyiv-72nd-separate-mechanized-brigade-senior-lieutenant/",
+        "context": "Pushych Valentyna Mykhajlivna"
+      },
+      {
+        "name": "Andryeyev Serhij Oleksandrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/andryeyev-serhij-oleksandrovych-2001-11-12-20-brovary-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Andryeyev Serhij Oleksandrovych"
+      },
+      {
+        "name": "Slobodjanjuk Ruslan Mykhajlovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/slobodjanjuk-ruslan-mykhajlovych-1986-12-23-35-borivka-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Slobodjanjuk Ruslan Mykhajlovych"
+      },
+      {
+        "name": "Dulik Roman Vsevolodovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/dulik-roman-vsevolodovych-1986-03-13-36-malyj-stydyn-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Dulik Roman Vsevolodovych"
+      },
+      {
+        "name": "Dudchenko Oleksandr Oleksandrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/dudchenko-oleksandr-oleksandrovych-1988-03-23-26-boryspil-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Dudchenko Oleksandr Oleksandrovych"
+      },
+      {
+        "name": "Murashov Oleksandr Viktorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/murashov-oleksandr-viktorovych-1995-05-11-29-kryvyj-rih-72nd-separate-mechanized-brigade/",
+        "context": "Murashov Oleksandr Viktorovych"
+      },
+      {
+        "name": "Chechet Ivan Ivanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/chechet-ivan-ivanovych-1975-01-14-49-prystromy-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Chechet Ivan Ivanovych"
+      },
+      {
+        "name": "Kovalskyj Mykola Romanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kovalskyj-mykola-romanovych-1999-01-09-24-lviv-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Koval's'kyj Mykola Romanovych"
+      },
+      {
+        "name": "Rachok Borys Mykhajlovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/rachok-borys-mykhajlovych-1976-01-24-49-shchurivchyky-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Rachok Borys Mykhajlovych"
+      },
+      {
+        "name": "Kovalenko Yevhen Mykolajovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/kovalenko-yevhen-mykolajovych-1972-04-11-43-pishchane-72nd-separate-mechanized-brigade-sergeant/",
+        "context": "Kovalenko Yevhen Mykolajovych"
+      },
+      {
+        "name": "Djachenko Oleksandr Volodymyrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/djachenko-oleksandr-volodymyrovych-1985-06-04-37-sukha-kalyhirka-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Djachenko Oleksandr Volodymyrovych"
+      },
+      {
+        "name": "Hrashchenko Oleksij Valerijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/hrashchenko-oleksij-valerijovych-1978-03-29-44-fastiv-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Hrashchenko Oleksij Valerijovych"
+      },
+      {
+        "name": "Baryshev Maksym Volodymyrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/baryshev-maksym-volodymyrovych-1975-01-03-48-bucha-72nd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Baryshev Maksym Volodymyrovych"
+      },
+      {
+        "name": "Vojtenko Ivan Vjacheslavovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/vojtenko-ivan-vjacheslavovych-1974-01-22-44-bila-tserkva-72nd-separate-mechanized-brigade-master-sergeant/",
+        "context": "Vojtenko Ivan V’jacheslavovych"
+      },
+      {
+        "name": "Polishchuk Oleksij Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/polishchuk-oleksij-volodymyrovych-1996-02-20-27-kaharlyk-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Polishchuk Oleksij Volodymyrovych"
+      },
+      {
+        "name": "Balchenko Volodymyr Ivanovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/balchenko-volodymyr-ivanovych-1992-01-04-25-berestovets-72nd-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Bal'chenko Volodymyr Ivanovych"
+      },
+      {
+        "name": "Stalynskyj Oleksandr Fedorovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/stalynskyj-oleksandr-fedorovych-1974-10-08-49-okhtyrka-72nd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Stalyns'kyj Oleksandr Fedorovych"
+      },
+      {
+        "name": "Tsybora Vitalij Viktorovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/tsybora-vitalij-viktorovych-1993-10-06-20-movchanivka-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Tsybora Vitalij Viktorovych"
+      },
+      {
+        "name": "Shabadash Jurij Viktorovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/shabadash-jurij-viktorovych-1962-04-10-59-kyiv-72nd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Shabadash Jurij Viktorovych"
+      },
+      {
+        "name": "Syvak Andrij Fedorovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/syvak-andrij-fedorovych-1981-03-19-43-velyka-bilozerka-1-72nd-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Syvak Andrij Fedorovych"
+      },
+      {
+        "name": "Maksymets Ljubomyr Jaroslavovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/maksymets-ljubomyr-jaroslavovych-1969-01-30-53-perehinske-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Maksymets' Ljubomyr Jaroslavovych"
+      }
+    ],
+    "casualty_count": 39
   },
   {
     "unit_id": "1156",
@@ -19897,7 +20374,196 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Horoshko Mykola Borysovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/horoshko-mykola-borysovych-1970-06-21-55-luchky-36th-road-rehabilitation-brigade-senior-sergeant/",
+        "context": "Horoshko Mykola Borysovych"
+      },
+      {
+        "name": "Udut Serhij Serhijovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/udut-serhij-serhijovych-1992-04-05-rozdilna-36th-separate-marine-brigade-junior-sergeant/",
+        "context": "Udut Serhij Serhijovych"
+      },
+      {
+        "name": "Honcharov Oleksandr Anatolijovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/honcharov-oleksandr-anatolijovych-1982-07-22-novoukrayinka-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Honcharov Oleksandr Anatolijovych"
+      },
+      {
+        "name": "Pizintsali Serhij Valerijovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/pizintsali-serhij-valerijovych-1969-02-02-odesa-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Pizintsali Serhij Valerijovych"
+      },
+      {
+        "name": "Prokopchuk Vitalij Serhijovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/prokopchuk-vitalij-serhijovych-1993-04-11-novhorodka-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Prokopchuk Vitalij Serhijovych"
+      },
+      {
+        "name": "Yehorov Oleksandr Anatolijovych",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/yehorov-oleksandr-anatolijovych-1989-01-20-bashtanka-36th-separate-marine-brigade-senior-lieutenant/",
+        "context": "Yehorov Oleksandr Anatolijovych"
+      },
+      {
+        "name": "Shulha Vadym Vadymovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/shulha-vadym-vadymovych-2000-03-27-kropyvnytskyj-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Shul'ha Vadym Vadymovych"
+      },
+      {
+        "name": "Bodnarjuk Denys Oleksandrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/bodnarjuk-denys-oleksandrovych-1995-09-19-26-roksolany-36th-separate-marine-brigade-sergeant/",
+        "context": "Bodnarjuk Denys Oleksandrovych"
+      },
+      {
+        "name": "Bondarenko Dmytro Stanislavovych",
+        "rank": "Seaman",
+        "source_url": "https://ualosses.org/en/soldier/bondarenko-dmytro-stanislavovych-2001-04-06-24-bohodukhiv-36th-separate-marine-brigade-seaman/",
+        "context": "Bondarenko Dmytro Stanislavovych"
+      },
+      {
+        "name": "Pljashnyk Anatolij Ivanovych",
+        "rank": "Major",
+        "source_url": "https://ualosses.org/en/soldier/pljashnyk-anatolij-ivanovych-1965-10-08-myrhorod-36th-separate-marine-brigade-major/",
+        "context": "Pljashnyk Anatolij Ivanovych"
+      },
+      {
+        "name": "Shchetynin Maksym Heorhijovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/shchetynin-maksym-heorhijovych-1980-02-16-44-zaporizhzhja-36th-separate-marine-brigade-sergeant/",
+        "context": "Shchetynin Maksym Heorhijovych"
+      },
+      {
+        "name": "Kormych Volodymyr Viktorovych",
+        "rank": "Seaman",
+        "source_url": "https://ualosses.org/en/soldier/kormych-volodymyr-viktorovych-2003-03-02-19-balovne-36th-separate-marine-brigade-seaman/",
+        "context": "Kormych Volodymyr Viktorovych"
+      },
+      {
+        "name": "Nikolayev Vladyslav Davydovych",
+        "rank": "Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/nikolayev-vladyslav-davydovych-1996-10-14-26-rivne-36th-separate-marine-brigade-lieutenant/",
+        "context": "Nikolayev Vladyslav Davydovych"
+      },
+      {
+        "name": "Bilyj Vadym Mykolajovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/bilyj-vadym-mykolajovych-1970-04-25-mykolayiv-36th-separate-marine-brigade-sergeant/",
+        "context": "Bilyj Vadym Mykolajovych"
+      },
+      {
+        "name": "Kosterin Volodymyr Serhijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kosterin-volodymyr-serhijovych-1997-03-01-brychkivka-36th-separate-marine-brigade-soldier/",
+        "context": "Kosterin Volodymyr Serhijovych"
+      },
+      {
+        "name": "Avanesov Karen Hryhorovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/avanesov-karen-hryhorovych-1998-02-17-bakhmut-36th-separate-marine-brigade-junior-sergeant/",
+        "context": "Avanesov Karen Hryhorovych"
+      },
+      {
+        "name": "Leskiv Vasyl Josyfovych",
+        "rank": "Seaman",
+        "source_url": "https://ualosses.org/en/soldier/leskiv-vasyl-josyfovych-1990-01-16-sudova-vyshnja-36th-separate-marine-brigade-seaman/",
+        "context": "Les'kiv Vasyl' Josyfovych"
+      },
+      {
+        "name": "Polyvach Myroslav Volodymyrovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/polyvach-myroslav-volodymyrovych-2000-06-03-21-khokhitva-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Polyvach Myroslav Volodymyrovych"
+      },
+      {
+        "name": "Zelenetskyj Mykhajlo Vasylovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/zelenetskyj-mykhajlo-vasylovych-1986-03-20-39-kolomyja-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Zelenets'kyj Mykhajlo Vasyl'ovych"
+      },
+      {
+        "name": "Snih Oleksandr Vitalijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/snih-oleksandr-vitalijovych-1978-05-12-47-troyitske-36th-separate-marine-brigade/",
+        "context": "Snih Oleksandr Vitalijovych"
+      },
+      {
+        "name": "Boryslavskyj Semen Oleksandrovych",
+        "rank": "Seaman",
+        "source_url": "https://ualosses.org/en/soldier/boryslavskyj-semen-oleksandrovych-1989-08-01-bashtanka-36th-separate-marine-brigade-seaman/",
+        "context": "Boryslavs'kyj Semen Oleksandrovych"
+      },
+      {
+        "name": "Pochtar Ruslan Oleksandrovych",
+        "rank": "Seaman",
+        "source_url": "https://ualosses.org/en/soldier/pochtar-ruslan-oleksandrovych-1985-09-27-38-barativka-36th-separate-marine-brigade-seaman/",
+        "context": "Pochtar' Ruslan Oleksandrovych"
+      },
+      {
+        "name": "Haponchuk Vitalij Kostjantynovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/haponchuk-vitalij-kostjantynovych-1979-03-18-44-syniv-36th-separate-marine-brigade/",
+        "context": "Haponchuk Vitalij Kostjantynovych"
+      },
+      {
+        "name": "Mojseyenko Andrij Vasylovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/mojseyenko-andrij-vasylovych-1976-11-12-mykolayiv-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Mojseyenko Andrij Vasyl'ovych"
+      },
+      {
+        "name": "Kulik Volodymyr Volodymyrovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/kulik-volodymyr-volodymyrovych-1977-01-19-bereznehuvate-36th-separate-marine-brigade-junior-sergeant/",
+        "context": "Kulik Volodymyr Volodymyrovych"
+      },
+      {
+        "name": "Khrapach Denys Leonidovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/khrapach-denys-leonidovych-1996-07-30-27-kocherhy-36th-separate-marine-brigade-senior-soldier/",
+        "context": "Khrapach Denys Leonidovych"
+      },
+      {
+        "name": "Fil Vitalij Oleksandrovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/fil-vitalij-oleksandrovych-1984-12-29-39-biljayivka-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Fil' Vitalij Oleksandrovych"
+      },
+      {
+        "name": "Tymokhin Oleksandr Mykhajlovych",
+        "rank": "Seaman",
+        "source_url": "https://ualosses.org/en/soldier/tymokhin-oleksandr-mykhajlovych-36th-separate-marine-brigade-seaman/",
+        "context": "Tymokhin Oleksandr Mykhajlovych"
+      },
+      {
+        "name": "Lyenik Oleksandr Valerijovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/lyenik-oleksandr-valerijovych-1984-11-20-mykolayiv-36th-separate-marine-brigade-senior-sergeant/",
+        "context": "Lyenik Oleksandr Valerijovych"
+      },
+      {
+        "name": "Hryhoryev Volodymyr Volodymyrovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/hryhoryev-volodymyr-volodymyrovych-2003-04-12-chermalyk-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Hryhor'yev Volodymyr Volodymyrovych"
+      },
+      {
+        "name": "Lychko Andrij Volodymyrovych",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/lychko-andrij-volodymyrovych-1979-04-05-mykolayiv-36th-separate-marine-brigade-senior-lieutenant/",
+        "context": "Lychko Andrij Volodymyrovych"
+      }
+    ],
+    "casualty_count": 31
   },
   {
     "unit_id": "1175",
@@ -19977,7 +20643,16 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Muljarchuk Mykola Oleksandrovych",
+        "rank": "Major",
+        "source_url": "https://ualosses.org/en/soldier/muljarchuk-mykola-oleksandrovych-1981-04-11-41-novyj-kalyniv-12th-separate-army-aviation-brigade-major/",
+        "context": "Muljarchuk Mykola Oleksandrovych"
+      }
+    ],
+    "casualty_count": 1
   },
   {
     "unit_id": "1248",
@@ -20017,7 +20692,100 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Tkachuk Ruslan Anatolijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/tkachuk-ruslan-anatolijovych-1991-08-27-33-savran-28th-mechanized-brigade/",
+        "context": "Tkachuk Ruslan Anatolijovych"
+      },
+      {
+        "name": "Stroja Anatolij Viktorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/stroja-anatolij-viktorovych-1993-07-20-31-reni-28th-mechanized-brigade/",
+        "context": "Stroja Anatolij Viktorovych"
+      },
+      {
+        "name": "Kovalenko Ihor Ivanovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/kovalenko-ihor-ivanovych-1988-06-16-27-yemylivka-28th-mechanized-brigade-junior-sergeant/",
+        "context": "Kovalenko Ihor Ivanovych"
+      },
+      {
+        "name": "Hutsenko Oleh Oleksandrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/hutsenko-oleh-oleksandrovych-1966-08-15-56-velykodolynske-28th-mechanized-brigade-soldier/",
+        "context": "Hutsenko Oleh Oleksandrovych"
+      },
+      {
+        "name": "Ljashchenko Vladyslav Pavlovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/ljashchenko-vladyslav-pavlovych-1996-05-16-24-horlivka-28th-mechanized-brigade-soldier/",
+        "context": "Ljashchenko Vladyslav Pavlovych"
+      },
+      {
+        "name": "Skljanskyj Maksymilian Oleksandrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/skljanskyj-maksymilian-oleksandrovych-1983-10-30-39-cherkasy-28th-mechanized-brigade-soldier/",
+        "context": "Skljans'kyj Maksymilian Oleksandrovych"
+      },
+      {
+        "name": "Zadachin Oleh Mykolajovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/zadachin-oleh-mykolajovych-1990-12-01-32-mohyliv-podilskyj-28th-mechanized-brigade-senior-soldier/",
+        "context": "Zadachin Oleh Mykolajovych"
+      },
+      {
+        "name": "Huljayev Vitalij Anatolijovych",
+        "rank": "Colonel",
+        "source_url": "https://ualosses.org/en/soldier/huljayev-vitalij-anatolijovych-1978-05-26-44-zvjahel-28th-mechanized-brigade-colonel/",
+        "context": "Huljayev Vitalij Anatolijovych"
+      },
+      {
+        "name": "Vrublevskyj Serhij Volodymyrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/vrublevskyj-serhij-volodymyrovych-1971-10-11-50-odesa-28th-mechanized-brigade-senior-soldier/",
+        "context": "Vrublevs'kyj Serhij Volodymyrovych"
+      },
+      {
+        "name": "Livitchuk Mykola Valerijovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/livitchuk-mykola-valerijovych-1987-06-06-34-holovanivsk-28th-mechanized-brigade-chief-sergeant/",
+        "context": "Livitchuk Mykola Valerijovych"
+      },
+      {
+        "name": "Svjatkovskyj Mykhajlo Viktorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/svjatkovskyj-mykhajlo-viktorovych-1984-06-03-30-odesa-28th-mechanized-brigade-soldier/",
+        "context": "Svjatkovs'kyj Mykhajlo Viktorovych"
+      },
+      {
+        "name": "Kopylov Mykyta Ihorovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kopylov-mykyta-ihorovych-1993-09-01-29-zolote-28th-mechanized-brigade-senior-soldier/",
+        "context": "Kopylov Mykyta Ihorovych"
+      },
+      {
+        "name": "Omelchenko Mykola Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/omelchenko-mykola-oleksandrovych-1987-10-18-37-trubivshchyna-28th-mechanized-brigade/",
+        "context": "Omel'chenko Mykola Oleksandrovych"
+      },
+      {
+        "name": "Skybytskyj Anatolij Ihorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/skybytskyj-anatolij-ihorovych-1995-04-11-30-zakharivka-28th-mechanized-brigade/",
+        "context": "Skybyts'kyj Anatolij Ihorovych"
+      },
+      {
+        "name": "Artamkin Vasyl Leonidovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/artamkin-vasyl-leonidovych-1962-09-05-54-nova-kakhovka-28th-mechanized-brigade-sergeant/",
+        "context": "Artamkin Vasyl' Leonidovych"
+      }
+    ],
+    "casualty_count": 15
   },
   {
     "unit_id": "1074",
@@ -20157,7 +20925,58 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Semenjuta Serhij Ivanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/semenjuta-serhij-ivanovych-1968-04-29-56-sumy-4th-separate-tank-brigade-soldier/",
+        "context": "Semenjuta Serhij Ivanovych"
+      },
+      {
+        "name": "Sutulov Volodymyr Vjacheslavovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/sutulov-volodymyr-vjacheslavovych-1978-03-04-44-svaljava-4th-separate-tank-brigade-soldier/",
+        "context": "Sutulov Volodymyr V’jacheslavovych"
+      },
+      {
+        "name": "Kamenchuk Dmytro Vasylovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kamenchuk-dmytro-vasylovych-1975-06-17-48-kolodenka-4th-separate-tank-brigade-senior-soldier/",
+        "context": "Kamenchuk Dmytro Vasyl'ovych"
+      },
+      {
+        "name": "Rozhenko Vitalij Mykolajovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/rozhenko-vitalij-mykolajovych-1977-11-09-46-kovjahy-4th-separate-tank-brigade-senior-sergeant/",
+        "context": "Rozhenko Vitalij Mykolajovych"
+      },
+      {
+        "name": "Derzhko Volodymyr Stepanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/derzhko-volodymyr-stepanovych-1973-10-26-stryj-4th-separate-tank-brigade-soldier/",
+        "context": "Derzhko Volodymyr Stepanovych"
+      },
+      {
+        "name": "Ljashyk Andrij Mykhajlovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/ljashyk-andrij-mykhajlovych-1991-10-25-33-novovolynsk-4th-separate-tank-brigade/",
+        "context": "Ljashyk Andrij Mykhajlovych"
+      },
+      {
+        "name": "Dronko Oleksij Ivanovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/dronko-oleksij-ivanovych-1987-04-01-karpylivka-4th-separate-tank-brigade/",
+        "context": "Dron'ko Oleksij Ivanovych"
+      },
+      {
+        "name": "Chmunevych Oleksandr Mykolajovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/chmunevych-oleksandr-mykolajovych-1984-04-27-40-volodymyrets-4th-separate-tank-brigade-junior-sergeant/",
+        "context": "Chmunevych Oleksandr Mykolajovych"
+      }
+    ],
+    "casualty_count": 8
   },
   {
     "unit_id": "1176",
@@ -21677,7 +22496,196 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Andryeyev Vasyl Valerijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/andryeyev-vasyl-valerijovych-1981-03-19-43-ljashkivka-92nd-separate-mechanized-brigade/",
+        "context": "Andryeyev Vasyl' Valerijovych"
+      },
+      {
+        "name": "Koshelenko Volodymyr Ivanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/koshelenko-volodymyr-ivanovych-2003-09-23-19-sofiyivka-92nd-separate-mechanized-brigade-soldier/",
+        "context": "Koshelenko Volodymyr Ivanovych"
+      },
+      {
+        "name": "Ratalskyj Ivan Ihorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/ratalskyj-ivan-ihorovych-1985-07-05-38-josypovychi-92nd-separate-mechanized-brigade/",
+        "context": "Ratal's'kyj Ivan Ihorovych"
+      },
+      {
+        "name": "Mukhtarov Denys Serhijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/mukhtarov-denys-serhijovych-1989-01-13-33-slatyne-92nd-separate-mechanized-brigade-soldier/",
+        "context": "Mukhtarov Denys Serhijovych"
+      },
+      {
+        "name": "Pershenkov Yevhenij Jurijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/pershenkov-yevhenij-jurijovych-2000-11-20-24-kryvyj-rih-92nd-separate-mechanized-brigade/",
+        "context": "Pershenkov Yevhenij Jurijovych"
+      },
+      {
+        "name": "Azizov Vakhid Azim Ohly",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/azizov-vakhid-azim-ohly-1966-02-28-56-kryvyj-rih-92nd-separate-mechanized-brigade-soldier/",
+        "context": "Azizov Vakhid Azim Ohly"
+      },
+      {
+        "name": "Fedorichko Dmytro Mykolajovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/fedorichko-dmytro-mykolajovych-1983-04-29-41-vodjane-92nd-separate-mechanized-brigade/",
+        "context": "Fedorichko Dmytro Mykolajovych"
+      },
+      {
+        "name": "Sukhyna Vasyl Vasylovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/sukhyna-vasyl-vasylovych-1979-06-01-45-bohodukhiv-92nd-separate-mechanized-brigade/",
+        "context": "Sukhyna Vasyl' Vasyl'ovych"
+      },
+      {
+        "name": "Denysenko Denys Serhijovych",
+        "rank": "Junior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/denysenko-denys-serhijovych-1988-11-04-novohrodivka-92nd-separate-mechanized-brigade-junior-lieutenant/",
+        "context": "Denysenko Denys Serhijovych"
+      },
+      {
+        "name": "Burjanov Ihor Valerijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/burjanov-ihor-valerijovych-1987-09-05-35-kropyvnytskyj-92nd-separate-mechanized-brigade-soldier/",
+        "context": "Bur’janov Ihor Valerijovych"
+      },
+      {
+        "name": "Kartechev Vitalij Oleksandrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kartechev-vitalij-oleksandrovych-1997-08-01-26-manhush-92nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Kartechev Vitalij Oleksandrovych"
+      },
+      {
+        "name": "Petukhov Oleksij Serhijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/petukhov-oleksij-serhijovych-2001-10-13-21-vilkhuvatka-92nd-separate-mechanized-brigade-soldier/",
+        "context": "Petukhov Oleksij Serhijovych"
+      },
+      {
+        "name": "Semenenko Viktor Volodymyrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/semenenko-viktor-volodymyrovych-1971-08-11-51-petrivka-92nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Semenenko Viktor Volodymyrovych"
+      },
+      {
+        "name": "Savchenko Vladyslav Vjacheslavovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/savchenko-vladyslav-vjacheslavovych-1993-11-10-30-chernihiv-92nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Savchenko Vladyslav V’jacheslavovych"
+      },
+      {
+        "name": "Vashetskyj Artem Viktorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/vashetskyj-artem-viktorovych-1986-10-20-37-sumy-92nd-separate-mechanized-brigade-soldier/",
+        "context": "Vashets'kyj Artem Viktorovych"
+      },
+      {
+        "name": "Yevstihnyeyev Mykhajlo Stanislavovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/yevstihnyeyev-mykhajlo-stanislavovych-1995-01-24-30-barvinkove-92nd-separate-mechanized-brigade-soldier/",
+        "context": "Yevstihnyeyev Mykhajlo Stanislavovych"
+      },
+      {
+        "name": "Lypko Ivan Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/lypko-ivan-oleksandrovych-1983-04-22-41-brylivka-92nd-separate-mechanized-brigade/",
+        "context": "Lypko Ivan Oleksandrovych"
+      },
+      {
+        "name": "Notchenko Andrij Vasylovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/notchenko-andrij-vasylovych-1977-06-10-45-novochervone-92nd-separate-mechanized-brigade/",
+        "context": "Notchenko Andrij Vasyl'ovych"
+      },
+      {
+        "name": "Tarasenko Volodymyr Oleksijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/tarasenko-volodymyr-oleksijovych-1975-02-24-40-bohodukhivka-92nd-separate-mechanized-brigade-soldier/",
+        "context": "Tarasenko Volodymyr Oleksijovych"
+      },
+      {
+        "name": "Miskevych Pavlo Volodymyrovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/miskevych-pavlo-volodymyrovych-1984-12-10-32-kharkiv-92nd-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Miskevych Pavlo Volodymyrovych"
+      },
+      {
+        "name": "Zhuk Oleksandr Pavlovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/zhuk-oleksandr-pavlovych-1968-07-19-54-tarasivka-92nd-separate-mechanized-brigade-sergeant/",
+        "context": "Zhuk Oleksandr Pavlovych"
+      },
+      {
+        "name": "Semenko Vitalij Viktorovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/semenko-vitalij-viktorovych-1979-01-24-43-lozove-92nd-separate-mechanized-brigade-sergeant/",
+        "context": "Semen'ko Vitalij Viktorovych"
+      },
+      {
+        "name": "Kozoroh Andrij Serhijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kozoroh-andrij-serhijovych-1987-12-14-35-pavlohrad-92nd-separate-mechanized-brigade-soldier/",
+        "context": "Kozoroh Andrij Serhijovych"
+      },
+      {
+        "name": "Yeromin Volodymyr Oleksandrovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/yeromin-volodymyr-oleksandrovych-1973-09-23-51-birochok-druhyj-92nd-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Yer'omin Volodymyr Oleksandrovych"
+      },
+      {
+        "name": "Vlasenko Volodymyr Ivanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/vlasenko-volodymyr-ivanovych-1982-08-24-42-nikopol-92nd-separate-mechanized-brigade-soldier/",
+        "context": "Vlasenko Volodymyr Ivanovych"
+      },
+      {
+        "name": "Kaskov Vitalij Valerijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kaskov-vitalij-valerijovych-1983-03-30-40-kyiv-92nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Kas'kov Vitalij Valerijovych"
+      },
+      {
+        "name": "Ismahilov Radik Harajkhanovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/ismahilov-radik-harajkhanovych-1966-05-22-zaporizhzhja-92nd-separate-mechanized-brigade/",
+        "context": "Ismahilov Radik Harajkhanovych"
+      },
+      {
+        "name": "Ponochovnyj Artem Leonidovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/ponochovnyj-artem-leonidovych-1987-08-01-34-nikopol-92nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Ponochovnyj Artem Leonidovych"
+      },
+      {
+        "name": "Tomashevskyj Anton Anatolijovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/tomashevskyj-anton-anatolijovych-1991-01-03-32-blahodatne-92nd-separate-mechanized-brigade-staff-sergeant/",
+        "context": "Tomashevs'kyj Anton Anatolijovych"
+      },
+      {
+        "name": "Rovnyj Oleksandr Oleksandrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/rovnyj-oleksandr-oleksandrovych-1991-11-29-22-matiyivka-92nd-separate-mechanized-brigade-soldier/",
+        "context": "Rovnyj Oleksandr Oleksandrovych"
+      },
+      {
+        "name": "Haltsov Oleksandr Ivanovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/haltsov-oleksandr-ivanovych-1977-01-15-47-dnipro-92nd-separate-mechanized-brigade/",
+        "context": "Hal'tsov Oleksandr Ivanovych"
+      }
+    ],
+    "casualty_count": 31
   },
   {
     "unit_id": "467",
@@ -24057,7 +25065,148 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Persijanov Denys Jurijovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/persijanov-denys-jurijovych-1980-02-01-44-zidky-47th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Persijanov Denys Jurijovych"
+      },
+      {
+        "name": "Mulyk Andrij Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/mulyk-andrij-oleksandrovych-1994-12-18-30-kyiv-47th-separate-mechanized-brigade/",
+        "context": "Mulyk Andrij Oleksandrovych"
+      },
+      {
+        "name": "Shapoval Kostjantyn Serhijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/shapoval-kostjantyn-serhijovych-1985-06-23-40-svitlovodsk-47th-separate-mechanized-brigade/",
+        "context": "Shapoval Kostjantyn Serhijovych"
+      },
+      {
+        "name": "Palko Ivan Vasylovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/palko-ivan-vasylovych-1967-07-01-57-zhupany-47th-separate-mechanized-brigade/",
+        "context": "Pal'ko Ivan Vasyl'ovych"
+      },
+      {
+        "name": "Buzduhan Valerij Viktorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/buzduhan-valerij-viktorovych-1979-06-14-45-novoinhulka-47th-separate-mechanized-brigade/",
+        "context": "Buzduhan Valerij Viktorovych"
+      },
+      {
+        "name": "Mazur Bohdan Olehovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/mazur-bohdan-olehovych-1994-02-21-30-vinnytsja-47th-separate-mechanized-brigade-sergeant/",
+        "context": "Mazur Bohdan Olehovych"
+      },
+      {
+        "name": "Kyryljuk Oleksandr Ivanovych",
+        "rank": "Seaman",
+        "source_url": "https://ualosses.org/en/soldier/kyryljuk-oleksandr-ivanovych-1969-01-01-55-buldychiv-47th-separate-mechanized-brigade-seaman/",
+        "context": "Kyryljuk Oleksandr Ivanovych"
+      },
+      {
+        "name": "Voronin Vladyslav Valerijovych",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/voronin-vladyslav-valerijovych-1995-04-23-28-dnipro-47th-separate-mechanized-brigade-senior-lieutenant/",
+        "context": "Voronin Vladyslav Valerijovych"
+      },
+      {
+        "name": "Polishchuk Serhij Petrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/polishchuk-serhij-petrovych-1986-06-17-35-kyiv-47th-separate-mechanized-brigade-soldier/",
+        "context": "Polishchuk Serhij Petrovych"
+      },
+      {
+        "name": "Seleshchuk Mykola Viktorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/seleshchuk-mykola-viktorovych-1985-05-26-39-novovolynsk-47th-engineering-brigade-soldier/",
+        "context": "Seleshchuk Mykola Viktorovych"
+      },
+      {
+        "name": "Hryhoryev Vasyl Volodymyrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/hryhoryev-vasyl-volodymyrovych-1973-03-31-51-sichyntsi-47th-separate-mechanized-brigade-sergeant/",
+        "context": "Hryhor’yev Vasyl' Volodymyrovych"
+      },
+      {
+        "name": "Solodkyj Vasyl Ivanovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/solodkyj-vasyl-ivanovych-1995-01-03-28-pavoloch-47th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Solodkyj Vasyl' Ivanovych"
+      },
+      {
+        "name": "Pavljuk Oleksandr Vasylovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/pavljuk-oleksandr-vasylovych-1979-03-24-zaborol-47th-separate-mechanized-brigade/",
+        "context": "Pavljuk Oleksandr Vasyl'ovych"
+      },
+      {
+        "name": "Voronjuk Jurij Oleksandrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/voronjuk-jurij-oleksandrovych-1988-10-15-36-vinnytsja-47th-separate-mechanized-brigade-soldier/",
+        "context": "Voronjuk Jurij Oleksandrovych"
+      },
+      {
+        "name": "Sidnenko Vasyl Ivanovych",
+        "rank": "Captain",
+        "source_url": "https://ualosses.org/en/soldier/sidnenko-vasyl-ivanovych-1975-08-24-49-svitlovodsk-47th-separate-mechanized-brigade-captain/",
+        "context": "Sidnenko Vasyl' Ivanovych"
+      },
+      {
+        "name": "Drahunovskyj Valerij Valentynovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/drahunovskyj-valerij-valentynovych-2000-02-24-23-prybuzke-47th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Drahunovs'kyj Valerij Valentynovych"
+      },
+      {
+        "name": "Dobrynin Oleksij Viktorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/dobrynin-oleksij-viktorovych-1985-05-18-39-myrhorod-47th-separate-mechanized-brigade/",
+        "context": "Dobrynin Oleksij Viktorovych"
+      },
+      {
+        "name": "Dohojda Jurij Mykolajovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/dohojda-jurij-mykolajovych-1979-04-28-45-pidhajtsi-47th-engineering-brigade-chief-sergeant/",
+        "context": "Dohojda Jurij Mykolajovych"
+      },
+      {
+        "name": "Kudrjashov Vitalij Viktorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kudrjashov-vitalij-viktorovych-1981-01-20-43-kaniv-47th-separate-mechanized-brigade-soldier/",
+        "context": "Kudrjashov Vitalij Viktorovych"
+      },
+      {
+        "name": "Shchehol Rostyslav Volodymyrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/shchehol-rostyslav-volodymyrovych-1997-01-29-26-kyiv-47th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Shchehol' Rostyslav Volodymyrovych"
+      },
+      {
+        "name": "Makarov Pavlo Vitalijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/makarov-pavlo-vitalijovych-1995-07-09-27-kherson-47th-separate-mechanized-brigade-soldier/",
+        "context": "Makarov Pavlo Vitalijovych"
+      },
+      {
+        "name": "Yelisavetskyj Serhij Serhijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/yelisavetskyj-serhij-serhijovych-1996-07-11-27-kropyvnytskyj-47th-separate-mechanized-brigade/",
+        "context": "Yelisavets'kyj Serhij Serhijovych"
+      },
+      {
+        "name": "Shevchuk Roman Viktorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/shevchuk-roman-viktorovych-1985-02-20-39-kyiv-47th-separate-mechanized-brigade/",
+        "context": "Shevchuk Roman Viktorovych"
+      }
+    ],
+    "casualty_count": 23
   },
   {
     "unit_id": "1167",
@@ -24617,7 +25766,196 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Burjak Dmytro Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/burjak-dmytro-volodymyrovych-1986-10-02-35-slavutych-30th-separate-mechanized-brigade-soldier/",
+        "context": "Burjak Dmytro Volodymyrovych"
+      },
+      {
+        "name": "Kuzmych Oleksandr Hryhorovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/kuzmych-oleksandr-hryhorovych-1967-05-26-55-korosten-30th-separate-mechanized-brigade-sergeant/",
+        "context": "Kuz'mych Oleksandr Hryhorovych"
+      },
+      {
+        "name": "Nanivskyj Ruslan Mykolajovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/nanivskyj-ruslan-mykolajovych-1979-08-18-43-brovky-pershi-30th-separate-mechanized-brigade/",
+        "context": "Nanivs'kyj Ruslan Mykolajovych"
+      },
+      {
+        "name": "Fedorov Andrij Anatolijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/fedorov-andrij-anatolijovych-1987-11-14-36-bilylivka-30th-separate-mechanized-brigade-soldier/",
+        "context": "Fedorov Andrij Anatolijovych"
+      },
+      {
+        "name": "Nykonchuk Roman Stepanovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/nykonchuk-roman-stepanovych-1984-11-10-38-josypivka-30th-separate-mechanized-brigade-sergeant/",
+        "context": "Nykonchuk Roman Stepanovych"
+      },
+      {
+        "name": "Biljuk Vasyl Oleksandrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/biljuk-vasyl-oleksandrovych-1992-08-04-30-artynsk-30th-separate-mechanized-brigade-soldier/",
+        "context": "Biljuk Vasyl' Oleksandrovych"
+      },
+      {
+        "name": "Bespalko Oleksandr Serhijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/bespalko-oleksandr-serhijovych-1991-09-11-30-vyhoda-30th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Bespal'ko Oleksandr Serhijovych"
+      },
+      {
+        "name": "Tymoshchuk Vitalij Valerijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/tymoshchuk-vitalij-valerijovych-1994-02-10-30-jaropovychi-30th-separate-mechanized-brigade-soldier/",
+        "context": "Tymoshchuk Vitalij Valerijovych"
+      },
+      {
+        "name": "Borovskyj Oleksandr Andrijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/borovskyj-oleksandr-andrijovych-1975-04-17-49-litky-30th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Borovs'kyj Oleksandr Andrijovych"
+      },
+      {
+        "name": "Kolodnyj Serhij Mykolajovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kolodnyj-serhij-mykolajovych-1970-05-19-52-hoholeve-30th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Kolodnyj Serhij Mykolajovych"
+      },
+      {
+        "name": "Jurchenko Valerij Viktorovych",
+        "rank": "Captain",
+        "source_url": "https://ualosses.org/en/soldier/jurchenko-valerij-viktorovych-1971-02-12-43-zvjahel-30th-separate-mechanized-brigade-captain/",
+        "context": "Jurchenko Valerij Viktorovych"
+      },
+      {
+        "name": "Stelmakh Oleh Serhijovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/stelmakh-oleh-serhijovych-1994-10-05-28-kyiv-30th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Stel'makh Oleh Serhijovych"
+      },
+      {
+        "name": "Damanskyj Jan Jurijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/damanskyj-jan-jurijovych-1991-05-18-23-nova-ushytsja-30th-separate-mechanized-brigade-soldier/",
+        "context": "Damans'kyj Jan Jurijovych"
+      },
+      {
+        "name": "Aladko Denys Viktorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/aladko-denys-viktorovych-1982-10-06-40-chernihiv-30th-separate-mechanized-brigade-soldier/",
+        "context": "Alad'ko Denys Viktorovych"
+      },
+      {
+        "name": "Berdin Vitalij Andrijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/berdin-vitalij-andrijovych-1995-01-06-27-vilne-30th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Berdin Vitalij Andrijovych"
+      },
+      {
+        "name": "Hrebenjuk Oleksandr Valentynovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/hrebenjuk-oleksandr-valentynovych-1986-03-26-28-makiyivka-30th-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Hrebenjuk Oleksandr Valentynovych"
+      },
+      {
+        "name": "Zakharchenko Oleksandr Oleksandrovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/zakharchenko-oleksandr-oleksandrovych-1972-11-20-51-serbo-slobidka-30th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Zakharchenko Oleksandr Oleksandrovych"
+      },
+      {
+        "name": "Jaroshenko Serhij Hryhorovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/jaroshenko-serhij-hryhorovych-1978-05-10-36-lisove-30th-separate-mechanized-brigade-sergeant/",
+        "context": "Jaroshenko Serhij Hryhorovych"
+      },
+      {
+        "name": "Holubets Yevhenij Oleksandrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/holubets-yevhenij-oleksandrovych-1987-10-02-35-bakumivka-30th-separate-mechanized-brigade-soldier/",
+        "context": "Holubets' Yevhenij Oleksandrovych"
+      },
+      {
+        "name": "Shyrokov Vitalij Valerijovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/shyrokov-vitalij-valerijovych-1981-10-20-33-oleksandrija-30th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Shyrokov Vitalij Valerijovych"
+      },
+      {
+        "name": "Snitko Vadym Valerijovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/snitko-vadym-valerijovych-1986-08-05-36-malyn-30th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Snitko Vadym Valerijovych"
+      },
+      {
+        "name": "Hryhoryev Oleh Oleksandrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/hryhoryev-oleh-oleksandrovych-1971-01-24-52-berdychiv-30th-separate-mechanized-brigade-sergeant/",
+        "context": "Hryhor’yev Oleh Oleksandrovych"
+      },
+      {
+        "name": "Sulym Maksym Anatolijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/sulym-maksym-anatolijovych-1984-02-06-39-krysky-30th-separate-mechanized-brigade-soldier/",
+        "context": "Sulym Maksym Anatolijovych"
+      },
+      {
+        "name": "Melnichenko Maksym Olehovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/melnichenko-maksym-olehovych-1994-09-21-27-krasnopilka-30th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Mel'nichenko Maksym Olehovych"
+      },
+      {
+        "name": "Dzjubenko Dmytro Viktorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/dzjubenko-dmytro-viktorovych-1976-11-02-46-mykolayiv-30th-separate-mechanized-brigade-soldier/",
+        "context": "Dzjubenko Dmytro Viktorovych"
+      },
+      {
+        "name": "Jatskovets Petro Mykolajovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/jatskovets-petro-mykolajovych-1971-06-26-43-ostapy-30th-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Jatskovets' Petro Mykolajovych"
+      },
+      {
+        "name": "Yeshchenko Leonid Oleksandrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/yeshchenko-leonid-oleksandrovych-1997-06-23-25-kremenchuk-30th-separate-mechanized-brigade-soldier/",
+        "context": "Yeshchenko Leonid Oleksandrovych"
+      },
+      {
+        "name": "Maksymchuk Stanislav Viktorovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/maksymchuk-stanislav-viktorovych-1995-06-15-19-holoby-30th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Maksymchuk Stanislav Viktorovych"
+      },
+      {
+        "name": "Tkach Oleksandr Mykhajlovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/tkach-oleksandr-mykhajlovych-1981-03-25-44-otrokiv-30th-separate-mechanized-brigade/",
+        "context": "Tkach Oleksandr Mykhajlovych"
+      },
+      {
+        "name": "Shchepanskyj Oleh Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/shchepanskyj-oleh-volodymyrovych-1976-08-27-38-komarivtsi-30th-separate-mechanized-brigade-soldier/",
+        "context": "Shchepans'kyj Oleh Volodymyrovych"
+      },
+      {
+        "name": "Osadchyj Valentyn Stanislavovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/osadchyj-valentyn-stanislavovych-1989-02-06-35-kalynivka-30th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Osadchyj Valentyn Stanislavovych"
+      }
+    ],
+    "casualty_count": 31
   },
   {
     "unit_id": "121",
@@ -25597,7 +26935,196 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Horoshko Mykola Borysovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/horoshko-mykola-borysovych-1970-06-21-55-luchky-36th-road-rehabilitation-brigade-senior-sergeant/",
+        "context": "Horoshko Mykola Borysovych"
+      },
+      {
+        "name": "Udut Serhij Serhijovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/udut-serhij-serhijovych-1992-04-05-rozdilna-36th-separate-marine-brigade-junior-sergeant/",
+        "context": "Udut Serhij Serhijovych"
+      },
+      {
+        "name": "Honcharov Oleksandr Anatolijovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/honcharov-oleksandr-anatolijovych-1982-07-22-novoukrayinka-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Honcharov Oleksandr Anatolijovych"
+      },
+      {
+        "name": "Pizintsali Serhij Valerijovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/pizintsali-serhij-valerijovych-1969-02-02-odesa-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Pizintsali Serhij Valerijovych"
+      },
+      {
+        "name": "Prokopchuk Vitalij Serhijovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/prokopchuk-vitalij-serhijovych-1993-04-11-novhorodka-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Prokopchuk Vitalij Serhijovych"
+      },
+      {
+        "name": "Yehorov Oleksandr Anatolijovych",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/yehorov-oleksandr-anatolijovych-1989-01-20-bashtanka-36th-separate-marine-brigade-senior-lieutenant/",
+        "context": "Yehorov Oleksandr Anatolijovych"
+      },
+      {
+        "name": "Shulha Vadym Vadymovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/shulha-vadym-vadymovych-2000-03-27-kropyvnytskyj-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Shul'ha Vadym Vadymovych"
+      },
+      {
+        "name": "Bodnarjuk Denys Oleksandrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/bodnarjuk-denys-oleksandrovych-1995-09-19-26-roksolany-36th-separate-marine-brigade-sergeant/",
+        "context": "Bodnarjuk Denys Oleksandrovych"
+      },
+      {
+        "name": "Bondarenko Dmytro Stanislavovych",
+        "rank": "Seaman",
+        "source_url": "https://ualosses.org/en/soldier/bondarenko-dmytro-stanislavovych-2001-04-06-24-bohodukhiv-36th-separate-marine-brigade-seaman/",
+        "context": "Bondarenko Dmytro Stanislavovych"
+      },
+      {
+        "name": "Pljashnyk Anatolij Ivanovych",
+        "rank": "Major",
+        "source_url": "https://ualosses.org/en/soldier/pljashnyk-anatolij-ivanovych-1965-10-08-myrhorod-36th-separate-marine-brigade-major/",
+        "context": "Pljashnyk Anatolij Ivanovych"
+      },
+      {
+        "name": "Shchetynin Maksym Heorhijovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/shchetynin-maksym-heorhijovych-1980-02-16-44-zaporizhzhja-36th-separate-marine-brigade-sergeant/",
+        "context": "Shchetynin Maksym Heorhijovych"
+      },
+      {
+        "name": "Kormych Volodymyr Viktorovych",
+        "rank": "Seaman",
+        "source_url": "https://ualosses.org/en/soldier/kormych-volodymyr-viktorovych-2003-03-02-19-balovne-36th-separate-marine-brigade-seaman/",
+        "context": "Kormych Volodymyr Viktorovych"
+      },
+      {
+        "name": "Nikolayev Vladyslav Davydovych",
+        "rank": "Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/nikolayev-vladyslav-davydovych-1996-10-14-26-rivne-36th-separate-marine-brigade-lieutenant/",
+        "context": "Nikolayev Vladyslav Davydovych"
+      },
+      {
+        "name": "Bilyj Vadym Mykolajovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/bilyj-vadym-mykolajovych-1970-04-25-mykolayiv-36th-separate-marine-brigade-sergeant/",
+        "context": "Bilyj Vadym Mykolajovych"
+      },
+      {
+        "name": "Kosterin Volodymyr Serhijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kosterin-volodymyr-serhijovych-1997-03-01-brychkivka-36th-separate-marine-brigade-soldier/",
+        "context": "Kosterin Volodymyr Serhijovych"
+      },
+      {
+        "name": "Avanesov Karen Hryhorovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/avanesov-karen-hryhorovych-1998-02-17-bakhmut-36th-separate-marine-brigade-junior-sergeant/",
+        "context": "Avanesov Karen Hryhorovych"
+      },
+      {
+        "name": "Leskiv Vasyl Josyfovych",
+        "rank": "Seaman",
+        "source_url": "https://ualosses.org/en/soldier/leskiv-vasyl-josyfovych-1990-01-16-sudova-vyshnja-36th-separate-marine-brigade-seaman/",
+        "context": "Les'kiv Vasyl' Josyfovych"
+      },
+      {
+        "name": "Polyvach Myroslav Volodymyrovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/polyvach-myroslav-volodymyrovych-2000-06-03-21-khokhitva-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Polyvach Myroslav Volodymyrovych"
+      },
+      {
+        "name": "Zelenetskyj Mykhajlo Vasylovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/zelenetskyj-mykhajlo-vasylovych-1986-03-20-39-kolomyja-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Zelenets'kyj Mykhajlo Vasyl'ovych"
+      },
+      {
+        "name": "Snih Oleksandr Vitalijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/snih-oleksandr-vitalijovych-1978-05-12-47-troyitske-36th-separate-marine-brigade/",
+        "context": "Snih Oleksandr Vitalijovych"
+      },
+      {
+        "name": "Boryslavskyj Semen Oleksandrovych",
+        "rank": "Seaman",
+        "source_url": "https://ualosses.org/en/soldier/boryslavskyj-semen-oleksandrovych-1989-08-01-bashtanka-36th-separate-marine-brigade-seaman/",
+        "context": "Boryslavs'kyj Semen Oleksandrovych"
+      },
+      {
+        "name": "Pochtar Ruslan Oleksandrovych",
+        "rank": "Seaman",
+        "source_url": "https://ualosses.org/en/soldier/pochtar-ruslan-oleksandrovych-1985-09-27-38-barativka-36th-separate-marine-brigade-seaman/",
+        "context": "Pochtar' Ruslan Oleksandrovych"
+      },
+      {
+        "name": "Haponchuk Vitalij Kostjantynovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/haponchuk-vitalij-kostjantynovych-1979-03-18-44-syniv-36th-separate-marine-brigade/",
+        "context": "Haponchuk Vitalij Kostjantynovych"
+      },
+      {
+        "name": "Mojseyenko Andrij Vasylovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/mojseyenko-andrij-vasylovych-1976-11-12-mykolayiv-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Mojseyenko Andrij Vasyl'ovych"
+      },
+      {
+        "name": "Kulik Volodymyr Volodymyrovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/kulik-volodymyr-volodymyrovych-1977-01-19-bereznehuvate-36th-separate-marine-brigade-junior-sergeant/",
+        "context": "Kulik Volodymyr Volodymyrovych"
+      },
+      {
+        "name": "Khrapach Denys Leonidovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/khrapach-denys-leonidovych-1996-07-30-27-kocherhy-36th-separate-marine-brigade-senior-soldier/",
+        "context": "Khrapach Denys Leonidovych"
+      },
+      {
+        "name": "Fil Vitalij Oleksandrovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/fil-vitalij-oleksandrovych-1984-12-29-39-biljayivka-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Fil' Vitalij Oleksandrovych"
+      },
+      {
+        "name": "Tymokhin Oleksandr Mykhajlovych",
+        "rank": "Seaman",
+        "source_url": "https://ualosses.org/en/soldier/tymokhin-oleksandr-mykhajlovych-36th-separate-marine-brigade-seaman/",
+        "context": "Tymokhin Oleksandr Mykhajlovych"
+      },
+      {
+        "name": "Lyenik Oleksandr Valerijovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/lyenik-oleksandr-valerijovych-1984-11-20-mykolayiv-36th-separate-marine-brigade-senior-sergeant/",
+        "context": "Lyenik Oleksandr Valerijovych"
+      },
+      {
+        "name": "Hryhoryev Volodymyr Volodymyrovych",
+        "rank": "Senior Seaman",
+        "source_url": "https://ualosses.org/en/soldier/hryhoryev-volodymyr-volodymyrovych-2003-04-12-chermalyk-36th-separate-marine-brigade-senior-seaman/",
+        "context": "Hryhor'yev Volodymyr Volodymyrovych"
+      },
+      {
+        "name": "Lychko Andrij Volodymyrovych",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/lychko-andrij-volodymyrovych-1979-04-05-mykolayiv-36th-separate-marine-brigade-senior-lieutenant/",
+        "context": "Lychko Andrij Volodymyrovych"
+      }
+    ],
+    "casualty_count": 31
   },
   {
     "unit_id": "402",
@@ -25737,7 +27264,106 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Antipov Oleksandr Viktorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/antipov-oleksandr-viktorovych-1977-09-08-47-kremenchuk-110th-separate-mechanized-brigade/",
+        "context": "Antipov Oleksandr Viktorovych"
+      },
+      {
+        "name": "Lendyel Bohdan Karelovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/lendyel-bohdan-karelovych-1975-11-05-47-sumy-110th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Lend’yel Bohdan Karelovych"
+      },
+      {
+        "name": "Daleka Oleksandr Ivanovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/daleka-oleksandr-ivanovych-1976-04-24-48-bilka-110th-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Daleka Oleksandr Ivanovych"
+      },
+      {
+        "name": "Bondar Roman Viktorovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/bondar-roman-viktorovych-1983-11-10-41-lviv-110th-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Bondar Roman Viktorovych"
+      },
+      {
+        "name": "Lender Dmytro Mykolajovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/lender-dmytro-mykolajovych-1978-06-15-47-kushuhum-110th-separate-territorial-defense-brigade/",
+        "context": "Lender Dmytro Mykolajovych"
+      },
+      {
+        "name": "Poberezhnyj Serhij Anatolijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/poberezhnyj-serhij-anatolijovych-1993-03-03-31-hajsyn-110th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Poberezhnyj Serhij Anatolijovych"
+      },
+      {
+        "name": "Marusjak Jaroslav Hryhorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/marusjak-jaroslav-hryhorovych-1976-04-11-46-trybukhivtsi-110th-separate-mechanized-brigade-soldier/",
+        "context": "Marusjak Jaroslav Hryhorovych"
+      },
+      {
+        "name": "Pavlov Heorhij Oleksandrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/pavlov-heorhij-oleksandrovych-1994-05-29-29-kryvyj-rih-110th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Pavlov Heorhij Oleksandrovych"
+      },
+      {
+        "name": "Pistrjak Mykola Hryhorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/pistrjak-mykola-hryhorovych-1975-03-18-47-chutove-110th-separate-mechanized-brigade-soldier/",
+        "context": "Pistrjak Mykola Hryhorovych"
+      },
+      {
+        "name": "Krasnoshchok Pavlo Mykolajovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/krasnoshchok-pavlo-mykolajovych-1971-09-20-52-zhukivka-110th-separate-mechanized-brigade/",
+        "context": "Krasnoshchok Pavlo Mykolajovych"
+      },
+      {
+        "name": "Ivanchenko Petro Petrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/ivanchenko-petro-petrovych-1994-04-06-29-starovychi-110th-separate-mechanized-brigade-soldier/",
+        "context": "Ivanchenko Petro Petrovych"
+      },
+      {
+        "name": "Aljautdinov Andrij Mykhajlovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/aljautdinov-andrij-mykhajlovych-1985-01-12-39-shepetivka-110th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Aljautdinov Andrij Mykhajlovych"
+      },
+      {
+        "name": "Savchenko Oleksandr Borysovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/savchenko-oleksandr-borysovych-1970-11-01-52-kyiv-110th-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Savchenko Oleksandr Borysovych"
+      },
+      {
+        "name": "Trembik Stanislav Mykolajovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/trembik-stanislav-mykolajovych-1992-02-23-31-pavlohrad-110th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Trembik Stanislav Mykolajovych"
+      },
+      {
+        "name": "Kartavyj Dmytro Petrovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/kartavyj-dmytro-petrovych-1979-01-19-45-romny-110th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Kartavyj Dmytro Petrovych"
+      },
+      {
+        "name": "Boruk Yevhenij Viktorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/boruk-yevhenij-viktorovych-1970-08-06-radomyshl-110th-separate-mechanized-brigade-soldier/",
+        "context": "Boruk Yevhenij Viktorovych"
+      }
+    ],
+    "casualty_count": 16
   },
   {
     "unit_id": "111",
@@ -27897,7 +29523,232 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Novyk Mykhajlo Jaroslavovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/novyk-mykhajlo-jaroslavovych-1986-11-18-37-zavadiv-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Novyk Mykhajlo Jaroslavovych"
+      },
+      {
+        "name": "Sychov Oleksandr Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/sychov-oleksandr-volodymyrovych-1990-12-03-novopavlivka-82nd-separate-air-assault-brigade/",
+        "context": "Sychov Oleksandr Volodymyrovych"
+      },
+      {
+        "name": "Maryshev Yevhen Anatolijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/maryshev-yevhen-anatolijovych-1980-04-06-44-pryluky-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Maryshev Yevhen Anatolijovych"
+      },
+      {
+        "name": "Nauruzov Oleksandr Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/nauruzov-oleksandr-volodymyrovych-1989-01-26-36-lviv-82nd-separate-air-assault-brigade/",
+        "context": "Nauruzov Oleksandr Volodymyrovych"
+      },
+      {
+        "name": "Vorontsov Ivan Serhijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/vorontsov-ivan-serhijovych-1989-12-14-35-mykolayiv-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Vorontsov Ivan Serhijovych"
+      },
+      {
+        "name": "Maljarchuk Mykhajlo Mykolajovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/maljarchuk-mykhajlo-mykolajovych-1982-04-15-43-kremenets-82nd-separate-air-assault-brigade/",
+        "context": "Maljarchuk Mykhajlo Mykolajovych"
+      },
+      {
+        "name": "Mjakushka Yevhenij Viktorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/mjakushka-yevhenij-viktorovych-1995-05-15-28-petrove-82nd-separate-air-assault-brigade/",
+        "context": "M’jakushka Yevhenij Viktorovych"
+      },
+      {
+        "name": "Shvachych Oleksij Vasylovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/shvachych-oleksij-vasylovych-1984-04-29-40-pervomajsk-82nd-separate-air-assault-brigade/",
+        "context": "Shvachych Oleksij Vasyl'ovych"
+      },
+      {
+        "name": "Lipych Mykola Mykolajovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/lipych-mykola-mykolajovych-1995-05-20-29-klitytsk-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Lipych Mykola Mykolajovych"
+      },
+      {
+        "name": "Masnjuk Jurij Anatolijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/masnjuk-jurij-anatolijovych-1987-04-27-38-lviv-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Masnjuk Jurij Anatolijovych"
+      },
+      {
+        "name": "Filkov Yevhen Serhijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/filkov-yevhen-serhijovych-1989-02-01-35-myrnohrad-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Fil'kov Yevhen Serhijovych"
+      },
+      {
+        "name": "Kalynchuk Ivan Mykolajovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/kalynchuk-ivan-mykolajovych-1999-06-03-26-berezhonka-82nd-separate-air-assault-brigade/",
+        "context": "Kalynchuk Ivan Mykolajovych"
+      },
+      {
+        "name": "Savchuk Ivan Vasylovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/savchuk-ivan-vasylovych-1994-08-19-31-koty-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Savchuk Ivan Vasyl'ovych"
+      },
+      {
+        "name": "Hryhorjak Ruslan Orestovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/hryhorjak-ruslan-orestovych-1980-01-16-45-valjava-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Hryhorjak Ruslan Orestovych"
+      },
+      {
+        "name": "Mudryj Dmytro Hryhorovych",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/mudryj-dmytro-hryhorovych-1978-03-06-46-kamjanets-podilskyj-82nd-separate-air-assault-brigade-senior-lieutenant/",
+        "context": "Mudryj Dmytro Hryhorovych"
+      },
+      {
+        "name": "Bocheljuk Mykhajlo Serhijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/bocheljuk-mykhajlo-serhijovych-1998-09-19-26-mykyty-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Bocheljuk Mykhajlo Serhijovych"
+      },
+      {
+        "name": "Berezhnyj Ivan Oleksandrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/berezhnyj-ivan-oleksandrovych-1987-07-05-37-korost-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Berezhnyj Ivan Oleksandrovych"
+      },
+      {
+        "name": "Nenchuk Andrij Mykolajovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/nenchuk-andrij-mykolajovych-1991-07-15-32-nadychi-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Nenchuk Andrij Mykolajovych"
+      },
+      {
+        "name": "Levkulich Viktor Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/levkulich-viktor-volodymyrovych-1986-10-22-37-kropyvnytskyj-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Levkulich Viktor Volodymyrovych"
+      },
+      {
+        "name": "Kuzlo Volodymyr Mykhajlovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/kuzlo-volodymyr-mykhajlovych-1993-02-05-30-svarytsevychi-82nd-separate-air-assault-brigade-junior-sergeant/",
+        "context": "Kuzlo Volodymyr Mykhajlovych"
+      },
+      {
+        "name": "Chayinskyj Hennadij Vasylovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/chayinskyj-hennadij-vasylovych-1986-03-14-38-plesna-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Chayins'kyj Hennadij Vasyl'ovych"
+      },
+      {
+        "name": "Zolotukhin Vadym Jurijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/zolotukhin-vadym-jurijovych-1980-11-17-44-kamjanets-podilskyj-82nd-separate-air-assault-brigade/",
+        "context": "Zolotukhin Vadym Jurijovych"
+      },
+      {
+        "name": "Hubar Oleksandr Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/hubar-oleksandr-volodymyrovych-1985-12-18-39-sumy-82nd-separate-air-assault-brigade/",
+        "context": "Hubar Oleksandr Volodymyrovych"
+      },
+      {
+        "name": "Djakonov Hapyn Oleksij Vitalijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/djakonov-hapyn-oleksij-vitalijovych-1983-05-08-41-khmelnytskyj-82nd-separate-air-assault-brigade-soldier/",
+        "context": "D'jakonov-Hapyn Oleksij Vitalijovych"
+      },
+      {
+        "name": "Shpak Roman Jurijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/shpak-roman-jurijovych-1993-08-31-30-mykolayivka-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Shpak Roman Jurijovych"
+      },
+      {
+        "name": "Kulchytskyj Serhij Fedorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/kulchytskyj-serhij-fedorovych-1986-04-01-38-lutsk-82nd-separate-air-assault-brigade/",
+        "context": "Kul'chyts'kyj Serhij Fedorovych"
+      },
+      {
+        "name": "Harbuz Andrij Serhijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/harbuz-andrij-serhijovych-1994-01-23-29-bojarka-82nd-separate-air-assault-brigade/",
+        "context": "Harbuz Andrij Serhijovych"
+      },
+      {
+        "name": "Vanchura Volodymyr Josyfovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/vanchura-volodymyr-josyfovych-1989-06-06-35-horodok-82nd-separate-air-assault-brigade/",
+        "context": "Vanchura Volodymyr Josyfovych"
+      },
+      {
+        "name": "Olijnyk Dmytro Vasylovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/olijnyk-dmytro-vasylovych-1976-11-08-48-lopativ-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Olijnyk Dmytro Vasyl'ovych"
+      },
+      {
+        "name": "Muzychko Anatolij Mykolajovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/muzychko-anatolij-mykolajovych-1970-06-01-54-brytske-82nd-separate-air-assault-brigade-junior-sergeant/",
+        "context": "Muzychko Anatolij Mykolajovych"
+      },
+      {
+        "name": "Nechyporuk Valerij Vasylovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/nechyporuk-valerij-vasylovych-1995-11-22-29-pashuky-82nd-separate-air-assault-brigade-sergeant/",
+        "context": "Nechyporuk Valerij Vasyl'ovych"
+      },
+      {
+        "name": "Bozhyk Nazar Vasylovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/bozhyk-nazar-vasylovych-2000-07-02-21-vivsja-82nd-separate-air-assault-brigade-junior-sergeant/",
+        "context": "Bozhyk Nazar Vasyl'ovych"
+      },
+      {
+        "name": "Burenko Serhij Jurijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/burenko-serhij-jurijovych-1978-07-02-44-kramatorsk-82nd-separate-air-assault-brigade-soldier/",
+        "context": "Burenko Serhij Jurijovych"
+      },
+      {
+        "name": "Tkachuk Viktor Oleksandrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/tkachuk-viktor-oleksandrovych-1993-09-29-30-khmelnytskyj-82nd-separate-air-assault-brigade-senior-soldier/",
+        "context": "Tkachuk Viktor Oleksandrovych"
+      },
+      {
+        "name": "Zejda Andrij Valentynovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/zejda-andrij-valentynovych-1984-11-22-40-ilpin-82nd-separate-air-assault-brigade/",
+        "context": "Zejda Andrij Valentynovych"
+      },
+      {
+        "name": "Mashkarynets Yevhen Ivanovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/mashkarynets-yevhen-ivanovych-1987-04-06-37-rozivka-82nd-separate-air-assault-brigade/",
+        "context": "Mashkarynets' Yevhen Ivanovych"
+      },
+      {
+        "name": "Fomenko Andrij Mykhajlovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/fomenko-andrij-mykhajlovych-1997-03-13-27-mykolayivka-82nd-separate-air-assault-brigade/",
+        "context": "Fomenko Andrij Mykhajlovych"
+      }
+    ],
+    "casualty_count": 37
   },
   {
     "unit_id": "686",
@@ -28097,7 +29948,112 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Lyenovskyj Viktor Leonidovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/lyenovskyj-viktor-leonidovych-1976-10-04-46-nova-haleshchyna-32nd-separate-mechanized-brigade/",
+        "context": "Lyen'ovs'kyj Viktor Leonidovych"
+      },
+      {
+        "name": "Stepanenko Stepan Stepanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/stepanenko-stepan-stepanovych-1981-09-05-41-stasi-32nd-separate-mechanized-brigade-soldier/",
+        "context": "Stepanenko Stepan Stepanovych"
+      },
+      {
+        "name": "Holovach Petro Josyfovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/holovach-petro-josyfovych-1976-04-05-49-hrimne-32nd-separate-mechanized-brigade/",
+        "context": "Holovach Petro Josyfovych"
+      },
+      {
+        "name": "Zadniprjanyj Mykola Leonidovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/zadniprjanyj-mykola-leonidovych-1975-11-25-48-petrushky-32nd-separate-mechanized-brigade/",
+        "context": "Zadniprjanyj Mykola Leonidovych"
+      },
+      {
+        "name": "Voronenko Viktor Jakovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/voronenko-viktor-jakovych-1977-06-29-47-brazhyntsi-32nd-separate-mechanized-brigade/",
+        "context": "Voronenko Viktor Jakovych"
+      },
+      {
+        "name": "Hrushovyj Oleksandr Volodymyrovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/hrushovyj-oleksandr-volodymyrovych-1978-09-26-44-kaharlyk-32nd-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Hrushovyj Oleksandr Volodymyrovych"
+      },
+      {
+        "name": "Matsenko Maksym Serhijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/matsenko-maksym-serhijovych-1988-04-27-35-chornotychi-32nd-separate-mechanized-brigade-soldier/",
+        "context": "Matsenko Maksym Serhijovych"
+      },
+      {
+        "name": "Svist Andrij Viktorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/svist-andrij-viktorovych-1989-06-06-novyna-dobrjatynska-32nd-separate-mechanized-brigade-soldier/",
+        "context": "Svist Andrij Viktorovych"
+      },
+      {
+        "name": "Tymoshyk Anatolij Petrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/tymoshyk-anatolij-petrovych-1978-02-28-45-pidlisne-32nd-separate-mechanized-brigade-soldier/",
+        "context": "Tymoshyk Anatolij Petrovych"
+      },
+      {
+        "name": "Vasyljuk Vitalij Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/vasyljuk-vitalij-oleksandrovych-1983-04-05-41-hryshkivtsi-32nd-separate-mechanized-brigade/",
+        "context": "Vasyljuk Vitalij Oleksandrovych"
+      },
+      {
+        "name": "Peresunko Jurij Jurijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/peresunko-jurij-jurijovych-1993-01-10-31-tulchyn-32nd-separate-mechanized-brigade/",
+        "context": "Peresun'ko Jurij Jurijovych"
+      },
+      {
+        "name": "Jakubenko Oleksandr Vasylovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/jakubenko-oleksandr-vasylovych-1970-09-22-53-kyiv-32nd-separate-mechanized-brigade/",
+        "context": "Jakubenko Oleksandr Vasyl'ovych"
+      },
+      {
+        "name": "Andrijuk Vasyl Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/andrijuk-vasyl-oleksandrovych-1971-01-14-53-ivanychi-32nd-separate-mechanized-brigade/",
+        "context": "Andrijuk Vasyl' Oleksandrovych"
+      },
+      {
+        "name": "Fenochko Vasyl Mykolajovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/fenochko-vasyl-mykolajovych-1975-08-08-hlobyne-32nd-separate-mechanized-brigade/",
+        "context": "Fenochko Vasyl' Mykolajovych"
+      },
+      {
+        "name": "Vsjakyj Pavlo Mykhajlovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/vsjakyj-pavlo-mykhajlovych-1971-11-12-53-kurovychi-32nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Vsjakyj Pavlo Mykhajlovych"
+      },
+      {
+        "name": "Havrylko Serhij Vasylovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/havrylko-serhij-vasylovych-1997-06-19-26-nosivka-32nd-separate-mechanized-brigade-soldier/",
+        "context": "Havrylko Serhij Vasyl'ovych"
+      },
+      {
+        "name": "Jaskevych Vitalij Fedorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/jaskevych-vitalij-fedorovych-1977-01-21-48-drozdyn-32nd-separate-mechanized-brigade/",
+        "context": "Jaskevych Vitalij Fedorovych"
+      }
+    ],
+    "casualty_count": 17
   },
   {
     "unit_id": "205",
@@ -28397,7 +30353,280 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Fedeka Ivan Ivanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/fedeka-ivan-ivanovych-1988-07-17-35-stebnyk-24th-separate-mechanized-brigade-soldier/",
+        "context": "Fedeka Ivan Ivanovych"
+      },
+      {
+        "name": "Tarasenko Oleksandr Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/tarasenko-oleksandr-volodymyrovych-1986-02-13-39-sosnivka-24th-separate-mechanized-brigade/",
+        "context": "Tarasenko Oleksandr Volodymyrovych"
+      },
+      {
+        "name": "Klymenko Serhij Stepanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/klymenko-serhij-stepanovych-1985-02-26-38-roztjazhyn-24th-separate-mechanized-brigade-soldier/",
+        "context": "Klymenko Serhij Stepanovych"
+      },
+      {
+        "name": "Uhlovyj Jurij Mykolajovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/uhlovyj-jurij-mykolajovych-1969-04-08-53-stryj-24th-separate-mechanized-brigade-soldier/",
+        "context": "Uhlovyj Jurij Mykolajovych"
+      },
+      {
+        "name": "Komasjuk Vasyl Anatolijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/komasjuk-vasyl-anatolijovych-1997-06-17-28-khorostkiv-24th-separate-mechanized-brigade/",
+        "context": "Komasjuk Vasyl' Anatolijovych"
+      },
+      {
+        "name": "Ocheretnyj Oleksandr Anatolijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/ocheretnyj-oleksandr-anatolijovych-1993-03-20-32-velykyj-oleksandriv-24th-separate-mechanized-brigade/",
+        "context": "Ocheretnyj Oleksandr Anatolijovych"
+      },
+      {
+        "name": "Kostiv Andrij Mykhajlovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/kostiv-andrij-mykhajlovych-1985-12-10-36-lviv-24th-separate-mechanized-brigade-sergeant/",
+        "context": "Kostiv Andrij Mykhajlovych"
+      },
+      {
+        "name": "Tazayev Ljubomyr Leonidovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/tazayev-ljubomyr-leonidovych-1985-04-06-37-lviv-24th-separate-mechanized-brigade-soldier/",
+        "context": "Tazayev Ljubomyr Leonidovych"
+      },
+      {
+        "name": "Voznyj Andrij Mykolajovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/voznyj-andrij-mykolajovych-1984-05-31-38-lviv-24th-separate-mechanized-brigade-soldier/",
+        "context": "Voznyj Andrij Mykolajovych"
+      },
+      {
+        "name": "Ukrayinskyj Dmytro Mykhajlovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/ukrayinskyj-dmytro-mykhajlovych-1979-11-03-38-lysychansk-24th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Ukrayins'kyj Dmytro Mykhajlovych"
+      },
+      {
+        "name": "Voronets Serhij Ivanovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/voronets-serhij-ivanovych-1969-08-14-54-nedra-24th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Voronets' Serhij Ivanovych"
+      },
+      {
+        "name": "Hurskyj Pavlo Mykolajovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/hurskyj-pavlo-mykolajovych-1972-06-23-52-krasne-24th-separate-mechanized-brigade-soldier/",
+        "context": "Hurs'kyj Pavlo Mykolajovych"
+      },
+      {
+        "name": "Kapleta Jurij Andrijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kapleta-jurij-andrijovych-1986-12-03-35-sokal-24th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Kapleta Jurij Andrijovych"
+      },
+      {
+        "name": "Bohut Vasyl Vasylovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/bohut-vasyl-vasylovych-1973-07-03-49-mukacheve-24th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Bohut Vasyl' Vasyl'ovych"
+      },
+      {
+        "name": "Povstjuk Andrij Oleksijovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/povstjuk-andrij-oleksijovych-1983-12-01-30-slavuta-24th-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Povstjuk Andrij Oleksijovych"
+      },
+      {
+        "name": "Kozachuk Jurij Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/kozachuk-jurij-oleksandrovych-1987-04-16-37-zdovbytsja-24th-separate-mechanized-brigade/",
+        "context": "Kozachuk Jurij Oleksandrovych"
+      },
+      {
+        "name": "Baloh Vasyl Jurijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/baloh-vasyl-jurijovych-1984-12-18-38-uzhhorod-24th-separate-mechanized-brigade-soldier/",
+        "context": "Baloh Vasyl' Jurijovych"
+      },
+      {
+        "name": "Matviyiv Andrij Vasylovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/matviyiv-andrij-vasylovych-1993-06-17-29-lviv-24th-separate-mechanized-brigade/",
+        "context": "Matviyiv Andrij Vasyl'ovych"
+      },
+      {
+        "name": "Sternjak Serhij Petrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/sternjak-serhij-petrovych-1988-11-07-35-kholopychi-24th-separate-mechanized-brigade/",
+        "context": "Sternjak Serhij Petrovych"
+      },
+      {
+        "name": "Bazhyk Stepan Viktorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/bazhyk-stepan-viktorovych-1994-03-01-28-kozyna-24th-separate-mechanized-brigade-soldier/",
+        "context": "Bazhyk Stepan Viktorovych"
+      },
+      {
+        "name": "Pikalo Oleksandr Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/pikalo-oleksandr-oleksandrovych-1994-08-27-myrne-24th-separate-mechanized-brigade/",
+        "context": "Pikalo Oleksandr Oleksandrovych"
+      },
+      {
+        "name": "Markevych Volodymyr Mykhajlovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/markevych-volodymyr-mykhajlovych-1971-02-05-48-rozdil-24th-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Markevych Volodymyr Mykhajlovych"
+      },
+      {
+        "name": "Slipko Oleh Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/slipko-oleh-volodymyrovych-1973-07-24-49-lisnovychi-24th-separate-mechanized-brigade-soldier/",
+        "context": "Slipko Oleh Volodymyrovych"
+      },
+      {
+        "name": "Shpytko Roman Andrijovych",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/shpytko-roman-andrijovych-1997-06-04-24-birky-24th-separate-mechanized-brigade-senior-lieutenant/",
+        "context": "Shpytko Roman Andrijovych"
+      },
+      {
+        "name": "Kozhokaru Dmytro Fedorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kozhokaru-dmytro-fedorovych-1972-09-12-49-molnytsja-24th-separate-mechanized-brigade-soldier/",
+        "context": "Kozhokaru Dmytro Fedorovych"
+      },
+      {
+        "name": "Korchynskyj Volodymyr Volodymyrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/korchynskyj-volodymyr-volodymyrovych-1988-06-06-36-turka-24th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Korchyns'kyj Volodymyr Volodymyrovych"
+      },
+      {
+        "name": "Pentsak Andrij Mykhajlovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/pentsak-andrij-mykhajlovych-1974-01-16-48-chervonohrad-24th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Pentsak Andrij Mykhajlovych"
+      },
+      {
+        "name": "Kirashchuk Andrij Jurijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kirashchuk-andrij-jurijovych-1984-12-13-40-berehomet-24th-separate-mechanized-brigade-soldier/",
+        "context": "Kirashchuk Andrij Jurijovych"
+      },
+      {
+        "name": "Mykhats Taras Jaroslavovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/mykhats-taras-jaroslavovych-1970-04-21-51-boryslav-24th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Mykhats' Taras Jaroslavovych"
+      },
+      {
+        "name": "Vlasjuk Volodymyr Leonidovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/vlasjuk-volodymyr-leonidovych-1998-10-16-23-znosychi-24th-separate-mechanized-brigade-soldier/",
+        "context": "Vlasjuk Volodymyr Leonidovych"
+      },
+      {
+        "name": "Maryn Oleksandr Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/maryn-oleksandr-volodymyrovych-1987-06-14-38-shevchenko-24th-separate-mechanized-brigade-soldier/",
+        "context": "Maryn Oleksandr Volodymyrovych"
+      },
+      {
+        "name": "Jaretskyj Myron Bohdanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/jaretskyj-myron-bohdanovych-1984-07-06-38-ivano-frankivsk-24th-separate-mechanized-brigade-soldier/",
+        "context": "Jarets'kyj Myron Bohdanovych"
+      },
+      {
+        "name": "Stus Volodymyr Ivanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/stus-volodymyr-ivanovych-1986-09-24-36-kalush-24th-separate-mechanized-brigade-soldier/",
+        "context": "Stus Volodymyr Ivanovych"
+      },
+      {
+        "name": "Kuzyk Ivan Fedorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/kuzyk-ivan-fedorovych-1968-06-19-56-tyniv-24th-separate-mechanized-brigade/",
+        "context": "Kuzyk Ivan Fedorovych"
+      },
+      {
+        "name": "Cholach Stepan Omeljanovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/cholach-stepan-omeljanovych-1964-07-05-57-rosnivka-24th-separate-mechanized-brigade-sergeant/",
+        "context": "Cholach Stepan Omeljanovych"
+      },
+      {
+        "name": "Bilozir Volodymyr Romanovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/bilozir-volodymyr-romanovych-1977-07-20-46-tetevchytsi-24th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Bilozir Volodymyr Romanovych"
+      },
+      {
+        "name": "Shevchuk Serhij Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/shevchuk-serhij-volodymyrovych-1990-08-16-34-dubno-24th-separate-mechanized-brigade-soldier/",
+        "context": "Shevchuk Serhij Volodymyrovych"
+      },
+      {
+        "name": "Borutskyj Vasyl Josyfovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/borutskyj-vasyl-josyfovych-1976-06-14-46-chervonohrad-24th-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Boruts'kyj Vasyl' Josyfovych"
+      },
+      {
+        "name": "Avramenko Vitalij Jurijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/avramenko-vitalij-jurijovych-1988-08-27-34-nizhyn-24th-separate-mechanized-brigade-soldier/",
+        "context": "Avramenko Vitalij Jurijovych"
+      },
+      {
+        "name": "Danyljuk Vasyl Andrijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/danyljuk-vasyl-andrijovych-1994-02-09-31-hrabova-24th-separate-mechanized-brigade-soldier/",
+        "context": "Danyljuk Vasyl' Andrijovych"
+      },
+      {
+        "name": "Dmytriv Jurij Fedorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/dmytriv-jurij-fedorovych-1984-02-13-39-kamjanka-24th-separate-mechanized-brigade-soldier/",
+        "context": "Dmytriv Jurij Fedorovych"
+      },
+      {
+        "name": "Burjak Andrij Andrijovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/burjak-andrij-andrijovych-1999-05-03-24-velyki-khutory-24th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Burjak Andrij Andrijovych"
+      },
+      {
+        "name": "Flysta Jurij Zinovijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/flysta-jurij-zinovijovych-1986-04-14-28-kurivtsi-24th-separate-mechanized-brigade-soldier/",
+        "context": "Flysta Jurij Zinovijovych"
+      },
+      {
+        "name": "Kuzenko Oleh Vasylovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/kuzenko-oleh-vasylovych-1967-01-30-55-novyj-rozdil-24th-separate-mechanized-brigade/",
+        "context": "Kuzenko Oleh Vasyl'ovych"
+      },
+      {
+        "name": "Bezkorovajnyj Jurij Vasylovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/bezkorovajnyj-jurij-vasylovych-1966-01-23-56-vorvulyntsi-24th-separate-mechanized-brigade-chief-sergeant/",
+        "context": "Bezkorovajnyj Jurij Vasyl'ovych"
+      }
+    ],
+    "casualty_count": 45
   },
   {
     "unit_id": "26",
@@ -28457,7 +30686,100 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Tkachuk Ruslan Anatolijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/tkachuk-ruslan-anatolijovych-1991-08-27-33-savran-28th-mechanized-brigade/",
+        "context": "Tkachuk Ruslan Anatolijovych"
+      },
+      {
+        "name": "Stroja Anatolij Viktorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/stroja-anatolij-viktorovych-1993-07-20-31-reni-28th-mechanized-brigade/",
+        "context": "Stroja Anatolij Viktorovych"
+      },
+      {
+        "name": "Kovalenko Ihor Ivanovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/kovalenko-ihor-ivanovych-1988-06-16-27-yemylivka-28th-mechanized-brigade-junior-sergeant/",
+        "context": "Kovalenko Ihor Ivanovych"
+      },
+      {
+        "name": "Hutsenko Oleh Oleksandrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/hutsenko-oleh-oleksandrovych-1966-08-15-56-velykodolynske-28th-mechanized-brigade-soldier/",
+        "context": "Hutsenko Oleh Oleksandrovych"
+      },
+      {
+        "name": "Ljashchenko Vladyslav Pavlovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/ljashchenko-vladyslav-pavlovych-1996-05-16-24-horlivka-28th-mechanized-brigade-soldier/",
+        "context": "Ljashchenko Vladyslav Pavlovych"
+      },
+      {
+        "name": "Skljanskyj Maksymilian Oleksandrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/skljanskyj-maksymilian-oleksandrovych-1983-10-30-39-cherkasy-28th-mechanized-brigade-soldier/",
+        "context": "Skljans'kyj Maksymilian Oleksandrovych"
+      },
+      {
+        "name": "Zadachin Oleh Mykolajovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/zadachin-oleh-mykolajovych-1990-12-01-32-mohyliv-podilskyj-28th-mechanized-brigade-senior-soldier/",
+        "context": "Zadachin Oleh Mykolajovych"
+      },
+      {
+        "name": "Huljayev Vitalij Anatolijovych",
+        "rank": "Colonel",
+        "source_url": "https://ualosses.org/en/soldier/huljayev-vitalij-anatolijovych-1978-05-26-44-zvjahel-28th-mechanized-brigade-colonel/",
+        "context": "Huljayev Vitalij Anatolijovych"
+      },
+      {
+        "name": "Vrublevskyj Serhij Volodymyrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/vrublevskyj-serhij-volodymyrovych-1971-10-11-50-odesa-28th-mechanized-brigade-senior-soldier/",
+        "context": "Vrublevs'kyj Serhij Volodymyrovych"
+      },
+      {
+        "name": "Livitchuk Mykola Valerijovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/livitchuk-mykola-valerijovych-1987-06-06-34-holovanivsk-28th-mechanized-brigade-chief-sergeant/",
+        "context": "Livitchuk Mykola Valerijovych"
+      },
+      {
+        "name": "Svjatkovskyj Mykhajlo Viktorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/svjatkovskyj-mykhajlo-viktorovych-1984-06-03-30-odesa-28th-mechanized-brigade-soldier/",
+        "context": "Svjatkovs'kyj Mykhajlo Viktorovych"
+      },
+      {
+        "name": "Kopylov Mykyta Ihorovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kopylov-mykyta-ihorovych-1993-09-01-29-zolote-28th-mechanized-brigade-senior-soldier/",
+        "context": "Kopylov Mykyta Ihorovych"
+      },
+      {
+        "name": "Omelchenko Mykola Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/omelchenko-mykola-oleksandrovych-1987-10-18-37-trubivshchyna-28th-mechanized-brigade/",
+        "context": "Omel'chenko Mykola Oleksandrovych"
+      },
+      {
+        "name": "Skybytskyj Anatolij Ihorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/skybytskyj-anatolij-ihorovych-1995-04-11-30-zakharivka-28th-mechanized-brigade/",
+        "context": "Skybyts'kyj Anatolij Ihorovych"
+      },
+      {
+        "name": "Artamkin Vasyl Leonidovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/artamkin-vasyl-leonidovych-1962-09-05-54-nova-kakhovka-28th-mechanized-brigade-sergeant/",
+        "context": "Artamkin Vasyl' Leonidovych"
+      }
+    ],
+    "casualty_count": 15
   },
   {
     "unit_id": "338",
@@ -28517,7 +30839,196 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Popytak Yevhen Josyfovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/popytak-yevhen-josyfovych-1982-04-01-ilarionove-93rd-separate-mechanized-brigade-sergeant/",
+        "context": "Popytak Yevhen Josyfovych"
+      },
+      {
+        "name": "Bezroda Anatolij Mykolajovych",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/bezroda-anatolij-mykolajovych-1967-04-01-47-lubny-93rd-separate-mechanized-brigade-senior-lieutenant/",
+        "context": "Bezroda Anatolij Mykolajovych"
+      },
+      {
+        "name": "Horodetskyj Oleksandr Mykolajovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/horodetskyj-oleksandr-mykolajovych-2002-07-21-kryvyj-rih-93rd-separate-mechanized-brigade/",
+        "context": "Horodets'kyj Oleksandr Mykolajovych"
+      },
+      {
+        "name": "Sapyehin Vitalij Ivanovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/sapyehin-vitalij-ivanovych-1977-07-13-38-lidyne-93rd-separate-mechanized-brigade-sergeant/",
+        "context": "Sapyehin Vitalij Ivanovych"
+      },
+      {
+        "name": "Koval Jurij Hennadijovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/koval-jurij-hennadijovych-1960-08-02-55-berdjansk-93rd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Koval' Jurij Hennadijovych"
+      },
+      {
+        "name": "Lykhovyd Yevhenij Jurijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/lykhovyd-yevhenij-jurijovych-1990-12-02-33-dubove-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Lykhovyd Yevhenij Jurijovych"
+      },
+      {
+        "name": "Hrivin Vitalij Mykolajovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/hrivin-vitalij-mykolajovych-1974-01-24-49-osokorivka-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Hrivin Vitalij Mykolajovych"
+      },
+      {
+        "name": "Jatskiv Petro Mykolajovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/jatskiv-petro-mykolajovych-1966-01-04-49-litynja-93rd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Jatskiv Petro Mykolajovych"
+      },
+      {
+        "name": "Khmil Herasemjuk Oleksandr Ivanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/khmil-herasemjuk-oleksandr-ivanovych-1992-10-10-30-skotarske-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Khmil'-Herasemjuk Oleksandr Ivanovych"
+      },
+      {
+        "name": "Jaremenko Vladyslav Hryhorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/jaremenko-vladyslav-hryhorovych-1984-02-01-zaporizhzhja-93rd-separate-mechanized-brigade/",
+        "context": "Jaremenko Vladyslav Hryhorovych"
+      },
+      {
+        "name": "Lysenko Yevhenij Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/lysenko-yevhenij-volodymyrovych-1991-09-27-33-sudanivka-93rd-separate-mechanized-brigade/",
+        "context": "Lysenko Yevhenij Volodymyrovych"
+      },
+      {
+        "name": "Nikitenko Vitalij Mykolajovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/nikitenko-vitalij-mykolajovych-1970-09-18-52-slovjanka-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Nikitenko Vitalij Mykolajovych"
+      },
+      {
+        "name": "Mishnyev Andrij Jurijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/mishnyev-andrij-jurijovych-1993-02-02-29-ustynivka-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Mishnyev Andrij Jurijovych"
+      },
+      {
+        "name": "Sorokolet Vitalij Heorhijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/sorokolet-vitalij-heorhijovych-1995-06-05-28-vesele-93rd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Sorokolet Vitalij Heorhijovych"
+      },
+      {
+        "name": "Cherkashyn Maksym Oleksandrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/cherkashyn-maksym-oleksandrovych-1978-04-01-46-kharkiv-93rd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Cherkashyn Maksym Oleksandrovych"
+      },
+      {
+        "name": "Smytana Mykola Leonidovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/smytana-mykola-leonidovych-1977-01-22-46-hrushivka-93rd-separate-mechanized-brigade-sergeant/",
+        "context": "Smytana Mykola Leonidovych"
+      },
+      {
+        "name": "Kobets Vitalij Volodymyrovych",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/kobets-vitalij-volodymyrovych-1998-11-24-24-richytsja-93rd-separate-mechanized-brigade-senior-lieutenant/",
+        "context": "Kobets' Vitalij Volodymyrovych"
+      },
+      {
+        "name": "Kamzinov Shajdulla Khajrullovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/kamzinov-shajdulla-khajrullovych-1975-08-02-39-zozulyntsi-93rd-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Kamzinov Shajdulla Khajrullovych"
+      },
+      {
+        "name": "Kukh Vitalij Anatolijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kukh-vitalij-anatolijovych-1982-02-02-42-tarnoruda-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Kukh Vitalij Anatolijovych"
+      },
+      {
+        "name": "Kostjuk Serhij Vasylovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kostjuk-serhij-vasylovych-1980-11-23-43-kolomyja-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Kostjuk Serhij Vasyl'ovych"
+      },
+      {
+        "name": "Hlukhyj Serhij Oleksandrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/hlukhyj-serhij-oleksandrovych-1993-10-17-31-petropavlivka-93rd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Hlukhyj Serhij Oleksandrovych"
+      },
+      {
+        "name": "Pyslar Dmytro Trokhymovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/pyslar-dmytro-trokhymovych-1983-11-10-kremenivka-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Pyslar Dmytro Trokhymovych"
+      },
+      {
+        "name": "Barateli Heorhij Tamazovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/barateli-heorhij-tamazovych-1991-12-24-23-bashmachka-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Barateli Heorhij Tamazovych"
+      },
+      {
+        "name": "Kashchenko Oleksandr Yevhenijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kashchenko-oleksandr-yevhenijovych-1971-10-27-50-polyvanivka-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Kashchenko Oleksandr Yevhenijovych"
+      },
+      {
+        "name": "Tymoshchuk Kyrylo Volodymyrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/tymoshchuk-kyrylo-volodymyrovych-1992-07-03-22-vyshchetarasivka-93rd-separate-mechanized-brigade-sergeant/",
+        "context": "Tymoshchuk Kyrylo Volodymyrovych"
+      },
+      {
+        "name": "Hryhorovych Oleksandr Valentynovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/hryhorovych-oleksandr-valentynovych-1979-04-02-35-kryvyj-rih-93rd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Hryhorovych Oleksandr Valentynovych"
+      },
+      {
+        "name": "Puchin Serhij Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/puchin-serhij-volodymyrovych-1988-01-13-34-kryvyj-rih-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Puchin Serhij Volodymyrovych"
+      },
+      {
+        "name": "Remenjuk Serhij Serhijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/remenjuk-serhij-serhijovych-1985-06-15-29-dnipro-93rd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Remenjuk Serhij Serhijovych"
+      },
+      {
+        "name": "Valnjukov Oleksij Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/valnjukov-oleksij-volodymyrovych-1992-02-12-30-pershotravensk-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Val'njukov Oleksij Volodymyrovych"
+      },
+      {
+        "name": "Yehorov Volodymyr Mykolajovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/yehorov-volodymyr-mykolajovych-1997-06-15-24-druzhkivka-93rd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Yehorov Volodymyr Mykolajovych"
+      },
+      {
+        "name": "Modlinskyj Andrij Olehovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/modlinskyj-andrij-olehovych-1988-03-18-34-mykhajlo-lukasheve-93rd-separate-mechanized-brigade/",
+        "context": "Modlins'kyj Andrij Olehovych"
+      }
+    ],
+    "casualty_count": 31
   },
   {
     "unit_id": "10",
@@ -28537,7 +31048,106 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Antipov Oleksandr Viktorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/antipov-oleksandr-viktorovych-1977-09-08-47-kremenchuk-110th-separate-mechanized-brigade/",
+        "context": "Antipov Oleksandr Viktorovych"
+      },
+      {
+        "name": "Lendyel Bohdan Karelovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/lendyel-bohdan-karelovych-1975-11-05-47-sumy-110th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Lend’yel Bohdan Karelovych"
+      },
+      {
+        "name": "Daleka Oleksandr Ivanovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/daleka-oleksandr-ivanovych-1976-04-24-48-bilka-110th-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Daleka Oleksandr Ivanovych"
+      },
+      {
+        "name": "Bondar Roman Viktorovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/bondar-roman-viktorovych-1983-11-10-41-lviv-110th-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Bondar Roman Viktorovych"
+      },
+      {
+        "name": "Lender Dmytro Mykolajovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/lender-dmytro-mykolajovych-1978-06-15-47-kushuhum-110th-separate-territorial-defense-brigade/",
+        "context": "Lender Dmytro Mykolajovych"
+      },
+      {
+        "name": "Poberezhnyj Serhij Anatolijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/poberezhnyj-serhij-anatolijovych-1993-03-03-31-hajsyn-110th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Poberezhnyj Serhij Anatolijovych"
+      },
+      {
+        "name": "Marusjak Jaroslav Hryhorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/marusjak-jaroslav-hryhorovych-1976-04-11-46-trybukhivtsi-110th-separate-mechanized-brigade-soldier/",
+        "context": "Marusjak Jaroslav Hryhorovych"
+      },
+      {
+        "name": "Pavlov Heorhij Oleksandrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/pavlov-heorhij-oleksandrovych-1994-05-29-29-kryvyj-rih-110th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Pavlov Heorhij Oleksandrovych"
+      },
+      {
+        "name": "Pistrjak Mykola Hryhorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/pistrjak-mykola-hryhorovych-1975-03-18-47-chutove-110th-separate-mechanized-brigade-soldier/",
+        "context": "Pistrjak Mykola Hryhorovych"
+      },
+      {
+        "name": "Krasnoshchok Pavlo Mykolajovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/krasnoshchok-pavlo-mykolajovych-1971-09-20-52-zhukivka-110th-separate-mechanized-brigade/",
+        "context": "Krasnoshchok Pavlo Mykolajovych"
+      },
+      {
+        "name": "Ivanchenko Petro Petrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/ivanchenko-petro-petrovych-1994-04-06-29-starovychi-110th-separate-mechanized-brigade-soldier/",
+        "context": "Ivanchenko Petro Petrovych"
+      },
+      {
+        "name": "Aljautdinov Andrij Mykhajlovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/aljautdinov-andrij-mykhajlovych-1985-01-12-39-shepetivka-110th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Aljautdinov Andrij Mykhajlovych"
+      },
+      {
+        "name": "Savchenko Oleksandr Borysovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/savchenko-oleksandr-borysovych-1970-11-01-52-kyiv-110th-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Savchenko Oleksandr Borysovych"
+      },
+      {
+        "name": "Trembik Stanislav Mykolajovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/trembik-stanislav-mykolajovych-1992-02-23-31-pavlohrad-110th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Trembik Stanislav Mykolajovych"
+      },
+      {
+        "name": "Kartavyj Dmytro Petrovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/kartavyj-dmytro-petrovych-1979-01-19-45-romny-110th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Kartavyj Dmytro Petrovych"
+      },
+      {
+        "name": "Boruk Yevhenij Viktorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/boruk-yevhenij-viktorovych-1970-08-06-radomyshl-110th-separate-mechanized-brigade-soldier/",
+        "context": "Boruk Yevhenij Viktorovych"
+      }
+    ],
+    "casualty_count": 16
   },
   {
     "unit_id": "11",
@@ -28557,7 +31167,106 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Antipov Oleksandr Viktorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/antipov-oleksandr-viktorovych-1977-09-08-47-kremenchuk-110th-separate-mechanized-brigade/",
+        "context": "Antipov Oleksandr Viktorovych"
+      },
+      {
+        "name": "Lendyel Bohdan Karelovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/lendyel-bohdan-karelovych-1975-11-05-47-sumy-110th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Lend’yel Bohdan Karelovych"
+      },
+      {
+        "name": "Daleka Oleksandr Ivanovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/daleka-oleksandr-ivanovych-1976-04-24-48-bilka-110th-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Daleka Oleksandr Ivanovych"
+      },
+      {
+        "name": "Bondar Roman Viktorovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/bondar-roman-viktorovych-1983-11-10-41-lviv-110th-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Bondar Roman Viktorovych"
+      },
+      {
+        "name": "Lender Dmytro Mykolajovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/lender-dmytro-mykolajovych-1978-06-15-47-kushuhum-110th-separate-territorial-defense-brigade/",
+        "context": "Lender Dmytro Mykolajovych"
+      },
+      {
+        "name": "Poberezhnyj Serhij Anatolijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/poberezhnyj-serhij-anatolijovych-1993-03-03-31-hajsyn-110th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Poberezhnyj Serhij Anatolijovych"
+      },
+      {
+        "name": "Marusjak Jaroslav Hryhorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/marusjak-jaroslav-hryhorovych-1976-04-11-46-trybukhivtsi-110th-separate-mechanized-brigade-soldier/",
+        "context": "Marusjak Jaroslav Hryhorovych"
+      },
+      {
+        "name": "Pavlov Heorhij Oleksandrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/pavlov-heorhij-oleksandrovych-1994-05-29-29-kryvyj-rih-110th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Pavlov Heorhij Oleksandrovych"
+      },
+      {
+        "name": "Pistrjak Mykola Hryhorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/pistrjak-mykola-hryhorovych-1975-03-18-47-chutove-110th-separate-mechanized-brigade-soldier/",
+        "context": "Pistrjak Mykola Hryhorovych"
+      },
+      {
+        "name": "Krasnoshchok Pavlo Mykolajovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/krasnoshchok-pavlo-mykolajovych-1971-09-20-52-zhukivka-110th-separate-mechanized-brigade/",
+        "context": "Krasnoshchok Pavlo Mykolajovych"
+      },
+      {
+        "name": "Ivanchenko Petro Petrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/ivanchenko-petro-petrovych-1994-04-06-29-starovychi-110th-separate-mechanized-brigade-soldier/",
+        "context": "Ivanchenko Petro Petrovych"
+      },
+      {
+        "name": "Aljautdinov Andrij Mykhajlovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/aljautdinov-andrij-mykhajlovych-1985-01-12-39-shepetivka-110th-separate-mechanized-brigade-senior-soldier/",
+        "context": "Aljautdinov Andrij Mykhajlovych"
+      },
+      {
+        "name": "Savchenko Oleksandr Borysovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/savchenko-oleksandr-borysovych-1970-11-01-52-kyiv-110th-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Savchenko Oleksandr Borysovych"
+      },
+      {
+        "name": "Trembik Stanislav Mykolajovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/trembik-stanislav-mykolajovych-1992-02-23-31-pavlohrad-110th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Trembik Stanislav Mykolajovych"
+      },
+      {
+        "name": "Kartavyj Dmytro Petrovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/kartavyj-dmytro-petrovych-1979-01-19-45-romny-110th-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Kartavyj Dmytro Petrovych"
+      },
+      {
+        "name": "Boruk Yevhenij Viktorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/boruk-yevhenij-viktorovych-1970-08-06-radomyshl-110th-separate-mechanized-brigade-soldier/",
+        "context": "Boruk Yevhenij Viktorovych"
+      }
+    ],
+    "casualty_count": 16
   },
   {
     "unit_id": "13",
@@ -28617,7 +31326,58 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Rusyn Jaroslav Fedorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/rusyn-jaroslav-fedorovych-1971-10-01-53-khust-155th-separate-infantry-brigade/",
+        "context": "Rusyn Jaroslav Fedorovych"
+      },
+      {
+        "name": "Nadolskyj Serhij Josyfovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/nadolskyj-serhij-josyfovych-1994-12-09-30-kamjanets-podilskyj-155th-separate-infantry-brigade/",
+        "context": "Nadol's'kyj Serhij Josyfovych"
+      },
+      {
+        "name": "Kononjuk Jurij Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/kononjuk-jurij-oleksandrovych-1979-10-26-45-kotjurzhyntsi-155th-separate-infantry-brigade/",
+        "context": "Kononjuk Jurij Oleksandrovych"
+      },
+      {
+        "name": "Ukrayinets Svjatoslav Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/ukrayinets-svjatoslav-volodymyrovych-1976-03-23-ostrozhets-155th-separate-infantry-brigade/",
+        "context": "Ukrayinets' Svjatoslav Volodymyrovych"
+      },
+      {
+        "name": "Tovstonoh Valentyn Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/tovstonoh-valentyn-volodymyrovych-1982-03-04-43-polohy-155th-separate-infantry-brigade/",
+        "context": "Tovstonoh Valentyn Volodymyrovych"
+      },
+      {
+        "name": "Voznjuk Serhij Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/voznjuk-serhij-oleksandrovych-1985-04-17-40-obych-155th-separate-infantry-brigade/",
+        "context": "Voznjuk Serhij Oleksandrovych"
+      },
+      {
+        "name": "Berbeka Taras Hennadijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/berbeka-taras-hennadijovych-1989-11-08-35-dnistrivka-155th-separate-infantry-brigade-soldier/",
+        "context": "Berbeka Taras Hennadijovych"
+      },
+      {
+        "name": "Shytov Ihor Serhijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/shytov-ihor-serhijovych-1988-11-24-36-samhorodok-155th-separate-infantry-brigade/",
+        "context": "Shytov Ihor Serhijovych"
+      }
+    ],
+    "casualty_count": 8
   },
   {
     "unit_id": "37",
@@ -28857,7 +31617,208 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Bozhok Andrij Mykhajlovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/bozhok-andrij-mykhajlovych-1988-12-26-34-ternopil-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Bozhok Andrij Mykhajlovych"
+      },
+      {
+        "name": "Karpenko Bohdan Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/karpenko-bohdan-volodymyrovych-1982-03-14-41-oster-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Karpenko Bohdan Volodymyrovych"
+      },
+      {
+        "name": "Kajumov Oleh Akhmedovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/kajumov-oleh-akhmedovych-1967-07-10-56-kamjanske-53rd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Kajumov Oleh Akhmedovych"
+      },
+      {
+        "name": "Kaluhin Oleksandr Ihorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kaluhin-oleksandr-ihorovych-1989-08-07-33-zaporizhzhja-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Kaluhin Oleksandr Ihorovych"
+      },
+      {
+        "name": "Yemeljanenko Vladyslav Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/yemeljanenko-vladyslav-volodymyrovych-1992-03-19-30-semenivka-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Yemel'janenko Vladyslav Volodymyrovych"
+      },
+      {
+        "name": "Bednars'kyj Matsej",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/bednarskyj-matsej-49-poland-53rd-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Bednars'kyj Matsej"
+      },
+      {
+        "name": "Omelchenko Vjacheslav Hennadijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/omelchenko-vjacheslav-hennadijovych-1999-04-08-nadiyivka-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Omel'chenko V'jacheslav Hennadijovych"
+      },
+      {
+        "name": "Nudha Dmytro Valentynovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/nudha-dmytro-valentynovych-1976-10-09-48-dnipro-53rd-separate-mechanized-brigade/",
+        "context": "Nud'ha Dmytro Valentynovych"
+      },
+      {
+        "name": "Dudar Ihor Volodymyrovych",
+        "rank": "Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/dudar-ihor-volodymyrovych-1965-11-16-ustja-53rd-separate-mechanized-brigade-lieutenant/",
+        "context": "Dudar Ihor Volodymyrovych"
+      },
+      {
+        "name": "Pomazov Andrij Vjacheslavovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/pomazov-andrij-vjacheslavovych-1968-06-23-50-melitopol-53rd-separate-mechanized-brigade/",
+        "context": "Pomazov Andrij V’jacheslavovych"
+      },
+      {
+        "name": "Piznik Ruslan Serhijovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/piznik-ruslan-serhijovych-1979-07-31-42-zaporizhzhja-53rd-separate-mechanized-brigade-chief-sergeant/",
+        "context": "Piznik Ruslan Serhijovych"
+      },
+      {
+        "name": "Zemljak Volodymyr Petrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/zemljak-volodymyr-petrovych-1977-07-04-45-cherkasivka-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Zemljak Volodymyr Petrovych"
+      },
+      {
+        "name": "Kolodjazhnyj Mykola Olehovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/kolodjazhnyj-mykola-olehovych-1995-07-14-30-okhtyrka-53rd-separate-mechanized-brigade/",
+        "context": "Kolodjazhnyj Mykola Olehovych"
+      },
+      {
+        "name": "Ihnatov Oleksandr Mykolajovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/ihnatov-oleksandr-mykolajovych-1993-06-25-22-kryvyj-rih-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Ihnatov Oleksandr Mykolajovych"
+      },
+      {
+        "name": "Khokhlov Oleksandr Serhijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/khokhlov-oleksandr-serhijovych-1990-09-24-31-zaporizhzhja-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Khokhlov Oleksandr Serhijovych"
+      },
+      {
+        "name": "Lehutskyj Oleksandr Ivanovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/lehutskyj-oleksandr-ivanovych-1975-05-21-46-verkhnokamjanske-53rd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Lehuts'kyj Oleksandr Ivanovych"
+      },
+      {
+        "name": "Ibrahimov Mukhammed Rizvanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/ibrahimov-mukhammed-rizvanovych-1994-02-11-28-spodobivka-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Ibrahimov Mukhammed Rizvanovych"
+      },
+      {
+        "name": "Makarenko Vladislav Vitalijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/makarenko-vladislav-vitalijovych-2001-07-01-20-pavlohrad-53rd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Makarenko Vladislav Vitalijovych"
+      },
+      {
+        "name": "Prokofyev Oleksandr Jurijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/prokofyev-oleksandr-jurijovych-1986-12-01-35-ljubymivka-53rd-separate-mechanized-brigade/",
+        "context": "Prokof’yev Oleksandr Jurijovych"
+      },
+      {
+        "name": "Pashchenko Serhij Serhijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/pashchenko-serhij-serhijovych-1992-06-16-31-kryvyj-rih-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Pashchenko Serhij Serhijovych"
+      },
+      {
+        "name": "Usik Volodymyr Volodymyrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/usik-volodymyr-volodymyrovych-1996-07-22-26-hubarivka-53rd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Usik Volodymyr Volodymyrovych"
+      },
+      {
+        "name": "Myrhorodskyj Mykola Viktorovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/myrhorodskyj-mykola-viktorovych-1975-12-12-48-dnipro-53rd-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Myrhorods'kyj Mykola Viktorovych"
+      },
+      {
+        "name": "Beroshvili Roman Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/beroshvili-roman-volodymyrovych-1996-05-22-26-dnipro-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Beroshvili Roman Volodymyrovych"
+      },
+      {
+        "name": "Rynkevych Myroslav Vitalijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/rynkevych-myroslav-vitalijovych-1999-10-16-22-kryvyj-rih-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Rynkevych Myroslav Vitalijovych"
+      },
+      {
+        "name": "Lobach Oleksandr Leonidovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/lobach-oleksandr-leonidovych-1978-03-08-44-zelenyj-haj-53rd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Lobach Oleksandr Leonidovych"
+      },
+      {
+        "name": "Zhyhnja Kostjantyn Vasylovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/zhyhnja-kostjantyn-vasylovych-1978-06-03-43-kashyrivka-53rd-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Zhyhnja Kostjantyn Vasyl'ovych"
+      },
+      {
+        "name": "Onyshchenko Oleksandr Mykolajovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/onyshchenko-oleksandr-mykolajovych-1993-03-06-31-hrebinka-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Onyshchenko Oleksandr Mykolajovych"
+      },
+      {
+        "name": "Vlasjuk Ivan Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/vlasjuk-ivan-volodymyrovych-1998-11-14-23-marynyn-53rd-separate-mechanized-brigade/",
+        "context": "Vlasjuk Ivan Volodymyrovych"
+      },
+      {
+        "name": "Ivanjuk Ivan Oleksandrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/ivanjuk-ivan-oleksandrovych-1977-10-13-45-netishyn-53rd-separate-mechanized-brigade-sergeant/",
+        "context": "Ivanjuk Ivan Oleksandrovych"
+      },
+      {
+        "name": "Kyryljuk Viktor Serhijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kyryljuk-viktor-serhijovych-1986-01-03-36-zaporizhzhja-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Kyryljuk Viktor Serhijovych"
+      },
+      {
+        "name": "Sobol Ivan Oleksandrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/sobol-ivan-oleksandrovych-2002-10-09-20-petrivka-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Sobol' Ivan Oleksandrovych"
+      },
+      {
+        "name": "Naumets Yevhenij Anatolijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/naumets-yevhenij-anatolijovych-1985-10-22-36-myrnohrad-53rd-separate-mechanized-brigade-soldier/",
+        "context": "Naumets' Yevhenij Anatolijovych"
+      },
+      {
+        "name": "Volchuk Oleksandr Leonidovych",
+        "rank": "Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/volchuk-oleksandr-leonidovych-1993-07-22-29-urvenna-53rd-separate-mechanized-brigade-lieutenant/",
+        "context": "Volchuk Oleksandr Leonidovych"
+      }
+    ],
+    "casualty_count": 33
   },
   {
     "unit_id": "54",
@@ -28937,7 +31898,58 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Rusyn Jaroslav Fedorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/rusyn-jaroslav-fedorovych-1971-10-01-53-khust-155th-separate-infantry-brigade/",
+        "context": "Rusyn Jaroslav Fedorovych"
+      },
+      {
+        "name": "Nadolskyj Serhij Josyfovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/nadolskyj-serhij-josyfovych-1994-12-09-30-kamjanets-podilskyj-155th-separate-infantry-brigade/",
+        "context": "Nadol's'kyj Serhij Josyfovych"
+      },
+      {
+        "name": "Kononjuk Jurij Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/kononjuk-jurij-oleksandrovych-1979-10-26-45-kotjurzhyntsi-155th-separate-infantry-brigade/",
+        "context": "Kononjuk Jurij Oleksandrovych"
+      },
+      {
+        "name": "Ukrayinets Svjatoslav Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/ukrayinets-svjatoslav-volodymyrovych-1976-03-23-ostrozhets-155th-separate-infantry-brigade/",
+        "context": "Ukrayinets' Svjatoslav Volodymyrovych"
+      },
+      {
+        "name": "Tovstonoh Valentyn Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/tovstonoh-valentyn-volodymyrovych-1982-03-04-43-polohy-155th-separate-infantry-brigade/",
+        "context": "Tovstonoh Valentyn Volodymyrovych"
+      },
+      {
+        "name": "Voznjuk Serhij Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/voznjuk-serhij-oleksandrovych-1985-04-17-40-obych-155th-separate-infantry-brigade/",
+        "context": "Voznjuk Serhij Oleksandrovych"
+      },
+      {
+        "name": "Berbeka Taras Hennadijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/berbeka-taras-hennadijovych-1989-11-08-35-dnistrivka-155th-separate-infantry-brigade-soldier/",
+        "context": "Berbeka Taras Hennadijovych"
+      },
+      {
+        "name": "Shytov Ihor Serhijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/shytov-ihor-serhijovych-1988-11-24-36-samhorodok-155th-separate-infantry-brigade/",
+        "context": "Shytov Ihor Serhijovych"
+      }
+    ],
+    "casualty_count": 8
   },
   {
     "unit_id": "60",
@@ -29077,7 +32089,124 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Kyshchuk Serhij Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/kyshchuk-serhij-oleksandrovych-1999-07-08-teplyk-59th-separate-motorized-infantry-brigade/",
+        "context": "Kyshchuk Serhij Oleksandrovych"
+      },
+      {
+        "name": "Medvedyev Artem Oleksijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/medvedyev-artem-oleksijovych-1991-08-08-31-poltava-59th-separate-motorized-infantry-brigade-soldier/",
+        "context": "Medvedyev Artem Oleksijovych"
+      },
+      {
+        "name": "Chekanjuk Ivan Mykhajlovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/chekanjuk-ivan-mykhajlovych-1994-11-24-27-hirka-polonka-59th-separate-motorized-infantry-brigade-soldier/",
+        "context": "Chekanjuk Ivan Mykhajlovych"
+      },
+      {
+        "name": "Jaroshchuk Volodymyr Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/jaroshchuk-volodymyr-volodymyrovych-1977-10-28-46-kamjana-verba-59th-separate-motorized-infantry-brigade/",
+        "context": "Jaroshchuk Volodymyr Volodymyrovych"
+      },
+      {
+        "name": "Vusatyj Pavlo Mykolajovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/vusatyj-pavlo-mykolajovych-1970-08-03-52-kryzhopil-59th-separate-motorized-infantry-brigade-staff-sergeant/",
+        "context": "Vusatyj Pavlo Mykolajovych"
+      },
+      {
+        "name": "Bondaruk Vitalij Anatolijovych",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/bondaruk-vitalij-anatolijovych-1997-11-11-24-knjazholuka-59th-separate-motorized-infantry-brigade-senior-lieutenant/",
+        "context": "Bondaruk Vitalij Anatolijovych"
+      },
+      {
+        "name": "Dyryshev Serhij Vadymovych",
+        "rank": "Major",
+        "source_url": "https://ualosses.org/en/soldier/dyryshev-serhij-vadymovych-1972-08-18-52-lviv-59th-separate-motorized-infantry-brigade-major/",
+        "context": "Dyryshev Serhij Vadymovych"
+      },
+      {
+        "name": "Zhukov Jurij Mykolajovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/zhukov-jurij-mykolajovych-1992-06-29-33-vinnytsja-59th-separate-motorized-infantry-brigade-junior-sergeant/",
+        "context": "Zhukov Jurij Mykolajovych"
+      },
+      {
+        "name": "Lysak Mykhajlo Mykhajlovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/lysak-mykhajlo-mykhajlovych-1977-11-17-47-pomichna-59th-separate-motorized-infantry-brigade/",
+        "context": "Lysak Mykhajlo Mykhajlovych"
+      },
+      {
+        "name": "Nebysh Serhij Vasylovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/nebysh-serhij-vasylovych-1975-01-29-48-udych-59th-separate-motorized-infantry-brigade-senior-sergeant/",
+        "context": "Nebysh Serhij Vasyl'ovych"
+      },
+      {
+        "name": "Mykhajlov Kostjantyn Vjacheslavovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/mykhajlov-kostjantyn-vjacheslavovych-1965-06-02-58-vinnytsja-59th-separate-motorized-infantry-brigade-sergeant/",
+        "context": "Mykhajlov Kostjantyn V’jacheslavovych"
+      },
+      {
+        "name": "Huk Vladyslav Olehovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/huk-vladyslav-olehovych-1999-08-22-25-martynivka-59th-separate-motorized-infantry-brigade-soldier/",
+        "context": "Huk Vladyslav Olehovych"
+      },
+      {
+        "name": "Nykolajchuk Artur Vitalijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/nykolajchuk-artur-vitalijovych-2001-09-16-22-tulchyn-district-59th-separate-motorized-infantry-brigade/",
+        "context": "Nykolajchuk Artur Vitalijovych"
+      },
+      {
+        "name": "Sverhun Oleksandr Ivanovych",
+        "rank": "Junior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/sverhun-oleksandr-ivanovych-1997-08-31-27-kharkiv-59th-separate-motorized-infantry-brigade-junior-lieutenant/",
+        "context": "Sverhun Oleksandr Ivanovych"
+      },
+      {
+        "name": "Lukjanov Dmytro Yevhenijovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/lukjanov-dmytro-yevhenijovych-1972-11-12-50-kramatorsk-59th-separate-motorized-infantry-brigade-junior-sergeant/",
+        "context": "Luk’janov Dmytro Yevhenijovych"
+      },
+      {
+        "name": "Serebrjanskyj Oleksandr Valentynovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/serebrjanskyj-oleksandr-valentynovych-1967-04-19-55-ulaniv-59th-separate-motorized-infantry-brigade-staff-sergeant/",
+        "context": "Serebrjans'kyj Oleksandr Valentynovych"
+      },
+      {
+        "name": "Brozhek Oleksandr Viktorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/brozhek-oleksandr-viktorovych-1972-11-11-50-jurivka-59th-separate-motorized-infantry-brigade-soldier/",
+        "context": "Brozhek Oleksandr Viktorovych"
+      },
+      {
+        "name": "Zozulja Dmytro Jakovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/zozulja-dmytro-jakovych-1990-09-10-32-voronovytsja-59th-separate-motorized-infantry-brigade-junior-sergeant/",
+        "context": "Zozulja Dmytro Jakovych"
+      },
+      {
+        "name": "Kozhenevskyj Oleksij Valentynovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/kozhenevskyj-oleksij-valentynovych-1990-09-13-34-sosnivka-59th-separate-motorized-infantry-brigade/",
+        "context": "Kozhenevs'kyj Oleksij Valentynovych"
+      }
+    ],
+    "casualty_count": 19
   },
   {
     "unit_id": "96",
@@ -29177,7 +32306,244 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Kutepov Jurij Andrijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kutepov-jurij-andrijovych-1988-01-07-34-dubovets-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Kutepov Jurij Andrijovych"
+      },
+      {
+        "name": "Mykhajlov Vitalij Anatolijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/mykhajlov-vitalij-anatolijovych-1982-10-30-31-tsentralne-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Mykhajlov Vitalij Anatolijovych"
+      },
+      {
+        "name": "Popovych Viktor Ivanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/popovych-viktor-ivanovych-1975-09-07-48-svaljava-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Popovych Viktor Ivanovych"
+      },
+      {
+        "name": "Rjabokin Anatolij Ihorovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/rjabokin-anatolij-ihorovych-1986-08-09-36-vyshnopil-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Rjabokin' Anatolij Ihorovych"
+      },
+      {
+        "name": "Hrebenjuk Oleksij Mykhajlovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/hrebenjuk-oleksij-mykhajlovych-1969-04-03-49-krolevets-72nd-separate-mechanized-brigade-sergeant/",
+        "context": "Hrebenjuk Oleksij Mykhajlovych"
+      },
+      {
+        "name": "Stepanenko Mykola Petrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/stepanenko-mykola-petrovych-1972-01-31-50-ozirna-72nd-separate-mechanized-brigade-staff-sergeant/",
+        "context": "Stepanenko Mykola Petrovych"
+      },
+      {
+        "name": "Krupskyj Volodymyr Volodymyrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/krupskyj-volodymyr-volodymyrovych-1970-04-14-48-hadjach-72nd-separate-mechanized-brigade-sergeant/",
+        "context": "Krups'kyj Volodymyr Volodymyrovych"
+      },
+      {
+        "name": "Knysh Ivan Mykolajovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/knysh-ivan-mykolajovych-1976-01-20-kupjansk-72nd-separate-mechanized-brigade/",
+        "context": "Knysh Ivan Mykolajovych"
+      },
+      {
+        "name": "Yemets Oleksandr Petrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/yemets-oleksandr-petrovych-1993-08-07-28-cherepyn-72nd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Yemets' Oleksandr Petrovych"
+      },
+      {
+        "name": "Mokhonko Jaroslav Oleksandrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/mokhonko-jaroslav-oleksandrovych-1991-10-20-30-karapyshi-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Mokhon'ko Jaroslav Oleksandrovych"
+      },
+      {
+        "name": "Nazarenko Oleksandr Viktorovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/nazarenko-oleksandr-viktorovych-1979-03-18-43-bila-tserkva-72nd-separate-mechanized-brigade-sergeant/",
+        "context": "Nazarenko Oleksandr Viktorovych"
+      },
+      {
+        "name": "Matvijchuk Serhij Petrovych",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/matvijchuk-serhij-petrovych-1987-04-21-35-katjuzhanka-72nd-separate-mechanized-brigade-senior-lieutenant/",
+        "context": "Matvijchuk Serhij Petrovych"
+      },
+      {
+        "name": "Zinchenko Oleksandr Vasylovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/zinchenko-oleksandr-vasylovych-1977-11-18-37-fastiv-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Zinchenko Oleksandr Vasyl'ovych"
+      },
+      {
+        "name": "Siljava Maksym Viktorovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/siljava-maksym-viktorovych-1981-10-27-41-ivankiv-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Siljava Maksym Viktorovych"
+      },
+      {
+        "name": "Zamojskyj Roman Ivanovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/zamojskyj-roman-ivanovych-1973-12-20-48-vyspa-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Zamojs'kyj Roman Ivanovych"
+      },
+      {
+        "name": "Bursa Yevhen Oleksijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/bursa-yevhen-oleksijovych-1989-08-22-32-velyka-rublivka-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Bursa Yevhen Oleksijovych"
+      },
+      {
+        "name": "Vyshnjak Maksym Vjacheslavovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/vyshnjak-maksym-vjacheslavovych-1999-07-11-22-bojarka-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Vyshnjak Maksym V’jacheslavovych"
+      },
+      {
+        "name": "Orlov Mykhajlo Viktorovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/orlov-mykhajlo-viktorovych-1985-05-23-39-zdolbuniv-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Orlov Mykhajlo Viktorovych"
+      },
+      {
+        "name": "Pushych Valentyna Mykhajlivna",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/pushych-valentyna-mykhajlivna-1980-08-18-41-kyiv-72nd-separate-mechanized-brigade-senior-lieutenant/",
+        "context": "Pushych Valentyna Mykhajlivna"
+      },
+      {
+        "name": "Andryeyev Serhij Oleksandrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/andryeyev-serhij-oleksandrovych-2001-11-12-20-brovary-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Andryeyev Serhij Oleksandrovych"
+      },
+      {
+        "name": "Slobodjanjuk Ruslan Mykhajlovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/slobodjanjuk-ruslan-mykhajlovych-1986-12-23-35-borivka-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Slobodjanjuk Ruslan Mykhajlovych"
+      },
+      {
+        "name": "Dulik Roman Vsevolodovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/dulik-roman-vsevolodovych-1986-03-13-36-malyj-stydyn-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Dulik Roman Vsevolodovych"
+      },
+      {
+        "name": "Dudchenko Oleksandr Oleksandrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/dudchenko-oleksandr-oleksandrovych-1988-03-23-26-boryspil-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Dudchenko Oleksandr Oleksandrovych"
+      },
+      {
+        "name": "Murashov Oleksandr Viktorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/murashov-oleksandr-viktorovych-1995-05-11-29-kryvyj-rih-72nd-separate-mechanized-brigade/",
+        "context": "Murashov Oleksandr Viktorovych"
+      },
+      {
+        "name": "Chechet Ivan Ivanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/chechet-ivan-ivanovych-1975-01-14-49-prystromy-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Chechet Ivan Ivanovych"
+      },
+      {
+        "name": "Kovalskyj Mykola Romanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kovalskyj-mykola-romanovych-1999-01-09-24-lviv-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Koval's'kyj Mykola Romanovych"
+      },
+      {
+        "name": "Rachok Borys Mykhajlovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/rachok-borys-mykhajlovych-1976-01-24-49-shchurivchyky-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Rachok Borys Mykhajlovych"
+      },
+      {
+        "name": "Kovalenko Yevhen Mykolajovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/kovalenko-yevhen-mykolajovych-1972-04-11-43-pishchane-72nd-separate-mechanized-brigade-sergeant/",
+        "context": "Kovalenko Yevhen Mykolajovych"
+      },
+      {
+        "name": "Djachenko Oleksandr Volodymyrovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/djachenko-oleksandr-volodymyrovych-1985-06-04-37-sukha-kalyhirka-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Djachenko Oleksandr Volodymyrovych"
+      },
+      {
+        "name": "Hrashchenko Oleksij Valerijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/hrashchenko-oleksij-valerijovych-1978-03-29-44-fastiv-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Hrashchenko Oleksij Valerijovych"
+      },
+      {
+        "name": "Baryshev Maksym Volodymyrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/baryshev-maksym-volodymyrovych-1975-01-03-48-bucha-72nd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Baryshev Maksym Volodymyrovych"
+      },
+      {
+        "name": "Vojtenko Ivan Vjacheslavovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/vojtenko-ivan-vjacheslavovych-1974-01-22-44-bila-tserkva-72nd-separate-mechanized-brigade-master-sergeant/",
+        "context": "Vojtenko Ivan V’jacheslavovych"
+      },
+      {
+        "name": "Polishchuk Oleksij Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/polishchuk-oleksij-volodymyrovych-1996-02-20-27-kaharlyk-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Polishchuk Oleksij Volodymyrovych"
+      },
+      {
+        "name": "Balchenko Volodymyr Ivanovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/balchenko-volodymyr-ivanovych-1992-01-04-25-berestovets-72nd-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Bal'chenko Volodymyr Ivanovych"
+      },
+      {
+        "name": "Stalynskyj Oleksandr Fedorovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/stalynskyj-oleksandr-fedorovych-1974-10-08-49-okhtyrka-72nd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Stalyns'kyj Oleksandr Fedorovych"
+      },
+      {
+        "name": "Tsybora Vitalij Viktorovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/tsybora-vitalij-viktorovych-1993-10-06-20-movchanivka-72nd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Tsybora Vitalij Viktorovych"
+      },
+      {
+        "name": "Shabadash Jurij Viktorovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/shabadash-jurij-viktorovych-1962-04-10-59-kyiv-72nd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Shabadash Jurij Viktorovych"
+      },
+      {
+        "name": "Syvak Andrij Fedorovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/syvak-andrij-fedorovych-1981-03-19-43-velyka-bilozerka-1-72nd-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Syvak Andrij Fedorovych"
+      },
+      {
+        "name": "Maksymets Ljubomyr Jaroslavovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/maksymets-ljubomyr-jaroslavovych-1969-01-30-53-perehinske-72nd-separate-mechanized-brigade-soldier/",
+        "context": "Maksymets' Ljubomyr Jaroslavovych"
+      }
+    ],
+    "casualty_count": 39
   },
   {
     "unit_id": "85",
@@ -29277,7 +32643,196 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Popytak Yevhen Josyfovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/popytak-yevhen-josyfovych-1982-04-01-ilarionove-93rd-separate-mechanized-brigade-sergeant/",
+        "context": "Popytak Yevhen Josyfovych"
+      },
+      {
+        "name": "Bezroda Anatolij Mykolajovych",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/bezroda-anatolij-mykolajovych-1967-04-01-47-lubny-93rd-separate-mechanized-brigade-senior-lieutenant/",
+        "context": "Bezroda Anatolij Mykolajovych"
+      },
+      {
+        "name": "Horodetskyj Oleksandr Mykolajovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/horodetskyj-oleksandr-mykolajovych-2002-07-21-kryvyj-rih-93rd-separate-mechanized-brigade/",
+        "context": "Horodets'kyj Oleksandr Mykolajovych"
+      },
+      {
+        "name": "Sapyehin Vitalij Ivanovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/sapyehin-vitalij-ivanovych-1977-07-13-38-lidyne-93rd-separate-mechanized-brigade-sergeant/",
+        "context": "Sapyehin Vitalij Ivanovych"
+      },
+      {
+        "name": "Koval Jurij Hennadijovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/koval-jurij-hennadijovych-1960-08-02-55-berdjansk-93rd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Koval' Jurij Hennadijovych"
+      },
+      {
+        "name": "Lykhovyd Yevhenij Jurijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/lykhovyd-yevhenij-jurijovych-1990-12-02-33-dubove-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Lykhovyd Yevhenij Jurijovych"
+      },
+      {
+        "name": "Hrivin Vitalij Mykolajovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/hrivin-vitalij-mykolajovych-1974-01-24-49-osokorivka-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Hrivin Vitalij Mykolajovych"
+      },
+      {
+        "name": "Jatskiv Petro Mykolajovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/jatskiv-petro-mykolajovych-1966-01-04-49-litynja-93rd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Jatskiv Petro Mykolajovych"
+      },
+      {
+        "name": "Khmil Herasemjuk Oleksandr Ivanovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/khmil-herasemjuk-oleksandr-ivanovych-1992-10-10-30-skotarske-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Khmil'-Herasemjuk Oleksandr Ivanovych"
+      },
+      {
+        "name": "Jaremenko Vladyslav Hryhorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/jaremenko-vladyslav-hryhorovych-1984-02-01-zaporizhzhja-93rd-separate-mechanized-brigade/",
+        "context": "Jaremenko Vladyslav Hryhorovych"
+      },
+      {
+        "name": "Lysenko Yevhenij Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/lysenko-yevhenij-volodymyrovych-1991-09-27-33-sudanivka-93rd-separate-mechanized-brigade/",
+        "context": "Lysenko Yevhenij Volodymyrovych"
+      },
+      {
+        "name": "Nikitenko Vitalij Mykolajovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/nikitenko-vitalij-mykolajovych-1970-09-18-52-slovjanka-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Nikitenko Vitalij Mykolajovych"
+      },
+      {
+        "name": "Mishnyev Andrij Jurijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/mishnyev-andrij-jurijovych-1993-02-02-29-ustynivka-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Mishnyev Andrij Jurijovych"
+      },
+      {
+        "name": "Sorokolet Vitalij Heorhijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/sorokolet-vitalij-heorhijovych-1995-06-05-28-vesele-93rd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Sorokolet Vitalij Heorhijovych"
+      },
+      {
+        "name": "Cherkashyn Maksym Oleksandrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/cherkashyn-maksym-oleksandrovych-1978-04-01-46-kharkiv-93rd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Cherkashyn Maksym Oleksandrovych"
+      },
+      {
+        "name": "Smytana Mykola Leonidovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/smytana-mykola-leonidovych-1977-01-22-46-hrushivka-93rd-separate-mechanized-brigade-sergeant/",
+        "context": "Smytana Mykola Leonidovych"
+      },
+      {
+        "name": "Kobets Vitalij Volodymyrovych",
+        "rank": "Senior Lieutenant",
+        "source_url": "https://ualosses.org/en/soldier/kobets-vitalij-volodymyrovych-1998-11-24-24-richytsja-93rd-separate-mechanized-brigade-senior-lieutenant/",
+        "context": "Kobets' Vitalij Volodymyrovych"
+      },
+      {
+        "name": "Kamzinov Shajdulla Khajrullovych",
+        "rank": "Junior Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/kamzinov-shajdulla-khajrullovych-1975-08-02-39-zozulyntsi-93rd-separate-mechanized-brigade-junior-sergeant/",
+        "context": "Kamzinov Shajdulla Khajrullovych"
+      },
+      {
+        "name": "Kukh Vitalij Anatolijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kukh-vitalij-anatolijovych-1982-02-02-42-tarnoruda-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Kukh Vitalij Anatolijovych"
+      },
+      {
+        "name": "Kostjuk Serhij Vasylovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kostjuk-serhij-vasylovych-1980-11-23-43-kolomyja-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Kostjuk Serhij Vasyl'ovych"
+      },
+      {
+        "name": "Hlukhyj Serhij Oleksandrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/hlukhyj-serhij-oleksandrovych-1993-10-17-31-petropavlivka-93rd-separate-mechanized-brigade-senior-sergeant/",
+        "context": "Hlukhyj Serhij Oleksandrovych"
+      },
+      {
+        "name": "Pyslar Dmytro Trokhymovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/pyslar-dmytro-trokhymovych-1983-11-10-kremenivka-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Pyslar Dmytro Trokhymovych"
+      },
+      {
+        "name": "Barateli Heorhij Tamazovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/barateli-heorhij-tamazovych-1991-12-24-23-bashmachka-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Barateli Heorhij Tamazovych"
+      },
+      {
+        "name": "Kashchenko Oleksandr Yevhenijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/kashchenko-oleksandr-yevhenijovych-1971-10-27-50-polyvanivka-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Kashchenko Oleksandr Yevhenijovych"
+      },
+      {
+        "name": "Tymoshchuk Kyrylo Volodymyrovych",
+        "rank": "Sergeant",
+        "source_url": "https://ualosses.org/en/soldier/tymoshchuk-kyrylo-volodymyrovych-1992-07-03-22-vyshchetarasivka-93rd-separate-mechanized-brigade-sergeant/",
+        "context": "Tymoshchuk Kyrylo Volodymyrovych"
+      },
+      {
+        "name": "Hryhorovych Oleksandr Valentynovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/hryhorovych-oleksandr-valentynovych-1979-04-02-35-kryvyj-rih-93rd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Hryhorovych Oleksandr Valentynovych"
+      },
+      {
+        "name": "Puchin Serhij Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/puchin-serhij-volodymyrovych-1988-01-13-34-kryvyj-rih-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Puchin Serhij Volodymyrovych"
+      },
+      {
+        "name": "Remenjuk Serhij Serhijovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/remenjuk-serhij-serhijovych-1985-06-15-29-dnipro-93rd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Remenjuk Serhij Serhijovych"
+      },
+      {
+        "name": "Valnjukov Oleksij Volodymyrovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/valnjukov-oleksij-volodymyrovych-1992-02-12-30-pershotravensk-93rd-separate-mechanized-brigade-soldier/",
+        "context": "Val'njukov Oleksij Volodymyrovych"
+      },
+      {
+        "name": "Yehorov Volodymyr Mykolajovych",
+        "rank": "Senior Soldier",
+        "source_url": "https://ualosses.org/en/soldier/yehorov-volodymyr-mykolajovych-1997-06-15-24-druzhkivka-93rd-separate-mechanized-brigade-senior-soldier/",
+        "context": "Yehorov Volodymyr Mykolajovych"
+      },
+      {
+        "name": "Modlinskyj Andrij Olehovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/modlinskyj-andrij-olehovych-1988-03-18-34-mykhajlo-lukasheve-93rd-separate-mechanized-brigade/",
+        "context": "Modlins'kyj Andrij Olehovych"
+      }
+    ],
+    "casualty_count": 31
   },
   {
     "unit_id": "94",
@@ -29677,7 +33232,58 @@
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
-    "avg_tie": 0
+    "avg_tie": 0,
+    "verified_casualties": [
+      {
+        "name": "Rusyn Jaroslav Fedorovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/rusyn-jaroslav-fedorovych-1971-10-01-53-khust-155th-separate-infantry-brigade/",
+        "context": "Rusyn Jaroslav Fedorovych"
+      },
+      {
+        "name": "Nadolskyj Serhij Josyfovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/nadolskyj-serhij-josyfovych-1994-12-09-30-kamjanets-podilskyj-155th-separate-infantry-brigade/",
+        "context": "Nadol's'kyj Serhij Josyfovych"
+      },
+      {
+        "name": "Kononjuk Jurij Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/kononjuk-jurij-oleksandrovych-1979-10-26-45-kotjurzhyntsi-155th-separate-infantry-brigade/",
+        "context": "Kononjuk Jurij Oleksandrovych"
+      },
+      {
+        "name": "Ukrayinets Svjatoslav Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/ukrayinets-svjatoslav-volodymyrovych-1976-03-23-ostrozhets-155th-separate-infantry-brigade/",
+        "context": "Ukrayinets' Svjatoslav Volodymyrovych"
+      },
+      {
+        "name": "Tovstonoh Valentyn Volodymyrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/tovstonoh-valentyn-volodymyrovych-1982-03-04-43-polohy-155th-separate-infantry-brigade/",
+        "context": "Tovstonoh Valentyn Volodymyrovych"
+      },
+      {
+        "name": "Voznjuk Serhij Oleksandrovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/voznjuk-serhij-oleksandrovych-1985-04-17-40-obych-155th-separate-infantry-brigade/",
+        "context": "Voznjuk Serhij Oleksandrovych"
+      },
+      {
+        "name": "Berbeka Taras Hennadijovych",
+        "rank": "Soldier",
+        "source_url": "https://ualosses.org/en/soldier/berbeka-taras-hennadijovych-1989-11-08-35-dnistrivka-155th-separate-infantry-brigade-soldier/",
+        "context": "Berbeka Taras Hennadijovych"
+      },
+      {
+        "name": "Shytov Ihor Serhijovych",
+        "rank": null,
+        "source_url": "https://ualosses.org/en/soldier/shytov-ihor-serhijovych-1988-11-24-36-samhorodok-155th-separate-infantry-brigade/",
+        "context": "Shytov Ihor Serhijovych"
+      }
+    ],
+    "casualty_count": 8
   },
   {
     "unit_id": "156",

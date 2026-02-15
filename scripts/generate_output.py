@@ -18,11 +18,13 @@ sys.stdout.reconfigure(encoding='utf-8')
 # =============================================================================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, '../war_tracker_v2/data/raw_events.db')
+IMPACT_ATLAS_DB_PATH = os.path.join(BASE_DIR, '../impact_atlas.db')
 GEOJSON_PATH = os.path.join(BASE_DIR, '../assets/data/events.geojson')
 CSV_PATH = os.path.join(BASE_DIR, '../assets/data/events_export.csv')
 UNITS_JSON_PATH = os.path.join(BASE_DIR, '../assets/data/units.json')
 ORBAT_JSON_PATH = os.path.join(BASE_DIR, '../assets/data/orbat_units.json')
 STRATEGIC_TRENDS_PATH = os.path.join(BASE_DIR, '../assets/data/strategic_trends.json')
+EXTERNAL_LOSSES_PATH = os.path.join(BASE_DIR, '../assets/data/external_losses.json')
 
 
 def parse_sources_to_list(sources_str):
@@ -226,6 +228,144 @@ def update_unit_stats(stats_acc, unit, event_data):
     entry["tactics_hist"][cls] = entry["tactics_hist"].get(cls, 0) + 1
 
 
+# =============================================================================
+# IMPACT ATLAS INTEGRATION: UALosses -> Unit Cards
+# =============================================================================
+def enrich_units_with_casualties(units_list):
+    """Enrich unit objects with verified casualty data from impact_atlas.db."""
+    if not os.path.exists(IMPACT_ATLAS_DB_PATH):
+        print("   [SKIP] impact_atlas.db not found, skipping casualty enrichment.")
+        return units_list
+
+    try:
+        conn = sqlite3.connect(IMPACT_ATLAS_DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        # Fetch all UALosses events grouped by unit
+        cursor.execute("""
+            SELECT unit_id, raw_data
+            FROM kinetic_events
+            WHERE source = 'UALosses' AND unit_id IS NOT NULL
+        """)
+        rows = cursor.fetchall()
+        conn.close()
+
+        # Build lookup: unit_id -> list of casualties
+        casualties_by_unit = {}
+        for row in rows:
+            uid = row['unit_id']
+            if uid not in casualties_by_unit:
+                casualties_by_unit[uid] = []
+            try:
+                data = json.loads(row['raw_data'])
+                casualties_by_unit[uid].append({
+                    "name": data.get('name', 'Unknown'),
+                    "rank": data.get('rank', 'Unknown'),
+                    "source_url": data.get('source_url', ''),
+                    "context": data.get('context', '')
+                })
+            except:
+                pass
+
+        # Merge into units
+        matched = 0
+        for unit in units_list:
+            uid = unit.get('unit_id', '')
+            # Try exact match first
+            if uid in casualties_by_unit:
+                unit['verified_casualties'] = casualties_by_unit[uid]
+                unit['casualty_count'] = len(casualties_by_unit[uid])
+                matched += 1
+            else:
+                # Fuzzy match: check if unit_id appears as substring
+                uid_lower = uid.lower()
+                for cas_uid, cas_list in casualties_by_unit.items():
+                    if cas_uid and (cas_uid.lower() in uid_lower or uid_lower in cas_uid.lower()):
+                        unit['verified_casualties'] = cas_list
+                        unit['casualty_count'] = len(cas_list)
+                        matched += 1
+                        break
+
+        print(f"   [CASUALTIES] Enriched {matched} units with {len(rows)} total casualty records.")
+
+    except Exception as e:
+        print(f"   [ERR] Failed to enrich casualties: {e}")
+
+    return units_list
+
+
+# =============================================================================
+# IMPACT ATLAS INTEGRATION: Oryx + LostArmour -> Equipment Timeline
+# =============================================================================
+def export_equipment_losses():
+    """Export Oryx and LostArmour data from impact_atlas.db to external_losses.json."""
+    if not os.path.exists(IMPACT_ATLAS_DB_PATH):
+        print("   [SKIP] impact_atlas.db not found, skipping equipment losses export.")
+        return
+
+    try:
+        conn = sqlite3.connect(IMPACT_ATLAS_DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT event_id, source, date, raw_data
+            FROM kinetic_events
+            WHERE source IN ('Oryx', 'LostArmour_fpv', 'LostArmour_lancet')
+        """)
+        rows = cursor.fetchall()
+        conn.close()
+
+        losses = []
+        for row in rows:
+            try:
+                data = json.loads(row['raw_data'])
+                source = row['source']
+
+                if source == 'Oryx':
+                    # Oryx: category (Tanks, IFVs...), entry (model name), status
+                    loss = {
+                        "date": row['date'] or 'Unknown',
+                        "model": data.get('entry', 'Unknown'),
+                        "type": data.get('category', 'Vehicle'),
+                        "country": "RUS",  # Oryx tracks Russian losses by default
+                        "status": data.get('status', 'Verified Loss'),
+                        "proof_url": data.get('proof_url', 'https://www.oryxspioenkop.com'),
+                        "source_tag": "Oryx"
+                    }
+                else:
+                    # LostArmour: precision strike data (Lancet, FPV)
+                    weapon_type = 'Lancet' if 'lancet' in source.lower() else 'FPV Drone'
+                    loss = {
+                        "date": row['date'] or 'Unknown',
+                        "model": weapon_type,
+                        "type": f"Precision Strike ({data.get('tag', weapon_type)})",
+                        "country": "UA",  # LostArmour tracks Ukrainian losses
+                        "status": "Verified Strike",
+                        "proof_url": data.get('source_url', 'https://lostarmour.info'),
+                        "source_tag": "LostArmour",
+                        "description": data.get('description', '')
+                    }
+
+                losses.append(loss)
+
+            except Exception as e:
+                continue
+
+        # Sort by date descending
+        losses.sort(key=lambda x: x.get('date', ''), reverse=True)
+
+        # Write to file
+        with open(EXTERNAL_LOSSES_PATH, 'w', encoding='utf-8') as f:
+            json.dump(losses, f, indent=2, ensure_ascii=False)
+
+        print(f"   [EQUIPMENT] Exported {len(losses)} equipment loss records to {EXTERNAL_LOSSES_PATH}")
+
+    except Exception as e:
+        print(f"   [ERR] Failed to export equipment losses: {e}")
+
+
 def export_units(unit_stats=None, orbat_data=None):
     print("[DB] Exporting ORBAT Units (with AI Triage)...")
     try:
@@ -308,6 +448,9 @@ def export_units(unit_stats=None, orbat_data=None):
                          orbat_count += 1
             
             print(f"   [MERGE] Added {orbat_count} unmatched units from Parabellum.")
+
+        # === IMPACT ATLAS: Enrich with UALosses casualties ===
+        units = enrich_units_with_casualties(units)
 
         # Save to JSON
         with open(UNITS_JSON_PATH, 'w', encoding='utf-8') as f:
@@ -579,6 +722,9 @@ def main():
 
     # Export Units
     export_units(unit_stats_acc, orbat_data)
+    
+    # Export Equipment Losses from Impact Atlas
+    export_equipment_losses()
     
     # Generate Strategic Trends
     generate_strategic_trends(geojson_features)
