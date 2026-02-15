@@ -157,7 +157,7 @@
 .loss-feed-container {
     flex: 1;
     overflow-y: auto;
-    max-height: 280px;
+    max-height: 400px;
 }
 
 .loss-feed-list {
@@ -250,6 +250,45 @@
     color: #94a3b8;
     min-width: 30px;
     text-align: right;
+}
+
+.loss-source-tag {
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    background: rgba(100, 116, 139, 0.2);
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+.loss-proof-link {
+    color: #64748b;
+    font-size: 0.7rem;
+    transition: color 0.2s;
+}
+
+.loss-proof-link:hover {
+    color: #f59e0b;
+}
+
+.loss-status.confirmed {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.loss-status.reported {
+    background: rgba(234, 179, 8, 0.2);
+    color: #eab308;
+}
+
+.loss-card.placeholder {
+    color: #64748b;
+    border-left-color: #334155;
+    justify-content: center;
+    font-style: italic;
 }
 
 .live-dot {

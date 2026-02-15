@@ -7,7 +7,6 @@ console.log("🚀 Dashboard Module Loading...");
 
 class MomentumGauge {
     constructor(canvasId, valueId, statusId) {
-        // Canvas no longer used, but keep reference for compatibility
         this.valueEl = document.getElementById(valueId);
         this.statusEl = document.getElementById(statusId);
         this.barFill = document.getElementById('tempoBarFill');
@@ -15,10 +14,8 @@ class MomentumGauge {
     }
 
     calculateMetrics(events) {
-        // Filter last 48 hours
         const now = moment();
         const cutoff = moment().subtract(48, 'hours');
-
         const recentEvents = events.filter(e => moment(e.date, "DD/MM/YYYY").isAfter(cutoff));
 
         let offensiveCount = 0;
@@ -34,8 +31,7 @@ class MomentumGauge {
         });
 
         const total = offensiveCount + staticCount;
-        const ratio = total === 0 ? 0.5 : (offensiveCount / total); // 0.0 - 1.0
-
+        const ratio = total === 0 ? 0.5 : (offensiveCount / total);
         return { ratio, total, offensiveCount };
     }
 
@@ -43,21 +39,20 @@ class MomentumGauge {
         const metrics = this.calculateMetrics(events);
         const percent = Math.round(metrics.ratio * 100);
 
-        // Update Text
         if (this.valueEl) this.valueEl.innerText = `${percent}%`;
 
         let statusText = "STALEMATE";
-        let color = "#64748b"; // Grey
+        let color = "#64748b";
 
         if (percent > 65) {
             statusText = "HIGH TEMPO OFFENSIVE";
-            color = "#ef4444"; // Red
+            color = "#ef4444";
         } else if (percent > 40) {
             statusText = "ACTIVE CONTEST";
-            color = "#f59e0b"; // Amber
+            color = "#f59e0b";
         } else {
             statusText = "STATIC / ATTRITION";
-            color = "#3b82f6"; // Blue
+            color = "#3b82f6";
         }
 
         if (this.statusEl) {
@@ -65,13 +60,8 @@ class MomentumGauge {
             this.statusEl.style.color = color;
         }
 
-        // Update horizontal bar and marker
-        if (this.barFill) {
-            this.barFill.style.width = `${percent}%`;
-        }
-        if (this.marker) {
-            this.marker.style.left = `${percent}%`;
-        }
+        if (this.barFill) this.barFill.style.width = `${percent}%`;
+        if (this.marker) this.marker.style.left = `${percent}%`;
     }
 }
 
@@ -79,118 +69,193 @@ class EquipmentTicker {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
         this.content = document.getElementById('ticker-content');
-        this.data = [];
+        this.allData = [];  // Full dataset for filtering
+        this.data = [];     // Currently displayed (filtered) data
+        console.log('📦 EquipmentTicker constructed:', {
+            container: !!this.container,
+            content: !!this.content
+        });
     }
 
     async loadData(internalEvents) {
+        console.log('📡 EquipmentTicker.loadData called with', internalEvents?.length, 'internal events');
+
         // Stream A: Internal Report (Filtered by target_type)
-        const internalLosses = internalEvents
+        const internalLosses = (internalEvents || [])
             .filter(e => e.target_type && e.target_type !== 'NULL' && e.target_type !== 'UNKNOWN')
             .map(e => ({
                 source: 'INTERNAL',
                 date: e.date,
-                model: e.target_type, // Using target_type as model proxy
-                country: 'UNKNOWN', // We might infer this from 'actor' if available
+                model: e.target_type,
+                country: 'UNKNOWN',
                 status: 'REPORTED',
-                icon: '<i class="fa-solid fa-triangle-exclamation" style="color:#eab308"></i>'
+                category: 'other'
             }));
 
-        // Stream B: External JSON (Oryx Mock)
+        console.log(`   Internal losses: ${internalLosses.length}`);
+
+        // Stream B: External JSON (Oryx + LostArmour from impact_atlas.db)
         let externalLosses = [];
         try {
             const res = await fetch('assets/data/external_losses.json');
+            console.log('   external_losses.json fetch status:', res.status);
             if (res.ok) {
                 const json = await res.json();
-                externalLosses = json.map(item => ({
-                    source: 'EXTERNAL',
-                    date: item.date, // YYYY-MM-DD
-                    model: item.model,
-                    country: item.country,
-                    status: 'CONFIRMED',
-                    icon: '<i class="fa-solid fa-circle-check" style="color:#22c55e"></i>'
-                }));
+                console.log(`   External losses loaded: ${json.length} records`);
+                externalLosses = json.map(item => {
+                    // Classify for filter tabs
+                    const modelLower = (item.model || '').toLowerCase();
+                    const typeLower = (item.type || '').toLowerCase();
+                    let category = 'other';
+                    if (typeLower.includes('tank') || modelLower.includes('t-')) category = 'tank';
+                    if (typeLower.includes('aircraft') || typeLower.includes('helicopter') ||
+                        modelLower.includes('su-') || modelLower.includes('mi-') ||
+                        modelLower.includes('ka-') || modelLower.includes('mig') ||
+                        typeLower.includes('uav') || typeLower.includes('drone')) category = 'air';
+
+                    return {
+                        source: 'EXTERNAL',
+                        date: item.date,
+                        model: item.model,
+                        country: item.country || 'RUS',
+                        status: item.status || 'CONFIRMED',
+                        proof_url: item.proof_url || '',
+                        source_tag: item.source_tag || 'Oryx',
+                        type: item.type || 'Vehicle',
+                        category: category
+                    };
+                });
             }
         } catch (err) {
             console.warn("Could not load external losses:", err);
         }
 
         // Merge and Sort
-        this.data = [...internalLosses, ...externalLosses]
+        this.allData = [...internalLosses, ...externalLosses]
             .sort((a, b) => new Date(b.date) - new Date(a.date));
 
+        this.data = this.allData;
+
+        console.log(`   Total merged losses: ${this.allData.length}`);
+        this.render();
+    }
+
+    filterByCategory(category) {
+        if (category === 'all') {
+            this.data = this.allData;
+        } else {
+            this.data = this.allData.filter(d => d.category === category);
+        }
         this.render();
     }
 
     render() {
-        if (!this.content) return;
+        if (!this.content) {
+            console.warn('❌ EquipmentTicker: #ticker-content not found!');
+            return;
+        }
 
         if (this.data.length === 0) {
             this.content.innerHTML = '<div class="loss-card placeholder">No recent losses reported.</div>';
             return;
         }
 
-        // Limit to 20 most recent for cleaner display
-        const displayData = this.data.slice(0, 20);
+        // Show up to 50 most recent
+        const displayData = this.data.slice(0, 50);
 
-        // Create HTML cards
         const itemsHtml = displayData.map(item => {
-            const statusClass = item.status.toLowerCase().replace(/\s+/g, '-');
-            const statusClean = item.status.split(' ')[0].toUpperCase(); // First word
+            const statusClass = (item.status || 'unknown').toLowerCase().replace(/\s+/g, '-');
 
-            // Icon based on type
-            let iconClass = 'fa-solid fa-truck-monster'; // Default ground
+            // Icon based on model/type
+            let iconClass = 'fa-solid fa-truck-monster';
             const type = (item.model || '').toLowerCase();
+            const typeCategory = (item.type || '').toLowerCase();
+
             if (type.includes('heli') || type.includes('ka-') || type.includes('mi-')) iconClass = 'fa-solid fa-helicopter';
-            if (type.includes('jet') || type.includes('su-') || type.includes('mig')) iconClass = 'fa-solid fa-jet-fighter';
-            if (type.includes('art') || type.includes('howitzer') || type.includes('m777')) iconClass = 'fa-solid fa-burst';
-            if (type.includes('tank') || type.includes('t-')) iconClass = 'fa-solid fa-truck-monster';
-            if (type.includes('drone') || type.includes('uav') || type.includes('orlan')) iconClass = 'fa-solid fa-plane';
+            else if (type.includes('su-') || type.includes('mig') || typeCategory.includes('aircraft')) iconClass = 'fa-solid fa-jet-fighter';
+            else if (typeCategory.includes('artiller') || type.includes('howitzer') || typeCategory.includes('rocket')) iconClass = 'fa-solid fa-burst';
+            else if (typeCategory.includes('tank') || type.includes('t-')) iconClass = 'fa-solid fa-truck-monster';
+            else if (typeCategory.includes('uav') || type.includes('drone') || typeCategory.includes('reconnaissance')) iconClass = 'fa-solid fa-plane';
+            else if (typeCategory.includes('radar') || typeCategory.includes('jammer')) iconClass = 'fa-solid fa-satellite-dish';
+            else if (typeCategory.includes('naval') || typeCategory.includes('ship')) iconClass = 'fa-solid fa-ship';
+            else if (typeCategory.includes('engineering') || typeCategory.includes('truck')) iconClass = 'fa-solid fa-truck';
+            else if (typeCategory.includes('command') || typeCategory.includes('communication')) iconClass = 'fa-solid fa-tower-cell';
+
+            // Country flag
+            const flagIcon = item.country === 'RUS' || item.country === 'RU'
+                ? '🇷🇺'
+                : (item.country === 'UA' ? '🇺🇦' : '🏴');
+
+            // Source badge
+            const sourceBadge = item.source_tag
+                ? `<span class="loss-source-tag">${item.source_tag}</span>`
+                : '';
+
+            // Proof link
+            const proofLink = item.proof_url
+                ? `<a href="${item.proof_url}" target="_blank" rel="noopener" class="loss-proof-link" title="View proof"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>`
+                : '';
 
             return `
             <div class="loss-card ${statusClass}">
                 <div class="loss-icon"><i class="${iconClass}"></i></div>
                 <div class="loss-info">
                     <span class="loss-model">${item.model}</span>
-                    <span class="loss-meta">${item.date}</span>
+                    <span class="loss-meta">${item.type || ''} • ${item.date}</span>
                 </div>
-                <span class="loss-status ${statusClass}">${statusClean}</span>
-                <span class="loss-country">${item.country}</span>
+                <span class="loss-status ${statusClass}">${(item.status || '').split(' ')[0].toUpperCase()}</span>
+                <span class="loss-country">${flagIcon}</span>
+                ${sourceBadge}
+                ${proofLink}
             </div>`;
         }).join('');
 
         this.content.innerHTML = itemsHtml;
+        console.log(`✅ EquipmentTicker rendered ${displayData.length} items`);
     }
 }
 
 // Global Dashboard Instance
 window.Dashboard = {
+    gauge: null,
+    ticker: null,
+
     init: async function () {
         console.log("🛡️ Initializing Tactical Dashboard...");
 
         // Wait for global events to be loaded by map.js
         if (!window.globalEvents || window.globalEvents.length === 0) {
             console.warn("Dashboard: Waiting for events...");
-            setTimeout(window.Dashboard.init, 1000); // Retry logic could be cleaner but works
+            // FIX: preserve `this` context with arrow function
+            setTimeout(() => window.Dashboard.init(), 1000);
             return;
         }
 
-        this.gauge = new MomentumGauge('momentumCanvas', 'momentumValue', 'momentumStatus');
-        this.ticker = new EquipmentTicker('equipment-ticker-wrapper');
+        window.Dashboard.gauge = new MomentumGauge('momentumCanvas', 'momentumValue', 'momentumStatus');
+        window.Dashboard.ticker = new EquipmentTicker('equipment-ticker-wrapper');
 
         // Render components
-        this.gauge.render(window.globalEvents);
-        await this.ticker.loadData(window.globalEvents);
+        window.Dashboard.gauge.render(window.globalEvents);
+        await window.Dashboard.ticker.loadData(window.globalEvents);
 
         console.log("✅ Dashboard Active.");
     },
 
-    // Called when filters change (hooked into map.js filter logic if needed)
     update: function (filteredEvents) {
-        if (this.gauge) this.gauge.render(filteredEvents);
-        if (this.ticker) this.ticker.loadData(filteredEvents); // Or keep ticker static/global
+        if (window.Dashboard.gauge) window.Dashboard.gauge.render(filteredEvents);
+        if (window.Dashboard.ticker) window.Dashboard.ticker.loadData(filteredEvents);
     }
 };
 
-// Hook into existing toggleVisualMode
-// We'll Monkey Patch it or ensure map.js calls it.
-// For now, let's rely on map.js modifications.
+// Filter function for Equipment Losses tabs
+window.filterLosses = function (category) {
+    // Update active tab styling
+    document.querySelectorAll('.loss-tab').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    if (window.Dashboard.ticker) {
+        window.Dashboard.ticker.filterByCategory(category);
+    } else {
+        console.warn('filterLosses: ticker not yet initialized');
+    }
+};
