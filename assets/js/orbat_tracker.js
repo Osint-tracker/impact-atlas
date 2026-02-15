@@ -76,6 +76,12 @@ class OrbatTracker {
             if (unit.type && unit.type.includes('AIRBORNE')) icon = 'fa-parachute-box';
             if (unit.type && unit.type.includes('RECON')) icon = 'fa-binoculars';
 
+            // Casualty badge (if UALosses data present)
+            const casCount = unit.casualty_count || 0;
+            const casBadge = casCount > 0
+                ? `<span style="background:#ef444433; color:#ef4444; padding:1px 6px; border-radius:4px; font-size:0.65rem; font-weight:700; margin-left:auto; font-family:'JetBrains Mono', monospace;"><i class="fa-solid fa-skull" style="font-size:0.6rem; margin-right:3px;"></i>${casCount}</span>`
+                : '';
+
             // Inner HTML Structure
             el.innerHTML = `
                 <div class="hud-card ${statusClass}">
@@ -85,6 +91,7 @@ class OrbatTracker {
                              <i class="fa-solid ${icon}" style="margin-right:8px; opacity:0.7; font-size:0.9em;"></i>
                              ${unit.display_name}
                         </span>
+                        ${casBadge}
                         <span class="hud-status-dot"></span> 
                     </div>
 

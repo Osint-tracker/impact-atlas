@@ -1552,6 +1552,17 @@
     const casualtiesList = document.getElementById('udCasualtiesList');
     const casualtyBadge = document.getElementById('udCasualtyBadge');
 
+    console.log('🩸 CASUALTY DEBUG:', {
+      panelFound: !!casualtiesPanel,
+      listFound: !!casualtiesList,
+      hasCasualties: !!(unit.verified_casualties),
+      casualtyCount: unit.casualty_count || 0,
+      casualtiesLength: (unit.verified_casualties || []).length,
+      unitId: unit.unit_id,
+      unitName: unit.display_name,
+      faction: unit.faction
+    });
+
     if (casualtiesPanel && casualtiesList) {
       const casualties = unit.verified_casualties || [];
       const casualtyCount = unit.casualty_count || 0;
