@@ -262,174 +262,77 @@
     })
     .catch(e => console.warn("⚠️ ORBAT Metadata missing"));
 
-  function loadOwlLayer() {
-    if (currentFrontlineLayer) map.removeLayer(currentFrontlineLayer);
-    if (owlLayer) map.removeLayer(owlLayer);
+  // ===========================================
+  // OWL INTEGRATION: DATA FETCHER (No Auto-Render)
+  // ===========================================
+  window.owlData = {
+    frontline: null,     // LayerGroup (Frontline segments)
+    fortifications: [],  // Array of Feature (Lines)
+    units: new Map()     // Map<NormalizedName, Feature>
+  };
 
-    console.log("🦉 Loading Project Owl Layer (Optimized)...");
+  function fetchOwlData() {
+    console.log("🦉 Fetching Project Owl Data...");
 
-    fetch('assets/data/owl_layer.geojson')
+    return fetch('assets/data/owl_layer.geojson')
       .then(res => res.json())
       .then(data => {
-        // --- 1. OPTIMIZATION: Split Lines & Points ---
-        const lines = [];
-        const points = [];
+        const fortifications = [];
+        const units = new Map();
+        const frontlineFeatures = [];
 
         data.features.forEach(f => {
-          if (f.geometry.type === 'Point') points.push(f);
-          else lines.push(f);
+          const props = f.properties || {};
+          const name = (props.name || '').toLowerCase();
+
+          if (f.geometry.type === 'Point') {
+            // UNIT
+            // Normalize name key for matching
+            // Remove 'brigade', 'regiment', 'separate', etc for key, but keep full prop
+            const key = name.replace(/separate|mechanized|brigade|regiment|infantry|marine|assault|airborne|battalion/g, '').trim();
+            units.set(key, f);
+          } else if (f.geometry.type === 'LineString' || f.geometry.type === 'MultiLineString') {
+            if (name.includes('fortification') || name.includes('trench') || name.includes('dragon')) {
+              fortifications.push(f);
+            } else {
+              frontlineFeatures.push(f);
+            }
+          }
         });
 
-        console.log(`   - Lines: ${lines.length}`);
-        console.log(`   - Units/Points: ${points.length}`);
+        // Store Logic
+        window.owlData.fortifications = fortifications;
+        window.owlData.units = units;
 
-        // --- 2. LAYERS SETUP ---
-        // A. Lines (Canvas Renderer for performance)
+        // Pre-build Frontline Layer (Canvas) for 'Project Owl' source
         const canvasRenderer = L.canvas();
-
-        const owlLinesLayer = L.geoJSON({ type: 'FeatureCollection', features: lines }, {
+        window.owlData.frontline = L.geoJSON({ type: 'FeatureCollection', features: frontlineFeatures }, {
           renderer: canvasRenderer,
           style: function (feature) {
             const side = feature.properties.side || 'NEUTRAL';
-            let color = '#d4d4d8'; // Default Zinc-300
-            if (side === 'RU') color = '#ef4444'; // Red
-            if (side === 'UA') color = '#3b82f6'; // Blue
-
-            // Detect Fortifications
-            const isFort = (feature.properties.name || '').toLowerCase().includes('fortification');
-
-            return {
-              color: color,
-              weight: isFort ? 1.5 : 2.5,
-              opacity: 0.8,
-              dashArray: isFort ? '4, 4' : null,
-              lineCap: 'square'
-            };
-          },
-          onEachFeature: function (feature, layer) {
-            layer.bindPopup(feature.properties.name || "Unknown Line");
+            let color = '#d4d4d8'; // Zinc
+            if (side === 'RU') color = '#ef4444';
+            if (side === 'UA') color = '#3b82f6';
+            return { color: color, weight: 2.5, opacity: 0.8, lineCap: 'square' };
           }
         });
 
-        // B. Points (Marker Cluster Group)
-        const owlClusterGroup = L.markerClusterGroup({
-          maxClusterRadius: 60,
-          disableClusteringAtZoom: 13,
-          spiderfyOnMaxZoom: true,
-          showCoverageOnHover: false,
-          zoomToBoundsOnClick: true,
-          iconCreateFunction: function (cluster) {
-            const count = cluster.getChildCount();
-            let color = '#f59e0b'; // Amber default
-            // Simple logic: if mostly UA, blue; if mostly RU, red.
-            // For now, keep it simple amber or distinct cluster style.
-            return L.divIcon({
-              html: `<div style="
-                     background: rgba(15, 23, 42, 0.9);
-                     color: #f59e0b;
-                     border-radius: 50%;
-                     width: 40px; 
-                     height: 40px;
-                     display: flex;
-                     align-items: center;
-                     justify-content: center;
-                     font-weight: bold;
-                     font-size: 14px;
-                     border: 2px solid #f59e0b;
-                     box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
-                   ">${count}</div>`,
-              className: 'owl-cluster-icon',
-              iconSize: [40, 40]
-            });
-          }
-        });
-
-        // Add points to cluster
-        points.forEach(f => {
-          const coords = f.geometry.coordinates; // [lon, lat]
-          const lat = coords[1];
-          const lon = coords[0];
-          const p = f.properties;
-
-          // Determine Style
-          const side = p.side || 'NEUTRAL';
-          const isUA = side === 'UA';
-          const color = isUA ? '#3b82f6' : (side === 'RU' ? '#ef4444' : '#64748b');
-
-          // IMPACT ATLAS STYLE HEXAGON
-          const icon = L.divIcon({
-            className: `unit-marker-hex`,
-            html: `<div style="
-                    width: 24px; 
-                    height: 26px; 
-                    background: ${color}; 
-                    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-                    display: flex; 
-                    align-items: center; 
-                    justify-content: center;
-                    box-shadow: 0 0 5px ${color};
-                    opacity: 0.9;
-                 ">
-                    <div style="
-                       width: 8px; 
-                       height: 8px; 
-                       background: rgba(0,0,0,0.5); 
-                       clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-                    "></div>
-                 </div>`,
-            iconSize: [24, 26],
-            iconAnchor: [12, 13]
-          });
-
-          const marker = L.marker([lat, lon], { icon: icon });
-
-          // BIND POPUP (Metadata Join)
-          let extraInfo = '';
-          let buttons = '';
-          if (window.orbatData && p.name) {
-            const unitMeta = window.orbatData.find(u =>
-              u.name === p.name ||
-              (u.name && p.name && u.name.includes(p.name)) ||
-              (u.name && p.name && p.name.includes(u.name))
-            );
-            if (unitMeta) {
-              if (unitMeta.parent) extraInfo += `<div style="font-size:0.8em; color:#64748b; margin-top:4px;">PART OF: ${unitMeta.parent}</div>`;
-              if (unitMeta.socials && unitMeta.socials.telegram_clean) {
-                buttons += `<a href="https://t.me/${unitMeta.socials.telegram_clean}" target="_blank" style="
-                            display:block; margin-top:8px; background:#24a1de; color:white; 
-                            text-align:center; padding:4px; border-radius:4px; text-decoration:none; font-size:0.8em; font-weight:bold;">
-                            <i class="fa-brands fa-telegram"></i> TELEGRAM INTEL
-                         </a>`;
-              }
-            }
-          }
-
-          const popupContent = `
-               <div style="font-family:'Jersey 15', sans-serif; min-width:220px;">
-                 <div style="background:#0f172a; padding:8px; border-bottom:1px solid #334155;">
-                   <strong style="color:#f59e0b; text-transform:uppercase; font-size:1.1em;">${p.name || 'Unknown Element'}</strong>
-                 </div>
-                 <div style="padding:10px; font-size:0.9em; color:#94a3b8; line-height:1.4;">
-                   ${p.description ? p.description.substring(0, 150) + (p.description.length > 150 ? '...' : '') : 'No tactical data available.'}
-                   ${extraInfo}
-                   ${buttons}
-                 </div>
-               </div>
-             `;
-          marker.bindPopup(popupContent);
-
-          owlClusterGroup.addLayer(marker);
-        });
-
-        // Add both to map (Group them)
-        owlLayer = L.layerGroup([owlLinesLayer, owlClusterGroup]);
-        owlLayer.addTo(map);
-
-        currentFrontlineLayer = owlLayer; // Set as current active layer
-        console.log("✅ Owl Composite Layer Loaded Successfully (Clustered)");
+        console.log(`🦉 Owl Data Ready: ${units.size} Units, ${fortifications.length} Forts`);
+        return window.owlData;
       })
-      .catch(err => console.error("❌ Failed to load Owl Layer:", err));
+      .catch(err => console.error("❌ Failed to fetch Owl Data:", err));
   }
+
+  // Alias for backward compatibility if needed, or simply replaced
+  window.loadOwlLayer = function () {
+    fetchOwlData().then(() => {
+      if (window.owlData.frontline) {
+        if (currentFrontlineLayer) map.removeLayer(currentFrontlineLayer);
+        currentFrontlineLayer = window.owlData.frontline;
+        currentFrontlineLayer.addTo(map);
+      }
+    });
+  };
 
   function loadFrontlineLayer(url, color) {
     // Deprecated wrapper - redirects to Owl if needed, or loads legacy
@@ -1074,31 +977,105 @@
           firmsLayer = null;
         }
       }
-    } else if (layerName === 'units') {
-      // ORBAT Units Layer - Optimized with marker clustering
+    } else if (layerName === 'fortifications') {
+      // OWL FORTIFICATIONS LAYER
       if (isChecked) {
-        console.log("🚀 STARTING UNITS FETCH...");
-        // alert("DEBUG: Starting Units Fetch...");
+        // Ensure data is ready
+        Promise.resolve(window.owlData || fetchOwlData()).then(owl => {
+          if (!owl || !owl.fortifications) return;
 
-        // Cache busting
+          // Canvas Renderer for performance
+          const canvasRenderer = L.canvas();
+
+          fortificationsLayer = L.geoJSON({ type: 'FeatureCollection', features: owl.fortifications }, {
+            renderer: canvasRenderer,
+            style: {
+              color: '#d4d4d8', // Zinc-300
+              weight: 1.5,
+              opacity: 0.8,
+              dashArray: '4, 4',
+              lineCap: 'square'
+            },
+            onEachFeature: function (feature, layer) {
+              layer.bindPopup(feature.properties.name || "Fortification Line");
+            }
+          });
+
+          fortificationsLayer.addTo(map);
+          console.log(`✅ Fortifications Layer loaded: ${owl.fortifications.length} lines`);
+        });
+      } else {
+        if (fortificationsLayer) {
+          map.removeLayer(fortificationsLayer);
+          fortificationsLayer = null;
+        }
+      }
+
+    } else if (layerName === 'units') {
+      // ORBAT Units Layer - UPSERT STRATEGY (User + Owl Merged)
+      if (isChecked) {
+        console.log("🚀 STARTING UNITS FETCH (UPSERT MODE)...");
+
+        // 1. Fetch User Data
         fetch(`assets/data/units.json?v=${new Date().getTime()}`)
-          .then(response => {
-            if (!response.ok) {
-              alert("❌ ERROR: units.json not found (404)");
-              throw new Error("HTTP 404");
-            }
-            return response.json();
-          })
-          .then(data => {
-            if (!data || data.length === 0) {
-              alert("⚠️ WARNING: units.json is empty!");
-              console.warn("⚠️ No units data available");
-              return;
-            }
-            // alert(`✅ LOADED ${data.length} UNITS. Rendering now...`);
-            console.log(`✅ Loaded ${data.length} units.`);
+          .then(res => res.json())
+          .then(async userUnits => {
+            if (!userUnits) userUnits = [];
 
-            // Use marker cluster for performance
+            // 2. Fetch Owl Data (Authoritative Live)
+            const owl = window.owlData || await fetchOwlData();
+
+            // 3. UPSERT LOGIC
+            const mergedUnits = new Map();
+
+            // Helper: Normalize for matching
+            const normalize = (str) => (str || '').toLowerCase().replace(/separate|mechanized|brigade|regiment|infantry|marine|assault|airborne|battalion|group|tactical/g, '').trim();
+
+            // A. Load User Units First
+            userUnits.forEach(u => {
+              const key = normalize(u.display_name || u.unit_name || u.unit_id);
+              mergedUnits.set(key, u);
+            });
+
+            // B. Enrich or Add from Owl
+            if (owl && owl.units) {
+              owl.units.forEach((feature, key) => {
+                // Key is already normalized from fetchOwlData
+                const existing = mergedUnits.get(key);
+
+                if (existing) {
+                  // ENRICH: Update location and add metadata
+                  existing.lat = feature.geometry.coordinates[1];
+                  existing.lon = feature.geometry.coordinates[0];
+                  existing.owl_meta = feature.properties;
+                  existing.last_updated = "LIVE (Owl)";
+                } else {
+                  // ADD NEW: Authoritative
+                  // Filter out noise? User said "ADD THE NEW UNIT".
+                  // Create compatible Unit Object
+                  const props = feature.properties;
+                  const newUnit = {
+                    unit_id: 'owl_' + (props.id || Math.random().toString(36).substr(2, 9)),
+                    display_name: props.name,
+                    unit_name: props.name,
+                    faction: props.side, // RU/UA
+                    type: 'infantry', // Default fallback
+                    lat: feature.geometry.coordinates[1],
+                    lon: feature.geometry.coordinates[0],
+                    source: 'OWL', // Distinct source
+                    status: 'active',
+                    owl_meta: props,
+                    description: props.description
+                  };
+                  mergedUnits.set(key, newUnit);
+                }
+              });
+            }
+
+            const finalData = Array.from(mergedUnits.values());
+            console.log(`✅ Merged Units: ${finalData.length} (Base: ${userUnits.length}, Owl Hits: ${owl ? owl.units.size : 0})`);
+
+            // 4. RENDER (Cluster)
             unitsLayer = L.markerClusterGroup({
               maxClusterRadius: 50,
               spiderfyOnMaxZoom: true,
@@ -1134,22 +1111,20 @@
               }
             });
 
-            let count = 0;
-            data.forEach(unit => {
-              const lat = unit.last_seen_lat;
-              const lon = unit.last_seen_lon;
+            finalData.forEach(unit => {
+              const lat = unit.lat || unit.last_seen_lat;
+              const lon = unit.lon || unit.last_seen_lon;
               if (!lat || !lon) return;
 
               // Determine faction
               const isUA = unit.faction === 'UA';
               const isRU = unit.faction === 'RU' || unit.faction === 'RU_PROXY' || unit.faction === 'RU_PMC';
               const color = isUA ? '#3b82f6' : (isRU ? '#ef4444' : '#64748b');
-              const factionLabel = isUA ? 'Ukraine' : (isRU ? 'Russia' : 'Unknown');
 
-              // SVG Flag icons (inline for performance)
               const uaFlag = `<svg width="20" height="14" viewBox="0 0 20 14"><rect width="20" height="7" fill="#005BBB"/><rect y="7" width="20" height="7" fill="#FFD500"/></svg>`;
               const ruFlag = `<svg width="20" height="14" viewBox="0 0 20 14"><rect width="20" height="4.67" fill="#fff"/><rect y="4.67" width="20" height="4.67" fill="#0039A6"/><rect y="9.33" width="20" height="4.67" fill="#D52B1E"/></svg>`;
               const unknownFlag = `<svg width="20" height="14" viewBox="0 0 20 14"><rect width="20" height="14" fill="#64748b"/></svg>`;
+              const owlBadge = unit.source === 'OWL' ? `<div style="position:absolute; bottom:0; right:0; width:6px; height:6px; background:#f59e0b; border-radius:50%; border:1px solid #fff;"></div>` : '';
 
               const flagSvg = isUA ? uaFlag : (isRU ? ruFlag : unknownFlag);
 
@@ -1157,8 +1132,9 @@
                 html: `<div style="
                   filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
                   border-radius: 2px;
-                  overflow: hidden;
-                ">${flagSvg}</div>`,
+                  overflow: visible; 
+                  position: relative;
+                ">${flagSvg}${owlBadge}</div>`, // Added Owl dot for live units
                 className: 'unit-flag-marker',
                 iconSize: [20, 14],
                 iconAnchor: [10, 7]
@@ -1166,44 +1142,27 @@
 
               const marker = L.marker([lat, lon], {
                 icon: icon,
-                faction: unit.faction, // Store for cluster icon
-                unitData: unit,        // Store data for click event
-                zIndexOffset: 1000     // Force ON TOP of everything
+                faction: unit.faction,
+                unitData: unit,
+                zIndexOffset: 1000
               });
 
-              // REMOVED individual click listener here to use Group listener below
-              // marker.on('click', () => { ... });
-
               unitsLayer.addLayer(marker);
-              count++;
             });
 
-            // CENTRALIZED CLICK LISTENER (Robust)
+            // Click Listener
             unitsLayer.on('click', function (a) {
-              console.log("🎯 UNIT CLICKED via Layer:", a.layer.options.unitData);
               const unit = a.layer.options.unitData;
-              if (!unit) {
-                console.error("❌ Unit data is NULL/undefined in marker options!");
-                return;
-              }
-              console.log("📋 Unit Data:", JSON.stringify(unit, null, 2).slice(0, 500));
-
-              if (typeof window.openUnitModal === 'function') {
-                console.log("✅ openUnitModal function exists, calling it...");
+              if (window.openUnitModal) {
                 window.openUnitModal(unit);
-              } else {
-                console.error("❌ window.openUnitModal is NOT a function!", typeof window.openUnitModal);
               }
             });
 
             unitsLayer.addTo(map);
-            // unitsLayer.bringToFront(); // Not always available on ClusterGroup, avoiding error
-
-            console.log(`✅ Units layer loaded: ${count} markers`);
           })
           .catch(err => {
-            console.error("❌ Failed to load units data:", err);
-            // alert("DEBUG: Fetch Error: " + err.message);
+            console.error("❌ Failed to load Units:", err);
+            alert("Error loading units.");
           });
       } else {
         if (unitsLayer) {
@@ -1211,6 +1170,7 @@
           unitsLayer = null;
         }
       }
+
     } else if (layerName === 'narratives') {
       // ============================================
       // STRATEGIC CONTEXT LAYER (Narrative Polygons)
@@ -1726,6 +1686,38 @@
            `;
         listEl.appendChild(el);
       });
+    }
+
+    // === OWL INTEL POPULATION ===
+    const elOwlPanel = document.getElementById('udOwlPanel');
+    if (elOwlPanel) {
+      if (unit.owl_meta || (unit.source === 'OWL')) {
+        elOwlPanel.style.display = 'block';
+        let desc = (unit.owl_meta ? unit.owl_meta.description : unit.description) || "No specific intel available.";
+
+        // Clean up description if needed
+        if (desc.length > 500) desc = desc.substring(0, 500) + '...';
+        document.getElementById('udOwlDesc').innerText = desc;
+
+        // Links
+        const linksContainer = document.getElementById('udOwlLinks');
+        linksContainer.innerHTML = '';
+
+        // Check for URL in owl_meta
+        const meta = unit.owl_meta || unit;
+        if (meta.url || meta.source_url) {
+          const url = meta.url || meta.source_url;
+          const link = document.createElement('a');
+          link.href = url;
+          link.target = '_blank';
+          link.className = 'ud-link';
+          link.style.cssText = 'color:#38bdf8; font-size:0.75rem; text-decoration:none; display:flex; align-items:center; gap:5px;';
+          link.innerHTML = `<i class="fa-brands fa-telegram"></i> View Source`;
+          linksContainer.appendChild(link);
+        }
+      } else {
+        elOwlPanel.style.display = 'none';
+      }
     }
 
     // === VERIFIED CASUALTIES (UALosses enrichment) ===

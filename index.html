@@ -826,7 +826,7 @@
 
             <label class="tech-toggle-row">
               <span class="tech-toggle-label">Fortifications</span>
-              <input type="checkbox" checked>
+              <input type="checkbox" checked onchange="toggleTechLayer('fortifications', this)">
               <div class="tech-switch"></div>
             </label>
 
@@ -1267,6 +1267,23 @@
                   <span class="ud-stat-label">District</span>
                   <span class="ud-stat-value" id="udDistrict">--</span>
                 </div>
+              </div>
+
+              <!-- OWL INTEL PANEL -->
+              <div class="ud-panel" id="udOwlPanel"
+                style="display:none; border:1px solid #f59e0b44; background:rgba(245, 158, 11, 0.05);">
+                <h4
+                  style="margin:0 0 10px 0; color:#f59e0b; font-size:0.9rem; display:flex; justify-content:space-between; align-items:center;">
+                  PROJECT OWL LIVE
+                  <i class="fa-solid fa-satellite-dish" style="opacity:0.7;"></i>
+                </h4>
+                <div class="ud-stat-row">
+                  <span class="ud-stat-label">Latest Intel</span>
+                </div>
+                <div id="udOwlDesc"
+                  style="font-size:0.8rem; color:#cbd5e1; margin-bottom:10px; line-height:1.4; max-height:100px; overflow-y:auto;">
+                  --</div>
+                <div id="udOwlLinks" style="display:flex; flex-direction:column; gap:4px;"></div>
               </div>
 
               <div class="ud-panel">
