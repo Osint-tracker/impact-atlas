@@ -266,12 +266,29 @@
     if (currentFrontlineLayer) map.removeLayer(currentFrontlineLayer);
     if (owlLayer) map.removeLayer(owlLayer);
 
-    console.log("🦉 Loading Project Owl Layer...");
+    console.log("🦉 Loading Project Owl Layer (Optimized)...");
 
     fetch('assets/data/owl_layer.geojson')
       .then(res => res.json())
       .then(data => {
-        owlLayer = L.geoJSON(data, {
+        // --- 1. OPTIMIZATION: Split Lines & Points ---
+        const lines = [];
+        const points = [];
+
+        data.features.forEach(f => {
+          if (f.geometry.type === 'Point') points.push(f);
+          else lines.push(f);
+        });
+
+        console.log(`   - Lines: ${lines.length}`);
+        console.log(`   - Units/Points: ${points.length}`);
+
+        // --- 2. LAYERS SETUP ---
+        // A. Lines (Canvas Renderer for performance)
+        const canvasRenderer = L.canvas();
+
+        const owlLinesLayer = L.geoJSON({ type: 'FeatureCollection', features: lines }, {
+          renderer: canvasRenderer,
           style: function (feature) {
             const side = feature.properties.side || 'NEUTRAL';
             let color = '#d4d4d8'; // Default Zinc-300
@@ -284,59 +301,110 @@
             return {
               color: color,
               weight: isFort ? 1.5 : 2.5,
-              opacity: 0.9,
+              opacity: 0.8,
               dashArray: isFort ? '4, 4' : null,
               lineCap: 'square'
             };
           },
-          pointToLayer: function (feature, latlng) {
-            // Create Unit Markers (if points exist in this layer)
-            const side = feature.properties.side || 'NEUTRAL';
-            const isUA = side === 'UA';
-            const color = isUA ? '#3b82f6' : '#ef4444';
-
-            return L.marker(latlng, {
-              icon: L.divIcon({
-                className: `unit-marker ${side.toLowerCase()}`, // .unit-marker.ru / .ua
-                html: `<div style="
-                    width: 14px; 
-                    height: 14px; 
-                    background: ${color}; 
-                    border: 1px solid white;
-                    box-shadow: 0 0 8px ${color};
-                    transform: rotate(45deg);
-                 "></div>`,
-                iconSize: [16, 16]
-              })
-            });
-          },
           onEachFeature: function (feature, layer) {
-            const p = feature.properties;
-            let extraInfo = '';
-            let buttons = '';
+            layer.bindPopup(feature.properties.name || "Unknown Line");
+          }
+        });
 
-            // Metadata Join (Robust Check)
-            if (window.orbatData && p.name) {
-              const unitMeta = window.orbatData.find(u =>
-                u.name === p.name ||
-                (u.name && p.name && u.name.includes(p.name)) ||
-                (u.name && p.name && p.name.includes(u.name))
-              );
+        // B. Points (Marker Cluster Group)
+        const owlClusterGroup = L.markerClusterGroup({
+          maxClusterRadius: 60,
+          disableClusteringAtZoom: 13,
+          spiderfyOnMaxZoom: true,
+          showCoverageOnHover: false,
+          zoomToBoundsOnClick: true,
+          iconCreateFunction: function (cluster) {
+            const count = cluster.getChildCount();
+            let color = '#f59e0b'; // Amber default
+            // Simple logic: if mostly UA, blue; if mostly RU, red.
+            // For now, keep it simple amber or distinct cluster style.
+            return L.divIcon({
+              html: `<div style="
+                     background: rgba(15, 23, 42, 0.9);
+                     color: #f59e0b;
+                     border-radius: 50%;
+                     width: 40px; 
+                     height: 40px;
+                     display: flex;
+                     align-items: center;
+                     justify-content: center;
+                     font-weight: bold;
+                     font-size: 14px;
+                     border: 2px solid #f59e0b;
+                     box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+                   ">${count}</div>`,
+              className: 'owl-cluster-icon',
+              iconSize: [40, 40]
+            });
+          }
+        });
 
-              if (unitMeta) {
-                if (unitMeta.parent) extraInfo += `<div style="font-size:0.8em; color:#64748b; margin-top:4px;">PART OF: ${unitMeta.parent}</div>`;
+        // Add points to cluster
+        points.forEach(f => {
+          const coords = f.geometry.coordinates; // [lon, lat]
+          const lat = coords[1];
+          const lon = coords[0];
+          const p = f.properties;
 
-                if (unitMeta.socials && unitMeta.socials.telegram_clean) {
-                  buttons += `<a href="https://t.me/${unitMeta.socials.telegram_clean}" target="_blank" style="
-                           display:block; margin-top:8px; background:#24a1de; color:white; 
-                           text-align:center; padding:4px; border-radius:4px; text-decoration:none; font-size:0.8em; font-weight:bold;">
-                           <i class="fa-brands fa-telegram"></i> TELEGRAM INTEL
-                        </a>`;
-                }
+          // Determine Style
+          const side = p.side || 'NEUTRAL';
+          const isUA = side === 'UA';
+          const color = isUA ? '#3b82f6' : (side === 'RU' ? '#ef4444' : '#64748b');
+
+          // IMPACT ATLAS STYLE HEXAGON
+          const icon = L.divIcon({
+            className: `unit-marker-hex`,
+            html: `<div style="
+                    width: 24px; 
+                    height: 26px; 
+                    background: ${color}; 
+                    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: center;
+                    box-shadow: 0 0 5px ${color};
+                    opacity: 0.9;
+                 ">
+                    <div style="
+                       width: 8px; 
+                       height: 8px; 
+                       background: rgba(0,0,0,0.5); 
+                       clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+                    "></div>
+                 </div>`,
+            iconSize: [24, 26],
+            iconAnchor: [12, 13]
+          });
+
+          const marker = L.marker([lat, lon], { icon: icon });
+
+          // BIND POPUP (Metadata Join)
+          let extraInfo = '';
+          let buttons = '';
+          if (window.orbatData && p.name) {
+            const unitMeta = window.orbatData.find(u =>
+              u.name === p.name ||
+              (u.name && p.name && u.name.includes(p.name)) ||
+              (u.name && p.name && p.name.includes(u.name))
+            );
+            if (unitMeta) {
+              if (unitMeta.parent) extraInfo += `<div style="font-size:0.8em; color:#64748b; margin-top:4px;">PART OF: ${unitMeta.parent}</div>`;
+              if (unitMeta.socials && unitMeta.socials.telegram_clean) {
+                buttons += `<a href="https://t.me/${unitMeta.socials.telegram_clean}" target="_blank" style="
+                            display:block; margin-top:8px; background:#24a1de; color:white; 
+                            text-align:center; padding:4px; border-radius:4px; text-decoration:none; font-size:0.8em; font-weight:bold;">
+                            <i class="fa-brands fa-telegram"></i> TELEGRAM INTEL
+                         </a>`;
               }
             }
+          }
 
-            let popupContent = `
+          const popupContent = `
                <div style="font-family:'Jersey 15', sans-serif; min-width:220px;">
                  <div style="background:#0f172a; padding:8px; border-bottom:1px solid #334155;">
                    <strong style="color:#f59e0b; text-transform:uppercase; font-size:1.1em;">${p.name || 'Unknown Element'}</strong>
@@ -348,12 +416,17 @@
                  </div>
                </div>
              `;
-            layer.bindPopup(popupContent);
-          }
-        }).addTo(map);
+          marker.bindPopup(popupContent);
+
+          owlClusterGroup.addLayer(marker);
+        });
+
+        // Add both to map (Group them)
+        owlLayer = L.layerGroup([owlLinesLayer, owlClusterGroup]);
+        owlLayer.addTo(map);
 
         currentFrontlineLayer = owlLayer; // Set as current active layer
-        console.log("✅ Owl Layer Loaded Successfully");
+        console.log("✅ Owl Composite Layer Loaded Successfully (Clustered)");
       })
       .catch(err => console.error("❌ Failed to load Owl Layer:", err));
   }
