@@ -1,0 +1,596 @@
+<!DOCTYPE HTML>
+<html lang="en-US" >
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+<title>Russian invasion of Ukraine. - Russo Ukrainian war - Parabellum Maps</title>
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<link type="text/css" href="/assets/js/jquery/ui/jquery-ui.min.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/assets/jelix/design/jform.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/assets/jelix/js/cropper.min.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/assets/css/bootstrap.min.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/assets/css/bootstrap-responsive.min.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/assets/css/jquery.dataTables.min.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/assets/css/dataTables.bootstrap.min.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/assets/js/TreeTable/stylesheets/jquery.treeTable.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/assets/js/OpenLayers-2.13/theme/default/style.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/assets/css/ol.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/assets/css/main.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/assets/css/map.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/assets/css/media.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/themes/default/css/main.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/themes/default/css/map.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/themes/default/css/media.css?_r=240524110219" rel="stylesheet" />
+
+<link type="text/css" href="/assets/css/print_popup.css?_r=240524110219" media="print" rel="stylesheet" />
+
+<link type="text/css" href="/assets/css/filter.css?_r=240524110219" rel="stylesheet" />
+
+<script src="/assets/js/jquery/jquery-3.5.1.min.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/jquery/jquery-migrate-3.3.1.min.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/jquery/ui/jquery-ui.min.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/jelix/js/jforms_jquery.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/jelix/js/cropper.min.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/jelix/js/jforms/choice.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/jelix/js/jforms/imageSelector.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/bootstrap.min.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/jquery.dataTables.min.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/dataTables.bootstrap.min.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/jelix/datatables/i18n/en_US.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/OpenLayers-2.13/OpenLayers.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/Proj4js/proj4js.min.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/jquery.combobox.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/TreeTable/javascripts/jquery.treeTable.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/map.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/lizmap.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/index.php/view/translate?lang=en_US&amp;_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/bottom-dock.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/search.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/attributeTable.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/filter.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/js/switcher-layers-actions.js?_r=240524110219" type="text/javascript" ></script>
+<script src="/assets/jelix/jquery/include/jquery.include.js?_r=240524110219" type="text/javascript" ></script>
+<style type="text/css">
+#map {background-color:rgb(255,255,255);}
+#navbar {display:none !important;}
+
+ </style>
+<script type="text/javascript">
+// <![CDATA[
+ Proj4js.libPath = "/assets/js/Proj4js/";
+var lizUrls = {"params":{"repository":"russoukrainianwar","project":"russian_invasion_of_ukraine"},"config":"\/index.php\/lizmap\/service\/getProjectConfig","remoteStorageConfig":"\/index.php\/lizmap\/service\/getRemoteStorageConfig","keyValueConfig":"\/index.php\/lizmap\/service\/getKeyValueConfig","wms":"\/index.php\/lizmap\/service","media":"\/index.php\/view\/media\/getMedia","nominatim":"\/index.php\/lizmap\/osm\/nominatim","ign":"\/index.php\/lizmap\/ign\/address","edition":"\/index.php\/lizmap\/edition\/getFeature","permalink":"https:\/\/geo.parabellumthinktank.com\/index.php\/view\/map","dataTableLanguage":"\/assets\/js\/dataTables\/en_US.json","basepath":"\/","geobookmark":"\/index.php\/lizmap\/geobookmark","service":"\/index.php\/lizmap\/service?repository=russoukrainianwar&project=russian_invasion_of_ukraine","resourceUrlReplacement":[]};
+var lizProj4 = {"EPSG:3857":"+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs","":"","EPSG:4326":"+proj=longlat +datum=WGS84 +no_defs"};
+var filterConfigData = {"url":"\/index.php\/filter\/service?repository=russoukrainianwar&project=russian_invasion_of_ukraine"};
+var filterConfig = {};
+// ]]>
+</script><link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+<link rel="apple-touch-icon" sizes="57x57" href="/assets/favicon/apple-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/assets/favicon/apple-icon-60x60.png"> 
+<link rel="apple-touch-icon" sizes="72x72" href="/assets/favicon/apple-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/assets/favicon/apple-icon-76x76.png"> 
+<link rel="apple-touch-icon" sizes="114x114" href="/assets/favicon/apple-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/assets/favicon/apple-icon-120x120.png"> 
+<link rel="apple-touch-icon" sizes="144x144" href="/assets/favicon/apple-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/assets/favicon/apple-icon-152x152.png"> 
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192"  href="/assets/favicon/android-icon-192x192.png"> 
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon/favicon-96x96.png"> 
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+<link rel="manifest" href="/assets/favicon/manifest.json"> 
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-TileImage" content="/assets/favicon/ms-icon-144x144.png"> 
+<meta name="theme-color" content="#ffffff">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="Revisit-After" content="10 days" />
+<style type="text/css">
+        #logo {
+          background : url("/index.php/view/media/themeImage?key=headerLogo") no-repeat left center;
+          background-size:contain;
+        
+        }
+        
+        #title {
+          top: 40%;
+          transform: translateY(-60%);
+        }
+        #header {
+background-image: none;
+height: 30px;
+}
+
+#logo {
+height: 30px;
+min-width: 30px;
+margin-top: 0px;
+margin-bottom: 0px;
+margin-left: 0px;
+margin-right: 0px;
+}
+
+#title {
+margin-top: 7px;
+}
+
+#headermenu {
+right: 0px;
+left: 0px;
+top: 0px;
+margin-bottom: 0px;
+}
+
+#attribution-box {
+background-color: transparent;
+}
+
+body {
+font-size: 1em;
+font-family: arial;
+}
+min-width: 30px;
+margin-top: 0px;
+margin-bottom: 0px;
+margin-left: 0px;
+margin-right: 0px;
+}
+
+#title {
+margin-top: 7px;
+}
+
+#headermenu {
+right: 0px;
+left: 0px;
+top: 0px;
+margin-bottom: 0px;
+}
+
+#attribution-box {
+background-color: transparent;
+}
+
+body {
+font-size: 1em;
+font-family: arial;
+}</style></head><body >
+<div id="header">
+  <div id="logo">
+  </div>
+  <div id="title">
+    <h1>
+          Russian invasion of Ukraine.
+        </h1>
+    <h2>Russo Ukrainian war</h2>
+  </div>
+  <div id="headermenu" class="navbar navbar-fixed-top">
+    <div id="auth" class="navbar-inner">
+  <div class="pull-right">
+    <form id="nominatim-search" class="navbar-search dropdown">
+   <button id="header-clear" class="btn-locate-clear btn btn-mini btn-link icon" type="button"></button>
+      <input id="search-query" type="text" class="search-query" placeholder="Search"></input>
+      <span class="search-icon">
+        <button class="icon nav-search" type="submit" tabindex="-1">
+          <span>Searching</span>
+        </button>
+      </span>
+    </form>
+
+    <ul class="nav">
+      
+    <li class="login">
+                <a href="/admin.php/auth/login?auth_url_return=%2Findex.php%2Fview%2Fmap%3Frepository%3Drussoukrainianwar%26project%3Drussian_invasion_of_ukraine">
+                        <span class="icon"></span>
+            <span class="text hidden-phone">Connect</span>
+        </a>
+    </li>
+    
+    </ul>
+  </div>
+</div>
+
+  </div>
+</div>
+
+<div id="content">
+
+  <div id="menuToggle">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <div id="mapmenu">
+    <div>
+    <ul class="nav nav-list">
+            <li class="home">
+        <a href="/index.php" rel="tooltip" data-original-title="Home" data-placement="right" data-container="#content">
+          <span class="icon"></span><span class="menu-title">Home</span>
+        </a>
+      </li>
+      
+            <li class="switcher nav-dock ">
+        <a id="button-switcher" rel="tooltip" data-original-title="Layers" data-placement="right" href="#switcher" data-container="#content">
+          <span class="icon"></span><span class="menu-title">Layers</span>
+        </a>
+      </li>
+            <li class="metadata nav-dock ">
+        <a id="button-metadata" rel="tooltip" data-original-title="Information" data-placement="right" href="#metadata" data-container="#content">
+          <span class="icon"></span><span class="menu-title">Information</span>
+        </a>
+      </li>
+            <li class="filter nav-dock ">
+        <a id="button-filter" rel="tooltip" data-original-title="Filter" data-placement="right" href="#filter" data-container="#content">
+          <span class="icon"></span><span class="menu-title">Filter</span>
+        </a>
+      </li>
+      
+
+            <li class="selectiontool nav-minidock ">
+        <a id="button-selectiontool" rel="tooltip" data-original-title="Selection" data-placement="right" href="#selectiontool" data-container="#content">
+          <span class="icon-white icon-star" style="margin-left:2px; margin-top:2px;"></span><span class="menu-title">Selection</span>
+        </a>
+      </li>
+            <li class="measure nav-minidock ">
+        <a id="button-measure" rel="tooltip" data-original-title="Measure" data-placement="right" href="#measure" data-container="#content">
+          <span class="icon"></span><span class="menu-title">Measure</span>
+        </a>
+      </li>
+            <li class="permaLink nav-minidock ">
+        <a id="button-permaLink" rel="tooltip" data-original-title="Permalink" data-placement="right" href="#permaLink" data-container="#content">
+          <span class="icon"></span><span class="menu-title">Permalink</span>
+        </a>
+      </li>
+            <li class="draw nav-minidock ">
+        <a id="button-draw" rel="tooltip" data-original-title="Draw" data-placement="right" href="#draw" data-container="#content">
+          <span class="icon"></span><span class="menu-title">Draw</span>
+        </a>
+      </li>
+      
+
+            <li class="attributeLayers nav-bottomdock ">
+        <a id="button-attributeLayers" rel="tooltip" data-original-title="Data" data-placement="right" href="#attributeLayers" data-container="#content">
+          <span class="icon"></span><span class="menu-title">Data</span>
+        </a>
+      </li>
+      
+
+      
+
+    </ul>
+</div>
+  </div>
+
+  <div id="docks-wrapper">
+    <div id="dock">
+          <div class="tabbable">
+      <ul id="dock-tabs" class="nav nav-tabs">
+              <li id="nav-tab-switcher"><a href="#switcher" data-toggle="tab">Layers</a></li>
+              <li id="nav-tab-metadata"><a href="#metadata" data-toggle="tab">Information</a></li>
+              <li id="nav-tab-filter"><a href="#filter" data-toggle="tab">Filter</a></li>
+      
+      </ul>
+      <div id="dock-content" class="tab-content">
+              <div class="tab-pane" id="switcher">
+          <div id="switcher-layers-container" class="switcher">
+    <div id="switcher-layers-actions">
+        <button class="btn btn-mini" id="layers-unfold-all" title="Expand all"><i class=
+        "icon-resize-full icon-white"></i></button>
+        <button class="btn btn-mini" id="layers-fold-all" title="Collapse all"><i class=
+        "icon-resize-small icon-white"></i></button>
+
+        <button class="btn btn-mini layerActionZoom disabled" title="Zoom to layer extent"><i class="icon-zoom-in icon-white"></i></button>
+
+        <button class="btn btn-mini pull-right" id="layerActionUnfilter" style="display:none;" title="Deactivate current filter"><i class="icon-filter icon-white"></i></button>
+
+    </div>
+
+    <div class="menu-content">
+        <div id="switcher-layers"></div>
+    </div>
+</div>
+<div id="switcher-baselayer" class="baselayer">
+    <h3>
+        <span class="title">
+            <span class="icon"></span>&nbsp;
+            <span class="text">Base Layer</span>
+            <span id="get-baselayer-metadata" class="pull-right" title="Information"><i class="icon-info-sign icon-white"></i></span>
+        </span>
+    </h3>
+    <div class="menu-content">
+        <lizmap-base-layers></lizmap-base-layers>
+    </div>
+</div>
+
+        </div>
+              <div class="tab-pane" id="metadata">
+              <div>
+      <div>
+        <p>
+          <img src="/index.php/view/media/illustration?repository=russoukrainianwar&amp;project=russian_invasion_of_ukraine" alt="project image" class="img-polaroid liz-project-img" width="200" height="200" loading="lazy">
+
+
+          <dl class="dl-vertical">
+                        <dt>Title</dt>
+            <dd>Russian invasion of Ukraine.&nbsp;</dd>
+            <br/>
+            
+
+            
+
+                        <dt>Organization</dt>
+            <dd>Parabellum&nbsp;</dd>
+            <br/>
+            
+
+            
+
+            
+
+            
+
+            
+
+            <dt>Projection</dt>
+            <dd><small class="proj">EPSG:3857&nbsp;</small></dd>
+            <br/>
+            <dt>Extent</dt>
+            <dd><small class="bbox">2442546.57989999977871776, 5402916.07039999961853027, 4499878.80260000005364418, 6960219.54250000044703484</small></dd>
+            <br/>
+
+            
+          </dl>
+        </p>
+      </div>
+    </div>
+
+
+        </div>
+              <div class="tab-pane" id="filter">
+          <div id="filter-container">
+    <div id="filter-content">
+    </div>
+</div>
+
+        </div>
+            </div>
+    </div>
+
+<button id="dock-close" class="btn"></button>
+    </div>
+    
+    <div id="sub-dock">
+    </div>
+    
+    <div id="bottom-dock" style="display:none;">
+          <div class="tabbable tabs-below">
+      <div id="bottom-dock-content" class="tab-content">
+              <div class="tab-pane active" id="attributeLayers">
+          <div class="tabbable">
+  <div class="tab-content" id="attribute-table-container">
+
+    <div class="tab-pane active attribute-content bottom-content" id="attribute-summary" >
+
+      <div id="attribute-layer-list"></div>
+
+      <b>Options</b>
+      <form class="form-horizontal" action="/index.php" method="post" id="jforms_view_attribute_layers_option"><div class="jforms-hiddens"><input type="hidden" name="liz_project" id="jforms_view_attribute_layers_option_liz_project" value="">
+<input type="hidden" name="__JFORMS_TOKEN__" value="36176932bc3c55ae0fb14426d18f821e328513ff">
+</div><div class="jforms-table"><div class="control-group"><div class="controls"><label class="checkbox jforms-label" for="jforms_view_attribute_layers_option_cascade" id="jforms_view_attribute_layers_option_cascade_label"><input name="cascade" id="jforms_view_attribute_layers_option_cascade" class="jforms-ctrl-checkbox" checked="checked" value="1" type="checkbox"/>Cascade filter to children</label>
+</div>
+</div>
+</div>
+<div class="jforms-submit-buttons form-actions"></div>
+<script type="text/javascript" src="/index.php/jelix/forms/js/view%7Eattribute_layers_option/0.js"></script></form>
+    </div>
+
+
+  </div>
+
+  <ul id="attributeLayers-tabs" class="nav nav-tabs">
+    <li id="nav-tab-attribute-summary" class="active"><a href="#attribute-summary" data-toggle="tab">Data</a></li>
+  </ul>
+
+</div>
+
+
+
+        </div>
+            </div>
+
+      <div id="bottom-dock-window-buttons">
+        <button class="btn-bottomdock-clear btn btn-mini" type="button" title="Close">Close</button>
+        &nbsp;
+        <button class="btn-bottomdock-size btn btn-mini" type="button" title="Maximize">Maximize</button>
+      </div>
+
+      <ul id="bottom-dock-tabs" class="nav nav-tabs">
+      
+        <li id="nav-tab-attributeLayers"  class="active"><a href="#attributeLayers" data-toggle="tab">Data</a></li>
+      
+      </ul>
+    </div>
+    </div>
+    
+    <div id="right-dock" style="display:none;">
+          <div class="tabbable">
+      <ul id="right-dock-tabs" class="nav nav-tabs">
+      
+      </ul>
+      <div id="right-dock-content" class="tab-content">
+            </div>
+    </div>
+
+<button id="right-dock-close" class="btn"></button>
+    </div>
+  </div>
+  <div id="map-content">
+    <div id="newOlMap" style="width:100%;height:100%;position: absolute;"></div>
+    <div id="baseLayersOlMap" style="width:100%;height:100%;position: absolute;"></div>
+    <div id="map"></div>
+
+    <div id="mini-dock">
+          <div class="tabbable tabs-below">
+      <div id="mini-dock-content" class="tab-content">
+              <div class="tab-pane active" id="selectiontool">
+          <lizmap-selection-tool ></lizmap-selection-tool>        </div>
+              <div class="tab-pane" id="measure">
+          <div class="measure">
+  <h3><span class="title"><button id="measure-stop" class="btn btn-stop btn-mini btn-error btn-link" title="Stop">×</button><span class="icon"></span>&nbsp;<span class="text">Measures</span></span></h3>
+  <div class="menu-content">
+    <select id="measure-type">
+      <option value="length">Length</option>
+      <option value="area">Area</option>
+      <option value="perimeter">Perimeter</option>
+      <option value="angle">Angle</option>
+    </select>
+  </div>
+</div>
+        </div>
+              <div class="tab-pane" id="permaLink">
+          <div class="permaLink">
+  <h3>
+    <span class="title">
+      <button class="btn-permalink-clear btn btn-mini btn-error btn-link" title="Stop">×</button>
+      <span class="icon"></span>
+      <span class="text">&nbsp;Permalink&nbsp;</span>
+    </span>
+  </h3>
+
+  <div class="menu-content">
+    <div id="permalink-box" class="tabbable">
+        <ul class="nav nav-tabs permalink-tabs">
+            <li class="active">
+                <a href="#tab-share-permalink" data-toggle="tab" title="Share the link to current map">Share</a>
+            </li>
+            <li>
+                <a href="#tab-embed-permalink" data-toggle="tab" title="Embed the current map">Embed</a>
+            </li>
+        </ul>
+        <div class="tab-content permalink-tab-content">
+            <div id="tab-share-permalink" class="permalink-tab-pane-share tab-pane active">
+                <input id="input-share-permalink" type="text">
+                <a href="" target="_blank" id="permalink" title="Link to current map"><i class="icon-share"></i></a>
+            </div>
+            <div id="tab-embed-permalink" class="permalink-tab-pane-embed tab-pane">
+                <a href="https://geo.parabellumthinktank.com/index.php/view/embed?repository=russoukrainianwar&amp;project=russian_invasion_of_ukraine" target="_blank" id="permalink-embed" style="display:none;"></a>
+                <select id="select-embed-permalink" class="permalink-embed-select" style="width:auto;">
+                    <option value="s">Small</option>
+                    <option value="m">Medium</option>
+                    <option value="l">Large</option>
+                    <option value="p">Personalized</option>
+                </select>
+                <div id="span-embed-personalized-permalink" class="permalink-personalized hide">
+                  <input id="input-embed-width-permalink" type="number" min="0" class="input-mini" value="800">
+                  <span>×</span>
+                  <input id="input-embed-height-permalink" type="number" min="0" class="input-mini" value="600">
+                </div>
+                <input id="input-embed-permalink" class="permalink-embed-input" type="text">
+            </div>
+        </div>
+    </div>
+
+    
+
+  </div>
+</div>
+        </div>
+              <div class="tab-pane" id="draw">
+          <div class="draw">
+    <h3>
+        <span class="title">
+            <button class="btn-draw-clear btn btn-mini btn-error btn-link"
+                title="Stop" onclick="document.querySelector('#button-draw').click();">×</button>
+            <svg>
+                <use xlink:href="#pencil"></use>
+            </svg>
+            <span class="text">&nbsp;Draw&nbsp;</span>
+        </span>
+    </h3>
+
+    <div class="menu-content">
+        <lizmap-digitizing save import-export></lizmap-digitizing>
+    </div>
+</div>
+        </div>
+            </div>
+      <ul id="mini-dock-tabs" class="nav nav-tabs">
+              <li id="nav-tab-selectiontool"  class="active"><a href="#selectiontool" data-toggle="tab">Selection</a></li>
+              <li id="nav-tab-measure" ><a href="#measure" data-toggle="tab">Measure</a></li>
+              <li id="nav-tab-permaLink" ><a href="#permaLink" data-toggle="tab">Permalink</a></li>
+              <li id="nav-tab-draw" ><a href="#draw" data-toggle="tab">Draw</a></li>
+      
+      </ul>
+    </div>
+    </div>
+
+    <span id="navbar">
+      <button class="btn pan active" title="Pan map"></button><br/>
+      <button class="btn zoom" title="Zoom by rectangle"></button><br/>
+      <button class="btn zoom-extent" title="Zoom to initial map extent"></button><br/>
+      <button class="btn zoom-in" title="Zoom in"></button><br/>
+      <div class="slider" title="Slide to zoom in or out"></div>
+      <button class="btn zoom-out" title="Zoom out"></button><br/>
+      <span class="history">
+        <button class="btn previous disabled" title="Previous"></button>
+        <button class="btn next disabled" title="Next"></button>
+      </span>
+      <span id="zoom-in-max-msg" class="ui-widget-content ui-corner-all" style="display:none;">No deeper zoom available for this base layer</span>
+    </span>
+<div id="overview-box">
+  <lizmap-overviewmap title="Move the rectangle to pan the map"></lizmap-overviewmap>
+  <div id="overview-bar">
+    <lizmap-scaleline title="Scale"></lizmap-scaleline>
+  </div>
+  <lizmap-mouse-position></lizmap-mouse-position>
+</div>
+<div id="attribution-box">
+  <a href="https://www.osintintelligence.net" target="_blank">
+    <img src="/themes/default/css/img/logo_footer.png" alt=""/>
+  </a>
+  <div id="attribution-ol"></div>
+</div>
+
+<div id="message" class="span6"></div>
+
+
+    <div id="lizmap-search">
+
+      <div id="lizmap-search-close">
+        <button class="btn btn-mini btn-primary">Close</button>
+      </div>
+
+      <div>
+        <ul class="items"></ul>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div id="loading" class="ui-dialog-content ui-widget-content" title="Loading map data">
+  <p>
+  </p>
+</div>
+
+<div id="lizmap-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-show="false" data-keyboard="false" data-backdrop="static">
+</div>
+
+
+
+</body></html>

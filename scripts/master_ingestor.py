@@ -40,6 +40,7 @@ from urllib.parse import urljoin
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from ingestion.connectors import WarSpottingClient, ParabellumGeoExtractor
 
 # ---------------------------------------------------------------------------
 # CONFIGURATION
@@ -391,62 +392,34 @@ def hash_text(text: str) -> str:
 # ===========================================================================
 # SOURCE 1: WARSPOTTING (API)
 # ===========================================================================
+# ===========================================================================
+# SOURCE 1: WARSPOTTING (API)
+# ===========================================================================
 def ingest_warspotting(db: DatabaseManager, resolver: UnitResolver):
-    """Fetch WarSpotting /api/releases/all and upsert into kinetic_events."""
+    """Fetch WarSpotting data via authoritative API connector."""
     logger.info("=== SOURCE 1: WarSpotting -- Starting ingestion ===")
-    url = "https://ukr.warspotting.net/api/releases/all"
-    resp = safe_request(url)
-    if not resp:
-        logger.error("WarSpotting: failed to fetch API")
-        return
-
-    try:
-        data = resp.json()
-    except json.JSONDecodeError:
-        logger.error("WarSpotting: invalid JSON response")
-        return
-
-    items = data if isinstance(data, list) else data.get("data", data.get("results", []))
+    
+    client = WarSpottingClient()
+    events = client.fetch_events()
+    
     count = 0
-    for item in items:
+    for ev in events:
         try:
-            ws_id = item.get("id")
-            if ws_id is None:
-                continue
-
-            event_id = make_event_id("ws", ws_id)
-            raw_unit = item.get("unit", "")
-            unit_id = resolver.resolve_unit_id(raw_unit) if raw_unit else None
-
-            geo = item.get("geo", {}) or {}
-            lat = safe_float(geo.get("lat"))
-            lon = safe_float(geo.get("lng") or geo.get("lon"))
-
-            model = item.get("model", "Unknown")
-            status = item.get("status", "Unknown")
-            date_str = normalize_date(item.get("date") or item.get("created_at"))
-
-            raw_data = json.dumps({
-                "model": model,
-                "status": status,
-                "unit": raw_unit,
-                "tags": item.get("tags", []),
-                "location": item.get("location", {}),
-            }, ensure_ascii=False)
-
+            # Resolve unit ID
+            unit_id = resolver.resolve_unit_id(ev.get('unit_raw'))
+            
             db.upsert_event(
-                event_id=event_id,
+                event_id=ev['event_id'],
                 unit_id=unit_id,
                 source="WarSpotting",
-                date=date_str,
-                lat=lat,
-                lon=lon,
-                intensity_score=None,
-                raw_data=raw_data,
+                date=normalize_date(ev['date']),
+                lat=ev['lat'],
+                lon=ev['lon'],
+                raw_data=json.dumps(ev['raw_data'], ensure_ascii=False)
             )
             count += 1
         except Exception as e:
-            logger.error("WarSpotting: error processing item %s: %s", item.get("id"), e)
+            logger.error("WarSpotting: error processing event %s: %s", ev.get('event_id'), e)
 
     logger.info("WarSpotting: upserted %d events", count)
 
@@ -1284,169 +1257,35 @@ def ingest_geoconfirmed(db: DatabaseManager, resolver: UnitResolver):
 # ===========================================================================
 PARABELLUM_DIR = DATA_DIR / "parabellum"
 
+# ===========================================================================
+# SOURCE 11: PARABELLUM THINK TANK (Map Scraper)
+# ===========================================================================
 def ingest_parabellum(db: DatabaseManager, resolver: UnitResolver):
-    """Fetch Parabellum Think Tank conflict map data via Lizmap WFS endpoint."""
-    logger.info("=== SOURCE 11: Parabellum Think Tank -- Starting ingestion ===")
-    PARABELLUM_DIR.mkdir(parents=True, exist_ok=True)
-
-    # Lizmap exposes a standard OGC WFS endpoint.
-    # First: GetCapabilities to discover available layer names.
-    base_wfs = (
-        "https://geo.parabellumthinktank.com/index.php/lizmap/service"
-        "?repository=russoukrainianwar&project=russian_invasion_of_ukraine"
-    )
-    capabilities_url = f"{base_wfs}&SERVICE=WFS&REQUEST=GetCapabilities"
-
-    resp = safe_request(capabilities_url)
-    layer_names: list[str] = []
-    if resp:
-        # WFS GetCapabilities returns XML -- use xml.etree.ElementTree
-        import xml.etree.ElementTree as ET
+    """Fetch Parabellum data via heuristic map scraper."""
+    logger.info("=== SOURCE 11: Parabellum -- Starting ingestion ===")
+    
+    extractor = ParabellumGeoExtractor()
+    events = extractor.fetch_events()
+    
+    count = 0
+    for ev in events:
         try:
-            root = ET.fromstring(resp.content)
-            # WFS namespaces vary; search for FeatureType/Name with and without ns
-            # Common WFS namespace
-            wfs_ns = {"wfs": "http://www.opengis.net/wfs"}
-            feature_types = root.findall(".//wfs:FeatureType/wfs:Name", wfs_ns)
-            if not feature_types:
-                # Try WFS 2.0 namespace
-                wfs_ns2 = {"wfs": "http://www.opengis.net/wfs/2.0"}
-                feature_types = root.findall(".//wfs:FeatureType/wfs:Name", wfs_ns2)
-            if not feature_types:
-                # Try without namespace
-                feature_types = root.findall(".//FeatureType/Name")
-            if not feature_types:
-                # Brute-force: find any element called Name under FeatureType
-                for ft in root.iter():
-                    if ft.tag.endswith("FeatureType"):
-                        for child in ft:
-                            if child.tag.endswith("Name") and child.text:
-                                layer_names.append(child.text.strip())
-            else:
-                for name_el in feature_types:
-                    if name_el.text:
-                        layer_names.append(name_el.text.strip())
-        except ET.ParseError as e:
-            logger.error("Parabellum: XML parse error on GetCapabilities: %s", e)
+            unit_id = resolver.resolve_unit_id(ev.get('unit_raw'))
 
-    if not layer_names:
-        logger.warning("Parabellum: No WFS layers discovered -- falling back to known layer names")
-        # Fallback: common layer names observed on Parabellum maps
-        layer_names = [
-            "russian_invasion_of_ukraine",
-            "frontline",
-            "events",
-            "positions",
-            "units",
-        ]
+            db.upsert_event(
+                event_id=ev['event_id'],
+                unit_id=unit_id,
+                source=f"Parabellum_{ev['raw_data'].get('layer', 'unknown')}",
+                date=normalize_date(ev['date']),
+                lat=ev['lat'],
+                lon=ev['lon'],
+                raw_data=json.dumps(ev['raw_data'], ensure_ascii=False)
+            )
+            count += 1
+        except Exception as e:
+            logger.error("Parabellum: error processing event %s: %s", ev.get('event_id'), e)
 
-    logger.info("Parabellum: discovered %d WFS layers: %s",
-                len(layer_names), layer_names[:15])
-
-    total_count = 0
-    for layer in layer_names:
-        wfs_url = (
-            f"{base_wfs}"
-            f"&SERVICE=WFS&REQUEST=GetFeature"
-            f"&TYPENAME={layer}"
-            f"&OUTPUTFORMAT=GeoJSON"
-            f"&SRSNAME=EPSG:4326"
-        )
-        resp = safe_request(wfs_url)
-        if not resp:
-            logger.debug("Parabellum: layer '%s' not available", layer)
-            continue
-
-        try:
-            geojson = resp.json()
-        except json.JSONDecodeError:
-            logger.debug("Parabellum: layer '%s' returned non-JSON", layer)
-            continue
-
-        features = geojson.get("features", [])
-        if not features:
-            continue
-
-        # Save raw GeoJSON to disk for reference
-        ts = datetime.now(timezone.utc).strftime("%Y%m%d")
-        safe_layer = re.sub(r"[^a-z0-9_]", "_", layer.lower())
-        save_path = PARABELLUM_DIR / f"{safe_layer}_{ts}.geojson"
-        try:
-            with open(save_path, "w", encoding="utf-8") as f:
-                json.dump(geojson, f, ensure_ascii=False, indent=2)
-        except IOError as e:
-            logger.error("Parabellum: failed to save %s: %s", save_path, e)
-
-        layer_count = 0
-        for feat in features:
-            try:
-                props = feat.get("properties", {})
-                geom = feat.get("geometry", {})
-                coords = geom.get("coordinates", [])
-
-                # Handle Point geometries (lon, lat)
-                lat, lon = None, None
-                geom_type = geom.get("type", "")
-                if geom_type == "Point" and len(coords) >= 2:
-                    lon = safe_float(coords[0])
-                    lat = safe_float(coords[1])
-                elif geom_type in ("Polygon", "MultiPolygon", "LineString"):
-                    # Use centroid of first coordinate for approximate location
-                    flat_coords = coords
-                    while flat_coords and isinstance(flat_coords[0], list):
-                        flat_coords = flat_coords[0]
-                    if len(flat_coords) >= 2:
-                        lon = safe_float(flat_coords[0])
-                        lat = safe_float(flat_coords[1])
-
-                # Build unique ID from layer + feature ID or properties hash
-                feat_id = feat.get("id") or props.get("id") or props.get("fid")
-                if feat_id:
-                    event_id = make_event_id("pb", f"{safe_layer}_{feat_id}")
-                else:
-                    event_id = make_event_id("pb", hash_text(
-                        f"{safe_layer}_{json.dumps(props, sort_keys=True)}"
-                    ))
-
-                # Try to extract date from properties
-                date_str = None
-                for date_key in ["date", "Date", "DATE", "timestamp", "time", "day"]:
-                    if date_key in props and props[date_key]:
-                        date_str = normalize_date(str(props[date_key]))
-                        if date_str:
-                            break
-
-                # Try to extract unit from properties
-                unit_raw = None
-                for unit_key in ["unit", "Unit", "name", "Name", "label", "description"]:
-                    if unit_key in props and props[unit_key]:
-                        unit_raw = str(props[unit_key])
-                        break
-                unit_id = resolver.resolve_unit_id(unit_raw) if unit_raw else None
-
-                raw_data = json.dumps({
-                    "layer": layer,
-                    "properties": props,
-                }, ensure_ascii=False, default=str)
-
-                db.upsert_event(
-                    event_id=event_id,
-                    unit_id=unit_id,
-                    source=f"Parabellum_{safe_layer}",
-                    date=date_str,
-                    lat=lat,
-                    lon=lon,
-                    raw_data=raw_data,
-                )
-                layer_count += 1
-            except Exception as e:
-                logger.error("Parabellum: error processing feature in '%s': %s", layer, e)
-
-        total_count += layer_count
-        logger.info("Parabellum: layer '%s' -- upserted %d features", layer, layer_count)
-
-    logger.info("Parabellum: total upserted %d events across %d layers",
-                total_count, len(layer_names))
+    logger.info("Parabellum: upserted %d events", count)
 
 
 # ===========================================================================

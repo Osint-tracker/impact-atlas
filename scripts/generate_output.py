@@ -572,12 +572,11 @@ def main():
             ai_summary,
             has_video,
             urls_list,
+            sources_list,
             -- JSON blob for coordinates fallback
             ai_report_json
         FROM unique_events 
         WHERE ai_analysis_status = 'COMPLETED'
-          AND urls_list IS NOT NULL 
-          AND urls_list != ''
     """)
     
     rows = cursor.fetchall()
@@ -637,8 +636,14 @@ def main():
             ai_summary = row.get('ai_summary') or ''
             has_video = bool(row.get('has_video'))
             
-            # Sources
+            # Sources — fallback chain: urls_list → sources_list → ai_report_json
             sources_str = row.get('urls_list') or ''
+            if not sources_str:
+                sources_str = row.get('sources_list') or ''
+            if not sources_str and ai_data:
+                agg = ai_data.get('Aggregated Sources', [])
+                if agg:
+                    sources_str = ' | '.join(str(s) for s in agg if s)
             structured_sources = parse_sources_to_list(sources_str)
             
             # Coordinates (extracted from JSON blob - no DB column exists)
@@ -654,6 +659,12 @@ def main():
                     geo = tactics.get('geo_location', {}).get('explicit', {})
                     lat = geo.get('lat')
                     lon = geo.get('lon')
+                    
+                    # Fallback: inferred coordinates
+                    if not lat or not lon:
+                        inferred = tactics.get('geo_location', {}).get('inferred', {})
+                        lat = inferred.get('lat')
+                        lon = inferred.get('lon')
                     
                     # Fallback for title
                     if not title:
@@ -689,9 +700,8 @@ def main():
             if not lat or not lon or float(lat) == 0 or float(lon) == 0:
                 continue
 
-            # Skip if no valid sources (Python-level check)
-            if not structured_sources:
-                continue
+            # Note: events without sources are still valuable for the map
+            # (intelligence data, TIE scores, description are still present)
             
             # Calculate marker style
             radius, color = get_marker_style(tie_score, e_score)
