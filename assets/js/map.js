@@ -18,6 +18,7 @@
   let firmsLayer = null;
   let unitsLayer = null;
   let narrativesLayer = null; // Strategic Context layer
+  let owlLayer = null; // Project Owl Layer
 
   window.allEventsData = [];
   window.globalEvents = [];
@@ -252,16 +253,120 @@
     console.log(`📅 Filtered to ${filtered.length} events up to ${dateString}`);
   }
 
+  // Pre-load ORBAT metadata for richness
+  fetch('assets/data/orbat_full.json')
+    .then(r => r.json())
+    .then(data => {
+      window.orbatData = data;
+      console.log(`✅ ORBAT Metadata Loaded: ${data.length} units`);
+    })
+    .catch(e => console.warn("⚠️ ORBAT Metadata missing"));
+
+  function loadOwlLayer() {
+    if (currentFrontlineLayer) map.removeLayer(currentFrontlineLayer);
+    if (owlLayer) map.removeLayer(owlLayer);
+
+    console.log("🦉 Loading Project Owl Layer...");
+
+    fetch('assets/data/owl_layer.geojson')
+      .then(res => res.json())
+      .then(data => {
+        owlLayer = L.geoJSON(data, {
+          style: function (feature) {
+            const side = feature.properties.side || 'NEUTRAL';
+            let color = '#d4d4d8'; // Default Zinc-300
+            if (side === 'RU') color = '#ef4444'; // Red
+            if (side === 'UA') color = '#3b82f6'; // Blue
+
+            // Detect Fortifications
+            const isFort = (feature.properties.name || '').toLowerCase().includes('fortification');
+
+            return {
+              color: color,
+              weight: isFort ? 1.5 : 2.5,
+              opacity: 0.9,
+              dashArray: isFort ? '4, 4' : null,
+              lineCap: 'square'
+            };
+          },
+          pointToLayer: function (feature, latlng) {
+            // Create Unit Markers (if points exist in this layer)
+            const side = feature.properties.side || 'NEUTRAL';
+            const isUA = side === 'UA';
+            const color = isUA ? '#3b82f6' : '#ef4444';
+
+            return L.marker(latlng, {
+              icon: L.divIcon({
+                className: `unit-marker ${side.toLowerCase()}`, // .unit-marker.ru / .ua
+                html: `<div style="
+                    width: 14px; 
+                    height: 14px; 
+                    background: ${color}; 
+                    border: 1px solid white;
+                    box-shadow: 0 0 8px ${color};
+                    transform: rotate(45deg);
+                 "></div>`,
+                iconSize: [16, 16]
+              })
+            });
+          },
+          onEachFeature: function (feature, layer) {
+            const p = feature.properties;
+            let extraInfo = '';
+            let buttons = '';
+
+            // Metadata Join (Robust Check)
+            if (window.orbatData && p.name) {
+              const unitMeta = window.orbatData.find(u =>
+                u.name === p.name ||
+                (u.name && p.name && u.name.includes(p.name)) ||
+                (u.name && p.name && p.name.includes(u.name))
+              );
+
+              if (unitMeta) {
+                if (unitMeta.parent) extraInfo += `<div style="font-size:0.8em; color:#64748b; margin-top:4px;">PART OF: ${unitMeta.parent}</div>`;
+
+                if (unitMeta.socials && unitMeta.socials.telegram_clean) {
+                  buttons += `<a href="https://t.me/${unitMeta.socials.telegram_clean}" target="_blank" style="
+                           display:block; margin-top:8px; background:#24a1de; color:white; 
+                           text-align:center; padding:4px; border-radius:4px; text-decoration:none; font-size:0.8em; font-weight:bold;">
+                           <i class="fa-brands fa-telegram"></i> TELEGRAM INTEL
+                        </a>`;
+                }
+              }
+            }
+
+            let popupContent = `
+               <div style="font-family:'Jersey 15', sans-serif; min-width:220px;">
+                 <div style="background:#0f172a; padding:8px; border-bottom:1px solid #334155;">
+                   <strong style="color:#f59e0b; text-transform:uppercase; font-size:1.1em;">${p.name || 'Unknown Element'}</strong>
+                 </div>
+                 <div style="padding:10px; font-size:0.9em; color:#94a3b8; line-height:1.4;">
+                   ${p.description ? p.description.substring(0, 150) + (p.description.length > 150 ? '...' : '') : 'No tactical data available.'}
+                   ${extraInfo}
+                   ${buttons}
+                 </div>
+               </div>
+             `;
+            layer.bindPopup(popupContent);
+          }
+        }).addTo(map);
+
+        currentFrontlineLayer = owlLayer; // Set as current active layer
+        console.log("✅ Owl Layer Loaded Successfully");
+      })
+      .catch(err => console.error("❌ Failed to load Owl Layer:", err));
+  }
+
   function loadFrontlineLayer(url, color) {
-    if (currentFrontlineLayer) {
-      map.removeLayer(currentFrontlineLayer);
+    // Deprecated wrapper - redirects to Owl if needed, or loads legacy
+    if (url.includes('owl')) {
+      loadOwlLayer();
+      return;
     }
 
-    // Remove historical layer when loading current
-    if (historicalFrontlineLayer) {
-      map.removeLayer(historicalFrontlineLayer);
-      historicalFrontlineLayer = null;
-    }
+    // Legacy support for basic LineStrings
+    if (currentFrontlineLayer) map.removeLayer(currentFrontlineLayer);
 
     fetch(url)
       .then(response => {
@@ -405,8 +510,8 @@
       // alert(`DEBUG: Map clicked at ${e.latlng}`);
     });
 
-    // Load default frontline
-    loadFrontlineLayer('assets/data/frontline.geojson', '#f59e0b');
+    // Load PROJECT OWL as default
+    loadOwlLayer();
 
     console.log("✅ Map initialized");
   }
@@ -663,14 +768,17 @@
     let colorStyle = '#ff3838';
 
     if (sourceName === 'deepstate') {
-      dataUrl = 'assets/data/frontline.geojson';
+      // NOW MAPPED TO OWL (Primary Source)
+      loadOwlLayer();
       colorStyle = '#f59e0b';
     } else if (sourceName === 'isw') {
+      // Fallback or secondary
       dataUrl = 'assets/data/frontline_isw.geojson';
       colorStyle = '#38bdf8';
+      loadFrontlineLayer(dataUrl, colorStyle);
+    } else {
+      loadOwlLayer();
     }
-
-    loadFrontlineLayer(dataUrl, colorStyle);
   };
 
   window.toggleTechLayer = function (layerName, checkbox) {
