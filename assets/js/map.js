@@ -1040,6 +1040,12 @@
             // B. Enrich or Add from Owl
             if (owl && owl.units) {
               owl.units.forEach((feature, key) => {
+                // FILTER: Skip Positions, Trenches, and Date-stamped markers (User Request)
+                const name = (feature.properties.name || '').toLowerCase();
+                if (name.includes('position') || name.includes('trench') || name.includes('fortification') || /\[\d{2}\/\d{2}\/\d{2}\]/.test(name)) {
+                  return; // Skip non-units
+                }
+
                 // Key is already normalized from fetchOwlData
                 const existing = mergedUnits.get(key);
 
@@ -1604,7 +1610,12 @@
       if (elBranch) elBranch.innerText = safeText(unit.branch);
 
       const elGarrison = document.getElementById('udGarrison');
-      if (elGarrison) elGarrison.innerText = safeText(unit.garrison).replace(/<[^>]*>?/gm, '');
+      if (elGarrison) {
+        // Robust HTML stripping
+        const tmp = document.createElement('div');
+        tmp.innerHTML = unit.garrison || 'N/A';
+        elGarrison.innerText = (tmp.textContent || tmp.innerText || 'N/A').trim().replace(/\s+/g, ' '); // Improved cleaning
+      }
 
       const elStatus = document.getElementById('udStatus');
       if (elStatus) {
@@ -1663,11 +1674,37 @@
       ? (relatedEvents.length / 30).toFixed(1) + "/day"
       : "Low";
 
-    // Related Events List
     const listEl = document.getElementById('udEventsList');
     listEl.innerHTML = '';
 
-    if (relatedEvents.length === 0) {
+    // === INJECT OWL LIVE DATA (Top of Engagements) ===
+    if (unit.owl_meta || unit.source === 'OWL') {
+      const meta = unit.owl_meta || unit;
+      const owlItem = document.createElement('div');
+      owlItem.className = 'ud-event-item';
+      // Distinct styling for Live Intel
+      owlItem.style.cssText = "border-left: 3px solid #f59e0b; background: rgba(245, 158, 11, 0.08);";
+
+      const dateStr = meta.last_updated || "LIVE";
+      const desc = (meta.description || "Position Updated").substring(0, 100) + (meta.description && meta.description.length > 100 ? '...' : '');
+      const url = meta.url || meta.source_url;
+
+      let linkHtml = '';
+      if (url) {
+        linkHtml = `<a href="${url}" target="_blank" onclick="event.stopPropagation()" style="color:#38bdf8; font-size:0.75rem; text-decoration:none; display:flex; align-items:center; gap:4px; margin-top:4px;">
+                <i class="fa-solid fa-link"></i> Source
+             </a>`;
+      }
+
+      owlItem.innerHTML = `
+             <div style="font-size:0.75rem; color:#f59e0b; margin-bottom:2px; font-weight:700; letter-spacing:0.5px;">NOON REPORT (OWL)</div>
+             <div style="font-size:0.85rem; font-weight:600; color:#e2e8f0;">${desc}</div>
+             ${linkHtml}
+        `;
+      listEl.appendChild(owlItem);
+    }
+
+    if (relatedEvents.length === 0 && !unit.owl_meta && unit.source !== 'OWL') {
       listEl.innerHTML = '<div class="ud-event-item" style="cursor:default; color:#64748b; border:none;">No recent activity linked.</div>';
     } else {
       // Sort by date desc
@@ -1688,37 +1725,6 @@
       });
     }
 
-    // === OWL INTEL POPULATION ===
-    const elOwlPanel = document.getElementById('udOwlPanel');
-    if (elOwlPanel) {
-      if (unit.owl_meta || (unit.source === 'OWL')) {
-        elOwlPanel.style.display = 'block';
-        let desc = (unit.owl_meta ? unit.owl_meta.description : unit.description) || "No specific intel available.";
-
-        // Clean up description if needed
-        if (desc.length > 500) desc = desc.substring(0, 500) + '...';
-        document.getElementById('udOwlDesc').innerText = desc;
-
-        // Links
-        const linksContainer = document.getElementById('udOwlLinks');
-        linksContainer.innerHTML = '';
-
-        // Check for URL in owl_meta
-        const meta = unit.owl_meta || unit;
-        if (meta.url || meta.source_url) {
-          const url = meta.url || meta.source_url;
-          const link = document.createElement('a');
-          link.href = url;
-          link.target = '_blank';
-          link.className = 'ud-link';
-          link.style.cssText = 'color:#38bdf8; font-size:0.75rem; text-decoration:none; display:flex; align-items:center; gap:5px;';
-          link.innerHTML = `<i class="fa-brands fa-telegram"></i> View Source`;
-          linksContainer.appendChild(link);
-        }
-      } else {
-        elOwlPanel.style.display = 'none';
-      }
-    }
 
     // === VERIFIED CASUALTIES (UALosses enrichment) ===
     const casualtiesPanel = document.getElementById('udCasualtiesPanel');
