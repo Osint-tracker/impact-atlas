@@ -67,7 +67,29 @@ CHANNELS_METADATA = {
     'Majakovsk73': {'bias': 'ANALYST', 'reliability': 0.85, 'type': 'BLOGGER'},
     'parabellumcommunity': {'bias': 'ANALYST', 'reliability': 0.80, 'type': 'BLOGGER'},
     'UkraineWarReports': {'bias': 'PRO_UA', 'reliability': 0.70, 'type': 'UA_NEWS'},
-    'myro_shnykov': {'bias': 'PRO_UA', 'reliability': 0.75, 'type': 'UA_NEWS'}
+    'myro_shnykov': {'bias': 'PRO_UA', 'reliability': 0.75, 'type': 'UA_NEWS'},
+
+    # NEW_CHANNELS
+    'supernova_plus': {'bias': 'PRO_UA', 'reliability': 0.85, 'type': 'AGGREGATOR'},
+    'dva_majors': {'bias': 'PRO_RU', 'reliability': 0.45, 'type': 'MILBLOGGER'},
+    'sternenko': {'bias': 'PRO_UA', 'reliability': 0.70, 'type': 'MILBLOGGER'},
+    'astrapress': {'bias': 'NEUTRAL', 'reliability': 0.90, 'type': 'OSINT'},
+    'sashakots': {'bias': 'PRO_RU', 'reliability': 0.30, 'type': 'PROPAGANDA'},
+    'ab3army': {'bias': 'PRO_UA', 'reliability': 0.95, 'type': 'MILITARY_OFFICIAL'},
+    'wargonzo': {'bias': 'PRO_RU', 'reliability': 0.35, 'type': 'MILBLOGGER'},
+    'insiderUKR': {'bias': 'PRO_UA', 'reliability': 0.60, 'type': 'AGGREGATOR'},
+    'Sladkov_plus': {'bias': 'PRO_RU', 'reliability': 0.40, 'type': 'MILBLOGGER'},
+    'lachentyt': {'bias': 'PRO_UA', 'reliability': 0.75, 'type': 'MILBLOGGER'},
+    'ButusovPlus': {'bias': 'PRO_UA', 'reliability': 0.80, 'type': 'MILBLOGGER'},
+    'moscowcalling': {'bias': 'NEUTRAL', 'reliability': 0.75, 'type': 'OSINT'},
+    'brygada47': {'bias': 'PRO_UA', 'reliability': 0.95, 'type': 'MILITARY_OFFICIAL'},
+    'rusich_army': {'bias': 'PRO_RU', 'reliability': 0.50, 'type': 'PARTISAN'},
+    'kherson_non_fake': {'bias': 'PRO_UA', 'reliability': 0.85, 'type': 'OSINT'},
+    'vysokygovorit': {'bias': 'PRO_RU', 'reliability': 0.55, 'type': 'MILBLOGGER'},
+    'exilenova_plus': {'bias': 'PRO_UA', 'reliability': 0.80, 'type': 'OSINT'},
+    'CITeam': {'bias': 'NEUTRAL', 'reliability': 0.92, 'type': 'OSINT'},
+    'batalyon_monaco': {'bias': 'PRO_UA', 'reliability': 0.50, 'type': 'HUMANITARIAN'},
+    'z_komitet': {'bias': 'PRO_RU', 'reliability': 0.40, 'type': 'MILBLOGGER'}
 }
 
 

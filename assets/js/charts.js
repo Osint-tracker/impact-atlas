@@ -4,6 +4,7 @@
 
 let charts = { timeline: null, type: null, radar: null };
 let ORIGINAL_DATA = [];
+let matrixFactionFilter = 'MIXED';
 
 const THEME = {
     primary: '#f59e0b', secondary: '#0f172a', text: '#94a3b8', grid: '#334155',
@@ -47,6 +48,17 @@ window.initCharts = function (events) {
     updateDashboard(ORIGINAL_DATA);
     populateFilters(ORIGINAL_DATA);
     setupChartFilters();
+
+    // --- FACTION SEGMENTED CONTROL ---
+    const factionBtns = document.querySelectorAll('#matrixFactionControl .mf-btn');
+    factionBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            factionBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            matrixFactionFilter = this.dataset.faction;
+            renderImpactMatrix(ORIGINAL_DATA);
+        });
+    });
 };
 
 // --- FILTERS ---
@@ -135,12 +147,42 @@ function renderImpactMatrix(data) {
     // Fallback: if no events in last 7 days, show most recent 100
     if (filtered.length === 0) filtered = data.slice(0, 100);
 
+    // --- FACTION FILTER (v2.0 — title-based detection) ---
+    // Events don't have actor_code/actors fields; derive side from title keywords
+    function _deriveSide(e) {
+        const txt = ((e.title || '') + ' ' + (e.description || '')).toUpperCase();
+        const ruHits = (txt.match(/\bRUSSIA|RUSSIAN FORCES|RUSSIAN STRIKES?|RUSSIAN DRONES?|RU FORCES|MOSCOW|KREMLIN/g) || []).length;
+        const uaHits = (txt.match(/\bUKRAIN|UKRAINIAN FORCES|UKRAINIAN STRIKES?|UKRAINIAN DRONES?|UA FORCES|KYIV FORCES|ZSU\b/g) || []).length;
+        if (ruHits > uaHits) return 'RU';
+        if (uaHits > ruHits) return 'UA';
+        return 'UNK';
+    }
+
+    if (matrixFactionFilter !== 'MIXED') {
+        const side = matrixFactionFilter; // 'RU' or 'UA'
+        filtered = filtered.filter(e => _deriveSide(e) === side);
+    }
+
     const bubbles = filtered
         .filter(e => e.vec_t && e.vec_e && e.vec_k)
         .map(e => {
             const tieTotal = e.tie_total || 0;
-            // Opacity: 0.3 (low impact) to 0.95 (high impact)
             const opacity = 0.3 + (Math.min(tieTotal, 100) / 100) * 0.65;
+
+            // --- COLOR PERSISTENCE (v2.0) ---
+            const eventSide = _deriveSide(e);
+            let bubbleColor, borderCl;
+            if (eventSide === 'RU') {
+                bubbleColor = `rgba(239, 68, 68, ${opacity})`;    // Red — RU action
+                borderCl = tieTotal >= 60 ? '#fca5a5' : 'rgba(239, 68, 68, 0.4)';
+            } else if (eventSide === 'UA') {
+                bubbleColor = `rgba(59, 130, 246, ${opacity})`;   // Blue — UA action
+                borderCl = tieTotal >= 60 ? '#93c5fd' : 'rgba(59, 130, 246, 0.4)';
+            } else {
+                bubbleColor = `rgba(245, 158, 11, ${opacity})`;   // Amber — unknown
+                borderCl = tieTotal >= 60 ? '#fbbf24' : 'rgba(245, 158, 11, 0.4)';
+            }
+
             return {
                 x: parseFloat(e.vec_t) || 1,
                 y: parseFloat(e.vec_e) || 1,
@@ -151,7 +193,10 @@ function renderImpactMatrix(data) {
                 _k: e.vec_k,
                 _e: e.vec_e,
                 _opacity: opacity,
-                _tieTotal: tieTotal
+                _tieTotal: tieTotal,
+                _aggressorSide: eventSide,
+                _bubbleColor: bubbleColor,
+                _borderColor: borderCl
             };
         });
 
@@ -163,8 +208,8 @@ function renderImpactMatrix(data) {
             datasets: [{
                 label: 'Events',
                 data: bubbles,
-                backgroundColor: bubbles.map(b => `rgba(245, 158, 11, ${b._opacity})`),
-                borderColor: bubbles.map(b => b._tieTotal >= 60 ? '#fbbf24' : 'rgba(245, 158, 11, 0.4)'),
+                backgroundColor: bubbles.map(b => b._bubbleColor),
+                borderColor: bubbles.map(b => b._borderColor),
                 borderWidth: bubbles.map(b => b._tieTotal >= 60 ? 2 : 1),
                 hoverBackgroundColor: 'rgba(251, 191, 36, 0.9)',
                 hoverBorderColor: '#fbbf24',
@@ -194,8 +239,9 @@ function renderImpactMatrix(data) {
                         },
                         label: function (ctx) {
                             const d = ctx.raw;
+                            const sideLabel = d._aggressorSide === 'RU' ? '🔴 RU' : d._aggressorSide === 'UA' ? '🔵 UA' : '⚪ UNK';
                             return [
-                                `📅 ${d._date}`,
+                                `📅 ${d._date}  |  ${sideLabel}`,
                                 `T:${d._t} | K:${d._k} | E:${d._e}`,
                                 `TIE Total: ${d._tieTotal}`
                             ];
@@ -240,7 +286,8 @@ function renderImpactMatrix(data) {
         }
     });
 
-    console.log(`✅ Impact Matrix rendered: ${bubbles.length} events`);
+    const filterLabel = matrixFactionFilter === 'MIXED' ? 'ALL' : matrixFactionFilter;
+    console.log(`✅ Impact Matrix rendered: ${bubbles.length} events [${filterLabel}]`);
 }
 
 // ===========================================

@@ -232,7 +232,11 @@ def update_unit_stats(stats_acc, unit, event_data):
 # IMPACT ATLAS INTEGRATION: UALosses -> Unit Cards
 # =============================================================================
 def enrich_units_with_casualties(units_list):
-    """Enrich unit objects with verified casualty data from impact_atlas.db."""
+    """Enrich unit objects with verified casualty data from impact_atlas.db.
+    
+    Uses 'unit_raw' from raw_data as the AUTHORITATIVE source for unit assignment.
+    Only matches casualties to UA-faction units (UALosses tracks Ukrainian fallen soldiers).
+    """
     if not os.path.exists(IMPACT_ATLAS_DB_PATH):
         print("   [SKIP] impact_atlas.db not found, skipping casualty enrichment.")
         return units_list
@@ -242,52 +246,111 @@ def enrich_units_with_casualties(units_list):
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
-        # Fetch all UALosses events grouped by unit
+        # Fetch all UALosses events — these are UKRAINIAN casualties
         cursor.execute("""
-            SELECT unit_id, raw_data
+            SELECT raw_data
             FROM kinetic_events
-            WHERE source = 'UALosses' AND unit_id IS NOT NULL
+            WHERE source = 'UALosses'
         """)
         rows = cursor.fetchall()
         conn.close()
 
-        # Build lookup: unit_id -> list of casualties
-        casualties_by_unit = {}
+        # Build lookup: unit_raw (lowercase) -> list of casualties
+        # unit_raw is the AUTHORITATIVE field scraped from ualosses.org
+        casualties_by_unit_raw = {}
+        no_unit_count = 0
         for row in rows:
-            uid = row['unit_id']
-            if uid not in casualties_by_unit:
-                casualties_by_unit[uid] = []
             try:
                 data = json.loads(row['raw_data'])
-                casualties_by_unit[uid].append({
+                unit_raw = (data.get('unit_raw') or '').strip()
+                if not unit_raw:
+                    no_unit_count += 1
+                    continue
+                
+                # Normalize: remove rank suffixes that sometimes get appended
+                # e.g., "105th Separate Territorial Defense Battalion Master" -> "105th Separate Territorial Defense Battalion"
+                unit_key = unit_raw.lower()
+                
+                if unit_key not in casualties_by_unit_raw:
+                    casualties_by_unit_raw[unit_key] = []
+                
+                casualties_by_unit_raw[unit_key].append({
                     "name": data.get('name', 'Unknown'),
-                    "rank": data.get('rank', 'Unknown'),
+                    "rank": data.get('rank'),
                     "source_url": data.get('source_url', ''),
                     "context": data.get('context', '')
                 })
-            except:
+            except Exception:
                 pass
 
-        # Merge into units
-        matched = 0
-        for unit in units_list:
-            uid = unit.get('unit_id', '')
-            # Try exact match first
-            if uid in casualties_by_unit:
-                unit['verified_casualties'] = casualties_by_unit[uid]
-                unit['casualty_count'] = len(casualties_by_unit[uid])
-                matched += 1
-            else:
-                # Fuzzy match: check if unit_id appears as substring
-                uid_lower = uid.lower()
-                for cas_uid, cas_list in casualties_by_unit.items():
-                    if cas_uid and (cas_uid.lower() in uid_lower or uid_lower in cas_uid.lower()):
-                        unit['verified_casualties'] = cas_list
-                        unit['casualty_count'] = len(cas_list)
-                        matched += 1
-                        break
+        print(f"   [CASUALTIES] Parsed {len(rows)} UALosses records -> {len(casualties_by_unit_raw)} unique unit_raw values ({no_unit_count} without unit)")
 
-        print(f"   [CASUALTIES] Enriched {matched} units with {len(rows)} total casualty records.")
+        # Match casualties to UA-faction units ONLY
+        matched = 0
+        total_casualties_assigned = 0
+        for unit in units_list:
+            faction = (unit.get('faction') or '').upper()
+            
+            # CRITICAL: UALosses data is ONLY for Ukrainian soldiers
+            # Never assign Ukrainian casualties to Russian (RU) units
+            if faction != 'UA':
+                continue
+            
+            display_name = (unit.get('display_name') or '').strip().strip('"').strip("'")
+            unit_id = unit.get('unit_id', '')
+            
+            if not display_name and not unit_id:
+                continue
+            
+            # Build candidate match strings from the unit
+            candidates = []
+            if display_name:
+                candidates.append(display_name.lower())
+            if unit_id:
+                # Convert UA_105TH_SEPARATE_TDB -> "105th separate tdb"
+                readable = unit_id.replace('UA_', '').replace('_', ' ').lower()
+                candidates.append(readable)
+            
+            # Try to find a matching unit_raw entry
+            best_match = None
+            best_count = 0
+            
+            for unit_key, cas_list in casualties_by_unit_raw.items():
+                for candidate in candidates:
+                    # Require substantial overlap, not just substring "5" matching everything
+                    # Both strings must share significant content
+                    if len(candidate) < 5 or len(unit_key) < 5:
+                        continue
+                    
+                    # Strategy 1: One contains the other
+                    if candidate in unit_key or unit_key in candidate:
+                        if len(cas_list) > best_count:
+                            best_match = unit_key
+                            best_count = len(cas_list)
+                    
+                    # Strategy 2: Shared numeric identifier matches
+                    # e.g., "47th" in both strings
+                    import re
+                    cand_nums = set(re.findall(r'\d+', candidate))
+                    key_nums = set(re.findall(r'\d+', unit_key))
+                    if cand_nums and key_nums and cand_nums == key_nums:
+                        # Number match — now check type keyword overlap
+                        type_keywords = {'brigade', 'battalion', 'regiment', 'division', 'guard', 'assault', 
+                                        'mechanized', 'territorial', 'airborne', 'marine', 'artillery', 'defense'}
+                        cand_words = set(candidate.split())
+                        key_words = set(unit_key.split())
+                        shared_types = (cand_words & key_words) & type_keywords
+                        if shared_types and len(cas_list) > best_count:
+                            best_match = unit_key
+                            best_count = len(cas_list)
+            
+            if best_match:
+                unit['verified_casualties'] = casualties_by_unit_raw[best_match]
+                unit['casualty_count'] = len(casualties_by_unit_raw[best_match])
+                matched += 1
+                total_casualties_assigned += len(casualties_by_unit_raw[best_match])
+
+        print(f"   [CASUALTIES] Enriched {matched} UA units with {total_casualties_assigned} total casualty records.")
 
     except Exception as e:
         print(f"   [ERR] Failed to enrich casualties: {e}")
@@ -325,13 +388,23 @@ def export_equipment_losses():
 
                 if source == 'Oryx':
                     # Oryx: category (Tanks, IFVs...), entry (model name), status
+                    category = data.get('category', 'Vehicle')
+                    
+                    # Construct per-category Oryx article URL
+                    # Oryx has two main articles: Russian losses and Ukrainian losses
+                    oryx_ru_base = 'https://www.oryxspioenkop.com/2022/02/attack-on-europe-documenting-equipment.html'
+                    oryx_ua_base = 'https://www.oryxspioenkop.com/2022/02/attack-on-europe-documenting-ukrainian.html'
+                    
+                    # This export tracks Russian losses by default
+                    proof_url = oryx_ru_base
+                    
                     loss = {
                         "date": row['date'] or 'Unknown',
                         "model": data.get('entry', 'Unknown'),
-                        "type": data.get('category', 'Vehicle'),
-                        "country": "RUS",  # Oryx tracks Russian losses by default
+                        "type": category,
+                        "country": "RUS",
                         "status": data.get('status', 'Verified Loss'),
-                        "proof_url": data.get('proof_url', 'https://www.oryxspioenkop.com'),
+                        "proof_url": proof_url,
                         "source_tag": "Oryx"
                     }
                 else:

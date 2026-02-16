@@ -921,6 +921,11 @@
               ANALYSIS</span>
           </h4>
           <div class="chart-wrapper" style="height: 340px; position: relative;">
+            <div class="matrix-faction-control" id="matrixFactionControl">
+              <button class="mf-btn active" data-faction="MIXED">MIXED</button>
+              <button class="mf-btn" data-faction="RU">RU SIDE</button>
+              <button class="mf-btn" data-faction="UA">UA SIDE</button>
+            </div>
             <canvas id="impactMatrixChart"></canvas>
           </div>
         </div>
@@ -1018,35 +1023,15 @@
               </div>
             </div>
 
-            <!-- 2. HEATMAP CONTROLS & KPI -->
-            <div class="dashboard-panel heatmap-panel">
-              <div class="panel-header">
-                <h4>INTENSITY LAYERS</h4>
-              </div>
-              <div class="heatmap-controls" id="dashboard-heatmap-controls">
-                <p style="color: #94a3b8; font-size: 0.9em; margin-bottom: 15px;">
-                  Visualize the density of clashes based on intensity score (0-10).
-                </p>
-
-                <label class="tech-toggle-row big-toggle">
-                  <span class="tech-toggle-label">COMBAT HEATMAP MODE</span>
-                  <input type="checkbox" id="dashboardHeatmapToggle" onchange="window.toggleVisualMode()">
-                  <div class="tech-switch"></div>
-                </label>
-
-                <div class="heat-legend">
-                  <span>Low</span>
-                  <div class="heat-gradient-bar"></div>
-                  <span>Critical</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- 3. EQUIPMENT LOSS FEED (Redesigned - Minimalist) -->
+            <!-- 3. EQUIPMENT LOSSES — WAR ROOM v2.0 -->
             <div class="dashboard-panel ticker-panel">
               <div class="panel-header">
-                <h4>EQUIPMENT LOSSES</h4>
+                <h4><i class="fa-solid fa-skull-crossbones"></i> EQUIPMENT LOSSES</h4>
                 <span class="live-dot"></span>
+              </div>
+              <!-- Burn Rate Stats -->
+              <div class="burn-rate-header" id="burn-rate-stats">
+                <div class="burn-stat"><span class="burn-label">LOADING</span><span class="burn-value">...</span></div>
               </div>
               <div class="loss-filter-tabs">
                 <button class="loss-tab active" onclick="filterLosses('all')">ALL</button>

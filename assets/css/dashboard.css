@@ -1,8 +1,46 @@
+/* --- IMPACT MATRIX FACTION CONTROL --- */
+.matrix-faction-control {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: flex;
+    gap: 4px;
+    z-index: 10;
+}
+
+.mf-btn {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid #334155;
+    color: #64748b;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.mf-btn:hover {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: #f59e0b;
+    color: #f59e0b;
+}
+
+.mf-btn.active {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: #f59e0b;
+    color: #f59e0b;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.2);
+}
+
 /* DASHBOARD STYLES - SLATE & AMBER THEME */
 
 .tactical-dashboard-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
     padding: 20px;
     height: 100%;
@@ -121,7 +159,50 @@
     color: #f59e0b;
 }
 
-/* --- EQUIPMENT LOSS FEED (Minimalist Cards) --- */
+/* --- EQUIPMENT LOSS FEED — WAR ROOM v2.0 --- */
+
+/* Burn Rate Stats Header */
+.burn-rate-header {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    padding: 8px 10px;
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 6px;
+    border: 1px solid rgba(245, 158, 11, 0.15);
+}
+
+.burn-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.burn-stat.econ {
+    border-left: 1px solid rgba(245, 158, 11, 0.2);
+    padding-left: 6px;
+}
+
+.burn-label {
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.burn-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #f59e0b;
+    font-family: 'Rajdhani', sans-serif;
+    line-height: 1;
+}
+
+/* Filter Tabs */
 .loss-filter-tabs {
     display: flex;
     gap: 8px;
@@ -154,46 +235,116 @@
     color: #f59e0b;
 }
 
+/* Feed Container */
 .loss-feed-container {
     flex: 1;
     overflow-y: auto;
     max-height: 400px;
 }
 
+.loss-feed-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.loss-feed-container::-webkit-scrollbar-thumb {
+    background: rgba(245, 158, 11, 0.3);
+    border-radius: 2px;
+}
+
+.loss-feed-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
 .loss-feed-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
-.loss-card {
+/* --- HOLOGRAPHIC LOSS CARDS --- */
+.loss-card.holo {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     padding: 10px 12px;
-    background: rgba(15, 23, 42, 0.6);
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.7) 0%, rgba(30, 41, 59, 0.5) 100%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-radius: 6px;
+    border: 1px solid rgba(148, 163, 184, 0.1);
     border-left: 3px solid #334155;
-    transition: all 0.2s;
+    transition: all 0.25s ease;
+    position: relative;
 }
 
-.loss-card:hover {
-    background: rgba(30, 41, 59, 0.8);
+.loss-card.holo:hover {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.5) 100%);
     transform: translateX(4px);
+    border-color: rgba(245, 158, 11, 0.3);
+    border-left-color: inherit;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.loss-card.destroyed {
+.loss-card.holo.destroyed {
     border-left-color: #ef4444;
 }
 
-.loss-card.captured {
+.loss-card.holo.captured {
     border-left-color: #22c55e;
 }
 
-.loss-card.damaged {
+.loss-card.holo.damaged {
     border-left-color: #f59e0b;
 }
 
+/* HVT Glow — High Value Target */
+.loss-card.holo.hvt-glow {
+    border-color: rgba(245, 158, 11, 0.3);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.15),
+        inset 0 0 20px rgba(245, 158, 11, 0.05);
+    animation: hvt-pulse 3s ease-in-out infinite;
+}
+
+@keyframes hvt-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 12px rgba(245, 158, 11, 0.15), inset 0 0 20px rgba(245, 158, 11, 0.05);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.3), inset 0 0 30px rgba(245, 158, 11, 0.1);
+    }
+}
+
+/* SVG Icon Container */
+.loss-icon-svg {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    flex-shrink: 0;
+}
+
+.loss-card.holo.destroyed .loss-icon-svg {
+    color: #ef4444;
+}
+
+.loss-card.holo.captured .loss-icon-svg {
+    color: #22c55e;
+}
+
+.loss-card.holo.damaged .loss-icon-svg {
+    color: #f59e0b;
+}
+
+.loss-card.holo.hvt-glow .loss-icon-svg {
+    color: #f59e0b;
+}
+
+/* Keep original .loss-icon for backwards compat */
 .loss-icon {
     font-size: 1.2rem;
     color: #64748b;
@@ -206,27 +357,58 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+    min-width: 0;
 }
 
 .loss-model {
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #f1f5f9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .loss-meta {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #64748b;
     font-family: 'JetBrains Mono', monospace;
 }
 
+/* Economic Value + TIE Column */
+.loss-econ {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.loss-econ-value {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #22c55e;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.loss-tie-badge {
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.15);
+    padding: 1px 4px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
 .loss-status {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 700;
     text-transform: uppercase;
-    padding: 3px 6px;
+    padding: 2px 5px;
     border-radius: 3px;
     letter-spacing: 0.5px;
+    flex-shrink: 0;
 }
 
 .loss-status.destroyed {
@@ -244,36 +426,6 @@
     color: #f59e0b;
 }
 
-.loss-country {
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: #94a3b8;
-    min-width: 30px;
-    text-align: right;
-}
-
-.loss-source-tag {
-    font-size: 0.55rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 2px 5px;
-    border-radius: 3px;
-    background: rgba(100, 116, 139, 0.2);
-    color: #94a3b8;
-    white-space: nowrap;
-}
-
-.loss-proof-link {
-    color: #64748b;
-    font-size: 0.7rem;
-    transition: color 0.2s;
-}
-
-.loss-proof-link:hover {
-    color: #f59e0b;
-}
-
 .loss-status.confirmed {
     background: rgba(34, 197, 94, 0.2);
     color: #22c55e;
@@ -284,13 +436,80 @@
     color: #eab308;
 }
 
-.loss-card.placeholder {
+.loss-country {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #94a3b8;
+    min-width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.loss-source-tag {
+    font-size: 0.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 4px;
+    border-radius: 3px;
+    background: rgba(100, 116, 139, 0.2);
+    color: #94a3b8;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.loss-proof-link {
+    color: #64748b;
+    font-size: 0.65rem;
+    transition: color 0.2s;
+    flex-shrink: 0;
+}
+
+.loss-proof-link:hover {
+    color: #f59e0b;
+}
+
+.loss-card.holo.placeholder {
     color: #64748b;
     border-left-color: #334155;
     justify-content: center;
     font-style: italic;
 }
 
+/* --- PULSE MARKER (Click-to-Locate) --- */
+.pulse-marker {
+    z-index: 9999 !important;
+}
+
+.leaflet-marker-icon.pulse-marker,
+.leaflet-interactive.pulse-marker {
+    z-index: 9999 !important;
+    animation: pulse-ring 1.5s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+    0% {
+        stroke-width: 2;
+        opacity: 1;
+    }
+
+    100% {
+        stroke-width: 8;
+        opacity: 0;
+    }
+}
+
+.pulse-popup .leaflet-popup-content-wrapper {
+    background: #0f172a !important;
+    border: 1px solid #f59e0b;
+    border-radius: 4px;
+}
+
+.pulse-popup .leaflet-popup-tip {
+    background: #0f172a !important;
+}
+
+/* --- OTHER DASHBOARD ELEMENTS --- */
 .live-dot {
     width: 8px;
     height: 8px;
@@ -308,8 +527,6 @@
     100% {
         transform: translateY(-50%);
     }
-
-    /* Logic assumes duplicated content for seamless loop */
 }
 
 @keyframes blink {
@@ -329,5 +546,9 @@
     .tactical-dashboard-grid {
         grid-template-columns: 1fr;
         grid-template-rows: auto auto auto;
+    }
+
+    .burn-rate-header {
+        flex-wrap: wrap;
     }
 }

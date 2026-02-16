@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import os
 import json
 import re
+import difflib
 import time
 import math
 import logging
@@ -134,11 +135,16 @@ You will receive a "Cluster Object" containing:
     * "Cotton" (Bavovna) -> Explosion.
     * "47th", "3rd Assault", "82nd" -> MILITARY UNITS.
 
-4.  **ORBAT EXTRACTION (MILITARY UNITS):**
+4.  **ORBAT EXTRACTION (MILITARY UNITS — CRITICAL RULES):**
     * Identify specific military units mentioned.
-    * Normalize ID: "47th Brigade" -> "UA_47_MECH_BDE" (if unsure use generic "UA_47_BDE").
+    * Normalize ID: "47th Brigade" -> "UA_47_MECH_BDE".
     * STATUS: "ENGAGED" (Fighting), "DESTROYED" (Eliminated), "ACTIVE" (Present), "REGROUPING" (Rotated).
     * INFERENCE: If "Challenger 2" mentioned -> implies "UA_82_AIR_ASSAULT" (only if highly specific).
+    * **CRITICAL — ZERO TOLERANCE FOR PLACEHOLDERS:**
+      - `unit_id` MUST be a specific normalized ID (e.g., "RU_382ND_RGT", "UA_47_MECH_BDE").
+      - **NEVER** use "?", "UNKNOWN", or generic placeholders as a `unit_id`.
+      - If you cannot identify the specific unit with HIGH confidence, set `unit_id` to `null`.
+      - Include `unit_name` with the raw text name even if `unit_id` is null.
     * OUTPUT FIELD: `military_units_detected`: [{ `unit_name`: "47th Brigade", `unit_id`: "UA_47_MECH_BDE", `faction`: "UA", `type`: "MECH_INF", `status`: "ENGAGED" }]
 
 **PROTOCOL "TITAN-10": INTENSITY SCORING STANDARDS**
@@ -270,6 +276,11 @@ class SuperSquadAgent:
         # Configuration for the retry loop
         self.GEO_MAX_RETRIES = 3
         self.KINETIC_MAX_RETRIES = 2  # Max retries for kinetic validation
+
+        # 6. Load ORBAT Whitelist + Reverse Lookup (Unit Integrity Gatekeeper)
+        self.orbat_whitelist = set()
+        self.orbat_reverse_lookup = {}  # lowercase name -> canonical unit_id
+        self._load_orbat_whitelist()
 
         print("Super Squad Agent Initialized (Engine: Google Serper Time-Machine).")
 
@@ -515,6 +526,174 @@ class SuperSquadAgent:
         except Exception as e:
             print(f"❌ Error loading DB {path}: {e}")
             return {}
+
+    # =========================================================================
+    # 🛡️ ORBAT INTEGRITY GATEKEEPER (v2.0 — Unit Assignment Validator)
+    # =========================================================================
+    def _load_orbat_whitelist(self):
+        """
+        Loads the ORBAT registry from units.json and builds:
+        1. orbat_whitelist: set of all known unit_id values
+        2. orbat_reverse_lookup: dict mapping lowercase display names/aliases -> canonical unit_id
+        """
+        units_path = os.path.join(BASE_DIR, '../assets/data/units.json')
+        try:
+            if not os.path.exists(units_path):
+                print(f"⚠️ ORBAT whitelist not loaded: {units_path} not found")
+                return
+            
+            with open(units_path, 'r', encoding='utf-8') as f:
+                units = json.load(f)
+            
+            for unit in units:
+                uid = unit.get('unit_id')
+                if not uid:
+                    continue
+                
+                # Primary: exact unit_id
+                self.orbat_whitelist.add(uid)
+                
+                # Reverse lookup: display_name -> unit_id
+                display_name = (unit.get('display_name') or '').strip().strip('"').strip("'")
+                if display_name:
+                    self.orbat_reverse_lookup[display_name.lower()] = uid
+                
+                # Also index the unit_id in a more readable form
+                # e.g., "RU_382ND_RGT" -> "382nd rgt" for fuzzy matching
+                readable_id = uid.replace('UA_', '').replace('RU_', '').replace('_', ' ').lower()
+                self.orbat_reverse_lookup[readable_id] = uid
+                
+                # Index common name patterns from subordination field
+                sub = unit.get('subordination', '')
+                if sub and isinstance(sub, str):
+                    self.orbat_reverse_lookup[sub.lower()] = uid
+            
+            print(f"   🛡️ ORBAT Whitelist: {len(self.orbat_whitelist)} units, "
+                  f"{len(self.orbat_reverse_lookup)} reverse lookup entries")
+                
+        except Exception as e:
+            print(f"❌ Error loading ORBAT whitelist: {e}")
+
+    def _validate_units_against_orbat(self, units_list):
+        """
+        Validates extracted unit_ids against the known ORBAT registry.
+        - Rejects '?' and generic placeholders
+        - Attempts fuzzy matching against reverse lookup for unrecognized IDs
+        - Returns cleaned list with validated or corrected unit_ids
+        """
+        if not units_list or not self.orbat_whitelist:
+            return units_list
+        
+        validated = []
+        rejected_count = 0
+        corrected_count = 0
+        
+        for unit in units_list:
+            unit_id = unit.get('unit_id')
+            unit_name = unit.get('unit_name', '')
+            
+            # --- GATE 1: Reject obvious placeholders ---
+            if not unit_id or unit_id in ('?', 'UNKNOWN', 'unknown', 'N/A', 'n/a', ''):
+                if unit_name:
+                    # Try to recover via fuzzy match on the raw name
+                    resolved_id = self._fuzzy_resolve_unit(unit_name, unit.get('faction', ''))
+                    if resolved_id:
+                        unit['unit_id'] = resolved_id
+                        unit['_orbat_corrected'] = True
+                        validated.append(unit)
+                        corrected_count += 1
+                        print(f"      🔧 ORBAT Corrected: '{unit_name}' -> {resolved_id}")
+                        continue
+                
+                # Cannot resolve — skip this unit entirely
+                rejected_count += 1
+                print(f"      ❌ ORBAT Rejected: placeholder unit_id='{unit_id}' name='{unit_name}'")
+                continue
+            
+            # --- GATE 2: Check if unit_id exists in whitelist ---
+            if unit_id in self.orbat_whitelist:
+                validated.append(unit)
+                continue
+            
+            # --- GATE 3: Unknown unit_id — attempt fuzzy correction ---
+            # First try the raw unit_name against reverse lookup
+            resolved_id = self._fuzzy_resolve_unit(
+                unit_name or unit_id, unit.get('faction', '')
+            )
+            
+            if resolved_id:
+                print(f"      🔧 ORBAT Corrected: '{unit_id}' -> {resolved_id} (via name '{unit_name}')")
+                unit['unit_id'] = resolved_id
+                unit['_orbat_corrected'] = True
+                validated.append(unit)
+                corrected_count += 1
+            else:
+                # Last resort: set to null and flag for review
+                print(f"      ⚠️ ORBAT Unresolved: '{unit_id}' (name: '{unit_name}') — flagged for review")
+                unit['unit_id'] = None
+                unit['_review_needed'] = True
+                # Still include it for event context, but won't update ORBAT registry
+                validated.append(unit)
+                rejected_count += 1
+        
+        if rejected_count > 0 or corrected_count > 0:
+            total = len(units_list)
+            print(f"      🛡️ ORBAT Gatekeeper: {len(validated)}/{total} passed "
+                  f"({corrected_count} corrected, {rejected_count} rejected/flagged)")
+        
+        return validated
+
+    def _fuzzy_resolve_unit(self, raw_name, faction_hint=''):
+        """
+        Attempts to resolve a raw unit name to a canonical unit_id
+        using the reverse lookup dictionary and fuzzy matching.
+        
+        Returns the canonical unit_id if a match is found (score > 0.85), else None.
+        """
+        if not raw_name:
+            return None
+        
+        name_lower = raw_name.lower().strip()
+        
+        # 1. Direct match in reverse lookup
+        if name_lower in self.orbat_reverse_lookup:
+            return self.orbat_reverse_lookup[name_lower]
+        
+        # 2. Fuzzy match against all reverse lookup keys
+        # Filter by faction hint if available to reduce false positives
+        candidates = {}
+        faction_prefix = faction_hint.upper() + '_' if faction_hint else ''
+        
+        for key, uid in self.orbat_reverse_lookup.items():
+            # If we know the faction, only consider matching faction units
+            if faction_prefix and not uid.startswith(faction_prefix):
+                continue
+            candidates[key] = uid
+        
+        if not candidates:
+            # Fallback: search all units if faction filter yielded nothing
+            candidates = self.orbat_reverse_lookup
+        
+        # Use difflib to find the best match
+        matches = difflib.get_close_matches(name_lower, candidates.keys(), n=1, cutoff=0.85)
+        
+        if matches:
+            return candidates[matches[0]]
+        
+        # 3. Try matching against the unit_id itself (in case LLM produced a close variant)
+        id_candidates = list(self.orbat_whitelist)
+        if faction_prefix:
+            id_candidates = [uid for uid in id_candidates if uid.startswith(faction_prefix)]
+        
+        id_matches = difflib.get_close_matches(
+            raw_name.upper().replace(' ', '_'), 
+            id_candidates, n=1, cutoff=0.85
+        )
+        
+        if id_matches:
+            return id_matches[0]
+        
+        return None
 
     # =========================================================================
     # STEP 0: THE BOUNCER v2.0 (Hybrid: Regex + AI)
@@ -2473,6 +2652,12 @@ def process_row(self, row):
             # =========================================================
             # Validate each unit's movement before updating the registry
             event_date = row.get("Date")
+            # =========================================================
+            # ORBAT INTEGRITY GATEKEEPER (v2.0)
+            # Validate unit_ids against known ORBAT registry
+            # =========================================================
+            units_detected = self._validate_units_against_orbat(units_detected)
+            
             validated_units = []
             implausible_units = []
             
