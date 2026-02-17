@@ -1038,13 +1038,16 @@
             });
 
             // B. Enrich or Add from Owl
+            // WHITELIST: Only names with real military unit designators pass
+            const UNIT_DESIGNATORS = /brigade|regiment|division|battalion|corps|company|platoon|squad|detachment|group|army|fleet|flotilla|squadron/i;
+
             if (owl && owl.units) {
               owl.units.forEach((feature, key) => {
-                // FILTER: Skip Positions, Trenches, and Date-stamped markers (User Request)
-                const name = (feature.properties.name || '').toLowerCase();
-                if (name.includes('position') || name.includes('trench') || name.includes('fortification') || /\[\d{2}\/\d{2}\/\d{2}\]/.test(name)) {
-                  return; // Skip non-units
-                }
+                const rawName = feature.properties.name || '';
+                // Skip if name doesn't contain a real unit designator
+                if (!UNIT_DESIGNATORS.test(rawName)) return;
+                // Skip date-stamped markers
+                if (/^\[\d{2}\/\d{2}\/\d{2}\]/.test(rawName)) return;
 
                 // Key is already normalized from fetchOwlData
                 const existing = mergedUnits.get(key);
@@ -1609,13 +1612,16 @@
       const elBranch = document.getElementById('udBranch');
       if (elBranch) elBranch.innerText = safeText(unit.branch);
 
+      // Helper: Strip HTML tags via DOM parser
+      const stripHtml = (raw) => {
+        if (!raw) return 'N/A';
+        const el = document.createElement('div');
+        el.innerHTML = raw;
+        return (el.textContent || el.innerText || 'N/A').trim().replace(/\s+/g, ' ');
+      };
+
       const elGarrison = document.getElementById('udGarrison');
-      if (elGarrison) {
-        // Robust HTML stripping
-        const tmp = document.createElement('div');
-        tmp.innerHTML = unit.garrison || 'N/A';
-        elGarrison.innerText = (tmp.textContent || tmp.innerText || 'N/A').trim().replace(/\s+/g, ' '); // Improved cleaning
-      }
+      if (elGarrison) elGarrison.innerText = stripHtml(unit.garrison);
 
       const elStatus = document.getElementById('udStatus');
       if (elStatus) {
@@ -1623,15 +1629,15 @@
         elStatus.style.color = (unit.status === 'destroyed') ? '#ef4444' : '#22c55e';
       }
 
-      // New Fields
+      // New Fields (all HTML-stripped)
       const elCmd = document.getElementById('udCommander');
-      if (elCmd) elCmd.innerText = format(unit.commander);
+      if (elCmd) elCmd.innerText = stripHtml(unit.commander);
 
       const elSup = document.getElementById('udSuperior');
-      if (elSup) elSup.innerText = format(unit.superior);
+      if (elSup) elSup.innerText = stripHtml(unit.superior);
 
       const elDist = document.getElementById('udDistrict');
-      if (elDist) elDist.innerText = format(unit.district);
+      if (elDist) elDist.innerText = stripHtml(unit.district);
 
       console.log("✅ Unit Modal Content Population Complete.");
 
@@ -1668,8 +1674,19 @@
     document.getElementById('udAvgTie').innerText = unit.avg_tie || '--';
     document.getElementById('udTactic').innerText = unit.primary_tactic || '--';
 
+    // Last Location (Coordinates)
+    const lat = unit.lat || unit.last_seen_lat;
+    const lon = unit.lon || unit.last_seen_lon;
+    const elLoc = document.getElementById('udLastLocation');
+    if (elLoc) {
+      if (lat && lon) {
+        elLoc.innerText = `${parseFloat(lat).toFixed(4)}, ${parseFloat(lon).toFixed(4)}`;
+      } else {
+        elLoc.innerText = '--';
+      }
+    }
+
     // Engagement Freq (events in last 30 days)
-    // Assuming simple count for now
     document.getElementById('udEngFreq').innerText = relatedEvents.length > 0
       ? (relatedEvents.length / 30).toFixed(1) + "/day"
       : "Low";
@@ -1677,30 +1694,35 @@
     const listEl = document.getElementById('udEventsList');
     listEl.innerHTML = '';
 
-    // === INJECT OWL LIVE DATA (Top of Engagements) ===
+    // === INJECT OWL LIVE INTEL (Top of Engagements) ===
     if (unit.owl_meta || unit.source === 'OWL') {
       const meta = unit.owl_meta || unit;
+
+      // Extract clean description (strip HTML img tags and markup)
+      let rawDesc = meta.description || '';
+      const descTmp = document.createElement('div');
+      descTmp.innerHTML = rawDesc;
+      let cleanDesc = (descTmp.textContent || descTmp.innerText || '').trim();
+      if (!cleanDesc || cleanDesc.length < 3) cleanDesc = 'Live position tracked by Project Owl';
+      if (cleanDesc.length > 160) cleanDesc = cleanDesc.substring(0, 160) + '...';
+
       const owlItem = document.createElement('div');
       owlItem.className = 'ud-event-item';
-      // Distinct styling for Live Intel
-      owlItem.style.cssText = "border-left: 3px solid #f59e0b; background: rgba(245, 158, 11, 0.08);";
+      owlItem.style.cssText = 'border-left: 3px solid #f59e0b; background: rgba(245,158,11,0.06); padding: 10px 12px; cursor: default;';
 
-      const dateStr = meta.last_updated || "LIVE";
-      const desc = (meta.description || "Position Updated").substring(0, 100) + (meta.description && meta.description.length > 100 ? '...' : '');
-      const url = meta.url || meta.source_url;
-
-      let linkHtml = '';
-      if (url) {
-        linkHtml = `<a href="${url}" target="_blank" onclick="event.stopPropagation()" style="color:#38bdf8; font-size:0.75rem; text-decoration:none; display:flex; align-items:center; gap:4px; margin-top:4px;">
-                <i class="fa-solid fa-link"></i> Source
-             </a>`;
-      }
+      // Source link (clickable)
+      const sourceUrl = meta.url || meta.source_url || '';
+      const sourceHtml = sourceUrl
+        ? `<a href="${sourceUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#38bdf8; font-size:0.7rem; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-top:6px; padding:3px 8px; background:rgba(56,189,248,0.1); border-radius:4px; border:1px solid rgba(56,189,248,0.2);">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Source
+          </a>`
+        : '';
 
       owlItem.innerHTML = `
-             <div style="font-size:0.75rem; color:#f59e0b; margin-bottom:2px; font-weight:700; letter-spacing:0.5px;">NOON REPORT (OWL)</div>
-             <div style="font-size:0.85rem; font-weight:600; color:#e2e8f0;">${desc}</div>
-             ${linkHtml}
-        `;
+        <div style="font-size:0.65rem; color:#f59e0b; margin-bottom:4px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase;">OWL SIGINT</div>
+        <div style="font-size:0.8rem; color:#cbd5e1; line-height:1.45;">${cleanDesc}</div>
+        ${sourceHtml}
+      `;
       listEl.appendChild(owlItem);
     }
 
