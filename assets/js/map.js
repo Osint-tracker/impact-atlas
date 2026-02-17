@@ -1053,11 +1053,11 @@
                 const existing = mergedUnits.get(key);
 
                 if (existing) {
-                  // ENRICH: Update location and add metadata
-                  existing.lat = feature.geometry.coordinates[1];
-                  existing.lon = feature.geometry.coordinates[0];
+                  // ENRICH: Add metadata only. Do NOT override user coordinates
+                  // (Owl coords are often garrison/base locations, not frontline positions)
                   existing.owl_meta = feature.properties;
-                  existing.last_updated = "LIVE (Owl)";
+                  existing.owl_garrison_lat = feature.geometry.coordinates[1];
+                  existing.owl_garrison_lon = feature.geometry.coordinates[0];
                 } else {
                   // ADD NEW: Authoritative
                   // Filter out noise? User said "ADD THE NEW UNIT".
@@ -1674,9 +1674,9 @@
     document.getElementById('udAvgTie').innerText = unit.avg_tie || '--';
     document.getElementById('udTactic').innerText = unit.primary_tactic || '--';
 
-    // Last Location (Coordinates)
-    const lat = unit.lat || unit.last_seen_lat;
-    const lon = unit.lon || unit.last_seen_lon;
+    // Last Location (Coordinates) — user coords only, NOT Owl garrison coords
+    const lat = unit.last_seen_lat || unit.lat;
+    const lon = unit.last_seen_lon || unit.lon;
     const elLoc = document.getElementById('udLastLocation');
     if (elLoc) {
       if (lat && lon) {
@@ -1691,42 +1691,53 @@
       ? (relatedEvents.length / 30).toFixed(1) + "/day"
       : "Low";
 
+    // --- OWL METADATA → METRICS ---
+    const eqRow = document.getElementById('udEquipmentRow');
+    const muRow = document.getElementById('udMilUnitRow');
+    const baseRow = document.getElementById('udBaseRow');
+    // Reset
+    if (eqRow) eqRow.style.display = 'none';
+    if (muRow) muRow.style.display = 'none';
+    if (baseRow) baseRow.style.display = 'none';
+
+    if (unit.owl_meta && unit.owl_meta.description) {
+      const rawDesc = unit.owl_meta.description;
+      // Strip HTML to plain text
+      const tmpDiv = document.createElement('div');
+      tmpDiv.innerHTML = rawDesc;
+      const plain = (tmpDiv.textContent || tmpDiv.innerText || '').trim();
+
+      // Parse structured fields from Owl description
+      // Format: "description: ...\nMilitary Unit Number: ...\nLast Known Location: ..."
+      const extractField = (text, label) => {
+        const re = new RegExp(label + '[:\\s]*(.+?)(?:\\n|$|Military Unit|Last Known|based at)', 'i');
+        const m = text.match(re);
+        return m ? m[1].trim().replace(/^[:\s]+/, '') : null;
+      };
+
+      // Equipment: look for known patterns
+      const equipMatch = plain.match(/(?:equipped|armed|using|operates?)\s+(?:with\s+)?(.+?)(?:\.|,|\n|Military|$)/i);
+      const basedMatch = plain.match(/based (?:at|in)\s+(.+?)(?:\.|,|\n|Military|$)/i);
+      const milUnitMatch = plain.match(/Military Unit (?:Number|№)?\s*(?:в\/ч)?[:\s]*([\w\d-]+)/i);
+
+      if (equipMatch && equipMatch[1].trim().length > 2) {
+        eqRow.style.display = 'flex';
+        document.getElementById('udEquipment').innerText = equipMatch[1].trim();
+      }
+      if (milUnitMatch && milUnitMatch[1].trim().length > 1) {
+        muRow.style.display = 'flex';
+        document.getElementById('udMilUnit').innerText = milUnitMatch[1].trim();
+      }
+      if (basedMatch && basedMatch[1].trim().length > 2) {
+        baseRow.style.display = 'flex';
+        document.getElementById('udBase').innerText = basedMatch[1].trim();
+      }
+    }
+
     const listEl = document.getElementById('udEventsList');
     listEl.innerHTML = '';
 
-    // === INJECT OWL LIVE INTEL (Top of Engagements) ===
-    if (unit.owl_meta || unit.source === 'OWL') {
-      const meta = unit.owl_meta || unit;
-
-      // Extract clean description (strip HTML img tags and markup)
-      let rawDesc = meta.description || '';
-      const descTmp = document.createElement('div');
-      descTmp.innerHTML = rawDesc;
-      let cleanDesc = (descTmp.textContent || descTmp.innerText || '').trim();
-      if (!cleanDesc || cleanDesc.length < 3) cleanDesc = 'Live position tracked by Project Owl';
-      if (cleanDesc.length > 160) cleanDesc = cleanDesc.substring(0, 160) + '...';
-
-      const owlItem = document.createElement('div');
-      owlItem.className = 'ud-event-item';
-      owlItem.style.cssText = 'border-left: 3px solid #f59e0b; background: rgba(245,158,11,0.06); padding: 10px 12px; cursor: default;';
-
-      // Source link (clickable)
-      const sourceUrl = meta.url || meta.source_url || '';
-      const sourceHtml = sourceUrl
-        ? `<a href="${sourceUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#38bdf8; font-size:0.7rem; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-top:6px; padding:3px 8px; background:rgba(56,189,248,0.1); border-radius:4px; border:1px solid rgba(56,189,248,0.2);">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Source
-          </a>`
-        : '';
-
-      owlItem.innerHTML = `
-        <div style="font-size:0.65rem; color:#f59e0b; margin-bottom:4px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase;">OWL SIGINT</div>
-        <div style="font-size:0.8rem; color:#cbd5e1; line-height:1.45;">${cleanDesc}</div>
-        ${sourceHtml}
-      `;
-      listEl.appendChild(owlItem);
-    }
-
-    if (relatedEvents.length === 0 && !unit.owl_meta && unit.source !== 'OWL') {
+    if (relatedEvents.length === 0) {
       listEl.innerHTML = '<div class="ud-event-item" style="cursor:default; color:#64748b; border:none;">No recent activity linked.</div>';
     } else {
       // Sort by date desc

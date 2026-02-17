@@ -653,6 +653,7 @@
         /* Limit height on mobile */
     }
 }
+
 /* ============================================
    UNIT DOSSIER MODAL (CYBER/INTEL AESTHETIC)
    ============================================ */
@@ -661,7 +662,8 @@
 #unitModal .modal-content {
     background: rgba(15, 23, 42, 0.95);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(59, 130, 246, 0.3); /* Blueish border */
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    /* Blueish border */
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
     border-radius: 12px;
 }
@@ -682,14 +684,15 @@
 .unit-dossier-header::after {
     content: "";
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(
-        0deg,
-        rgba(0, 0, 0, 0.2),
-        rgba(0, 0, 0, 0.2) 1px,
-        transparent 1px,
-        transparent 2px
-    );
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(0deg,
+            rgba(0, 0, 0, 0.2),
+            rgba(0, 0, 0, 0.2) 1px,
+            transparent 1px,
+            transparent 2px);
     pointer-events: none;
     z-index: 1;
 }
@@ -699,7 +702,7 @@
     height: 42px;
     border-radius: 2px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     z-index: 2;
 }
@@ -762,7 +765,7 @@
 .ud-panel:hover {
     border-color: rgba(255, 255, 255, 0.1);
     background: rgba(30, 41, 59, 0.5);
-    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
 .ud-panel h4 {
@@ -810,7 +813,13 @@
     color: #e2e8f0;
     font-weight: 600;
     font-family: 'JetBrains Mono', monospace;
-    text-shadow: 0 0 5px rgba(0,0,0,0.3);
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    max-width: 60%;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.8rem;
 }
 
 /* Sparkline Container */
@@ -839,11 +848,11 @@
 }
 
 .ud-events-list::-webkit-scrollbar-track {
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .ud-events-list::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 2px;
 }
 
@@ -851,7 +860,7 @@
     background: rgba(15, 23, 42, 0.6);
     padding: 12px;
     border-radius: 4px;
-    border-left: 2px solid rgba(255,255,255,0.1);
+    border-left: 2px solid rgba(255, 255, 255, 0.1);
     cursor: pointer;
     transition: all 0.2s;
     position: relative;
@@ -861,7 +870,10 @@
 .ud-event-item::before {
     content: "";
     position: absolute;
-    top: 0; left: 0; width: 0%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
     background: rgba(255, 255, 255, 0.05);
     transition: width 0.3s;
 }
