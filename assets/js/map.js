@@ -1012,12 +1012,12 @@
       }
 
     } else if (layerName === 'units') {
-      // ORBAT Units Layer - UPSERT STRATEGY (User + Owl Merged)
+      // ORBAT Units Layer - PARABELLUM PRIMARY + OWL ENRICHMENT
       if (isChecked) {
-        console.log("🚀 STARTING UNITS FETCH (UPSERT MODE)...");
+        console.log("🚀 STARTING UNITS FETCH (PARABELLUM PRIMARY)...");
 
-        // 1. Fetch User Data
-        fetch(`assets/data/units.json?v=${new Date().getTime()}`)
+        // 1. Fetch Parabellum Data (Primary — accurate WFS positions)
+        fetch(`assets/data/orbat_units.json?v=${new Date().getTime()}`)
           .then(res => res.json())
           .then(async userUnits => {
             if (!userUnits) userUnits = [];
@@ -1031,58 +1031,33 @@
             // Helper: Normalize for matching
             const normalize = (str) => (str || '').toLowerCase().replace(/separate|mechanized|brigade|regiment|infantry|marine|assault|airborne|battalion|group|tactical/g, '').trim();
 
-            // A. Load User Units First
+            // A. Load Parabellum Units First (authoritative positions)
             userUnits.forEach(u => {
-              const key = normalize(u.display_name || u.unit_name || u.unit_id);
+              const key = normalize(u.unit_name || u.full_name_en || u.orbat_id);
               mergedUnits.set(key, u);
             });
 
-            // B. Enrich or Add from Owl
-            // WHITELIST: Only names with real military unit designators pass
-            const UNIT_DESIGNATORS = /brigade|regiment|division|battalion|corps|company|platoon|squad|detachment|group|army|fleet|flotilla|squadron/i;
-
+            // B. Enrich from Owl (METADATA ONLY — no coordinate injection)
+            // Owl coords are garrison/base locations, NOT frontline positions.
+            // Parabellum provides the authoritative geo-positions.
             if (owl && owl.units) {
+              let enrichCount = 0;
               owl.units.forEach((feature, key) => {
-                const rawName = feature.properties.name || '';
-                // Skip if name doesn't contain a real unit designator
-                if (!UNIT_DESIGNATORS.test(rawName)) return;
-                // Skip date-stamped markers
-                if (/^\[\d{2}\/\d{2}\/\d{2}\]/.test(rawName)) return;
-
-                // Key is already normalized from fetchOwlData
                 const existing = mergedUnits.get(key);
-
                 if (existing) {
-                  // ENRICH: Add metadata only. Do NOT override user coordinates
-                  // (Owl coords are often garrison/base locations, not frontline positions)
+                  // ENRICH: Add Owl metadata only. Never override Parabellum coordinates.
                   existing.owl_meta = feature.properties;
                   existing.owl_garrison_lat = feature.geometry.coordinates[1];
                   existing.owl_garrison_lon = feature.geometry.coordinates[0];
-                } else {
-                  // ADD NEW: Authoritative
-                  // Filter out noise? User said "ADD THE NEW UNIT".
-                  // Create compatible Unit Object
-                  const props = feature.properties;
-                  const newUnit = {
-                    unit_id: 'owl_' + (props.id || Math.random().toString(36).substr(2, 9)),
-                    display_name: props.name,
-                    unit_name: props.name,
-                    faction: props.side, // RU/UA
-                    type: 'infantry', // Default fallback
-                    lat: feature.geometry.coordinates[1],
-                    lon: feature.geometry.coordinates[0],
-                    source: 'OWL', // Distinct source
-                    status: 'active',
-                    owl_meta: props,
-                    description: props.description
-                  };
-                  mergedUnits.set(key, newUnit);
+                  enrichCount++;
                 }
+                // DO NOT add new units from Owl — their coordinates are unreliable
               });
+              console.log(`🦉 Owl enriched ${enrichCount} units with metadata.`);
             }
 
             const finalData = Array.from(mergedUnits.values());
-            console.log(`✅ Merged Units: ${finalData.length} (Base: ${userUnits.length}, Owl Hits: ${owl ? owl.units.size : 0})`);
+            console.log(`✅ Final Units: ${finalData.length} (Parabellum: ${userUnits.length})`);
 
             // 4. RENDER (Cluster)
             unitsLayer = L.markerClusterGroup({
