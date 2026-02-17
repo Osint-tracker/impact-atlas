@@ -1,153 +1,154 @@
 <div align="center">
 
-# 🗺️ OSINT Tracker / Impact Atlas
+```text
+██╗███╗   ███╗██████╗  █████╗  ██████╗████████╗    ██████╗████████╗██╗      █████╗ ███████╗
+██║████╗ ████║██╔══██╗██╔══██╗██╔════╝╚══██╔══╝    ██╔══██╗╚══██╔══╝██║     ██╔══██╗██╔════╝
+██║██╔████╔██║██████╔╝███████║██║        ██║       ███████║   ██║   ██║     ███████║███████╗
+██║██║╚██╔╝██║██╔═══╝ ██╔══██║██║        ██║       ██╔══██║   ██║   ██║     ██╔══██║╚════██║
+██║██║ ╚═╝ ██║██║     ██║  ██║╚██████╗   ██║       ██║  ██║   ██║   ███████╗██║  ██║███████║
+╚═╝╚═╝     ╚═╝╚═╝     ╚═╝  ╚═╝ ╚═════╝   ╚═╝       ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝╚══════╝
+```
 
-**AI-Powered Military Intelligence Platform**  
-*Monitoring the Russia-Ukraine Conflict via Multi-Agent Swarms*
+### **AI-POWERED MILITARY INTELLIGENCE PLATFORM**
+*Autonomous Multi-Agent Swarm for Conflict Monitoring & Analysis*
 
-[![Status](https://img.shields.io/badge/Status-Production-success?style=for-the-badge&logo=statuspage)](https://github.com/Osint-tracker/impact-atlas)
-[![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![License](https://img.shields.io/badge/License-Private-red?style=for-the-badge)](LICENSE)
+[![Status](https://img.shields.io/badge/STATUS-OPERATIONAL-059669?style=for-the-badge&logo=prometheus&logoColor=white)](https://github.com/Osint-tracker/impact-atlas)
+[![Intelligence](https://img.shields.io/badge/INTEL-LEVEL%204-dc2626?style=for-the-badge&logo=wikidata&logoColor=white)](https://github.com/Osint-tracker/impact-atlas)
+[![Python](https://img.shields.io/badge/CORE-PYTHON%203.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Privacy](https://img.shields.io/badge/ACCESS-CLASSIFIED-1e293b?style=for-the-badge&logo=torproject&logoColor=white)](LICENSE)
 
-[Features](#-key-features) • [Tech Stack](#-tech-stack) • [Installation](#-quick-start) • [Documentation](#-documentation)
+[**MISSION BRIEF**](#-mission-brief) • [**CAPABILITIES**](#-capabilities) • [**DEPLOYMENT**](#-deployment) • [**CLASSIFIED DOCS**](#-classified-docs)
 
 </div>
 
 ---
 
-Impact Atlas transforms unstructured OSINT data (Telegram, GDELT, news) into actionable intelligence through a **7-agent AI pipeline**, displaying events on an interactive tactical map with real-time analysis.
+## 📜 Mission Brief
 
-## 🧠 The "Super Squad" Pipeline
+> **"Turning Noise into Signal."**
+
+**IMPACT ATLAS** is a sovereign intelligence platform designed to ingest high-volume, unstructured OSINT data (Telegram, GDELT, Satellites) and distill it into precise, actionable military insights. 
+
+Operated by a **7-Agent AI Swarm**, the system autonomously verifies targets, calculates kinetic impact, tracks unit movements, and maintains a real-time Common Operational Picture (COP) of the Russia-Ukraine theater.
+
+---
+
+## 🧠 The "Super Squad" Architecture
 
 ```mermaid
 graph LR
-    Input[Raw OSINT] --> Bouncer[👮 Bouncer]
-    Bouncer -->|Filtered| Brain[🧠 Brain]
+    Input[📡 Raw SIGINT/OSINT] --> Bouncer[👮 Bouncer]
+    Bouncer -->|Cleaned| Brain[🧠 Brain]
     Brain --> Soldier[🪖 Soldier]
     Soldier --> Titan[🤖 Titan]
     Titan --> Calculator[Hz Calculator]
     Calculator --> Journalist[📰 Journalist]
     Journalist --> Strategist[♟️ Strategist]
-    Strategist --> Output[Intelligence Feed]
+    Strategist --> Output[🎯 Intelligence Feed]
     
     style Input fill:#f9f,stroke:#333
-    style Output fill:#bbf,stroke:#333
-    style Bouncer fill:#e1f5fe
-    style Brain fill:#e1f5fe
-    style Soldier fill:#e1f5fe
-    style Titan fill:#e1f5fe
-    style Calculator fill:#e1f5fe
-    style Journalist fill:#e1f5fe
-    style Strategist fill:#e1f5fe
+    style Output fill:#0ea5e9,stroke:#333,color:#fff
+    style Bouncer fill:#1e293b,stroke:#333,color:#fff
+    style Brain fill:#1e293b,stroke:#333,color:#fff
+    style Soldier fill:#1e293b,stroke:#333,color:#fff
+    style Titan fill:#b91c1c,stroke:#333,color:#fff
+    style Calculator fill:#1e293b,stroke:#333,color:#fff
+    style Journalist fill:#1e293b,stroke:#333,color:#fff
+    style Strategist fill:#1e293b,stroke:#333,color:#fff
 ```
 
 ---
 
-## ✨ Key Features
+## 🛠️ Capabilities
 
-| Feature | Description |
-|:---|:---|
-| **🤖 7-Agent Pipeline** | Sequential chain with **Self-Correction** and **Hallucination Checks**. |
-| **🦅 Project Owl Integration** | **[NEW]** Live frontline data & unit tracking via Owl Maps API. |
-| **🗂️ Unified Dossier** | **[NEW]** Integrated card combining ORBAT data, live position, and engagements. |
-| **🎯 T.I.E. Scoring** | Unique **Target-Kinetic-Effect** vectors (1-10) for event intensity calibration. |
-| **🔍 Smart Fusion** | Entity resolution & deduplication using **Vector Embeddings**. |
-| **📍 ORBAT Tracker** | Real-time military unit tracking (UA/RU) with **Whitelist Filtering**. |
-| **🌍 Sanity Loops** | **GeoProbe** (Coordinate Validation) & **HistoryProbe** (Kinetic Plausibility). |
+### ⚡ Kinetic Analysis
+| Vector | Description | Status |
+|:---|:---|:---|
+| **Targeting** | Automatic identification of HVT (High Value Targets) vs. Civilian objects. | ✅ Active |
+| **Ballistics** | Weapon system identification (S-300, Himars, Shahed) via text signatures. | ✅ Active |
+| **Damage** | **T.I.E. Scoring** (Target-Kinetic-Effect) to assess strike effectiveness (1-10). | ✅ Active |
 
----
-
-## 🛠️ Tech Stack
-
-<div align="center">
-
-| Layer | Technologies |
-|:---|:---|
-| **Core AI** | **DeepSeek V3** • **GPT-4o-mini (Fine-Tuned)** • **Qwen 2.5** |
-| **Backend** | **Python 3.12+** • **SQLite (WAL Mode)** |
-| **Frontend** | **Vanilla JS** • **Leaflet.js** • **Glassmorphism UI** |
-| **Data** | **Owl Harvester** • **Telethon** • **GDELT** |
-
-</div>
+### 🗺️ Geospatial Intelligence
+| Component | Description | Status |
+|:---|:---|:---|
+| **Project Owl** | Live frontline integration & unit tracking (International/OSINT). | ✅ Active |
+| **ORBAT Tracker** | Regimental/Brigade level unit tracking with **Whitelist Filtering**. | ✅ Active |
+| **GeoProbe** | Self-healing coordinate validation loop to prevent mapping errors. | ✅ Active |
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Deployment
 
 ### Prerequisites
-- Python 3.12+
-- API Keys: OpenAI, OpenRouter, Serper (optional)
+- **Python 3.12+**
+- **API Access**: OpenRouter (DeepSeek/Qwen), OpenAI (GPT-4o)
 
-### Installation
+### Protocol: Initiation
 ```bash
-# Clone repository
+# 1. Clone Repository
 git clone https://github.com/Osint-tracker/impact-atlas.git
 cd osint-tracker
 
-# Create virtual environment
+# 2. Establish Environment
 python -m venv .venv
-.venv\Scripts\activate  # Windows
-source .venv/bin/activate  # Linux/Mac
+source .venv/bin/activate
 
-# Install dependencies
+# 3. Install Dependencies
 pip install -r requirements.txt
 
-# Configure environment
+# 4. Configure Credentials
 cp .env.example .env
-# Edit .env with your API keys
 ```
 
-### Run Operations
+### Protocol: Operation
 ```bash
-# 1. Ingest Data (Owl Maps + Telegram)
+# [PHASE 1] Data Ingestion (Owl + Telegram)
 python scripts/ingest_owl_total.py  # Map Layers
 python scripts/ingest_owl_db.py     # Unit Registry
 python scripts/run_daily.py         # News Feed
 
-# 2. Activate AI Pipeline
+# [PHASE 2] AI Analysis (Swarm Activation)
 python scripts/ai_agent.py
 
-# 3. Export to Tactical Map
+# [PHASE 3] Tactical Display
 python scripts/generate_output.py
+# -> Open index.html
 ```
 
 ---
 
-## 📂 Project Structure
+## 📂 System Hierarchy
 
 ```
 osint-tracker/
-├── assets/
-│   ├── data/           # GeoJSON (owl_layer.geojson), JSON exports
-│   └── js/             # Frontend logic (map.js, charts.js)
-├── scripts/            # Core Ecosystem
-│   ├── ai_agent.py     # Main 7-Agent Pipeline
-│   ├── ingest_owl_*.py # Owl Data Harvesters
-│   ├── smart_fusion.py # Entity Resolution Engine
-│   └── instruments/    # GeoProbe, HistoryProbe
-├── index.html          # Main Dashboard UI
-└── technical-spec_v1.3.md  # Full Technical Documentation
+├── assets/             # Intelligence Assets
+│   ├── data/           # GeoJSON, JSON exports
+│   └── js/             # Tactical Display Logic
+├── scripts/            # Command & Control
+│   ├── ai_agent.py     # Swarm Orchestrator
+│   ├── ingest_owl_*.py # External Feeds
+│   └── instruments/    # Probes (Geo/History)
+├── index.html          # Dashboard Interface
+└── technical-spec_v1.3.md  # Classified Specs
 ```
 
 ---
 
-## 🧪 T.I.E. Score System
+## 🧪 Score Vector (T.I.E.)
 
-Events are scored on three **1-10 vectors**:
+$$ TIE = \frac{K \times T \times E}{10} $$
 
 > **K (Kinetic)**: Weapon magnitude _(1=Rifle → 10=WMD)_  
 > **T (Target)**: Target value _(1=Field → 10=Capital)_  
 > **E (Effect)**: Damage outcome _(1=Miss → 10=Total Erase)_  
 
-$$ TIE = \frac{K \times T \times E}{10} $$
-
 ---
 
-## 📖 Documentation
+## 📚 Classified Docs
 
-- **[Technical Specification (v4.1)](technical-spec_v1.3.md)** – Architecture & Schemas
-- **[GeoJSON Structure](GEOJSON_STRUCTURE.md)** – Data Format
+- **[Technical Specification (v4.1)](technical-spec_v1.3.md)** – Full Architecture
+- **[Data Schema](GEOJSON_STRUCTURE.md)** – JSON Formats
 
 <div align="center">
-  <sub>Maintained by Osint tracker | Private Repository</sub>
+  <sub>Authorized Personnel Only | Private Repository</sub>
 </div>
