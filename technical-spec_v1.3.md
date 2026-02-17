@@ -1850,16 +1850,13 @@ value: Multiple frontline data sources with toggle
 ```yaml
 source_1:
   name: Project Owl (Primary)
+  id: deepstate (mapped to Owl)
   file: assets/data/owl_layer.geojson
   badge: OSINT/INTL
 
 source_2:
-  name: DeepState (UA)
-  file: assets/data/frontline.geojson
-  badge: UA
-
-source_3:
-  name: ISW Research (US)
+  name: ISW Analytics
+  id: isw
   file: assets/data/frontline_isw.geojson
   badge: US
 ```
