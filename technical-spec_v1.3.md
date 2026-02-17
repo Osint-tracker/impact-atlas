@@ -1,22 +1,42 @@
 # MASTER TECHNICAL SPECIFICATION DOCUMENT (TSD)
 
 **Project:** OSINT Military Intelligence Tracker & Analysis Platform  
-**Version:** 4.0 (Consolidated Master)  
-**Date:** January 6, 2026  
+**Version:** 4.1.0 (Consolidated Master)  
+**Date:** February 17, 2026  
 **Status:** Production-Ready  
 **Maintainer:** Senior AI Architect & Technical Product Manager
+
+---
+
+## 📜 Table of Contents
+
+1. [Metadata](#metadata)
+2. [Rule Priority Order](#rule_priority_order)
+3. [Goals & Non-Goals](#goals)
+4. [Architecture](#architecture)
+   - [Tier Structure](#tier_structure)
+   - [Technology Stack](#technology_stack)
+5. [Components](#components)
+   - [Super Squad AI Pipeline](#component_1_super_squad_ai_pipeline)
+   - [Smart Fusion Engine](#component_2_smart_fusion_engine)
+   - [AI Classification Model (MIA)](#component_3_ai_classification_model_mia)
+   - [Project Owl Integration](#component_4_project_owl_integration)
+6. [Data Schemas](#data_schemas)
+7. [Validation Rules](#validation_rules)
+8. [Deployment](#deployment)
 
 ---
 
 ## METADATA
 ```yaml
 document_type: technical_specification
-semantic_version: 4.0.0
+semantic_version: 4.1.0
 status: PRODUCTION_READY
-last_updated: 2026-01-06
+last_updated: 2026-02-17
 scope: complete_system
 components:
   - AI_Military_Intelligence_Analyst
+  - Project_Owl_Integration
   - OSINT_Tracker_Backend
   - Impact_Atlas_Frontend
 ```
@@ -79,11 +99,37 @@ non_goal_5:
 ## ARCHITECTURE
 
 ### TIER_STRUCTURE
+
+```mermaid
+graph TD
+    subgraph Tier 1: Data Ingestion
+    A[Owl KMZ] --> Ingest[Ingest Scripts]
+    B[Owl TS Units] --> Ingest
+    C[Telegram/GDELT] --> Ingest
+    Ingest --> DB[(SQLite WAL)]
+    end
+
+    subgraph Tier 2: AI Processing
+    DB --> Pipeline[Super Squad AI]
+    Pipeline --> Fusion[Smart Fusion]
+    Fusion --> Analysis[Strategic Analysis]
+    Analysis --> DB
+    end
+
+    subgraph Tier 3: Visualization
+    DB --> GeoJSON[GeoJSON Output]
+    GeoJSON --> Leaflet[Leaflet Map]
+    DB --> Dashboard[Analytics Dashboard]
+    end
+```
+
 ```yaml
 tier_1:
   name: DATA_INGESTION_AND_AI_PROCESSING
   purpose: Raw data acquisition and intelligent preprocessing
   components:
+    - Owl Map Harvester (KMZ -> GeoJSON)
+    - Owl Unit Harvester (TypeScript -> JSON)
     - Google Sheets scrapers
     - Telegram scrapers
     - Super Squad AI Pipeline
@@ -173,14 +219,41 @@ ci_cd:
 value: Sequential multi-agent chain for intelligent event processing
 ```
 
+**AGENT FLOW:**
+```mermaid
+sequenceDiagram
+    participant D as Data Source
+    participant B as Bouncer
+    participant Br as Brain
+    participant S as Soldier
+    participant T as Titan
+    participant C as Calculator
+    participant J as Journalist
+    participant St as Strategist
+    
+    D->>B: Raw Text
+    B->>B: Spam Filter
+    B->>Br: Relevant Text
+    Br->>Br: Context Analysis
+    Br->>S: Extraction Request
+    S->>S: Geo & Unit Extraction
+    S->>T: Structured Data
+    T->>T: Classification (Fine-Tuned)
+    T->>C: Event Class
+    C->>C: T.I.E. Scoring
+    C->>J: Scored Event
+    J->>J: Headline & Summary
+    J->>St: Final Report
+    St->>St: Strategic Impact
+```
+
 **AGENT_CONFIGURATION:**
 ```yaml
 agent_1:
   name: The Bouncer
   role: Security and spam filter
-  purpose: Discard crypto spam, non-military news, malformed inputs before costly analysis
-  model: Qwen 2.5 32B
-  provider: OpenRouter
+  purpose: Hybrid Regex + AI filter. Discards crypto spam, non-military news, malformed inputs.
+  model: Qwen 2.5 32B (via OpenRouter)
   temperature: 0.0
   output_format: Boolean + Short Reason
   constraint: HARD_CONSTRAINT
@@ -188,9 +261,8 @@ agent_1:
 agent_2:
   name: The Brain
   role: Strategic coordinator
-  purpose: Analyze general context, decide political/military relevance, orchestrate decision flow
+  purpose: Analyze general context, decide political/military relevance, orchestrate decision flow.
   model: DeepSeek V3.2
-  provider: OpenRouter
   temperature: 0.0
   output_format: Structured Decision JSON
   constraint: HARD_CONSTRAINT
@@ -198,29 +270,27 @@ agent_2:
 agent_3:
   name: The Soldier
   role: Hard data extraction
-  purpose: Extract geographic coordinates (Lat/Lon), ISO timestamp, military units, weaponry
+  purpose: Extract geographic coordinates (Lat/Lon), ISO timestamp, military units, weaponry.
   model: Qwen 2.5 72B
-  provider: OpenRouter
   temperature: 0.0
   output_format: Strict JSON
   failure_mode: ABORT_IF_NO_VALID_DATE
   constraint: HARD_CONSTRAINT
 
 agent_4:
-  name: The Strategist
-  role: Deep tactical insight
-  purpose: Distinguish military tactics (Attrition vs Manoeuvre vs Shaping), analyze strategic implications
-  model: DeepSeek V3.2
-  provider: OpenRouter
-  temperature: 0.1
-  output_format: Analytical Text
+  name: The Titan
+  role: Fine-Tuned Classification
+  purpose: Specialized diverse classification (Attrition, Manoeuvre, Shaping) using fine-tuned model.
+  model: Titan v4 (Fine-Tuned GPT-4o-mini)
+  temperature: 0.0
+  output_format: JSON Classification
   constraint: HARD_CONSTRAINT
 
 agent_5:
   name: The Calculator
   role: Scoring engine
-  purpose: Calculate Reliability (0-100), Bias (L/R/N), Intensity (0-10), Confidence (0-1)
-  model: Python Deterministic
+  purpose: Calculate Reliability (0-100), Bias (L/R/N), Intensity (0-10), Confidence (0-1).
+  model: Python Deterministic (TitanSensor)
   provider: INTERNAL
   temperature: N/A
   output_format: JSON Numbers
@@ -229,11 +299,19 @@ agent_5:
 agent_6:
   name: The Journalist
   role: Content synthesis
-  purpose: Generate catchy headline, bilingual summary (IT/EN), neutral journalistic style
+  purpose: Generate catchy headline, bilingual summary (IT/EN), neutral journalistic style.
   model: GPT-4o-mini
-  provider: OpenAI
   temperature: 0.0
   output_format: JSON Text Fields
+  constraint: HARD_CONSTRAINT
+
+agent_7:
+  name: The Strategist
+  role: Deep tactical insight
+  purpose: High-level analysis of strategic implications and campaign impact.
+  model: DeepSeek V3.2
+  temperature: 0.1
+  output_format: Analytical Text
   constraint: HARD_CONSTRAINT
 ```
 
@@ -551,6 +629,40 @@ target_volume:
   value: ">=1200"
   quality_requirement: Uniform CoT across all examples
   constraint: HARD_CONSTRAINT
+```
+
+---
+
+### COMPONENT_4: PROJECT_OWL_INTEGRATION
+
+**PURPOSE:**
+```yaml
+value: Ingest authoritative frontline and unit data from Project Owl
+```
+
+**PIPELINE_STAGES:**
+```yaml
+stage_1:
+  name: Map Layer Harvester
+  script: ingest_owl_total.py
+  input: Remote KMZ (UAControlMapBackups/latest.kmz)
+  process: 
+    - Decompress KMZ
+    - Parse KML (Points, LineStrings, Polygons)
+    - Extract Metadata (Name, Description, StyleURL)
+  output: assets/data/owl_layer.geojson
+  frequency: Daily
+
+stage_2:
+  name: Unit Data Harvester
+  script: ingest_owl_db.py
+  input: Remote Repo ZIP (owlmaps/units)
+  process:
+    - Scan TypeScript definition files
+    - Extract Unit Hierarchy, Social Links, Faction
+    - Filter by UA/RU side
+  output: assets/data/orbat_full.json
+  frequency: Daily
 ```
 
 ---
