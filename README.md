@@ -2,8 +2,7 @@
 
 <div align="center">
 
-![Impact Atlas](assets/images/banner_v4.png)
-<!-- Place the banner image at assets/images/banner_v4.png -->
+![Impact Atlas](assets/images/banner_v4.jpeg)
 
 ### **AI-POWERED MILITARY INTELLIGENCE PLATFORM**
 *Autonomous Multi-Agent Swarm for Conflict Monitoring & Analysis*

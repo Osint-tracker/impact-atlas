@@ -1626,7 +1626,7 @@ normalization: Capped at 100
 
 ---
 
-### COMPONENT_8: GEOPROBE INSTRUMENTATION (Sanfilippo Method)
+### COMPONENT_8: GEOPROBE INSTRUMENTATION
 
 **PURPOSE:**
 ```yaml
