@@ -526,16 +526,41 @@
 
           const ts = m.isValid() ? m.valueOf() : moment().valueOf();
 
+          // --- ENRICHMENT FOR FILTERS ---
+          const txt = (props.title + " " + (props.description || "")).toLowerCase();
+
+          // 1. Actor (Heuristic)
+          let actor = 'UNK';
+          if (txt.includes('russia') || txt.includes('moscow') || txt.includes('kremlin') || txt.includes('putin') || txt.includes('russian')) actor = 'RUS';
+          if (txt.includes('ukrain') || txt.includes('kyiv') || txt.includes('zelensky') || txt.includes('afu') || txt.includes('uaf')) actor = 'UKR';
+          if (props.actor) actor = props.actor; // Fallback
+
+          // 2. Threat Level (Intensity 1-10 -> Categories)
+          const score = props.intensity_score || (props.tie_total ? props.tie_total / 10 : 0) || 0;
+          let threat = 'low';
+          if (score >= 4) threat = 'medium';
+          if (score >= 7) threat = 'high';
+          if (score >= 9) threat = 'critical';
+
+          // 3. Category (Heuristic)
+          let cat = 'Other';
+          if (txt.includes('strike') || txt.includes('attack') || txt.includes('bomb') || txt.includes('fire') || txt.includes('explo') || txt.includes('destroy')) cat = 'Kinetic';
+          else if (txt.includes('advance') || txt.includes('captur') || txt.includes('retreat') || txt.includes('storm') || txt.includes('seiz')) cat = 'Maneuver';
+          else if (txt.includes('civilian') || txt.includes('casualt') || txt.includes('hous') || txt.includes('school') || txt.includes('hospital')) cat = 'Civilian';
+          else if (txt.includes('statement') || txt.includes('meet') || txt.includes('warn') || txt.includes('visit') || txt.includes('politic')) cat = 'Political';
+          if (props.category) cat = props.category;
+
           return {
             ...props,
-            // --- CRITICAL FIX: ID UNIFICATION ---
-            // If cluster_id exists, use it as event_id. This fixes the Dossier button.
             event_id: props.event_id || props.cluster_id || props.id,
-            // ------------------------------------
             lat: f.geometry ? f.geometry.coordinates[1] : props.lat,
             lon: f.geometry ? f.geometry.coordinates[0] : props.lon,
             timestamp: ts,
-            date: m.isValid() ? m.format("DD/MM/YYYY") : props.date
+            date: m.isValid() ? m.format("DD/MM/YYYY") : props.date,
+            // Enriched Fields
+            actor: actor,
+            threat_level: threat,
+            category: cat
           };
         })
           // MODIFICATION: Frontend "Junk" Filter
@@ -550,59 +575,54 @@
         console.log(`✅ Events processed: ${window.globalEvents.length}`);
 
         // 3. FILTER DEFINITION (CIVILIAN + ACTORS + SMART SEARCH + HIGH IMPACT)
+        // 3. FILTER DEFINITION (Comprehensive Rewrite)
         window._applyMapFiltersImpl = function () {
-          // A. Retrieve Input (Safe handling if elements missing)
-          const toggle = document.getElementById('civilianToggle');
-          const showCivilian = toggle ? toggle.checked : true;
-
+          // A. Retrieve Input
           const searchInput = document.getElementById('textSearch');
           const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+          const startDateInput = document.getElementById('startDate');
+          const endDateInput = document.getElementById('endDate');
+          const startDate = startDateInput && startDateInput.value ? new Date(startDateInput.value).getTime() : 0;
+          const endDate = endDateInput && endDateInput.value ? new Date(endDateInput.value).getTime() : 9999999999999;
 
           const actorSelect = document.getElementById('actorFilter');
           const selectedActor = actorSelect ? actorSelect.value : '';
 
-          // NEW: High Impact Filter (TIE > 50)
-          const highImpactToggle = document.getElementById('highImpactToggle');
-          const showHighImpactOnly = highImpactToggle ? highImpactToggle.checked : false;
+          const categorySelect = document.getElementById('chartTypeFilter');
+          const selectedCategory = categorySelect ? categorySelect.value : '';
+
+          // Threat Level Checkboxes
+          const threatCritical = document.querySelector('input[value="critical"]') ? document.querySelector('input[value="critical"]').checked : true;
+          const threatHigh = document.querySelector('input[value="high"]') ? document.querySelector('input[value="high"]').checked : true;
+          const threatMedium = document.querySelector('input[value="medium"]') ? document.querySelector('input[value="medium"]').checked : true;
 
           // B. Filtering Cycle
           const filtered = window.globalEvents.filter(e => {
+            // 1. Date Range
+            if (e.timestamp < startDate || e.timestamp > endDate) return false;
 
-            // 1. Civilian Filter (ORIGINAL LOGIC KEPT)
-            if (typeof isCivilianEvent === 'function') {
-              const isCivil = isCivilianEvent(e);
-              if (isCivil && !showCivilian) return false;
-            }
+            // 2. Actor
+            if (selectedActor && e.actor !== selectedActor) return false;
 
-            // 2. Actor Filter (NEW)
-            // If an actor is selected in the menu, the event must match
-            if (selectedActor && e.actor !== selectedActor) {
-              return false;
-            }
+            // 3. Category
+            if (selectedCategory && e.category !== selectedCategory) return false;
 
-            // 2.5 HIGH IMPACT FILTER (TIE > 50)
-            if (showHighImpactOnly) {
-              const tieScore = e.tie_total || e.tie_score || 0;
-              if (tieScore < 50) return false;
-            }
+            // 4. Threat Level
+            if (e.threat_level === 'critical' && !threatCritical) return false;
+            if (e.threat_level === 'high' && !threatHigh) return false;
+            if (e.threat_level === 'medium' && !threatMedium) return false;
 
-            // 3. Smart Text Search (NEW)
+            // 5. Smart Text Search
             if (searchTerm) {
-              // Smart Mapping: User types "Russia" -> We search Actor "RUS"
-              let targetActor = null;
-              if (['russia', 'russo', 'russi', 'mosca'].some(k => searchTerm.includes(k))) targetActor = 'RUS';
-              if (['ucraina', 'ukraine', 'kiev'].some(k => searchTerm.includes(k))) targetActor = 'UKR';
-
-              // Search in text fields
               const inTitle = (e.title || '').toLowerCase().includes(searchTerm);
               const inDesc = (e.description || '').toLowerCase().includes(searchTerm);
               const inLoc = (e.location_precision || '').toLowerCase().includes(searchTerm);
 
-              // Search by smart actor (e.g. wrote "russian attacks" -> show RUS events)
-              const isSmartMatch = targetActor && e.actor === targetActor;
+              const isDateMatch = (e.date || '').includes(searchTerm);
+              const isSmartActor = (searchTerm.includes('russia') && e.actor === 'RUS') || (searchTerm.includes('ukrain') && e.actor === 'UKR');
 
-              // If text not found AND not a smart match -> Hide
-              if (!inTitle && !inDesc && !inLoc && !isSmartMatch) return false;
+              if (!inTitle && !inDesc && !inLoc && !isDateMatch && !isSmartActor) return false;
             }
 
             return true;
@@ -610,23 +630,48 @@
 
           // C. Update Map and Counters
           window.currentFilteredEvents = filtered;
+
+          if (document.getElementById('eventCount')) {
+            document.getElementById('eventCount').innerText = filtered.length;
+          }
+
           renderInternal(filtered);
 
-          // NEW: Dashboard Update
           if (window.Dashboard) window.Dashboard.update(filtered);
         };
+
+        // Helper to Populate Category Dropdown
+        window.populateCategoryFilter = function (events) {
+          const catSelect = document.getElementById('chartTypeFilter');
+          if (!catSelect) return;
+
+          // Get unique categories
+          const categories = [...new Set(events.map(e => e.category))].sort();
+
+          // Keep "All categories" option
+          catSelect.innerHTML = '<option value="">All categories</option>';
+
+          categories.forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.innerText = cat;
+            catSelect.appendChild(opt);
+          });
+        };
+
+        // CALL POPULATION ONCE
+        window.populateCategoryFilter(window.globalEvents);
 
         // Exposes the function
         window.applyMapFilters = window._applyMapFiltersImpl;
 
         // --- LIVE ACTIVATION (FUNDAMENTAL) ---
-        // Connects filters to HTML inputs to update map in real time
-        const inputsToCheck = ['textSearch', 'actorFilter', 'civilianToggle', 'highImpactToggle'];
+        const inputsToCheck = ['textSearch', 'actorFilter', 'chartTypeFilter', 'startDate', 'endDate'];
         inputsToCheck.forEach(id => {
           const el = document.getElementById(id);
           if (el) {
-            el.oninput = window.applyMapFilters; // For when writing
-            el.onchange = window.applyMapFilters; // For menu and checkbox
+            el.oninput = window.applyMapFilters;
+            el.onchange = window.applyMapFilters;
           }
         });
 
@@ -758,8 +803,45 @@
   };
 
   window.toggleTechLayer = function (layerName, checkbox) {
-    const isChecked = checkbox.checked;
-    console.log(`Toggle ${layerName}: ${isChecked}`);
+    const isChecked = checkbox ? checkbox.checked : false;
+    const map = window.map;
+
+    console.log(`Toggling layer: ${layerName} -> ${isChecked}`);
+
+    if (layerName === 'radar') {
+      if (isChecked) {
+        if (!window.radarLayer) {
+          // RainViewer (Frame 0 of loop for simplicity)
+          window.radarLayer = L.tileLayer('https://tile.rainviewer.com/priority/radar/nowcast_loop/0/256/{z}/{x}/{y}/1/1_1.png', {
+            opacity: 0.6,
+            attribution: 'RainViewer'
+          }).addTo(map);
+        } else {
+          map.addLayer(window.radarLayer);
+        }
+      } else {
+        if (window.radarLayer) map.removeLayer(window.radarLayer);
+      }
+    } else if (layerName === 'satellite') {
+      if (isChecked) {
+        if (!window.satelliteLayer) {
+          window.satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Esri'
+          }).addTo(map);
+        } else {
+          map.addLayer(window.satelliteLayer);
+        }
+      } else {
+        if (window.satelliteLayer) map.removeLayer(window.satelliteLayer);
+      }
+    } else if (layerName === 'events') {
+      // Toggle MarkerCluster
+      if (isChecked) {
+        if (window.markerClusterGroup) map.addLayer(window.markerClusterGroup);
+      } else {
+        if (window.markerClusterGroup) map.removeLayer(window.markerClusterGroup);
+      }
+    }
 
     if (layerName === 'firms') {
       if (isChecked) {
@@ -1189,6 +1271,10 @@
 
               if (!geometry || !geometry.coordinates || !centroid) return;
 
+              // Fix: GeoJSON uses [LNG, LAT], Leaflet needs [LAT, LNG]
+              // We need to swap them for correct positioning.
+              const trueCentroid = [centroid[1], centroid[0]];
+
               // Convert GeoJSON coordinates to Leaflet format [lat, lng]
               let coords = geometry.coordinates[0].map(c => [c[1], c[0]]);
 
@@ -1200,8 +1286,8 @@
 
               // If polygon is too small, create a circle-like polygon around centroid
               if (latSpan < MIN_RADIUS_DEG && lngSpan < MIN_RADIUS_DEG) {
-                const centerLat = centroid[0];
-                const centerLng = centroid[1];
+                const centerLat = trueCentroid[0];
+                const centerLng = trueCentroid[1];
                 const numPoints = 32;
                 coords = [];
                 for (let i = 0; i < numPoints; i++) {

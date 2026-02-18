@@ -669,7 +669,7 @@
           <div class="sidebar-header-wrapper">
             <div class="search-box" style="margin-top: 15px;">
               <i class="fa-solid fa-magnifying-glass search-icon"></i>
-              <input type="text" id="textSearch" placeholder="Search event, city...">
+              <input type="text" id="textSearch" placeholder="Search event, city..." oninput="window.applyMapFilters()">
 
               <div class="info-icon-wrapper" data-tooltip="Search in title or description.">
                 <i class="fa-solid fa-circle-info"></i>
@@ -687,9 +687,9 @@
                 </span>
               </label>
               <div class="date-group">
-                <input type="date" id="startDate" class="clean-input">
+                <input type="date" id="startDate" class="clean-input" onchange="window.applyMapFilters()">
                 <span class="date-arrow"><i class="fa-solid fa-arrow-right"></i></span>
-                <input type="date" id="endDate" class="clean-input">
+                <input type="date" id="endDate" class="clean-input" onchange="window.applyMapFilters()">
               </div>
             </div>
 
@@ -709,7 +709,7 @@
             <div class="filter-block">
               <label>Event Category</label>
               <div class="custom-select">
-                <select id="chartTypeFilter" class="clean-input">
+                <select id="chartTypeFilter" class="clean-input" onchange="window.applyMapFilters()">
                   <option value="">All categories</option>
                 </select>
                 <i class="fa-solid fa-chevron-down select-arrow"></i>
@@ -728,7 +728,7 @@
             <div class="filter-block">
               <label>Actors</label>
               <div class="custom-select">
-                <select id="actorFilter" class="clean-input">
+                <select id="actorFilter" class="clean-input" onchange="window.applyMapFilters()">
                   <option value="">All actors</option>
                   <option value="UKR">Ukraine (UKR)</option>
                   <option value="RUS">Russia (RUS)</option>
@@ -743,19 +743,19 @@
               <div class="toggle-container">
 
                 <label class="toggle-card">
-                  <input type="checkbox" checked value="critical">
+                  <input type="checkbox" checked value="critical" onchange="window.applyMapFilters()">
                   <div class="card-content"><span class="dot red"></span> Critical</div>
                   <i class="fa-solid fa-check check-icon"></i>
                 </label>
 
                 <label class="toggle-card">
-                  <input type="checkbox" checked value="high">
+                  <input type="checkbox" checked value="high" onchange="window.applyMapFilters()">
                   <div class="card-content"><span class="dot orange"></span> High</div>
                   <i class="fa-solid fa-check check-icon"></i>
                 </label>
 
                 <label class="toggle-card">
-                  <input type="checkbox" checked value="medium">
+                  <input type="checkbox" checked value="medium" onchange="window.applyMapFilters()">
                   <div class="card-content"><span class="dot yellow"></span> Medium</div>
                   <i class="fa-solid fa-check check-icon"></i>
                 </label>
@@ -807,7 +807,7 @@
 
             <label class="tech-toggle-row">
               <span class="tech-toggle-label">Weather Radar</span>
-              <input type="checkbox">
+              <input type="checkbox" onchange="toggleTechLayer('radar', this)">
               <div class="tech-switch"></div>
             </label>
 
@@ -820,7 +820,15 @@
             </label>
             <label class="tech-toggle-row">
               <span class="tech-toggle-label">Satellite (HIR)</span>
-              <input type="checkbox">
+              <input type="checkbox" onchange="toggleTechLayer('satellite', this)">
+              <div class="tech-switch"></div>
+            </label>
+
+            <div class="layer-section-title">VIEW OPTIONS</div>
+
+            <label class="tech-toggle-row">
+              <span class="tech-toggle-label">Show Events</span>
+              <input type="checkbox" checked onchange="toggleTechLayer('events', this)">
               <div class="tech-switch"></div>
             </label>
 
