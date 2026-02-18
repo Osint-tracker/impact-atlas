@@ -597,6 +597,8 @@
           const threatHigh = document.querySelector('input[value="high"]') ? document.querySelector('input[value="high"]').checked : true;
           const threatMedium = document.querySelector('input[value="medium"]') ? document.querySelector('input[value="medium"]').checked : true;
 
+          console.log(`🔍 Filtering: Range[${startDate}-${endDate}] Actor[${selectedActor}] Cat[${selectedCategory}] Threat[${threatCritical},${threatHigh},${threatMedium}] Search[${searchTerm}]`);
+
           // B. Filtering Cycle
           const filtered = window.globalEvents.filter(e => {
             // 1. Date Range
@@ -804,7 +806,8 @@
 
   window.toggleTechLayer = function (layerName, checkbox) {
     const isChecked = checkbox ? checkbox.checked : false;
-    const map = window.map;
+    // FIX: Use closure variable 'map', DO NOT redefine or use window.map unless initialized
+    // const map = window.map; <--- REMOVED this bug
 
     console.log(`Toggling layer: ${layerName} -> ${isChecked}`);
 
@@ -835,11 +838,11 @@
         if (window.satelliteLayer) map.removeLayer(window.satelliteLayer);
       }
     } else if (layerName === 'events') {
-      // Toggle MarkerCluster
+      // Toggle MarkerCluster (Using closure variable 'eventsLayer')
       if (isChecked) {
-        if (window.markerClusterGroup) map.addLayer(window.markerClusterGroup);
+        if (eventsLayer) map.addLayer(eventsLayer);
       } else {
-        if (window.markerClusterGroup) map.removeLayer(window.markerClusterGroup);
+        if (eventsLayer) map.removeLayer(eventsLayer);
       }
     }
 
