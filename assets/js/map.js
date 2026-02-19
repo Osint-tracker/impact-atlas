@@ -1540,32 +1540,42 @@
   window.initWeatherRadar = function () {
     if (window.radarLayer) return; // Already running
 
-    console.log("🌦️ Starting Weather Radar Loop...");
-    // FIX: Align timestamp to nearest 10 minutes (600s) for RainViewer
-    const now = Math.floor(Date.now() / 1000 / 600) * 600;
-    const timeSteps = [];
+    console.log("🌦️ Starting Weather Radar Loop (Fetching Metadata)...");
 
-    // Past 2 hours (every 10 min) -> 12 frames
-    for (let i = 12; i >= 0; i--) {
-      timeSteps.push(now - (i * 600));
-    }
+    // FETCH VALID TIMESTAMPS FROM RAINVIEWER API
+    fetch('https://api.rainviewer.com/public/weather-maps.json')
+      .then(response => response.json())
+      .then(data => {
+        // We use 'past' frames for the loop
+        // data.radar.past is array of { time: UNIX_TIMESTAMP, path: ... }
+        if (!data.radar || !data.radar.past) {
+          console.error("❌ RainViewer Metadata invalid:", data);
+          return;
+        }
 
-    radarFrames = timeSteps.map(ts => {
-      return L.tileLayer(`https://tile.rainviewer.com/priority/radar/${ts}/256/{z}/{x}/{y}/2/1_1.png`, {
-        opacity: 0,
-        attribution: 'RainViewer',
-        zIndex: 500
-      }).addTo(map);
-    });
+        const timestamps = data.radar.past.map(frame => frame.time);
+        console.log(`✅ Loaded ${timestamps.length} radar frames.`);
 
-    window.radarLayer = L.layerGroup(radarFrames);
+        radarFrames = timestamps.map(ts => {
+          return L.tileLayer(`https://tile.rainviewer.com/priority/radar/${ts}/256/{z}/{x}/{y}/2/1_1.png`, {
+            opacity: 0,
+            attribution: 'RainViewer',
+            zIndex: 500
+          }).addTo(map);
+        });
 
-    // Animation Loop
-    radarInterval = setInterval(() => {
-      radarFrames.forEach(l => l.setOpacity(0)); // Hide all
-      radarFrames[currentFrameIndex].setOpacity(0.6); // Show current
-      currentFrameIndex = (currentFrameIndex + 1) % radarFrames.length;
-    }, 500); // 0.5s per frame
+        window.radarLayer = L.layerGroup(radarFrames);
+
+        // Animation Loop
+        radarInterval = setInterval(() => {
+          radarFrames.forEach(l => l.setOpacity(0)); // Hide all
+          if (radarFrames[currentFrameIndex]) {
+            radarFrames[currentFrameIndex].setOpacity(0.6); // Show current
+          }
+          currentFrameIndex = (currentFrameIndex + 1) % radarFrames.length;
+        }, 500); // 0.5s per frame
+      })
+      .catch(e => console.error("❌ Weather Radar Metadata Fetch Failed:", e));
   };
 
   window.stopWeatherRadar = function () {
@@ -1575,6 +1585,7 @@
       radarFrames = [];
     }
     window.radarLayer = null;
+    currentFrameIndex = 0;
     console.log("🛑 Weather Radar Stopped");
   };
 

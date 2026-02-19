@@ -40,15 +40,27 @@ def fetch_gdelt_window(start_str, end_str):
     }
 
     try:
-        response = requests.get(
-            url, params=params, headers=headers, timeout=10)
+        # Retry loop for 429/503 errors
+        max_retries = 3
+        for attempt in range(max_retries):
+            response = requests.get(
+                url, params=params, headers=headers, timeout=15)
 
-        if response.status_code != 200:
-            print(f"   ⚠️ Errore HTTP {response.status_code}")
-            return []
-
-        data = response.json()
-        return data.get('articles', [])
+            if response.status_code == 200:
+                data = response.json()
+                return data.get('articles', [])
+            
+            elif response.status_code == 429:
+                wait_time = (2 ** attempt) * 5  # 5s, 10s, 20s
+                print(f"   ⚠️ HTTP 429 Too Many Requests. Waiting {wait_time}s...")
+                time.sleep(wait_time)
+                continue
+            
+            else:
+                print(f"   ⚠️ HTTP {response.status_code}")
+                return []
+        
+        return []
 
     except Exception as e:
         # Spesso GDELT restituisce errore se non trova nulla in quel range preciso
@@ -107,8 +119,8 @@ def fetch_gdelt_news(start_date, end_date):
 
         # Avanziamo il cursore
         current_cursor = next_cursor
-        # Pausa di cortesia per non bombardare l'API
-        time.sleep(0.5)
+        # Pausa di cortesia per non bombardare l'API (Incremented to 2.0s)
+        time.sleep(2.0)
 
     print(f"✅ GDELT COMPLETATO: {total_saved} articoli totali salvati nel DB.")
 
