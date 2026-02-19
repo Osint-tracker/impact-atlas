@@ -813,17 +813,9 @@
 
     if (layerName === 'radar') {
       if (isChecked) {
-        if (!window.radarLayer) {
-          // RainViewer (Frame 0 of loop for simplicity)
-          window.radarLayer = L.tileLayer('https://tile.rainviewer.com/priority/radar/nowcast_loop/0/256/{z}/{x}/{y}/1/1_1.png', {
-            opacity: 0.6,
-            attribution: 'RainViewer'
-          }).addTo(map);
-        } else {
-          map.addLayer(window.radarLayer);
-        }
+        window.initWeatherRadar();
       } else {
-        if (window.radarLayer) map.removeLayer(window.radarLayer);
+        window.stopWeatherRadar();
       }
     } else if (layerName === 'satellite') {
       if (isChecked) {
@@ -1063,36 +1055,32 @@
         }
       }
     } else if (layerName === 'fortifications') {
-      // OWL FORTIFICATIONS LAYER
+      // PARABELLUM FORTIFICATIONS (Repaired Data)
       if (isChecked) {
-        // Ensure data is ready
-        Promise.resolve(window.owlData || fetchOwlData()).then(owl => {
-          if (!owl || !owl.fortifications) return;
-
-          // Canvas Renderer for performance
-          const canvasRenderer = L.canvas();
-
-          fortificationsLayer = L.geoJSON({ type: 'FeatureCollection', features: owl.fortifications }, {
-            renderer: canvasRenderer,
-            style: {
-              color: '#d4d4d8', // Zinc-300
-              weight: 1.5,
-              opacity: 0.8,
-              dashArray: '4, 4',
-              lineCap: 'square'
-            },
-            onEachFeature: function (feature, layer) {
-              layer.bindPopup(feature.properties.name || "Fortification Line");
-            }
-          });
-
-          fortificationsLayer.addTo(map);
-          console.log(`✅ Fortifications Layer loaded: ${owl.fortifications.length} lines`);
-        });
+        if (!window.fortificationsLayer) {
+          console.log("🛡️ Loading Fortifications (Dragon's Teeth)...");
+          fetch('assets/data/fortifications_parabellum.geojson')
+            .then(r => r.json())
+            .then(data => {
+              // Canvas Renderer for performance (80k features!)
+              const canvasRenderer = L.canvas();
+              window.fortificationsLayer = L.geoJSON(data, {
+                renderer: canvasRenderer,
+                style: styleFortifications, // Use new Dragon's Teeth style
+                onEachFeature: function (f, l) {
+                  l.bindPopup("<b>Fortification Line</b><br>Dragon's Teeth / Trench System");
+                }
+              }).addTo(map);
+              console.log(`✅ Fortifications loaded: ${data.features.length}`);
+            })
+            .catch(e => console.error("Fortification load failed:", e));
+        } else {
+          map.addLayer(window.fortificationsLayer);
+        }
       } else {
-        if (fortificationsLayer) {
-          map.removeLayer(fortificationsLayer);
-          fortificationsLayer = null;
+        if (window.fortificationsLayer) {
+          map.removeLayer(window.fortificationsLayer);
+          window.fortificationsLayer = null;
         }
       }
 
@@ -1535,6 +1523,125 @@
         }
       }
     }
+  };
+
+  // ============================================
+  // 9. WEATHER & FORTIFICATIONS (NEW)
+  // ============================================
+
+  // A. Fortifications Styling (Dragon's Teeth)
+  function styleFortifications(feature) {
+    return {
+      color: '#ff3333',
+      weight: 3,
+      opacity: 0.7,
+      dashArray: '0, 8', // Dots
+      lineCap: 'round'
+    };
+  }
+
+  // B. Weather Radar (Animated Loop)
+  let radarInterval = null;
+  let radarFrames = [];
+  let currentFrameIndex = 0;
+
+  window.initWeatherRadar = function () {
+    if (window.radarLayer) return; // Already running
+
+    console.log("🌦️ Starting Weather Radar Loop...");
+    const now = Math.floor(Date.now() / 1000);
+    const timeSteps = [];
+
+    // Past 2 hours (every 10 min) -> 12 frames
+    for (let i = 12; i >= 0; i--) {
+      timeSteps.push(now - (i * 600));
+    }
+
+    radarFrames = timeSteps.map(ts => {
+      return L.tileLayer(`https://tile.rainviewer.com/priority/radar/${ts}/256/{z}/{x}/{y}/2/1_1.png`, {
+        opacity: 0,
+        attribution: 'RainViewer',
+        zIndex: 500
+      }).addTo(map);
+    });
+
+    window.radarLayer = L.layerGroup(radarFrames);
+
+    // Animation Loop
+    radarInterval = setInterval(() => {
+      radarFrames.forEach(l => l.setOpacity(0)); // Hide all
+      radarFrames[currentFrameIndex].setOpacity(0.6); // Show current
+      currentFrameIndex = (currentFrameIndex + 1) % radarFrames.length;
+    }, 500); // 0.5s per frame
+  };
+
+  window.stopWeatherRadar = function () {
+    if (radarInterval) clearInterval(radarInterval);
+    if (radarFrames.length > 0) {
+      radarFrames.forEach(l => map.removeLayer(l));
+      radarFrames = [];
+    }
+    window.radarLayer = null;
+    console.log("🛑 Weather Radar Stopped");
+  };
+
+  // C. Physical Frontline (Open-Meteo)
+  window.fetchFrontlineWeather = function () {
+    // Center of Frontline (approx Donbas)
+    const lat = 48.0, lon = 37.8;
+
+    console.log("🌡️ Fetching Frontline Weather (Physical Effects)...");
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=soil_moisture_0_1cm,soil_temperature_0cm`)
+      .then(r => r.json())
+      .then(data => {
+        const temp = data.current_weather.temperature;
+        const moisture = data.hourly.soil_moisture_0_1cm[0] || 0.3; // Approx
+
+        console.log(`🌡️ Temp: ${temp}°C, 💧 Moisture: ${moisture}`);
+
+        // Update Mobility Index Widget
+        const mobIndex = document.getElementById('mobility-index');
+        if (mobIndex) {
+          let status = "OPTIMAL";
+          let color = "#22c55e"; // Green
+
+          if (temp > 0 && moisture > 0.35) {
+            status = "CRITICAL (MUD)";
+            color = "#ef4444"; // Red
+          } else if (temp < -2) {
+            status = "GOOD (FROZEN)";
+            color = "#3b82f6"; // Blue
+          } else if (moisture < 0.2) {
+            status = "GOOD (DRY)";
+            color = "#eab308"; // Yellow
+          }
+          mobIndex.innerHTML = `<span style="color:${color}; font-weight:800;">${status}</span>`;
+        }
+
+        // Apply Physical Glow to Frontline (if exists)
+        if (currentFrontlineLayer) {
+          currentFrontlineLayer.eachLayer(layer => {
+            let color = '#d4d4d8'; // Default Zinc
+            let glowColor = 'transparent';
+
+            if (temp > 0 && moisture > 0.35) {
+              // Muddy / Rasputitsa
+              color = '#854d0e'; // Brown
+              glowColor = '#a16207';
+            } else if (temp < -2) {
+              // Frozen
+              color = '#cffafe'; // Cyan-100
+              glowColor = '#06b6d4'; // Cyan-500
+            }
+
+            if (layer.setStyle) {
+              layer.setStyle({ color: color, weight: 3 });
+              // Leaflet doesn't support glow natively easily, relying on color
+            }
+          });
+        }
+      })
+      .catch(e => console.error("Weather fetch failed:", e));
   };
 
   // Global filter function (defensive wrapper)
@@ -2506,6 +2613,9 @@
     console.log("🚀 Starting Impact Atlas...");
     initMap();
     loadEventsData();
+
+    // Initialize Physical Weather
+    if (window.fetchFrontlineWeather) window.fetchFrontlineWeather();
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', startApp);
