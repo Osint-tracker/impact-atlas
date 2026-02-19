@@ -101,6 +101,14 @@
     });
 
     marker.bindPopup(createPopupContent(e));
+
+    // Fetch weather impact data asynchronously when the popup is opened
+    marker.on('popupopen', function () {
+      if (window.fetchHistoricalWeatherImpact) {
+        window.fetchHistoricalWeatherImpact(e);
+      }
+    });
+
     return marker;
   }
 
@@ -141,9 +149,10 @@
       <div style="border-left: 4px solid ${color}; padding-left: 12px; margin-bottom: 12px;">
         <h5 style="margin:0; font-weight:700; font-size:1rem; line-height:1.3; color:#f8fafc;">${e.title}</h5>
         
-        <div style="margin-top:8px; display:flex; gap:8px;">
+        <div style="margin-top:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
           <span class="popup-meta-tag" style="background:#1e293b; padding:2px 6px; border-radius:4px; font-size:0.75rem;"><i class="fa-regular fa-calendar"></i> ${e.date}</span>
           <span class="popup-meta-tag" style="background:#1e293b; padding:2px 6px; border-radius:4px; font-size:0.75rem;"><i class="fa-solid fa-tag"></i> ${e.type || 'Event'}</span>
+          <span id="weather-badge-${id}" style="font-size:0.75rem; display:inline-block;"></span>
         </div>
       </div>
 
@@ -162,6 +171,51 @@
       ${sourceFooter}
     </div>`;
   }
+
+  // ==========================================
+  // 1.5 HISTORICAL WEATHER IMPACT GENERATOR
+  // ==========================================
+  window.fetchHistoricalWeatherImpact = function (e) {
+    const id = e.event_id || e.id || (e.properties ? e.properties.event_id : null);
+    const badge = document.getElementById(`weather-badge-${id}`);
+
+    if (!badge || badge.dataset.loaded === 'true') return;
+
+    // Extract date (YYYY-MM-DD format required for Open-Meteo)
+    const dateMatch = (e.date || '').match(/\d{4}-\d{2}-\d{2}/);
+    if (!dateMatch || !e.lat || !e.lon) {
+      badge.style.display = 'none';
+      return; // Can't fetch without valid location and date
+    }
+    const isoDate = dateMatch[0];
+    badge.innerHTML = `<span style="color:#64748b; font-size:0.65rem;">Fetching weather...</span>`;
+
+    // Fetch from Open-Meteo Archive API
+    fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${e.lat}&longitude=${e.lon}&start_date=${isoDate}&end_date=${isoDate}&daily=temperature_2m_max,precipitation_sum&timezone=auto`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.daily) {
+          const tMax = data.daily.temperature_2m_max[0];
+          const precip = data.daily.precipitation_sum[0] || 0;
+
+          let impactHtml = '';
+          if (tMax <= -2) {
+            impactHtml = `<span style="background:#082f49; color:#38bdf8; border:1px solid #0284c7; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-snowflake"></i> Frozen (${tMax}°C)</span>`;
+          } else if (tMax > 0 && precip > 5) {
+            impactHtml = `<span style="background:#422006; color:#fb923c; border:1px solid #ea580c; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-cloud-showers-heavy"></i> Mud/Rain (${precip}mm)</span>`;
+          } else {
+            impactHtml = `<span style="background:#1e293b; color:#94a3b8; border:1px solid #334155; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-cloud"></i> Fair (${tMax}°C)</span>`;
+          }
+
+          badge.innerHTML = impactHtml;
+          badge.dataset.loaded = 'true';
+        }
+      })
+      .catch(err => {
+        console.warn(`Historical weather fetch failed for event ${id}:`, err);
+        badge.style.display = 'none';
+      });
+  };
 
   // ============================================
   // 4. RENDERING FUNCTIONS
@@ -297,6 +351,8 @@
             } else {
               frontlineFeatures.push(f);
             }
+          } else if (f.geometry.type === 'Polygon' || f.geometry.type === 'MultiPolygon') {
+            frontlineFeatures.push(f); // Polygons are part of the frontline map
           }
         });
 
@@ -310,10 +366,40 @@
           renderer: canvasRenderer,
           style: function (feature) {
             const side = feature.properties.side || 'NEUTRAL';
-            let color = '#d4d4d8'; // Zinc
-            if (side === 'RU') color = '#ef4444';
-            if (side === 'UA') color = '#3b82f6';
-            return { color: color, weight: 2.5, opacity: 0.8, lineCap: 'square' };
+            const type = feature.geometry.type;
+
+            // Base styles
+            let color = '#d4d4d8';      // Zinc line for borders
+            let fillColor = 'transparent';
+            let fillOpacity = 0;
+            let weight = 2.5;
+
+            if (side === 'RU') {
+              color = '#ef4444'; // Red
+              if (type.includes('Polygon')) {
+                fillColor = '#ef4444';
+                fillOpacity = 0.15; // Semi-transparent red field for RU occupation
+                weight = 1;         // Thinner border for the polygon itself
+              }
+            } else if (side === 'UA') {
+              color = '#3b82f6'; // Blue for lines
+              if (type.includes('Polygon')) {
+                // USER REQUEST: No color for Ukrainians (transparent fill)
+                fillColor = 'transparent';
+                fillOpacity = 0;
+                color = 'transparent'; // Completely invisible polygon
+                weight = 0;
+              }
+            }
+
+            return {
+              color: color,
+              weight: weight,
+              opacity: 0.8,
+              fillColor: fillColor,
+              fillOpacity: fillOpacity,
+              lineCap: 'square'
+            };
           }
         });
 
@@ -808,6 +894,12 @@
         window.initWeatherRadar();
       } else {
         window.stopWeatherRadar();
+      }
+    } else if (layerName === 'vfr') {
+      if (isChecked) {
+        window.showVFR();
+      } else {
+        window.hideVFR();
       }
     } else if (layerName === 'satellite') {
       if (isChecked) {
@@ -1589,63 +1681,143 @@
     console.log("🛑 Weather Radar Stopped");
   };
 
-  // C. Physical Frontline (Open-Meteo)
+  // C. Drone Visibility Index (V.F.R.)
+  window.vfrLayer = null;
+
+  window.showVFR = function () {
+    if (window.vfrLayer) return;
+    console.log("🚁 Fetching Drone V.F.R. Data...");
+
+    // 5 Key frontline sectors
+    const sectors = [
+      { name: 'Kupiansk', lat: 49.7, lon: 37.6 },
+      { name: 'Bakhmut', lat: 48.6, lon: 38.0 },
+      { name: 'Donetsk', lat: 48.1, lon: 37.7 },
+      { name: 'Zaporizhzhia', lat: 47.5, lon: 35.8 },
+      { name: 'Kherson', lat: 46.6, lon: 32.6 }
+    ];
+
+    window.vfrLayer = L.layerGroup().addTo(map);
+
+    sectors.forEach(sector => {
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${sector.lat}&longitude=${sector.lon}&current=cloud_cover,visibility`)
+        .then(r => r.json())
+        .then(data => {
+          if (!data.current) return;
+          const clouds = data.current.cloud_cover || 0; // percentage
+          const vis = data.current.visibility || 10000; // meters
+
+          // Drone ops degraded if clouds > 70% or visibility < 3000m
+          const isDegraded = clouds > 70 || vis < 3000;
+
+          if (isDegraded) {
+            // Draw a hashed/solid dark mask over the sector
+            const circle = L.circle([sector.lat, sector.lon], {
+              color: '#0f172a',
+              fillColor: '#1e293b',
+              weight: 2,
+              dashArray: '5, 10',
+              fillOpacity: 0.6,
+              radius: 40000 // 40km radius
+            }).addTo(window.vfrLayer);
+
+            // Add warning label
+            const labelIcon = L.divIcon({
+              className: 'vfr-label',
+              html: `<div style="background: rgba(15, 23, 42, 0.8); border: 1px solid #ef4444; color: #ef4444; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; font-weight: bold; white-space: nowrap; text-align: center;">
+                                ⚠️ V.F.R. DEGRADED<br>
+                                <span style="color:#94a3b8; font-size:0.6rem;">Clouds: ${clouds}% | Vis: ${(vis / 1000).toFixed(1)}km</span>
+                             </div>`,
+              iconSize: [120, 40],
+              iconAnchor: [60, 20]
+            });
+            L.marker([sector.lat, sector.lon], { icon: labelIcon }).addTo(window.vfrLayer);
+          }
+        })
+        .catch(e => console.error("VFR Fetch Error:", e));
+    });
+  };
+
+  window.hideVFR = function () {
+    if (window.vfrLayer) {
+      map.removeLayer(window.vfrLayer);
+      window.vfrLayer = null;
+    }
+  };
+
+  // D. Physical Frontline (Open-Meteo) 3-Day Forecast
   window.fetchFrontlineWeather = function () {
     // Center of Frontline (approx Donbas)
     const lat = 48.0, lon = 37.8;
 
-    console.log("🌡️ Fetching Frontline Weather (Physical Effects)...");
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=soil_moisture_0_1cm,soil_temperature_0cm`)
+    console.log("🌡️ Fetching Tactical Weather Forecast...");
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=soil_moisture_0_1cm,soil_temperature_0cm&forecast_days=3`)
       .then(r => r.json())
       .then(data => {
-        const temp = data.current_weather.temperature;
-        const moisture = data.hourly.soil_moisture_0_1cm[0] || 0.3; // Approx
+        if (!data.hourly) return;
 
-        console.log(`🌡️ Temp: ${temp}°C, 💧 Moisture: ${moisture}`);
+        // Helper to get status
+        const getStatus = (temp, moisture) => {
+          if (temp > 0 && moisture > 0.35) return { label: "MUD", color: "#ef4444" }; // Red
+          if (temp <= -2) return { label: "FROZEN", color: "#3b82f6" }; // Blue
+          if (moisture < 0.25) return { label: "DRY", color: "#eab308" }; // Yellow
+          return { label: "OPTIMAL", color: "#22c55e" }; // Green
+        };
 
-        // Update Mobility Index Widget
+        // Sample noon (12:00) for each of the 3 days
+        const t1 = data.hourly.soil_temperature_0cm[12] || 0;
+        const m1 = data.hourly.soil_moisture_0_1cm[12] || 0.3;
+        const d1 = getStatus(t1, m1);
+
+        const t2 = data.hourly.soil_temperature_0cm[36] || t1;
+        const m2 = data.hourly.soil_moisture_0_1cm[36] || m1;
+        const d2 = getStatus(t2, m2);
+
+        const t3 = data.hourly.soil_temperature_0cm[60] || t2;
+        const m3 = data.hourly.soil_moisture_0_1cm[60] || m2;
+        const d3 = getStatus(t3, m3);
+
         const mobIndex = document.getElementById('mobility-index');
         if (mobIndex) {
-          let status = "OPTIMAL";
-          let color = "#22c55e"; // Green
-
-          if (temp > 0 && moisture > 0.35) {
-            status = "CRITICAL (MUD)";
-            color = "#ef4444"; // Red
-          } else if (temp < -2) {
-            status = "GOOD (FROZEN)";
-            color = "#3b82f6"; // Blue
-          } else if (moisture < 0.2) {
-            status = "GOOD (DRY)";
-            color = "#eab308"; // Yellow
-          }
-          mobIndex.innerHTML = `<span style="color:${color}; font-weight:800;">${status}</span>`;
+          mobIndex.innerHTML = `
+              <div style="display:flex; justify-content:space-between; margin-top:5px; gap:4px;">
+                <div style="flex:1; background:#0f172a; border: 1px solid ${d1.color}55; padding:6px; border-radius:4px; text-align:center;">
+                  <div style="font-size:0.5rem; color:#94a3b8; font-weight:bold; letter-spacing:1px; margin-bottom:2px;">TODAY</div>
+                  <div style="color:${d1.color}; font-size:0.75rem; font-weight:800; font-family:'JetBrains Mono', monospace;">${d1.label}</div>
+                </div>
+                <div style="flex:1; background:#0f172a; border: 1px solid ${d2.color}44; padding:6px; border-radius:4px; text-align:center;">
+                  <div style="font-size:0.5rem; color:#94a3b8; font-weight:bold; letter-spacing:1px; margin-bottom:2px;">+24H</div>
+                  <div style="color:${d2.color}; font-size:0.7rem; font-weight:800; font-family:'JetBrains Mono', monospace;">${d2.label}</div>
+                </div>
+                <div style="flex:1; background:#0f172a; border: 1px solid ${d3.color}33; padding:6px; border-radius:4px; text-align:center;">
+                  <div style="font-size:0.5rem; color:#94a3b8; font-weight:bold; letter-spacing:1px; margin-bottom:2px;">+48H</div>
+                  <div style="color:${d3.color}; font-size:0.7rem; font-weight:800; font-family:'JetBrains Mono', monospace;">${d3.label}</div>
+                </div>
+              </div>
+            `;
         }
 
-        // Apply Physical Glow to Frontline (if exists)
+        // Apply Physical Glow to Frontline (if exists) based on Today's conditions
         if (currentFrontlineLayer) {
           currentFrontlineLayer.eachLayer(layer => {
-            let color = '#d4d4d8'; // Default Zinc
-            let glowColor = 'transparent';
+            let styleColor = '#d4d4d8'; // Default Zinc
 
-            if (temp > 0 && moisture > 0.35) {
-              // Muddy / Rasputitsa
-              color = '#854d0e'; // Brown
-              glowColor = '#a16207';
-            } else if (temp < -2) {
-              // Frozen
-              color = '#cffafe'; // Cyan-100
-              glowColor = '#06b6d4'; // Cyan-500
+            if (t1 > 0 && m1 > 0.35) {
+              styleColor = '#854d0e'; // Brown Mud
+            } else if (t1 < -2) {
+              styleColor = '#cffafe'; // Cyan Frozen
             }
 
-            if (layer.setStyle) {
-              layer.setStyle({ color: color, weight: 3 });
-              // Leaflet doesn't support glow natively easily, relying on color
+            if (layer.setStyle && (!layer.options.fillColor || layer.options.fillColor === 'transparent')) {
+              // Only style lines or neutral polygons, not filled occupation zones
+              if (layer.options.color !== 'transparent') {
+                layer.setStyle({ color: styleColor, weight: 3 });
+              }
             }
           });
         }
       })
-      .catch(e => console.error("Weather fetch failed:", e));
+      .catch(e => console.error("Forecast fetch failed:", e));
   };
 
   // Global filter function (defensive wrapper)

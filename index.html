@@ -716,14 +716,6 @@
               </div>
             </div>
 
-            <div class="control-group">
-              <h3>External Sources</h3>
-              <button onclick="openExternalMap()" class="action-btn"
-                style="width:100%; padding:10px; background:#444; color:white; border:1px solid #666; cursor:pointer;">
-                Open Playfra Map
-              </button>
-              <small style="color:#aaa; font-size:0.8em;">Data curated by @Playfra</small>
-            </div>
 
             <div class="filter-block">
               <label>Actors</label>
@@ -767,15 +759,15 @@
               <div class="card-desc">Real-time frontline & unit tracking. Primary Intelligence Source.</div>
             </div>
 
-            <div class="map-layer-card" onclick="selectMapSource(this, 'isw')">
+            <div class="map-layer-card" onclick="openPlayfraModal()">
               <div class="card-header">
                 <div>
-                  <span class="card-title">ISW ANALYTICS</span>
-                  <span class="badge-source badge-us">US</span>
+                  <span class="card-title">TACTICAL DEEP MAP</span>
+                  <span class="badge-source badge-us" style="background:#8b5cf6; color:white;">PLAYFRA</span>
                 </div>
-                <i class="fa-regular fa-circle status-dot"></i>
+                <i class="fa-solid fa-satellite status-dot" style="color: #cbd5e1;"></i>
               </div>
-              <div class="card-desc">Conservative daily analysis (Fallback).</div>
+              <div class="card-desc">High-resolution tactical map overlay.</div>
             </div>
 
             <!-- Rybar Removed -->
@@ -795,6 +787,14 @@
               <input type="checkbox" onchange="toggleTechLayer('firms', this)">
               <div class="tech-switch"></div>
             </label>
+            <label class="tech-toggle-row">
+              <span class="tech-toggle-label" data-tooltip="Real-time cloud cover & fog degrading drone operations.">
+                Drone V.F.R. (Visibility)
+              </span>
+              <input type="checkbox" onchange="toggleTechLayer('vfr', this)">
+              <div class="tech-switch"></div>
+            </label>
+
             <label class="tech-toggle-row">
               <span class="tech-toggle-label">Satellite (HIR)</span>
               <input type="checkbox" onchange="toggleTechLayer('satellite', this)">
@@ -1216,6 +1216,21 @@
         </div>
       </div>
 
+      <!-- PLAYFRA MAP MODAL (IFRAME) -->
+      <div id="playfraModal" class="modal-overlay" onclick="if(event.target.id==='playfraModal') closePlayfraModal()">
+        <div class="modal-content"
+          style="max-width: 95vw; height: 95vh; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+          <div
+            style="background: #0f172a; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155;">
+            <h3 style="margin: 0; color: #f8fafc; font-size: 1rem;"><i class="fa-solid fa-satellite"></i> TACTICAL DEEP
+              MAP (PLAYFRA)</h3>
+            <span class="close-modal" onclick="closePlayfraModal()"
+              style="position: static; color: #ef4444; font-size: 1.5rem; cursor: pointer;">&times;</span>
+          </div>
+          <iframe id="playfraIframe" style="flex: 1; width: 100%; border: none;" allow="fullscreen"></iframe>
+        </div>
+      </div>
+
       <!-- UNIT DOSSIER MODAL -->
       <div id="unitModal" class="modal-overlay" onclick="closeUnitModal(event)">
         <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto; padding: 0;">
@@ -1407,6 +1422,21 @@
           // View Container Update
           document.querySelectorAll('.view-container').forEach(c => c.classList.remove('active'));
           document.getElementById('view-' + viewName).classList.add('active');
+        }
+
+        // --- PLAYFRA MAP MODAL LOGIC (NEW) ---
+        function openPlayfraModal() {
+          const modal = document.getElementById('playfraModal');
+          const iframe = document.getElementById('playfraIframe');
+          // Only load iframe src when opened to save bandwidth
+          if (!iframe.src || iframe.src === window.location.href) {
+            iframe.src = "https://map.playfra.com";
+          }
+          modal.style.display = 'flex';
+        }
+
+        function closePlayfraModal() {
+          document.getElementById('playfraModal').style.display = 'none';
         }
 
         // --- SIDEBAR TAB LOGIC (NEW) ---
