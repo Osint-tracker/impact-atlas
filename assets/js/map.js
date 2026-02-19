@@ -592,12 +592,8 @@
           const categorySelect = document.getElementById('chartTypeFilter');
           const selectedCategory = categorySelect ? categorySelect.value : '';
 
-          // Threat Level Checkboxes
-          const threatCritical = document.querySelector('input[value="critical"]') ? document.querySelector('input[value="critical"]').checked : true;
-          const threatHigh = document.querySelector('input[value="high"]') ? document.querySelector('input[value="high"]').checked : true;
-          const threatMedium = document.querySelector('input[value="medium"]') ? document.querySelector('input[value="medium"]').checked : true;
 
-          console.log(`🔍 Filtering: Range[${startDate}-${endDate}] Actor[${selectedActor}] Cat[${selectedCategory}] Threat[${threatCritical},${threatHigh},${threatMedium}] Search[${searchTerm}]`);
+          console.log(`🔍 Filtering: Range[${startDate}-${endDate}] Actor[${selectedActor}] Cat[${selectedCategory}] Search[${searchTerm}]`);
 
           // B. Filtering Cycle
           const filtered = window.globalEvents.filter(e => {
@@ -610,10 +606,6 @@
             // 3. Category
             if (selectedCategory && e.category !== selectedCategory) return false;
 
-            // 4. Threat Level
-            if (e.threat_level === 'critical' && !threatCritical) return false;
-            if (e.threat_level === 'high' && !threatHigh) return false;
-            if (e.threat_level === 'medium' && !threatMedium) return false;
 
             // 5. Smart Text Search
             if (searchTerm) {
@@ -1529,14 +1521,14 @@
   // 9. WEATHER & FORTIFICATIONS (NEW)
   // ============================================
 
-  // A. Fortifications Styling (Dragon's Teeth)
+  // A. Fortifications Styling (Concrete / Defensive Line)
   function styleFortifications(feature) {
     return {
-      color: '#ff3333',
+      color: '#52525b', // Zinc-600 (Concrete)
       weight: 3,
-      opacity: 0.7,
-      dashArray: '0, 8', // Dots
-      lineCap: 'round'
+      opacity: 0.8,
+      dashArray: '4, 8', // Dashed
+      lineCap: 'square'
     };
   }
 
@@ -1549,7 +1541,8 @@
     if (window.radarLayer) return; // Already running
 
     console.log("🌦️ Starting Weather Radar Loop...");
-    const now = Math.floor(Date.now() / 1000);
+    // FIX: Align timestamp to nearest 10 minutes (600s) for RainViewer
+    const now = Math.floor(Date.now() / 1000 / 600) * 600;
     const timeSteps = [];
 
     // Past 2 hours (every 10 min) -> 12 frames
