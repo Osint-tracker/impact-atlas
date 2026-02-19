@@ -1553,11 +1553,11 @@
           return;
         }
 
-        const timestamps = data.radar.past.map(frame => frame.time);
-        console.log(`✅ Loaded ${timestamps.length} radar frames.`);
+        const pastFrames = data.radar.past;
+        console.log(`✅ Loaded ${pastFrames.length} radar frames from ${data.host}`);
 
-        radarFrames = timestamps.map(ts => {
-          return L.tileLayer(`https://tile.rainviewer.com/priority/radar/${ts}/256/{z}/{x}/{y}/2/1_1.png`, {
+        radarFrames = pastFrames.map(frame => {
+          return L.tileLayer(`${data.host}${frame.path}/256/{z}/{x}/{y}/2/1_1.png`, {
             opacity: 0,
             attribution: 'RainViewer',
             zIndex: 500

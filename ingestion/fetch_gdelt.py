@@ -52,12 +52,12 @@ def fetch_gdelt_window(start_str, end_str):
             
             elif response.status_code == 429:
                 wait_time = (2 ** attempt) * 5  # 5s, 10s, 20s
-                print(f"   ⚠️ HTTP 429 Too Many Requests. Waiting {wait_time}s...")
+                print(f"   [WARNING] HTTP 429 Too Many Requests. Waiting {wait_time}s...")
                 time.sleep(wait_time)
                 continue
             
             else:
-                print(f"   ⚠️ HTTP {response.status_code}")
+                print(f"   [ERROR] HTTP {response.status_code}")
                 return []
         
         return []
@@ -73,14 +73,14 @@ def fetch_gdelt_news(start_date, end_date):
     Scarica news iterando giorno per giorno per aggirare il limite di 250 risultati.
     Accetta stringhe YYYYMMDDHHMMSS.
     """
-    print(f"🌍 GDELT: Avvio scraping massivo da {start_date} a {end_date}...")
+    print(f"[INFO] GDELT: Avvio scraping massivo da {start_date} a {end_date}...")
 
     # Convertiamo stringhe in oggetti datetime per fare i calcoli
     try:
         dt_start = datetime.datetime.strptime(start_date, "%Y%m%d%H%M%S")
         dt_end = datetime.datetime.strptime(end_date, "%Y%m%d%H%M%S")
     except ValueError:
-        print("❌ Errore formato data GDELT. Usa YYYYMMDDHHMMSS")
+        print("[ERROR] Errore formato data GDELT. Usa YYYYMMDDHHMMSS")
         return
 
     current_cursor = dt_start
@@ -97,7 +97,7 @@ def fetch_gdelt_news(start_date, end_date):
         s_str = current_cursor.strftime("%Y%m%d%H%M%S")
         e_str = next_cursor.strftime("%Y%m%d%H%M%S")
 
-        print(f"   📥 Scarico finestra: {s_str} -> {e_str} ... ", end="")
+        print(f"   [FETCH] Scarico finestra: {s_str} -> {e_str} ... ", end="")
 
         articles = fetch_gdelt_window(s_str, e_str)
 
@@ -122,7 +122,7 @@ def fetch_gdelt_news(start_date, end_date):
         # Pausa di cortesia per non bombardare l'API (Incremented to 2.0s)
         time.sleep(2.0)
 
-    print(f"✅ GDELT COMPLETATO: {total_saved} articoli totali salvati nel DB.")
+    print(f"[SUCCESS] GDELT COMPLETATO: {total_saved} articoli totali salvati nel DB.")
 
 
 # Test rapido
