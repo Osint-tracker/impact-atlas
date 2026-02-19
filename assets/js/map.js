@@ -182,12 +182,19 @@
     if (!badge || badge.dataset.loaded === 'true') return;
 
     // Extract date (YYYY-MM-DD format required for Open-Meteo)
-    const dateMatch = (e.date || '').match(/\d{4}-\d{2}-\d{2}/);
-    if (!dateMatch || !e.lat || !e.lon) {
+    let isoDate = null;
+    if (e.timestamp) {
+      isoDate = new Date(e.timestamp).toISOString().split('T')[0];
+    } else {
+      const dateMatch = (e.date || '').match(/\d{4}-\d{2}-\d{2}/);
+      if (dateMatch) isoDate = dateMatch[0];
+    }
+
+    if (!isoDate || !e.lat || !e.lon) {
       badge.style.display = 'none';
       return; // Can't fetch without valid location and date
     }
-    const isoDate = dateMatch[0];
+
     badge.innerHTML = `<span style="color:#64748b; font-size:0.65rem;">Fetching weather...</span>`;
 
     // Fetch from Open-Meteo Archive API
@@ -378,7 +385,7 @@
               color = '#ef4444'; // Red
               if (type.includes('Polygon')) {
                 fillColor = '#ef4444';
-                fillOpacity = 0.15; // Semi-transparent red field for RU occupation
+                fillOpacity = 0.3;  // Stronger Red field for RU occupation
                 weight = 1;         // Thinner border for the polygon itself
               }
             } else if (side === 'UA') {
@@ -389,6 +396,14 @@
                 fillOpacity = 0;
                 color = 'transparent'; // Completely invisible polygon
                 weight = 0;
+              }
+            } else {
+              // Neutral / Grey Zone / Unknown
+              color = '#94a3b8'; // Slate Grey
+              if (type.includes('Polygon')) {
+                fillColor = '#94a3b8';
+                fillOpacity = 0.2; // Grey field for Grey Zone
+                weight = 1;
               }
             }
 

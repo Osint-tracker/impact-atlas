@@ -787,12 +787,15 @@
               <input type="checkbox" onchange="toggleTechLayer('firms', this)">
               <div class="tech-switch"></div>
             </label>
-            <label class="tech-toggle-row">
-              <span class="tech-toggle-label" data-tooltip="Real-time cloud cover & fog degrading drone operations.">
-                Drone V.F.R. (Visibility)
-              </span>
+            <label class="tech-toggle-row" style="align-items: flex-start;">
+              <div style="display:flex; flex-direction:column;">
+                <span class="tech-toggle-label" data-tooltip="Real-time cloud cover & fog degrading drone operations.">
+                  Drone V.F.R. (Visibility)
+                </span>
+                <span style="font-size: 0.65rem; color: #64748b; margin-top: 2px;">Clouds >70% or Vis &lt;3km</span>
+              </div>
               <input type="checkbox" onchange="toggleTechLayer('vfr', this)">
-              <div class="tech-switch"></div>
+              <div class="tech-switch" style="margin-top: 2px;"></div>
             </label>
 
             <label class="tech-toggle-row">
