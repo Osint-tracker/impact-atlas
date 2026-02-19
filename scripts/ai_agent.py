@@ -1396,6 +1396,12 @@ RAW TEXT:
         clean_loc_lower = location_name.lower()
         is_suspicious = any(cap.lower() in clean_loc_lower for cap in self.SUSPICIOUS_CAPITALS)
         
+        # Block generic country names from snapping to capital centroid
+        GENERIC_COUNTRIES = ["ukraine", "russia", "romania", "poland", "belarus", "moldova", "usa", "us", "uk", "nato"]
+        if clean_loc_lower in GENERIC_COUNTRIES:
+            print(f"      ⚠️ COUNTRY-LEVEL EXTRACT DETECTED: '{location_name}'. Rejecting to prevent capital centroid snap.")
+            return None
+
         if is_suspicious:
             # Check if context implies frontline combat (metonymy detection)
             context_lower = context_text.lower()
