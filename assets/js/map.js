@@ -346,6 +346,9 @@
           const props = f.properties || {};
           const name = (props.name || '').toLowerCase();
 
+          // Skip strange Holding Area rectangles in the Black Sea
+          if (name.includes('holding area')) return;
+
           if (f.geometry.type === 'Point') {
             // UNIT
             // Normalize name key for matching
@@ -381,29 +384,29 @@
             let fillOpacity = 0;
             let weight = 2.5;
 
-            if (side === 'RU') {
-              color = '#ef4444'; // Red
-              if (type.includes('Polygon')) {
-                fillColor = '#ef4444';
-                fillOpacity = 0.3;  // Stronger Red field for RU occupation
-                weight = 1;         // Thinner border for the polygon itself
-              }
-            } else if (side === 'UA') {
-              color = '#3b82f6'; // Blue for lines
-              if (type.includes('Polygon')) {
-                // USER REQUEST: No color for Ukrainians (transparent fill)
+            if (type.includes('Polygon')) {
+              if (side === 'UA') {
+                // Ukrainian held (e.g. counterattacks)
                 fillColor = 'transparent';
                 fillOpacity = 0;
-                color = 'transparent'; // Completely invisible polygon
+                color = 'transparent';
                 weight = 0;
+              } else {
+                // RU or NEUTRAL Polygons represent Russian-occupied territories (Crimea, LPR, etc)
+                color = '#ef4444'; // Red
+                fillColor = '#ef4444';
+                fillOpacity = 0.3; // Red field for Russian occupation
+                weight = 1;        // Thinner border for polygon
               }
             } else {
-              // Neutral / Grey Zone / Unknown
-              color = '#94a3b8'; // Slate Grey
-              if (type.includes('Polygon')) {
-                fillColor = '#94a3b8';
-                fillOpacity = 0.2; // Grey field for Grey Zone
-                weight = 1;
+              // Lines (Frontline, Grey Zone, Fortifications)
+              if (side === 'RU') {
+                color = '#ef4444'; // Red
+              } else if (side === 'UA') {
+                color = '#3b82f6'; // Blue
+              } else {
+                // Neutral / Grey Zone / Unknown lines
+                color = '#94a3b8'; // Slate Grey
               }
             }
 
