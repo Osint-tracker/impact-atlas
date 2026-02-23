@@ -11,6 +11,15 @@ import logging
 from datetime import datetime, timedelta
 from openai import OpenAI
 from dotenv import load_dotenv
+
+# Vision Instrument: Zero-disk I/O media processor for The Visionary
+try:
+    from scripts.instruments.vision_instrument import MediaProcessor
+except ImportError:
+    try:
+        from instruments.vision_instrument import MediaProcessor
+    except ImportError:
+        MediaProcessor = None  # Graceful degradation if opencv not installed
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
 from geo_instrument import GeoProbe  
@@ -223,6 +232,105 @@ Return ONLY valid JSON:
   ]
 }
 """
+
+# =========================================================================
+# 👁️ THE VISIONARY: IMINT Verification & Equipment ID (System Prompt)
+# =========================================================================
+# MODEL: qwen/qwen3-vl-235b-a22b-instruct (MANDATORY HARD CONSTRAINT)
+# TEMPERATURE: 0.0 (Strict Determinism)
+# ACTIVATION: CONDITIONAL — Only when event payload contains media files
+# PIPELINE: After The Soldier (Step 2), Before The Titan (Step 3)
+# =========================================================================
+
+VISIONARY_SYSTEM_PROMPT = """
+You are **The Visionary**, an elite AI Military Intelligence Analyst specializing in **IMINT (Imagery Intelligence)**.
+Your primary directive is **Ground Truth Verification**. You activate only when visual evidence is available.
+
+## CARDINAL RULE
+IMINT OVERRIDES SIGINT/TEXT. What you see in the image is the ABSOLUTE TRUTH.
+If text says "destroyed tank" but image shows an intact field, the field is the truth.
+
+## INPUT CONTEXT
+You will receive:
+1. **Text Intel:** JSON data extracted by "The Soldier" (containing claims about units, weapons, and locations).
+2. **Visual Evidence:** Image frames or video keyframes attached to this message.
+
+## MISSION
+Analyze the Visual Evidence to **CONFIRM**, **CONTRADICT**, or **ENRICH** the Text Intel.
+You do not trust the text; you trust only what is pixel-verified.
+Your output dictates the factual baseline for the rest of the intelligence pipeline.
+
+## PROTOCOL
+
+### 1. EQUIPMENT IDENTIFICATION (CRITICAL)
+- Identify military assets to the **specific variant level** if resolution allows.
+  - GOOD: "T-72B3", "M2A2 Bradley ODS-SA", "S-300PM2", "BMP-3", "2S19 Msta-S"
+  - BAD: "tank", "IFV", "SAM system", "armored vehicle"
+- If the image is blurry, obscured, distant, or partially occluded:
+  - Output `"UNKNOWN_ARMOR"`, `"UNKNOWN_VEHICLE"`, `"UNKNOWN_AIRCRAFT"`, or `"UNKNOWN_SYSTEM"`.
+  - **DO NOT GUESS. DO NOT HALLUCINATE.**
+- Faction assignment: Use visible markings (Z, V, O, △, cross, tryzub) to assign RU/UA.
+  If no markings visible, output `"UNKNOWN"`.
+
+### 2. KINETIC ASSESSMENT (Effect Vector for T.I.E.)
+Assess the physical damage visible in the media to inform the T.I.E. Score (Effect Vector).
+- `NONE` — Asset intact, no visible damage, possibly staged or pre-strike.
+- `SUPERFICIAL` — Cosmetic damage, scorch marks, minor fragmentation hits. Asset likely operational.
+- `MOBILITY_KILL` — Track/wheel damage, thrown track, immobilized but hull intact. Repairable.
+- `CATASTROPHIC_DESTRUCTION` — Turret ejection, ammunition cook-off, burned-out hull, structural collapse. Irrecoverable.
+
+### 3. CONSISTENCY CHECK (Soldier Cross-Reference)
+Compare the Visual Evidence against the Text Intel provided by The Soldier:
+- If Text claims "Aviation destroyed" but Visual shows an **empty field** → `verification_status: "CONTRADICTED"`
+- If Text claims "T-72 destroyed" and Visual shows a **burning T-72** → `verification_status: "CONFIRMED"`
+- If Text mentions no equipment but Visual shows **3 abandoned BMPs** → `verification_status: "ENRICHED"`
+- If Visual is too degraded to make a determination → `verification_status: "INCONCLUSIVE"`
+
+### 4. GEOLOCATION MARKERS
+Extract any visible text from the scene strictly as it appears:
+- Street signs, shop names, license plates, graffiti, road markers
+- Preserve original script (Cyrillic/Latin) exactly as rendered
+- DO NOT translate or interpret — raw extraction only
+
+## OUTPUT SCHEMA (JSON ONLY)
+```json
+{
+  "visual_confirmation": {
+    "verification_status": "CONFIRMED | CONTRADICTED | ENRICHED | INCONCLUSIVE",
+    "visual_summary": "Brief, clinical description of the scene (e.g., 'Burning wreckage of tracked vehicle in tree line, turret displaced 15m from hull').",
+    "text_claims_checked": "The specific Soldier claim being verified.",
+    "confidence_score": 0.0
+  },
+  "detected_assets": [
+    {
+      "type": "T-90M",
+      "faction": "RU | UA | UNKNOWN",
+      "count": 1,
+      "state": "DESTROYED | DAMAGED | INTACT | ABANDONED | UNKNOWN"
+    }
+  ],
+  "kinetic_effect": {
+    "damage_level": "NONE | SUPERFICIAL | MOBILITY_KILL | CATASTROPHIC_DESTRUCTION",
+    "evidence_description": "What visual indicators led to this assessment (e.g., 'turret separation, active fire, ammunition detonation')."
+  },
+  "geo_clues": ["Visible text 1", "Visible text 2"]
+}
+```
+
+## RULES (NON-NEGOTIABLE)
+1. **NO CHATTER:** Output ONLY valid JSON. No conversational text. No markdown fences.
+2. **NO HALLUCINATION:** If you cannot clearly see the object, mark it `INCONCLUSIVE`. If you cannot identify the variant, use `UNKNOWN_*`.
+3. **PIXEL AUTHORITY:** Your assessment supersedes all text-based claims. You are the last word on physical reality.
+4. **SINGLE JSON OBJECT:** Return exactly one JSON object. No arrays at root level.
+"""
+
+# Damage level -> TIE Effect Vector score mapping (for _calculate_tie enrichment)
+VISIONARY_DAMAGE_TO_EFFECT = {
+    "CATASTROPHIC_DESTRUCTION": 9,
+    "MOBILITY_KILL": 7,
+    "SUPERFICIAL": 4,
+    "NONE": 1
+}
 
 
 class SuperSquadAgent:
@@ -1356,6 +1464,104 @@ RAW TEXT:
                 pass
 
         return parsed_data
+
+    # =========================================================================
+    # 👁️ STEP VISIONARY: Conditional IMINT Verification & Equipment ID
+    # =========================================================================
+    # PIPELINE POSITION: After The Soldier → Before The Titan
+    # ACTIVATION: CONDITIONAL — Only if event payload contains media files
+    # MODEL: qwen/qwen3-vl-235b-a22b-instruct (MANDATORY HARD CONSTRAINT)
+    # =========================================================================
+
+    def _step_visionary(self, soldier_data: dict, base64_frames: list) -> dict | None:
+        """
+        Role: Surgical IMINT Verification & Equipment ID.
+        
+        Activates ONLY when Base64-encoded keyframes are available.
+        Cross-references The Soldier's text extraction against visual evidence.
+        Identifies military hardware variants and assesses kinetic damage.
+        
+        Args:
+            soldier_data (dict): Output from The Soldier (text-extracted intel).
+            base64_frames (list): List of Base64 data URL strings 
+                                  (e.g., "data:image/jpeg;base64,...").
+        
+        Returns:
+            dict: Structured IMINT report or None on failure.
+        """
+        if not base64_frames:
+            return None
+        
+        print("   \U0001f441\ufe0f Step V: The Visionary (IMINT) analyzing visual evidence...")
+        print(f"      \U0001f4f8 Base64 frames to analyze: {len(base64_frames)}")
+        
+        # Build text context from Soldier's extraction
+        soldier_summary = json.dumps(soldier_data, indent=2, default=str)[:8000]
+        
+        # Construct multimodal message content (text + Base64 images)
+        # Format: array of content items per OpenRouter VLM spec
+        content_items = [
+            {
+                "type": "text",
+                "text": f"""SOLDIER TEXT INTEL (Cross-reference this against the images):
+{soldier_summary}
+
+Analyze the attached visual evidence. CONFIRM, CONTRADICT, or ENRICH the text intel above.
+Output ONLY valid JSON per your instructions."""
+            }
+        ]
+        
+        # Attach each Base64 frame as an image_url content item
+        # Cap at 4 frames to avoid token overflow on the VLM
+        for b64_data_url in base64_frames[:4]:
+            content_items.append({
+                "type": "image_url",
+                "image_url": {"url": str(b64_data_url)}
+            })
+        
+        try:
+            response = self.openrouter_client.chat.completions.create(
+                model="qwen/qwen3-vl-235b-a22b-instruct",  # MANDATORY HARD CONSTRAINT
+                messages=[
+                    {"role": "system", "content": VISIONARY_SYSTEM_PROMPT},
+                    {"role": "user", "content": content_items}
+                ],
+                temperature=0.0,  # Strict Determinism
+                max_tokens=2048
+            )
+            
+            raw_response = response.choices[0].message.content
+            parsed = self._clean_and_parse_json(raw_response)
+            
+            if not parsed:
+                print("   \u26a0\ufe0f Visionary JSON parse failed. Attempting repair...")
+                parsed = self._repair_json_with_ai(raw_response, "Visionary output malformed")
+            
+            if parsed:
+                # Log key findings
+                v_status = parsed.get('visual_confirmation', {}).get('verification_status', 'UNKNOWN')
+                v_conf = parsed.get('visual_confirmation', {}).get('confidence_score', 0)
+                v_damage = parsed.get('kinetic_effect', {}).get('damage_level', 'UNKNOWN')
+                assets = parsed.get('detected_assets', [])
+                
+                print(f"      \U0001f441\ufe0f VISIONARY VERDICT: {v_status} (Conf: {v_conf})")
+                print(f"      \U0001f4a5 Kinetic Effect: {v_damage}")
+                if assets:
+                    for a in assets[:3]:
+                        print(f"      \U0001f3af Detected: {a.get('type', '?')} [{a.get('faction', '?')}] x{a.get('count', '?')} \u2192 {a.get('state', '?')}")
+                
+                geo_clues = parsed.get('geo_clues', [])
+                if geo_clues:
+                    print(f"      \U0001f4cd Geo Clues: {geo_clues[:5]}")
+                
+                return parsed
+            else:
+                print("   \u274c Visionary Failed (Unfixable Response).")
+                return None
+                
+        except Exception as e:
+            print(f"   \u26a0\ufe0f Visionary Exception: {e}")
+            return None
 
     # =========================================================================
     # 🌍 STEP GEO-VERIFIER: Anti-Hallucination Geolocation Validator
@@ -2703,6 +2909,81 @@ def process_row(self, row):
             if validated_units:
                 self._update_units_registry(validated_units, event_date, {'lat': final_lat, 'lon': final_lon})
     
+    # =========================================================================
+    # 👁️ THE VISIONARY — Conditional IMINT Verification (Surgical Activation)
+    # =========================================================================
+    # ACTIVATION GATE: Only fires if the event payload contains media files.
+    # If media_urls is empty/missing, this block is BYPASSED entirely (zero compute).
+    # Pipeline: Soldier → MediaProcessor → [VISIONARY] → TIE Calculation
+    # =========================================================================
+    media_urls_raw = row.get('media_urls') or []
+    if isinstance(media_urls_raw, str):
+        try:
+            media_urls_raw = json.loads(media_urls_raw) if media_urls_raw.strip() else []
+        except (json.JSONDecodeError, ValueError):
+            media_urls_raw = []
+    
+    visionary_out = None
+    if media_urls_raw and isinstance(media_urls_raw, list) and len(media_urls_raw) > 0:
+        # --- MEDIA PROCESSING: Extract Base64 keyframes via MediaProcessor ---
+        # Raw URLs cannot be passed directly to OpenRouter (anti-hotlinking, MP4 format).
+        # MediaProcessor streams via FFmpeg, extracts scene-change keyframes, encodes to Base64.
+        all_b64_frames = []
+        if MediaProcessor is not None:
+            media_proc = MediaProcessor()
+            for m_url in media_urls_raw:
+                frames = media_proc.extract_keyframes(str(m_url))
+                all_b64_frames.extend(frames)
+                if len(all_b64_frames) >= 4:  # Cap total frames for VLM
+                    all_b64_frames = all_b64_frames[:4]
+                    break
+            
+            if all_b64_frames:
+                print(f"      \U0001f4f8 MediaProcessor: {len(all_b64_frames)} keyframes extracted from {len(media_urls_raw)} media files.")
+            else:
+                print(f"      \u26a0\ufe0f MediaProcessor: No keyframes extracted (dead links or unsupported format). Visionary bypassed.")
+        else:
+            print("      \u26a0\ufe0f MediaProcessor unavailable (opencv-python-headless not installed). Visionary bypassed.")
+        
+        # --- INVOKE THE VISIONARY (only if we have frames) ---
+        if all_b64_frames:
+            visionary_out = self._step_visionary(soldier_out, all_b64_frames)
+        
+        if visionary_out:
+            # A. Override visual_evidence flag for TIE calculation
+            soldier_out['visual_evidence'] = True
+            
+            # B. ABSOLUTE REPLACEMENT of Effect Vector from IMINT
+            #    Ground Truth is ABSOLUTE. IMINT overrides text-based effect_score
+            #    in BOTH directions (up AND down). If text hypes Effect=9 but
+            #    image shows missed shots, Visionary downgrades to Effect=1.
+            imint_damage = visionary_out.get('kinetic_effect', {}).get('damage_level')
+            imint_confidence = visionary_out.get('visual_confirmation', {}).get('confidence_score', 0)
+            
+            if imint_damage and imint_damage in VISIONARY_DAMAGE_TO_EFFECT and imint_confidence >= 0.5:
+                imint_effect = VISIONARY_DAMAGE_TO_EFFECT[imint_damage]
+                current_effect = int(soldier_out.get('titan_assessment', {}).get('effect_score', 1) or 1)
+                
+                # ABSOLUTE REPLACEMENT: IMINT is Ground Truth, it replaces regardless of direction
+                if 'titan_assessment' not in soldier_out:
+                    soldier_out['titan_assessment'] = {}
+                soldier_out['titan_assessment']['effect_score'] = imint_effect
+                soldier_out['titan_assessment']['effect_source'] = 'VISIONARY_IMINT'
+                
+                direction = '\u2b06\ufe0f' if imint_effect > current_effect else '\u2b07\ufe0f' if imint_effect < current_effect else '\u2194\ufe0f'
+                print(f"      \U0001f441\ufe0f IMINT Ground Truth: Effect Vector E {direction} {current_effect} \u2192 {imint_effect} ({imint_damage})")
+            
+            # C. Store Visionary output for downstream consumers
+            soldier_out['visionary_report'] = visionary_out
+            
+            # D. Log verification status
+            v_status = visionary_out.get('visual_confirmation', {}).get('verification_status', 'UNKNOWN')
+            if v_status == 'CONTRADICTED':
+                print("      \u26a0\ufe0f VISIONARY ALERT: Text claims CONTRADICTED by visual evidence!")
+    else:
+        # No media — Visionary bypassed (silent, no log spam for the 99% case)
+        pass
+
     # 3. Calcolo T.I.E. (Layer 1)
     titan_data = soldier_out.get('titan_assessment', {})
     visual_evidence = soldier_out.get('visual_evidence', False)

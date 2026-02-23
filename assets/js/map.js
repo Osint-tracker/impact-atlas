@@ -26,6 +26,10 @@
 
   let mapDates = []; // Historical dates index
 
+  // Tactical Time Command State
+  let tacticalTimeWindowHours = 0; // 0 = ALL (no filter)
+  let tacticalPersistence = true;  // Default: ON
+
   // Central helper to define what is civilian
   function isCivilianEvent(e) {
     // Joins all text fields to search for keywords
@@ -92,6 +96,41 @@
     const size = (e.intensity || 0.2) >= 0.8 ? 34 : 26;
     const iconSize = Math.floor(size / 1.8);
 
+    // --- TASK 5: Directional Manoeuvre Indicator ---
+    const cat = (e.category || '').toUpperCase();
+    if (cat === 'MANOEUVRE' || cat === 'MANEUVER') {
+      const directionMap = {
+        'north': 0, 'n': 0,
+        'north-east': 45, 'ne': 45, 'northeast': 45,
+        'east': 90, 'e': 90,
+        'south-east': 135, 'se': 135, 'southeast': 135,
+        'south': 180, 's': 180,
+        'south-west': 225, 'sw': 225, 'southwest': 225,
+        'west': 270, 'w': 270,
+        'north-west': 315, 'nw': 315, 'northwest': 315
+      };
+      const rawDir = (e.direction || e.manoeuvre_direction || '').toLowerCase().trim();
+      const rotation = directionMap[rawDir] !== undefined ? directionMap[rawDir] : null;
+
+      const arrowHtml = rotation !== null
+        ? `<div class="manoeuvre-marker"><div class="manoeuvre-arrow" style="transform: rotate(${rotation}deg);"><i class="fa-solid fa-arrow-up"></i></div></div>`
+        : `<div class="manoeuvre-marker"><div class="manoeuvre-arrow"><i class="fa-solid fa-arrows-up-down-left-right"></i></div></div>`;
+
+      const mMarker = L.marker([e.lat, e.lon], {
+        icon: L.divIcon({
+          className: 'custom-icon-marker',
+          html: arrowHtml,
+          iconSize: [32, 32]
+        })
+      });
+      mMarker.bindPopup(createPopupContent(e));
+      mMarker.on('popupopen', function () {
+        if (window.fetchHistoricalWeatherImpact) window.fetchHistoricalWeatherImpact(e);
+      });
+      return mMarker;
+    }
+
+    // Standard marker
     const marker = L.marker([e.lat, e.lon], {
       icon: L.divIcon({
         className: 'custom-icon-marker',
@@ -101,12 +140,8 @@
     });
 
     marker.bindPopup(createPopupContent(e));
-
-    // Fetch weather impact data asynchronously when the popup is opened
     marker.on('popupopen', function () {
-      if (window.fetchHistoricalWeatherImpact) {
-        window.fetchHistoricalWeatherImpact(e);
-      }
+      if (window.fetchHistoricalWeatherImpact) window.fetchHistoricalWeatherImpact(e);
     });
 
     return marker;
@@ -742,6 +777,23 @@
               if (!inTitle && !inDesc && !inLoc && !isDateMatch && !isSmartActor) return false;
             }
 
+            // 6. Tactical Time Window Filter
+            if (tacticalTimeWindowHours > 0) {
+              const cutoff = Date.now() - (tacticalTimeWindowHours * 3600000);
+              if (e.timestamp < cutoff) {
+                // Event is outside the time window
+                if (tacticalPersistence) {
+                  // Persistence ON: keep if TIE > 80 or category is MANOEUVRE/SHAPING_OFFENSIVE
+                  const tieScore = e.tie_total || e.tie_score || 0;
+                  const eCat = (e.category || '').toUpperCase();
+                  const isPersistent = tieScore > 80 || eCat === 'MANOEUVRE' || eCat === 'MANEUVER' || eCat === 'SHAPING_OFFENSIVE';
+                  if (!isPersistent) return false;
+                } else {
+                  return false; // Persistence OFF: strict cutoff
+                }
+              }
+            }
+
             return true;
           });
 
@@ -841,6 +893,140 @@
 
   window.loadHistoricalMap = loadHistoricalMap;
   window.filterEventsByDate = filterEventsByDate;
+
+  // ============================================
+  // TASK 1: TACTICAL TIME COMMAND (Global API)
+  // ============================================
+  window.setTimeWindow = function (hours) {
+    tacticalTimeWindowHours = hours;
+    // Update button states
+    document.querySelectorAll('.ttb-btn').forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.dataset.hours) === hours);
+    });
+    // Re-apply filters
+    if (window.applyMapFilters) window.applyMapFilters();
+    console.log(`\u23F0 Time Window set to: ${hours === 0 ? 'ALL' : hours + 'H'}`);
+  };
+
+  window.toggleTacticalPersistence = function () {
+    const checkbox = document.getElementById('ttbPersistence');
+    tacticalPersistence = checkbox ? checkbox.checked : !tacticalPersistence;
+    if (window.applyMapFilters) window.applyMapFilters();
+    console.log(`\uD83D\uDD12 Tactical Persistence: ${tacticalPersistence ? 'ON' : 'OFF'}`);
+  };
+
+  // ============================================
+  // TASK 4: QUICK SEARCH (flyTo Logic)
+  // ============================================
+  (function initQuickSearch() {
+    const input = document.getElementById('quickSearchInput');
+    const resultsBox = document.getElementById('quickSearchResults');
+    if (!input || !resultsBox) return;
+
+    let debounceTimer = null;
+
+    input.addEventListener('input', function () {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => performQuickSearch(input.value.trim()), 250);
+    });
+
+    // Close results on outside click
+    document.addEventListener('click', function (ev) {
+      if (!ev.target.closest('.map-quick-search')) {
+        resultsBox.classList.remove('visible');
+      }
+    });
+
+    function performQuickSearch(query) {
+      if (query.length < 2) {
+        resultsBox.classList.remove('visible');
+        return;
+      }
+
+      const q = query.toLowerCase();
+      const results = [];
+
+      // 1. Search ORBAT units
+      if (window.orbatData && Array.isArray(window.orbatData)) {
+        window.orbatData.forEach(unit => {
+          const name = (unit.display_name || unit.unit_name || unit.unit_id || '').toLowerCase();
+          if (name.includes(q)) {
+            const lat = unit.last_lat || unit.lat;
+            const lon = unit.last_lon || unit.lon;
+            if (lat && lon) {
+              results.push({
+                label: unit.display_name || unit.unit_name || unit.unit_id,
+                type: 'UNIT',
+                lat: parseFloat(lat),
+                lon: parseFloat(lon)
+              });
+            }
+          }
+        });
+      }
+
+      // 2. Search OWL unit positions
+      if (window.owlData && window.owlData.units) {
+        window.owlData.units.forEach((feature, key) => {
+          const name = (feature.properties?.name || key || '').toLowerCase();
+          if (name.includes(q) && feature.geometry?.coordinates) {
+            results.push({
+              label: feature.properties?.name || key,
+              type: 'OWL',
+              lat: feature.geometry.coordinates[1],
+              lon: feature.geometry.coordinates[0]
+            });
+          }
+        });
+      }
+
+      // 3. Search event cities/locations
+      if (window.globalEvents) {
+        const seenLocations = new Set();
+        window.globalEvents.forEach(evt => {
+          const loc = (evt.location_precision || evt.title || '').toLowerCase();
+          if (loc.includes(q) && !seenLocations.has(loc.substring(0, 30))) {
+            seenLocations.add(loc.substring(0, 30));
+            results.push({
+              label: evt.title || evt.location_precision || 'Event',
+              type: 'EVENT',
+              lat: evt.lat,
+              lon: evt.lon
+            });
+          }
+        });
+      }
+
+      // Render results (max 6)
+      const limited = results.slice(0, 6);
+      if (limited.length === 0) {
+        resultsBox.classList.remove('visible');
+        return;
+      }
+
+      resultsBox.innerHTML = limited.map(r => `
+        <div class="qs-item" data-lat="${r.lat}" data-lon="${r.lon}">
+          <span class="qs-type">${r.type}</span>
+          <span>${r.label.length > 40 ? r.label.substring(0, 40) + '...' : r.label}</span>
+        </div>
+      `).join('');
+
+      resultsBox.classList.add('visible');
+
+      // Bind click handlers
+      resultsBox.querySelectorAll('.qs-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const lat = parseFloat(item.dataset.lat);
+          const lon = parseFloat(item.dataset.lon);
+          if (map && !isNaN(lat) && !isNaN(lon)) {
+            map.flyTo([lat, lon], 12, { duration: 1.5 });
+          }
+          resultsBox.classList.remove('visible');
+          input.value = '';
+        });
+      });
+    }
+  })();
 
   window.toggleVisualMode = function () {
     isHeatmapMode = !isHeatmapMode;

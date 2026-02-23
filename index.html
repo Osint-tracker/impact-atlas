@@ -626,6 +626,312 @@
       stroke-dasharray: 5, 10;
       stroke-linecap: square;
     }
+
+    /* ========================================== */
+    /* TACTICAL TIME COMMAND BAR                  */
+    /* ========================================== */
+    .tactical-time-bar {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      border-radius: 6px;
+      padding: 5px 6px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .ttb-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #94a3b8;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 5px 12px;
+      cursor: pointer;
+      border-radius: 3px;
+      transition: all 0.2s;
+      text-transform: uppercase;
+    }
+
+    .ttb-btn:hover {
+      color: #f8fafc;
+      background: rgba(245, 158, 11, 0.1);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .ttb-btn.active {
+      color: #0f172a;
+      background: #f59e0b;
+      border-color: #f59e0b;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+    }
+
+    .ttb-divider {
+      width: 1px;
+      height: 20px;
+      background: #334155;
+      margin: 0 4px;
+    }
+
+    .ttb-persistence {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #64748b;
+      font-size: 0.7rem;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      padding: 0 6px;
+    }
+
+    .ttb-persistence input {
+      display: none;
+    }
+
+    .ttb-persistence .ttb-pip {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #334155;
+      border: 1px solid #475569;
+      transition: all 0.3s;
+    }
+
+    .ttb-persistence input:checked~.ttb-pip {
+      background: #f59e0b;
+      border-color: #fbbf24;
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+    }
+
+    .ttb-persistence input:checked~span {
+      color: #f59e0b;
+    }
+
+    /* ========================================== */
+    /* SKELETON LOADERS                           */
+    /* ========================================== */
+    @keyframes skeleton-pulse {
+      0% {
+        background-position: -200px 0;
+      }
+
+      100% {
+        background-position: calc(200px + 100%) 0;
+      }
+    }
+
+    .skeleton-line {
+      height: 12px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+      background-size: 200px 100%;
+      animation: skeleton-pulse 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-block {
+      border-radius: 6px;
+      background: linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+      background-size: 200px 100%;
+      animation: skeleton-pulse 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 200px;
+      flex-shrink: 0;
+    }
+
+    .skeleton-stat {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .skeleton-stat .skeleton-block {
+      width: 36px;
+      height: 36px;
+      border-radius: 4px;
+    }
+
+    .skeleton-stat-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    /* ========================================== */
+    /* COLLAPSIBLE STRATEGIST ACCORDION           */
+    /* ========================================== */
+    .strategist-accordion-toggle {
+      background: transparent;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      padding: 4px 8px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.2s;
+    }
+
+    .strategist-accordion-toggle:hover {
+      color: #f59e0b;
+    }
+
+    .strategist-accordion-toggle .chevron {
+      transition: transform 0.3s ease;
+      font-size: 0.7rem;
+    }
+
+    .strategist-accordion-toggle.open .chevron {
+      transform: rotate(180deg);
+    }
+
+    .strategist-accordion-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+
+    .strategist-accordion-body.expanded {
+      max-height: 600px;
+    }
+
+    /* ========================================== */
+    /* QUICK SEARCH (MAP OVERLAY)                 */
+    /* ========================================== */
+    .map-quick-search {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 1000;
+      width: 260px;
+    }
+
+    .map-quick-search input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      border-radius: 6px;
+      padding: 8px 12px 8px 34px;
+      color: #f8fafc;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .map-quick-search input:focus {
+      border-color: rgba(245, 158, 11, 0.5);
+    }
+
+    .map-quick-search input::placeholder {
+      color: #64748b;
+    }
+
+    .map-quick-search .qs-icon {
+      position: absolute;
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .qs-results {
+      display: none;
+      margin-top: 4px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid #334155;
+      border-radius: 6px;
+      max-height: 220px;
+      overflow-y: auto;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    }
+
+    .qs-results.visible {
+      display: block;
+    }
+
+    .qs-item {
+      padding: 8px 12px;
+      color: #cbd5e1;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+      transition: background 0.15s;
+    }
+
+    .qs-item:last-child {
+      border-bottom: none;
+    }
+
+    .qs-item:hover {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f8fafc;
+    }
+
+    .qs-item .qs-type {
+      font-size: 0.65rem;
+      color: #64748b;
+      background: #1e293b;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* ========================================== */
+    /* DIRECTIONAL MANOEUVRE MARKERS               */
+    /* ========================================== */
+    .manoeuvre-marker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .manoeuvre-arrow {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #0f172a;
+      background: #22c55e;
+      border: 2px solid #1e293b;
+      border-radius: 4px;
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
+      transition: transform 0.3s;
+    }
   </style>
 </head>
 
@@ -894,6 +1200,28 @@
       </div>
 
       <div class="map-container-wrapper" style="position: relative;">
+
+        <!-- QUICK SEARCH (flyTo) -->
+        <div class="map-quick-search" id="quickSearchContainer">
+          <i class="fa-solid fa-magnifying-glass qs-icon"></i>
+          <input type="text" id="quickSearchInput" placeholder="Search unit or city..." autocomplete="off">
+          <div class="qs-results" id="quickSearchResults"></div>
+        </div>
+
+        <!-- TACTICAL TIME COMMAND BAR -->
+        <div class="tactical-time-bar" id="tacticalTimeBar">
+          <button class="ttb-btn" onclick="setTimeWindow(24)" data-hours="24">24H</button>
+          <button class="ttb-btn" onclick="setTimeWindow(48)" data-hours="48">48H</button>
+          <button class="ttb-btn" onclick="setTimeWindow(72)" data-hours="72">72H</button>
+          <button class="ttb-btn active" onclick="setTimeWindow(0)" data-hours="0">ALL</button>
+          <div class="ttb-divider"></div>
+          <label class="ttb-persistence">
+            <input type="checkbox" id="ttbPersistence" checked onchange="toggleTacticalPersistence()">
+            <div class="ttb-pip"></div>
+            <span>PERSIST</span>
+          </label>
+        </div>
+
         <div id="map"></div>
 
         <div class="map-overlay-controls">
@@ -945,7 +1273,21 @@
         </div>
         <div id="hvt-carousel" class="hvt-carousel-track">
           <!-- JS injects HVT cards here -->
-          <div class="hvt-placeholder" style="color: #64748b; padding: 20px; font-size: 0.85rem;">Loading threat feed...
+          <!-- Skeleton Loader: HVT Threat Feed -->
+          <div class="skeleton-card">
+            <div class="skeleton-line" style="width: 60%;"></div>
+            <div class="skeleton-line" style="width: 90%;"></div>
+            <div class="skeleton-line" style="width: 40%;"></div>
+          </div>
+          <div class="skeleton-card">
+            <div class="skeleton-line" style="width: 50%;"></div>
+            <div class="skeleton-line" style="width: 80%;"></div>
+            <div class="skeleton-line" style="width: 35%;"></div>
+          </div>
+          <div class="skeleton-card">
+            <div class="skeleton-line" style="width: 70%;"></div>
+            <div class="skeleton-line" style="width: 85%;"></div>
+            <div class="skeleton-line" style="width: 45%;"></div>
           </div>
         </div>
       </div>
@@ -1033,7 +1375,21 @@
               </div>
               <!-- Burn Rate Stats -->
               <div class="burn-rate-header" id="burn-rate-stats">
-                <div class="burn-stat"><span class="burn-label">LOADING</span><span class="burn-value">...</span></div>
+                <!-- Skeleton Loader: Burn Rate Stats -->
+                <div class="skeleton-stat">
+                  <div class="skeleton-block"></div>
+                  <div class="skeleton-stat-text">
+                    <div class="skeleton-line" style="width: 50%;"></div>
+                    <div class="skeleton-line" style="width: 30%;"></div>
+                  </div>
+                </div>
+                <div class="skeleton-stat">
+                  <div class="skeleton-block"></div>
+                  <div class="skeleton-stat-text">
+                    <div class="skeleton-line" style="width: 45%;"></div>
+                    <div class="skeleton-line" style="width: 25%;"></div>
+                  </div>
+                </div>
               </div>
               <div class="loss-filter-tabs">
                 <button class="loss-tab active" onclick="filterLosses('all')">ALL</button>
@@ -1043,8 +1399,13 @@
               </div>
               <div class="loss-feed-container" id="equipment-ticker-wrapper">
                 <div class="loss-feed-list" id="ticker-content">
-                  <!-- JS Injects Items Here -->
-                  <div class="loss-card placeholder">Loading intelligence streams...</div>
+                  <!-- Skeleton Loader: Equipment Losses -->
+                  <div style="display: flex; flex-direction: column; gap: 8px; padding: 8px;">
+                    <div class="skeleton-line" style="width: 100%; height: 28px;"></div>
+                    <div class="skeleton-line" style="width: 90%; height: 28px;"></div>
+                    <div class="skeleton-line" style="width: 75%; height: 28px;"></div>
+                    <div class="skeleton-line" style="width: 85%; height: 28px;"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1201,10 +1562,10 @@
 
             </div>
 
-            <!-- BOTTOM ROW: STRATEGIST -->
+            <!-- BOTTOM ROW: STRATEGIST (Collapsible Accordion) -->
             <div class="dossier-bottom">
               <div class="strategist-box">
-                <div class="strategist-header">
+                <div class="strategist-header" style="cursor: pointer;" onclick="toggleStrategistAccordion()">
                   <span>
                     <i class="fa-solid fa-robot"></i> THE STRATEGIST
                     <div class="info-icon-wrapper">
@@ -1219,10 +1580,18 @@
                       </div>
                     </div>
                   </span>
-                  <span class="ai-tag">Generated by AI - CONFIDENTIAL</span>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="ai-tag">Generated by AI - CONFIDENTIAL</span>
+                    <button class="strategist-accordion-toggle" id="strategistToggleBtn" type="button">
+                      <span>EXPAND</span>
+                      <i class="fa-solid fa-chevron-down chevron"></i>
+                    </button>
+                  </div>
                 </div>
-                <div class="strategist-content" id="modal-strategist-content">
-                  AI ASSESSMENT: Analysis in progress...
+                <div class="strategist-accordion-body" id="strategistAccordionBody">
+                  <div class="strategist-content" id="modal-strategist-content">
+                    AI ASSESSMENT: Analysis in progress...
+                  </div>
                 </div>
               </div>
             </div>
@@ -1491,6 +1860,20 @@
           console.log(`Map changed to: ${sourceName}`);
           // TODO: Real Leaflet call to change GeoJSON
         }
+
+        // --- STRATEGIST ACCORDION TOGGLE ---
+        function toggleStrategistAccordion() {
+          const body = document.getElementById('strategistAccordionBody');
+          const btn = document.getElementById('strategistToggleBtn');
+          if (!body || !btn) return;
+          const isOpen = body.classList.toggle('expanded');
+          btn.classList.toggle('open', isOpen);
+          btn.querySelector('span').innerText = isOpen ? 'COLLAPSE' : 'EXPAND';
+        }
+
+        // --- GLOBAL SHIMS (overridden by map.js when ready) ---
+        window.setTimeWindow = window.setTimeWindow || function () { };
+        window.toggleTacticalPersistence = window.toggleTacticalPersistence || function () { };
       </script>
 
 </body>

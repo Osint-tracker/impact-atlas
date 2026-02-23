@@ -140,7 +140,7 @@ tier_2:
   name: AI_CLASSIFICATION_AND_FINE_TUNING
   purpose: Event classification via fine-tuned LLM
   components:
-    - Fine-Tuned LLM (Llama 3.x 8B + QLoRA)
+    - Fine-Tuned LLM (Gpt 4o-mini + QLoRA)
     - Teach Trident RLHF Loop
     - Training Dataset (JSONL format)
   
@@ -180,7 +180,7 @@ llm_inference:
 fine_tuning:
   value:
     method: QLoRA
-    base_model: Llama 3.x 8B
+    base_model: Gpt 4o-mini
   rationale: Memory-efficient training
   constraint: HARD_CONSTRAINT
 
@@ -226,6 +226,7 @@ sequenceDiagram
     participant B as Bouncer
     participant Br as Brain
     participant S as Soldier
+    participant V as Visionary
     participant T as Titan
     participant C as Calculator
     participant J as Journalist
@@ -237,7 +238,10 @@ sequenceDiagram
     Br->>Br: Context Analysis
     Br->>S: Extraction Request
     S->>S: Geo & Unit Extraction
-    S->>T: Structured Data
+    Note over S,V: Conditional Gate: media_urls present?
+    S->>V: Structured Data + Media
+    V->>V: IMINT Verification & Equipment ID
+    V->>T: Visually Verified Data
     T->>T: Classification (Fine-Tuned)
     T->>C: Event Class
     C->>C: T.I.E. Scoring
@@ -275,6 +279,19 @@ agent_3:
   temperature: 0.0
   output_format: Strict JSON
   failure_mode: ABORT_IF_NO_VALID_DATE
+  constraint: HARD_CONSTRAINT
+
+agent_3.5:
+  name: The Visionary
+  role: Surgical IMINT Verification & Equipment ID
+  purpose: Provide ground-truth visual validation of text-based claims. Cross-references The Soldier's extraction against image/video evidence. Identifies specific military hardware variants and assesses kinetic damage levels for TIE Effect Vector.
+  model: qwen/qwen3-vl-235b-a22b-instruct
+  provider: OpenRouter
+  temperature: 0.0
+  output_format: Strict JSON (visual_confirmation, detected_assets, kinetic_effect, geo_clues)
+  activation_trigger: "Conditional — activates ONLY if event payload contains valid media files (image/video URLs). Bypassed entirely when media_urls is empty."
+  pipeline_position: After The Soldier (agent_3), Before The Titan (agent_4)
+  tie_integration: "Overrides Effect Vector (E) in TIE calculation when IMINT confidence >= 0.5"
   constraint: HARD_CONSTRAINT
 
 agent_4:
@@ -446,7 +463,7 @@ constraint: HARD_CONSTRAINT
 **MODEL_SPECIFICATIONS:**
 ```yaml
 base_model:
-  value: Llama 3.x 8B Instruct
+  value: Gpt 4o-mini
   alternative: Successor SOTA as of January 2026
   rationale: Balance between reasoning capability and inference speed on consumer hardware
   constraint: HARD_CONSTRAINT
@@ -1355,7 +1372,7 @@ planned_item_3:
 planned_item_4:
   name: Fine-Tuned Model v2
   value:
-    description: Deployment of Llama 3.x model specialized on Gold dataset
+    description: Deployment of Gpt 4o-mini model specialized on Gold dataset
   rationale: Cost reduction
 ```
 
