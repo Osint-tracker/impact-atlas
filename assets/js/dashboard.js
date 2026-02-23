@@ -131,12 +131,23 @@ class EquipmentTicker {
         // Stream A: Internal events
         const internalLosses = (internalEvents || [])
             .filter(e => e.target_type && e.target_type !== 'NULL' && e.target_type !== 'UNKNOWN')
-            .map(e => ({
-                source: 'INTERNAL', date: e.date, model: e.target_type,
-                country: 'UNKNOWN', status: 'REPORTED', category: 'other',
-                lat: e.lat || null, lon: e.lon || null,
-                tie_total: e.tie_total || 0
-            }));
+            .map(e => {
+                // Derive side for internal events based on title
+                const txt = ((e.title || '') + ' ' + (e.description || '')).toUpperCase();
+                const ruHits = (txt.match(/\bRUSSIA|RUSSIAN FORCES|RUSSIAN STRIKES?|RUSSIAN DRONES?|RU FORCES|MOSCOW|KREMLIN/g) || []).length;
+                const uaHits = (txt.match(/\bUKRAIN|UKRAINIAN FORCES|UKRAINIAN STRIKES?|UKRAINIAN DRONES?|UA FORCES|KYIV FORCES|ZSU\b/g) || []).length;
+                let ctry = 'UNKNOWN';
+                if (ruHits > uaHits) ctry = 'RU';
+                else if (uaHits > ruHits) ctry = 'UA';
+
+                return {
+                    source: 'INTERNAL', date: e.date, model: e.target_type,
+                    country: ctry, status: 'REPORTED', category: 'other',
+                    lat: e.lat || null, lon: e.lon || null,
+                    tie_total: e.tie_total || 0, vec_t: e.vec_t || 0,
+                    visual_evidence: e.visual_evidence || e.before_img || null
+                };
+            });
 
         // Stream B: External JSON (Oryx + LostArmour)
         let externalLosses = [];
@@ -149,7 +160,9 @@ class EquipmentTicker {
                     const typeLower = (item.type || '').toLowerCase();
                     let category = 'other';
                     if (typeLower.includes('tank') || modelLower.match(/^t-\d/)) category = 'tank';
-                    if (typeLower.includes('aircraft') || typeLower.includes('helicopter') ||
+                    else if (typeLower.includes('artiller') || typeLower.includes('rocket') || typeLower.includes('howitzer')) category = 'artillery';
+                    else if (typeLower.includes('infantry fighting') || typeLower.includes('ifv') || typeLower.includes('apc')) category = 'ifv';
+                    else if (typeLower.includes('aircraft') || typeLower.includes('helicopter') ||
                         modelLower.match(/^(su-|mi-|ka-|mig)/i) ||
                         typeLower.includes('uav') || typeLower.includes('drone')) category = 'air';
 
@@ -171,7 +184,7 @@ class EquipmentTicker {
         this.allData = [...internalLosses, ...externalLosses]
             .sort((a, b) => new Date(b.date) - new Date(a.date));
         this.data = this.allData;
-        this._renderBurnRate();
+        this._renderAttritionMatrix();
         this.render();
     }
 
@@ -180,52 +193,70 @@ class EquipmentTicker {
         this.render();
     }
 
-    // --- BURN RATE HEADER ---
-    _renderBurnRate() {
-        const burnEl = document.getElementById('burn-rate-stats');
-        if (!burnEl) return;
+    // --- ATTRITION MATRIX (MIRROR CHART) ---
+    _renderAttritionMatrix() {
+        const container = document.getElementById('attrition-mirror-chart');
+        if (!container) return;
 
-        const total = this.allData.length;
-        const now = new Date();
-        const today = now.toISOString().split('T')[0];
-        const yesterday = new Date(now - 86400000).toISOString().split('T')[0];
+        // Calculate losses by side and category
+        const stats = {
+            tank: { ru: 0, ua: 0 },
+            ifv: { ru: 0, ua: 0 },
+            artillery: { ru: 0, ua: 0 },
+            air: { ru: 0, ua: 0 }
+        };
 
-        // Count today + yesterday
-        const last24h = this.allData.filter(d => d.date >= yesterday).length;
-
-        // Daily average (using date range of dataset)
-        const dates = this.allData.map(d => d.date).filter(Boolean);
-        let dailyAvg = 0;
-        if (dates.length > 1) {
-            const earliest = new Date(dates[dates.length - 1]);
-            const latest = new Date(dates[0]);
-            const daySpan = Math.max(1, (latest - earliest) / 86400000);
-            dailyAvg = (total / daySpan).toFixed(1);
-        }
-
-        // Economic total
-        let econTotal = 0;
         this.allData.forEach(d => {
-            econTotal += this._getEconomicValue(d.model, d.type);
+            const side = (d.country === 'RUS' || d.country === 'RU') ? 'ru' : (d.country === 'UA' || d.country === 'UKR' ? 'ua' : null);
+            if (!side || !stats[d.category]) return;
+            stats[d.category][side]++;
         });
-        const econStr = econTotal >= 1000 ? `$${(econTotal / 1000).toFixed(1)}B` : `$${econTotal.toFixed(0)}M`;
 
-        burnEl.innerHTML = `
-            <div class="burn-stat">
-                <span class="burn-label">24H</span>
-                <span class="burn-value">${last24h}</span>
-            </div>
-            <div class="burn-stat">
-                <span class="burn-label">DAILY AVG</span>
-                <span class="burn-value">${dailyAvg}</span>
-            </div>
-            <div class="burn-stat">
-                <span class="burn-label">TOTAL</span>
-                <span class="burn-value">${total}</span>
-            </div>
-            <div class="burn-stat econ">
-                <span class="burn-label">EST. VALUE</span>
-                <span class="burn-value">${econStr}</span>
+        // Generate Mirror Bars
+        const generateBar = (label, ru, ua) => {
+            const total = ru + ua;
+            const ratioVal = ua > 0 ? (ru / ua) : ru;
+            const ratioStr = ratioVal.toFixed(1) + ':1';
+            const isExtreme = ratioVal > 3;
+
+            // Adjust proportions for visualization (log scale or clamp to prevent UI break)
+            const maxPx = 100; // max width of one side
+            const totalMax = Math.max(ru, ua) || 1;
+            const ruPct = (ru / totalMax) * maxPx;
+            const uaPct = (ua / totalMax) * maxPx;
+
+            return `
+            <div style="display:flex; align-items:center; margin-bottom:6px; font-family:'JetBrains Mono', monospace; font-size:0.7rem;">
+                <div style="width:40px; text-align:right; color:#64748b; padding-right:8px; text-transform:uppercase; font-weight:bold;">${label}</div>
+                <!-- UA Side (Left) -->
+                <div style="flex:1; display:flex; justify-content:flex-end; padding-right:2px;">
+                    <span style="margin-right:4px; color:#64748b;">${ua}</span>
+                    <div style="height:12px; background:#3b82f6; width:${uaPct}px; border-radius:2px 0 0 2px;"></div>
+                </div>
+                <div style="width:1px; height:16px; background:#94a3b8; margin:0 4px;"></div>
+                <!-- RU Side (Right) -->
+                <div style="flex:1; display:flex; justify-content:flex-start; padding-left:2px;">
+                    <div style="height:12px; background:#ef4444; width:${ruPct}px; border-radius:0 2px 2px 0;"></div>
+                    <span style="margin-left:4px; color:#64748b;">${ru}</span>
+                </div>
+                <!-- Ratio -->
+                <div style="width:50px; text-align:right; font-weight:bold; color:${isExtreme ? '#f59e0b' : '#94a3b8'};">
+                    ${ratioStr}
+                </div>
+            </div>`;
+        };
+
+        container.innerHTML = `
+            <div style="background:rgba(15,23,42,0.8); border:1px solid #334155; border-radius:6px; padding:10px; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.7rem; font-weight:bold; color:#f8fafc; font-family:'JetBrains Mono', monospace;">
+                    <span><span style="color:#3b82f6;">UA</span> LOSSES</span>
+                    <span><span style="color:#ef4444;">RU</span> LOSSES</span>
+                    <span style="color:#94a3b8;">RATIO</span>
+                </div>
+                ${generateBar('MBT', stats.tank.ru, stats.tank.ua)}
+                ${generateBar('IFV', stats.ifv.ru, stats.ifv.ua)}
+                ${generateBar('SPG', stats.artillery.ru, stats.artillery.ua)}
+                ${generateBar('AIR', stats.air.ru, stats.air.ua)}
             </div>
         `;
     }
@@ -329,15 +360,29 @@ class EquipmentTicker {
             const econValue = this._getEconomicValue(item.model, item.type);
             const econStr = econValue >= 100 ? `$${econValue.toFixed(0)}M` : `$${econValue.toFixed(1)}M`;
             const tieTotal = Math.round(item.tie_total || 0);
-            const isHVT = tieTotal >= 70 || econValue >= 20;
+            const vecT = parseFloat(item.vec_t || 0);
+            const isHVT = tieTotal >= 80 || vecT >= 8;
+
+            // Recency Effect (< 24H)
+            const itemDate = new Date(item.date);
+            const isRecent = (new Date() - itemDate) <= 86400000;
+            const recentClass = isRecent ? 'pulse-recent-loss' : '';
 
             // Country flag
             const flagIcon = (item.country === 'RUS' || item.country === 'RU')
-                ? '🇷🇺' : (item.country === 'UA' ? '🇺🇦' : '🏴');
+                ? '🇷🇺' : (item.country === 'UA' || item.country === 'UKR' ? '🇺🇦' : '🏴');
 
             // Source badge
             const sourceBadge = item.source_tag
                 ? `<span class="loss-source-tag">${item.source_tag}</span>` : '';
+
+            // IMINT / Tooltip integration
+            let imintHover = '';
+            let imintIcon = '';
+            if (item.visual_evidence) {
+                imintHover = `onmouseover="window.showImintTooltip(this, '${item.visual_evidence}')" onmouseout="window.hideImintTooltip()"`;
+                imintIcon = `<i class="fa-solid fa-camera" style="color:#f59e0b; font-size:0.6rem; margin-left:4px;" title="IMINT Available"></i>`;
+            }
 
             // Proof link
             const proofLink = item.proof_url
@@ -349,10 +394,10 @@ class EquipmentTicker {
                 : '';
 
             return `
-            <div class="loss-card holo ${statusClass} ${isHVT ? 'hvt-glow' : ''}" ${clickAttr}>
+            <div class="loss-card holo ${statusClass} ${isHVT ? 'hvt-glow hvt-elite-border' : ''} ${recentClass}" ${clickAttr} ${imintHover}>
                 <div class="loss-icon-svg">${svgIcon}</div>
                 <div class="loss-info">
-                    <span class="loss-model">${item.model || 'Unknown'}</span>
+                    <span class="loss-model">${item.model || 'Unknown'} ${imintIcon}</span>
                     <span class="loss-meta">${item.type || ''} • ${item.date || '--'}</span>
                 </div>
                 <div class="loss-econ">
@@ -407,9 +452,42 @@ window.filterLosses = function (category) {
     document.querySelectorAll('.loss-tab').forEach(btn => btn.classList.remove('active'));
     if (event && event.target) event.target.classList.add('active');
 
-    if (window.Dashboard.ticker) {
-        window.Dashboard.ticker.filterByCategory(category);
+    if (category === 'hvt') {
+        window.Dashboard.ticker.data = window.Dashboard.ticker.allData.filter(d => (d.tie_total >= 80 || d.vec_t >= 8));
+        window.Dashboard.ticker.render();
     } else {
-        console.warn('filterLosses: ticker not yet initialized');
+        window.Dashboard.ticker.filterByCategory(category);
     }
+}
+
+// Global IMINT tooltip handlers
+window.showImintTooltip = function (el, imgUrl) {
+    let tooltip = document.getElementById('imint-hover-tooltip');
+    if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'imint-hover-tooltip';
+        tooltip.style.position = 'absolute';
+        tooltip.style.zIndex = '100000';
+        tooltip.style.background = '#0f172a';
+        tooltip.style.border = '1px solid #f59e0b';
+        tooltip.style.borderRadius = '4px';
+        tooltip.style.padding = '4px';
+        tooltip.style.boxShadow = '0 4px 12px rgba(0,0,0,0.5)';
+        tooltip.style.pointerEvents = 'none';
+        document.body.appendChild(tooltip);
+    }
+
+    // Add image
+    tooltip.innerHTML = `<img src="${imgUrl}" style="max-width:200px; max-height:150px; border-radius:2px; display:block;">`;
+
+    // Position
+    const rect = el.getBoundingClientRect();
+    tooltip.style.left = (rect.left - 210) + 'px'; // Show to the left of the card
+    tooltip.style.top = rect.top + 'px';
+    tooltip.style.display = 'block';
+};
+
+window.hideImintTooltip = function () {
+    const tooltip = document.getElementById('imint-hover-tooltip');
+    if (tooltip) tooltip.style.display = 'none';
 };

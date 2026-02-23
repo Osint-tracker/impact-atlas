@@ -1410,35 +1410,26 @@
               </div>
             </div>
 
-            <!-- 3. EQUIPMENT LOSSES — WAR ROOM v2.0 -->
+            <!-- 3. TACTICAL GRAVEYARD (Equipment Losses + Attrition) -->
             <div class="dashboard-panel ticker-panel">
               <div class="panel-header">
-                <h4><i class="fa-solid fa-skull-crossbones"></i> EQUIPMENT LOSSES</h4>
+                <h4><i class="fa-solid fa-skull-crossbones"></i> TACTICAL GRAVEYARD</h4>
                 <span class="live-dot"></span>
               </div>
-              <!-- Burn Rate Stats -->
-              <div class="burn-rate-header" id="burn-rate-stats">
-                <!-- Skeleton Loader: Burn Rate Stats -->
-                <div class="skeleton-stat">
-                  <div class="skeleton-block"></div>
-                  <div class="skeleton-stat-text">
-                    <div class="skeleton-line" style="width: 50%;"></div>
-                    <div class="skeleton-line" style="width: 30%;"></div>
-                  </div>
-                </div>
-                <div class="skeleton-stat">
-                  <div class="skeleton-block"></div>
-                  <div class="skeleton-stat-text">
-                    <div class="skeleton-line" style="width: 45%;"></div>
-                    <div class="skeleton-line" style="width: 25%;"></div>
-                  </div>
-                </div>
+
+              <!-- Attrition Ratio Mirror Chart Container -->
+              <div class="attrition-mirror-container" id="attrition-mirror-chart">
+                <!-- Populated by JS -->
+                <div style="flex:1; text-align:center; padding:10px; color:#64748b; font-size:0.75rem;">Initializing
+                  Attrition Matrix...</div>
               </div>
+
               <div class="loss-filter-tabs">
                 <button class="loss-tab active" onclick="filterLosses('all')">ALL</button>
                 <button class="loss-tab" onclick="filterLosses('tank')">TANKS</button>
+                <button class="loss-tab" onclick="filterLosses('artillery')">ARTILLERY</button>
                 <button class="loss-tab" onclick="filterLosses('air')">AIR</button>
-                <button class="loss-tab" onclick="filterLosses('other')">OTHER</button>
+                <button class="loss-tab" onclick="filterLosses('hvt')">HVTs</button>
               </div>
               <div class="loss-feed-container" id="equipment-ticker-wrapper">
                 <div class="loss-feed-list" id="ticker-content">

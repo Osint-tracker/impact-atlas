@@ -86,7 +86,7 @@ class EventBuilder:
     def get_articles_for_cluster(self, cluster_id: str) -> pd.DataFrame:
         """Scarica raw data per il cluster specificato."""
         query = """
-            SELECT source_name, date_published, text_content, url
+            SELECT source_name, date_published, text_content, url, media_urls
             FROM raw_signals
             WHERE cluster_id = ?
         """
@@ -307,6 +307,18 @@ class EventBuilder:
             sources_json = json.dumps(top_articles['source_name'].tolist())
             urls_json = json.dumps(top_articles['url'].tolist())
 
+            # Aggreghiamo i media_urls
+            all_media = []
+            if 'media_urls' in top_articles.columns:
+                for mu_str in top_articles['media_urls'].dropna():
+                    try:
+                        mu_list = json.loads(mu_str)
+                        if isinstance(mu_list, list):
+                            all_media.extend(mu_list)
+                    except:
+                        pass
+            media_urls_json = json.dumps(list(set(all_media)))
+
             # Date (gestione sicura anche se formati misti, prendiamo min/max stringa per ora)
             dates = top_articles['date_published'].sort_values()
             first_date = str(dates.iloc[0]) if not dates.empty else ""
@@ -320,16 +332,17 @@ class EventBuilder:
                 self.cursor.execute("""
                     INSERT INTO unique_events (
                         event_id, first_seen_date, last_seen_date, article_count,
-                        sources_list, urls_list, full_text_dossier, ai_analysis_status
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, 'PENDING')
+                        sources_list, urls_list, full_text_dossier, ai_analysis_status, media_urls
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, 'PENDING', ?)
                     ON CONFLICT(event_id) DO UPDATE SET
                         article_count = excluded.article_count,
                         full_text_dossier = excluded.full_text_dossier,
                         last_seen_date = excluded.last_seen_date,
                         sources_list = excluded.sources_list,
                         urls_list = excluded.urls_list,
+                        media_urls = excluded.media_urls,
                         ai_analysis_status = 'PENDING' 
-                """, (c_id, first_date, last_date, article_count, sources_json, urls_json, dossier_text))
+                """, (c_id, first_date, last_date, article_count, sources_json, urls_json, dossier_text, media_urls_json))
 
                 processed_count += 1
 

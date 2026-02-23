@@ -20,6 +20,9 @@ from typing import Dict, List, Tuple
 
 import cv2
 import numpy as np
+import requests
+from bs4 import BeautifulSoup
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +75,13 @@ class MediaProcessor:
         """
         if not media_url or not isinstance(media_url, str):
             return []
+
+        if media_url.startswith("https://t.me/"):
+            resolved_url = self._resolve_telegram_url(media_url)
+            if not resolved_url:
+                logger.warning(f"MediaProcessor: Failed to resolve Telegram CDN for {media_url}")
+                return []
+            media_url = resolved_url
 
         try:
             # Attempt to open the stream via FFmpeg backend
@@ -229,4 +239,41 @@ class MediaProcessor:
 
         except Exception as e:
             logger.error(f"MediaProcessor: Compression error: {e}")
+            return None
+
+    def _resolve_telegram_url(self, tme_url: str) -> str | None:
+        """
+        Resolves a public t.me post URL to its direct CDN video/image link.
+        Uses the ?embed=1 endpoint to scrape the direct src without login.
+        """
+        embed_url = tme_url + "?embed=1"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Referer": "https://t.me/"
+        }
+        
+        try:
+            r = requests.get(embed_url, headers=headers, timeout=10)
+            if r.status_code != 200:
+                return None
+                
+            soup = BeautifulSoup(r.text, 'html.parser')
+            
+            # 1. Try to find a video source
+            video_tag = soup.find('video')
+            if video_tag and video_tag.has_attr('src'):
+                return video_tag['src']
+                
+            # 2. Try to find a photo background image
+            photo_tags = soup.find_all('a', class_='tgme_widget_message_photo_wrap')
+            if photo_tags:
+                style = photo_tags[0].get('style', '')
+                match = re.search(r"url\('([^']+)'\)", style)
+                if match:
+                    return match.group(1)
+                    
+            return None
+            
+        except Exception as e:
+            logger.error(f"MediaProcessor: Error resolving {tme_url}: {e}")
             return None

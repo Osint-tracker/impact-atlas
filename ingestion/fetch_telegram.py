@@ -3,6 +3,7 @@ import sys
 import asyncio
 import hashlib
 import random
+import json
 import emoji
 from datetime import datetime, timezone
 
@@ -151,8 +152,12 @@ async def fetch_channel_history(client, channel_name, start_date, end_date=None)
                 continue
 
             # 3. Preparazione Dati per DB Manager
-            # Adattiamo il formato al 'save_raw_events' standard
-            # Nota: save_raw_events si aspetta {'text', 'source', 'type', 'date'}
+            # Check for media (store public t.me URL)
+            media_urls = []
+            if message.media:
+                # Generiamo l'URL pubblico del messaggio:
+                media_url = f"https://t.me/{channel_name}/{message.id}"
+                media_urls.append(media_url)
 
             # Formattiamo la data come stringa per il DB
             date_str = msg_date.strftime("%Y-%m-%d %H:%M:%S")
@@ -162,8 +167,7 @@ async def fetch_channel_history(client, channel_name, start_date, end_date=None)
                 'source': channel_name,     # Nome canale
                 'type': 'TELEGRAM',         # Tipo fonte
                 'date': date_str,           # Data stringa
-                # I metadati extra li mettiamo nel testo o li ignoriamo per ora
-                # (Il DB raw_events.db attuale è semplice)
+                'media_urls': json.dumps(media_urls) # URL Multimediali
             }
 
             signals_batch.append(event_obj)
