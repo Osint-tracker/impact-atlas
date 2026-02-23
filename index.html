@@ -1062,10 +1062,7 @@
     <aside class="sidebar">
 
       <div class="sidebar-tabs">
-        <button class="s-tab-btn active" onclick="switchSidebarTab('filters')">
-          <i class="fa-solid fa-filter"></i> FILTERS
-        </button>
-        <button class="s-tab-btn" onclick="switchSidebarTab('layers')">
+        <button class="s-tab-btn active" onclick="switchSidebarTab('layers')">
           <i class="fa-solid fa-layer-group"></i> MAPS
         </button>
         <button class="s-tab-btn" onclick="switchSidebarTab('orbat')">
@@ -1075,86 +1072,7 @@
 
       <div class="sidebar-content-wrapper">
 
-        <div id="sidebar-tab-filters" class="s-tab-content active">
-
-          <div class="sidebar-header-wrapper">
-            <div class="search-box" style="margin-top: 15px;">
-              <i class="fa-solid fa-magnifying-glass search-icon"></i>
-              <input type="text" id="textSearch" placeholder="Search event, city..." oninput="window.applyMapFilters()">
-
-              <div class="info-icon-wrapper" data-tooltip="Search in title or description.">
-                <i class="fa-solid fa-circle-info"></i>
-              </div>
-            </div>
-          </div>
-
-          <div class="sidebar-scroll-area">
-
-            <div class="filter-block">
-              <label>
-                Time Window
-                <span class="info-icon-wrapper tooltip-bottom" data-tooltip="Filter by date.">
-                  <i class="fa-solid fa-circle-info"></i>
-                </span>
-              </label>
-              <div class="date-group">
-                <input type="date" id="startDate" class="clean-input" onchange="window.applyMapFilters()">
-                <span class="date-arrow"><i class="fa-solid fa-arrow-right"></i></span>
-                <input type="date" id="endDate" class="clean-input" onchange="window.applyMapFilters()">
-              </div>
-            </div>
-
-            <div class="filter-block">
-              <label>Operational Filter</label>
-              <div class="toggle-container" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;">
-                <label class="tech-toggle-row" style="margin:0; width:100%;">
-                  <span class="tech-toggle-label" style="font-size: 0.85rem; color: #94a3b8;">
-                    Show Civilian Events
-                  </span>
-                  <input type="checkbox" id="civilianToggle" onchange="window.applyMapFilters()">
-                  <div class="tech-switch"></div>
-                </label>
-              </div>
-            </div>
-
-            <div class="filter-block">
-              <label>Event Category</label>
-              <div class="custom-select">
-                <select id="chartTypeFilter" class="clean-input" onchange="window.applyMapFilters()">
-                  <option value="">All categories</option>
-                </select>
-                <i class="fa-solid fa-chevron-down select-arrow"></i>
-              </div>
-            </div>
-
-
-            <div class="filter-block">
-              <label>Actors</label>
-              <div class="custom-select">
-                <select id="actorFilter" class="clean-input" onchange="window.applyMapFilters()">
-                  <option value="">All actors</option>
-                  <option value="UKR">Ukraine (UKR)</option>
-                  <option value="RUS">Russia (RUS)</option>
-                  <option value="UNK">Unknown / Unattributed</option>
-                </select>
-                <i class="fa-solid fa-chevron-down select-arrow"></i>
-              </div>
-            </div>
-
-
-
-          </div>
-
-          <div class="sidebar-actions" style="flex-wrap: wrap; gap: 10px;">
-            <button id="applyFilters" class="action-btn primary" style="flex: 1 1 100%;">Apply Filters</button>
-            <!-- Report Button Removed from Sidebar -->
-            <button id="exportData" class="action-btn ghost" style="flex: 1 1 45%;">
-              <i class="fa-solid fa-download"></i> CSV
-            </button>
-          </div>
-        </div>
-
-        <div id="sidebar-tab-layers" class="s-tab-content">
+        <div id="sidebar-tab-layers" class="s-tab-content active">
           <div class="sidebar-scroll-area">
 
             <div class="layer-section-title">FRONTLINE SOURCE</div>
@@ -1315,10 +1233,10 @@
 
         <!-- TACTICAL TIME COMMAND BAR -->
         <div class="tactical-time-bar" id="tacticalTimeBar">
-          <button class="ttb-btn" onclick="setTimeWindow(24)" data-hours="24">24H</button>
+          <button class="ttb-btn active" onclick="setTimeWindow(24)" data-hours="24">24H</button>
           <button class="ttb-btn" onclick="setTimeWindow(48)" data-hours="48">48H</button>
           <button class="ttb-btn" onclick="setTimeWindow(72)" data-hours="72">72H</button>
-          <button class="ttb-btn active" onclick="setTimeWindow(0)" data-hours="0">ALL</button>
+          <button class="ttb-btn" onclick="setTimeWindow(0)" data-hours="0">ALL</button>
           <div class="ttb-divider"></div>
           <div class="ttb-custom-group">
             <input type="number" class="ttb-custom-input" id="ttbCustomHours" min="1" max="720" placeholder="—"

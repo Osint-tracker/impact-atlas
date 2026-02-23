@@ -963,29 +963,14 @@
         });
       }
 
-      // 3. Search city/location names (deduplicated by location)
-      if (window.globalEvents) {
-        const seenCities = new Set();
-        window.globalEvents.forEach(evt => {
-          const locName = (evt.location_precision || '').toLowerCase();
-          if (locName && locName.includes(q) && !seenCities.has(locName)) {
-            seenCities.add(locName);
-            results.push({
-              label: evt.location_precision,
-              type: 'CITY',
-              lat: evt.lat,
-              lon: evt.lon,
-              _eventData: null // City - no specific event
-            });
-          }
-        });
-      }
 
-      // 4. Search event titles
+
+      // 4. Search event titles and descriptions (for cities)
       if (window.globalEvents) {
         window.globalEvents.forEach(evt => {
           const title = (evt.title || '').toLowerCase();
-          if (title.includes(q)) {
+          const desc = (evt.description || '').toLowerCase();
+          if (title.includes(q) || desc.includes(q)) {
             results.push({
               label: evt.title || 'Event',
               type: 'EVENT',
