@@ -718,6 +718,111 @@
       color: #f59e0b;
     }
 
+    /* Persistence Tooltip */
+    .ttb-persistence-wrap {
+      position: relative;
+    }
+
+    .ttb-tooltip {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 10px);
+      right: -10px;
+      width: 260px;
+      background: rgba(15, 23, 42, 0.97);
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 12px 14px;
+      color: #cbd5e1;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      z-index: 1001;
+      pointer-events: none;
+    }
+
+    .ttb-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      right: 20px;
+      border-width: 6px;
+      border-style: solid;
+      border-color: #334155 transparent transparent transparent;
+    }
+
+    .ttb-tooltip .tt-title {
+      color: #f59e0b;
+      font-weight: 700;
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+      font-family: 'Rajdhani', sans-serif;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .ttb-tooltip .tt-rule {
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+      margin-top: 4px;
+    }
+
+    .ttb-tooltip .tt-rule i {
+      color: #f59e0b;
+      margin-top: 2px;
+      font-size: 0.65rem;
+    }
+
+    .ttb-persistence-wrap:hover .ttb-tooltip {
+      display: block;
+    }
+
+    /* Custom Hours Input */
+    .ttb-custom-group {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .ttb-custom-input {
+      width: 38px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid #475569;
+      border-radius: 3px;
+      color: #f8fafc;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 4px 2px;
+      outline: none;
+      transition: border-color 0.2s;
+      -moz-appearance: textfield;
+    }
+
+    .ttb-custom-input::-webkit-outer-spin-button,
+    .ttb-custom-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .ttb-custom-input:focus {
+      border-color: #f59e0b;
+      box-shadow: 0 0 6px rgba(245, 158, 11, 0.3);
+    }
+
+    .ttb-custom-suffix {
+      color: #64748b;
+      font-size: 0.7rem;
+      font-weight: 700;
+      font-family: 'Rajdhani', sans-serif;
+    }
+
     /* ========================================== */
     /* SKELETON LOADERS                           */
     /* ========================================== */
@@ -1215,11 +1320,31 @@
           <button class="ttb-btn" onclick="setTimeWindow(72)" data-hours="72">72H</button>
           <button class="ttb-btn active" onclick="setTimeWindow(0)" data-hours="0">ALL</button>
           <div class="ttb-divider"></div>
-          <label class="ttb-persistence">
-            <input type="checkbox" id="ttbPersistence" checked onchange="toggleTacticalPersistence()">
-            <div class="ttb-pip"></div>
-            <span>PERSIST</span>
-          </label>
+          <div class="ttb-custom-group">
+            <input type="number" class="ttb-custom-input" id="ttbCustomHours" min="1" max="720" placeholder="—"
+              title="Custom hours" onchange="setTimeWindow(parseInt(this.value) || 0)">
+            <span class="ttb-custom-suffix">H</span>
+          </div>
+          <div class="ttb-divider"></div>
+          <div class="ttb-persistence-wrap">
+            <label class="ttb-persistence">
+              <input type="checkbox" id="ttbPersistence" checked onchange="toggleTacticalPersistence()">
+              <div class="ttb-pip"></div>
+              <span>PERSIST</span>
+              <i class="fa-solid fa-circle-info" style="font-size: 0.6rem; margin-left: 2px; opacity: 0.6;"></i>
+            </label>
+            <div class="ttb-tooltip">
+              <div class="tt-title"><i class="fa-solid fa-shield-halved"></i> Tactical Persistence</div>
+              When enabled, high-impact events remain visible even outside your selected time window:
+              <div class="tt-rule"><i class="fa-solid fa-chevron-right"></i><span>Events with <strong
+                    style="color:#f59e0b">T.I.E. Score &gt; 80</strong></span></div>
+              <div class="tt-rule"><i class="fa-solid fa-chevron-right"></i><span>Events classified as <strong
+                    style="color:#22c55e">MANOEUVRE</strong> or <strong
+                    style="color:#22c55e">SHAPING_OFFENSIVE</strong></span></div>
+              <div style="margin-top: 8px; color: #64748b; font-size: 0.7rem;">When OFF, only events within the exact
+                time window are shown.</div>
+            </div>
+          </div>
         </div>
 
         <div id="map"></div>

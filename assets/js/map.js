@@ -899,13 +899,26 @@
   // ============================================
   window.setTimeWindow = function (hours) {
     tacticalTimeWindowHours = hours;
-    // Update button states
+    const customInput = document.getElementById('ttbCustomHours');
+    const isPreset = [0, 24, 48, 72].includes(hours);
+
+    // Update preset button states
     document.querySelectorAll('.ttb-btn').forEach(btn => {
-      btn.classList.toggle('active', parseInt(btn.dataset.hours) === hours);
+      btn.classList.toggle('active', isPreset && parseInt(btn.dataset.hours) === hours);
     });
+
+    // Sync custom input: clear if preset was clicked, show value if custom
+    if (customInput) {
+      if (isPreset) {
+        customInput.value = '';
+      } else {
+        customInput.value = hours;
+      }
+    }
+
     // Re-apply filters
     if (window.applyMapFilters) window.applyMapFilters();
-    console.log(`\u23F0 Time Window set to: ${hours === 0 ? 'ALL' : hours + 'H'}`);
+    console.log(`\u23F0 Time Window set to: ${hours === 0 ? 'ALL' : hours + 'H'}${isPreset ? '' : ' (custom)'}`);
   };
 
   window.toggleTacticalPersistence = function () {
