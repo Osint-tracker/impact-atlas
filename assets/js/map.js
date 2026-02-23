@@ -125,17 +125,36 @@
 
     // 3. Source Footer Management
     let sourceFooter = '';
-    if (e.source && e.source !== 'Unknown Source') {
-      const url = e.source.startsWith('http') ? e.source : '#';
+    let primaryUrl = null;
+
+    if (e.source && e.source !== 'Unknown Source' && e.source !== 'Source' && e.source !== '#') {
+      primaryUrl = e.source.startsWith('http') ? e.source : (e.source.includes('.') ? 'https://' + e.source : null);
+    } else if (e.sources_list) {
+      try {
+        let sList = typeof e.sources_list === 'string' ? JSON.parse(e.sources_list.replace(/'/g, '"')) : e.sources_list;
+        if (Array.isArray(sList)) {
+          let validUrlObj = sList.find(s => {
+            let u = typeof s === 'string' ? s : (s.url || s.link || s.source_url || '#');
+            return u && u !== '#' && u.toLowerCase() !== 'source' && u.trim() !== '';
+          });
+          if (validUrlObj) {
+            let extracted = typeof validUrlObj === 'string' ? validUrlObj : (validUrlObj.url || validUrlObj.link);
+            primaryUrl = extracted.startsWith('http') ? extracted : 'https://' + extracted;
+          }
+        }
+      } catch (err) { }
+    }
+
+    if (primaryUrl && primaryUrl.startsWith('http')) {
       let domain = "Original Source";
       try {
-        if (url !== '#') domain = new URL(url).hostname.replace('www.', '');
+        domain = new URL(primaryUrl).hostname.replace('www.', '');
       } catch (err) { }
 
       sourceFooter = `
             <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #334155; display: flex; align-items: center; justify-content: space-between;">
               <span style="font-size: 0.7rem; color: #64748b;">Source:</span>
-              <a href="${url}" target="_blank" style="color: #3b82f6; text-decoration: none;">
+              <a href="${primaryUrl}" target="_blank" style="color: #3b82f6; text-decoration: none;">
                  <i class="fa-solid fa-link"></i> ${domain}
               </a>
             </div>`;
@@ -2385,10 +2404,7 @@
       if (!sources || sources.length === 0) {
         sourceListEl.innerHTML = `<span style="color:#64748b; font-style:italic; font-size:0.8rem;">No explicit sources listed.</span>`;
       } else {
-        sourceListEl.innerHTML = sources.map(src => {
-          // Formatting domain name
-          let domain = typeof src === 'string' ? src : (src.name || src.source || src.url || "Source");
-
+        let validHtml = sources.map(src => {
           // Robust URL extraction
           let url = "#";
           if (typeof src === 'string') {
@@ -2397,12 +2413,17 @@
             url = src.url || src.link || src.source_url || src.uri || "#";
           }
 
+          if (!url || url === '#' || url.toLowerCase() === 'source' || url.trim() === '') return '';
+
           // Ensure protocol
-          if (url !== '#' && !url.startsWith('http')) {
+          if (!url.startsWith('http')) {
             url = 'https://' + url;
           }
+
+          // Formatting domain name
+          let domain = typeof src === 'string' ? src : (src.name || src.source || src.url || "Source");
           try {
-            if (url !== '#') domain = new URL(url).hostname.replace('www.', '');
+            domain = new URL(url).hostname.replace('www.', '');
           } catch (e) { }
 
           // Simple Favicon via Google S2
@@ -2414,7 +2435,9 @@
                     <span>${domain}</span>
                     <i class="fa-solid fa-external-link-alt" style="margin-left:auto; font-size:0.7rem; opacity:0.5;"></i>
                 </a>`;
-        }).join('');
+        }).filter(Boolean).join('');
+
+        sourceListEl.innerHTML = validHtml || `<span style="color:#64748b; font-style:italic; font-size:0.8rem;">No explicit sources listed.</span>`;
       }
     }
 

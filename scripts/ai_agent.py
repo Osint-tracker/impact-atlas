@@ -1303,6 +1303,7 @@ RAW TEXT:
                         if probe_result['is_valid']:
                             # SUCCESS - Coordinates are valid
                             print(f"   ✅ GeoProbe PASS: {probe_result['region']} ({probe_result['country_code'].upper()})")
+                            parsed_data["geo_location"]["suspicious"] = probe_result.get('suspicious', False)
                             # Continue to sanity checks below and return
                             break
                         else:
@@ -1421,45 +1422,50 @@ RAW TEXT:
                     return None
         
         # =====================================================================
-        # STEP 2: GEOPY LOOKUP (Get Candidates)
+        # STEP 1.5: LOCAL GAZETTEER FALLBACK (Zero API Cost)
         # =====================================================================
-        geolocator = Nominatim(user_agent="osint-tracker-geo-verifier/1.0", timeout=10)
-        
-        try:
-            # Search with priority for UA/RU
-            candidates = geolocator.geocode(
-                location_name, 
-                exactly_one=False, 
-                limit=5,
-                country_codes=['ua', 'ru']
-            )
+        local_coords = self.geo_probe.gazetteer_lookup(location_name)
+        if local_coords:
+            print(f"      📍 Local Gazetteer: Zero-latency match for '{location_name}'")
+            return local_coords
             
-            # Fallback: global search if no results in UA/RU
-            if not candidates:
-                candidates = geolocator.geocode(
-                    location_name,
-                    exactly_one=False,
-                    limit=5
-                )
-                
-            if not candidates:
-                print(f"      ⚠️ Geopy: No results for '{location_name}'")
+        # =====================================================================
+        # STEP 2: PHOTON LOOKUP (Get Candidates) 
+        # =====================================================================
+        # Replaced Nominatim with Photon for zero-cost, high rate-limit fuzzy matching
+        
+        candidates_list = []
+        try:
+            import requests
+            # Search Photon API (Prioritize UA by adding it to query if not present, though Photon handles it implicitly well)
+            url = f"https://photon.komoot.io/api/?q={location_name}&limit=5"
+            resp = requests.get(url, timeout=10)
+            data = resp.json()
+            
+            if data and "features" in data:
+                for i, f in enumerate(data["features"]):
+                    props = f.get("properties", {})
+                    coords = f.get("geometry", {}).get("coordinates", [])
+                    if len(coords) == 2:
+                        # Construct a display name similar to Geopy's address
+                        address_parts = [props.get("name"), props.get("county"), props.get("state"), props.get("country")]
+                        display_name = ", ".join([p for p in address_parts if p])
+                        
+                        candidates_list.append({
+                            'id': i,
+                            'display_name': display_name,
+                            'lat': coords[1],  # Photon returns [lon, lat]
+                            'lon': coords[0]
+                        })
+            
+            if not candidates_list:
+                print(f"      ⚠️ Photon: No results for '{location_name}'")
                 return None
                 
-            # Format candidates for AI
-            candidates_list = []
-            for i, loc in enumerate(candidates):
-                candidates_list.append({
-                    'id': i,
-                    'display_name': loc.address,
-                    'lat': loc.latitude,
-                    'lon': loc.longitude
-                })
-            
-            print(f"      📍 Geopy: Found {len(candidates_list)} candidates")
+            print(f"      📍 Photon: Found {len(candidates_list)} candidates")
             
         except Exception as e:
-            print(f"      ❌ Geopy Error: {e}")
+            print(f"      ❌ Photon Error: {e}")
             return None
         
         # =====================================================================

@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Impact Atlas](assets/images/banner_v4.jpeg)
+![Impact Atlas](assets/images/impact_atlas_banner.png)
 
 ### **AI-POWERED MILITARY INTELLIGENCE PLATFORM**
 *Autonomous Multi-Agent Swarm for Conflict Monitoring & Analysis*

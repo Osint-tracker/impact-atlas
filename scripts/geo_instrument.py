@@ -55,23 +55,69 @@ class GeoProbe:
         Initialize the GeoProbe.
         
         Args:
-            use_reverse_geocoding: Whether to use geopy for country validation
+            use_reverse_geocoding: Whether to use Photon for country validation
             timeout: Timeout in seconds for geocoding API calls
         """
+        import os
         self.use_reverse_geocoding = use_reverse_geocoding
         self.timeout = timeout
-        self._geolocator = None
         
-        if use_reverse_geocoding:
-            try:
-                from geopy.geocoders import Nominatim
-                self._geolocator = Nominatim(
-                    user_agent="osint-tracker-geo-probe/1.0",
-                    timeout=timeout
-                )
-            except ImportError:
-                logger.warning("geopy not installed. Reverse geocoding disabled.")
-                self.use_reverse_geocoding = False
+        # Load local gazetteer and frontline data for fast, free checks
+        self.gazetteer = None
+        self.frontline_geometry = None
+        
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        self.gazetteer_path = os.path.join(base_dir, '../assets/data/gazetteer.json')
+        self.frontline_path = os.path.join(base_dir, '../assets/data/owl_layer.geojson')
+        
+        self._load_local_datasets()
+        
+    def _load_local_datasets(self):
+        import json
+        
+        # Load Gazetteer
+        try:
+            with open(self.gazetteer_path, 'r', encoding='utf-8') as f:
+                self.gazetteer = json.load(f)
+                logger.info(f"Loaded local gazetteer with {len(self.gazetteer)} entries.")
+        except FileNotFoundError:
+            # Gazetteer not found, will rely on Photon
+            self.gazetteer = None
+            
+        # Load Frontline for Soft Anomaly Filters
+        try:
+            from shapely.geometry import shape, MultiLineString
+            with open(self.frontline_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                lines = []
+                for feat in data.get('features', []):
+                    # We assume frontline is represented by LineStrings
+                     geom = feat.get('geometry', {})
+                     if geom.get('type') in ['LineString', 'MultiLineString']:
+                         lines.append(shape(geom))
+                if lines:
+                    from shapely.ops import linemerge
+                    self.frontline_geometry = linemerge(lines)
+                    logger.info("Loaded frontline geometry for distance checks.")
+        except Exception as e:
+            logger.warning(f"Could not load frontline geometry: {e}")
+
+    def gazetteer_lookup(self, location_name: str) -> Optional[dict]:
+        """Fast fuzzy lookup in local JSON gazetteer (Zero API Cost)."""
+        if not self.gazetteer or not location_name:
+            return None
+        
+        loc_lower = location_name.lower().strip()
+        # Direct match check
+        for entry in self.gazetteer:
+            name_en = entry.get('name_en', '').lower()
+            name_ua = entry.get('name_ua', '').lower()
+            name_ru = entry.get('name_ru', '').lower()
+            if loc_lower in [name_en, name_ua, name_ru]:
+                return {'lat': entry['lat'], 'lon': entry['lon']}
+                
+        # Fuzzy match logic could be added here (e.g. rapidfuzz)
+        return None
     
     def _is_in_bounding_box(self, lat: float, lon: float, strict: bool = True) -> bool:
         """
@@ -89,33 +135,31 @@ class GeoProbe:
     
     def _reverse_geocode(self, lat: float, lon: float) -> Optional[dict]:
         """
-        Reverse geocode coordinates to get location details.
+        Reverse geocode coordinates to get location details using Photon API.
         
         Returns:
-            dict with 'address', 'country_code', 'region' or None on failure
+            dict with 'address', 'country_code', 'region', 'country' or None on failure
         """
-        if not self._geolocator:
-            return None
-            
+        import requests
+        
         try:
-            location = self._geolocator.reverse(
-                f"{lat}, {lon}",
-                language='en',
-                addressdetails=True
-            )
+            url = f"https://photon.komoot.io/reverse?lon={lon}&lat={lat}"
+            resp = requests.get(url, timeout=self.timeout)
+            data = resp.json()
             
-            if location and location.raw:
-                address = location.raw.get('address', {})
+            if data and data.get('features'):
+                props = data['features'][0].get('properties', {})
+                country_code = props.get('countrycode', '').lower()
+                
                 return {
-                    'address': location.address,
-                    'country_code': address.get('country_code', '').lower(),
-                    'region': address.get('state') or address.get('county') or address.get('city', 'Unknown'),
-                    'country': address.get('country', 'Unknown')
+                    'address': props.get('name', 'Unknown'),
+                    'country_code': country_code,
+                    'region': props.get('state') or props.get('county') or props.get('city', 'Unknown'),
+                    'country': props.get('country', 'Unknown')
                 }
         except Exception as e:
-            logger.warning(f"Reverse geocoding failed for ({lat}, {lon}): {e}")
-            return None
-        
+            logger.warning(f"Photon reverse geocoding failed for ({lat}, {lon}): {e}")
+            
         return None
     
     def probe_coordinates(self, lat: float, lon: float) -> dict:
@@ -135,6 +179,7 @@ class GeoProbe:
                 - country_code: str - ISO country code
                 - error_msg: str - Specific error if invalid (empty if valid)
                 - method: str - How validation was performed
+                - suspicious: bool - True if event is suspiciously far from action
         """
         result = {
             'is_valid': False,
@@ -142,7 +187,8 @@ class GeoProbe:
             'country_code': 'unknown',
             'country': 'Unknown',
             'error_msg': '',
-            'method': 'none'
+            'method': 'none',
+            'suspicious': False
         }
         
         # =====================================================================
@@ -248,6 +294,18 @@ class GeoProbe:
                 f"and reverse geocoding failed. This could be offshore (Black Sea) or a border error. "
                 f"Please provide coordinates within the strict theatre bounds."
             )
+        # =====================================================================
+        # VALIDATION CHECK 5: Soft Anomaly Distance (100km from front)
+        # =====================================================================
+        if self.frontline_geometry and result['is_valid']:
+            from shapely.geometry import Point
+            p = Point(lon, lat)
+            # Distance in degrees: 1 degree approx 100km at this latitude
+            # If distance > 1.0 degrees, it's > 100km from the frontline
+            dist = self.frontline_geometry.distance(p)
+            if dist > 1.0:
+                result['suspicious'] = True
+                logger.info(f"Anomaly Filter: Event is ~{dist*100:.1f}km from frontline. Flagged as suspicious.")
         
         return result
     
