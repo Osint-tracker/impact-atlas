@@ -2623,43 +2623,64 @@
     const sourceListEl = document.getElementById('modal-source-list');
     if (sourceListEl) {
       let sources = [];
+      let urls = [];
       try {
         if (Array.isArray(eventData.sources_list)) {
           sources = eventData.sources_list;
         } else if (typeof eventData.sources_list === 'string') {
-          // 1. Try Clean JSON Parse first (Backend v2)
           try {
-            sources = JSON.parse(eventData.sources_list);
-          } catch (e1) {
-            // 2. Fallback for Legacy/Dirty strings (Python list style)
-            try {
-              // Only replace quotes if it looks like a Python list string
-              if (eventData.sources_list.includes("'")) {
-                sources = JSON.parse(eventData.sources_list.replace(/'/g, '"'));
-              } else {
-                sources = [eventData.sources_list];
-              }
-            } catch (e2) {
-              // Last resort: treat as single string
-              sources = [eventData.sources_list];
+            if (eventData.sources_list.includes("'") && !eventData.sources_list.includes('"')) {
+              sources = JSON.parse(eventData.sources_list.replace(/'/g, '"'));
+            } else {
+              sources = JSON.parse(eventData.sources_list);
             }
+          } catch (e2) {
+            sources = [eventData.sources_list];
           }
         }
+
+        if (Array.isArray(eventData.urls_list)) {
+          urls = eventData.urls_list;
+        } else if (typeof eventData.urls_list === 'string') {
+          try {
+            let cleaned = eventData.urls_list;
+            if (cleaned.includes("'") && !cleaned.includes('"')) {
+              cleaned = cleaned.replace(/'/g, '"');
+            }
+            urls = JSON.parse(cleaned);
+          } catch (e) { }
+        }
       } catch (e) { console.warn("Error parsing sources:", e); }
+
+      // Fallback: If sources is empty but urls is not, use urls as sources
+      if (sources.length === 0 && urls.length > 0) {
+        sources = urls.map(u => "Source");
+      }
 
       if (!sources || sources.length === 0) {
         sourceListEl.innerHTML = `<span style="color:#64748b; font-style:italic; font-size:0.8rem;">No explicit sources listed.</span>`;
       } else {
-        let validHtml = sources.map(src => {
-          // Robust URL extraction
-          let url = "#";
-          if (typeof src === 'string') {
-            url = src;
-          } else if (typeof src === 'object') {
-            url = src.url || src.link || src.source_url || src.uri || "#";
+        // Zip sources and urls
+        let validHtml = sources.map((src, i) => {
+          let sourceName = typeof src === 'string' ? src : (src.name || src.source || src.url || "Source");
+          let url = (urls && urls[i]) ? urls[i] : null;
+
+          // If the URL is missing or invalid, try to reconstruct it for Telegram, or make it unclickable
+          if (!url || url === '#' || url === 'None' || url === 'null') {
+            if (eventData.type && eventData.type.toUpperCase() === 'TELEGRAM') {
+              url = 'https://t.me/' + sourceName;
+            } else {
+              url = '#'; // Unclickable
+            }
           }
 
-          if (!url || url === '#' || url.toLowerCase() === 'source' || url.trim() === '') return '';
+          if (url === '#') {
+            return `
+                <div class="source-item" style="cursor:default; opacity:0.8; display:flex; align-items:center;">
+                    <i class="fa-solid fa-file-lines" style="margin-right:8px; opacity:0.5;"></i>
+                    <span>${sourceName}</span>
+                </div>`;
+          }
 
           // Ensure protocol
           if (!url.startsWith('http')) {
@@ -2667,7 +2688,7 @@
           }
 
           // Formatting domain name
-          let domain = typeof src === 'string' ? src : (src.name || src.source || src.url || "Source");
+          let domain = sourceName;
           try {
             domain = new URL(url).hostname.replace('www.', '');
           } catch (e) { }
@@ -2676,7 +2697,7 @@
           const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
 
           return `
-                <a href="${url}" target="_blank" class="source-item">
+                <a href="${url}" target="_blank" rel="noopener noreferrer" class="source-item">
                     <img src="${faviconUrl}" class="source-icon" onerror="this.style.display='none'">
                     <span>${domain}</span>
                     <i class="fa-solid fa-external-link-alt" style="margin-left:auto; font-size:0.7rem; opacity:0.5;"></i>

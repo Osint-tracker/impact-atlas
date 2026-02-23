@@ -29,32 +29,60 @@ EXTERNAL_LOSSES_PATH = os.path.join(BASE_DIR, '../assets/data/external_losses.js
 
 def parse_sources_to_list(sources_str):
     """Parse sources string to structured list of {name, url}."""
-    if not sources_str:
+    if not sources_str or sources_str == '[]':
         return []
     
-    # Handle both ' | ' and ' ||| ' separators
-    if ' ||| ' in str(sources_str):
-        urls = [u.strip() for u in str(sources_str).split(' ||| ') if u.strip()]
-    elif ' | ' in str(sources_str):
-        urls = [u.strip() for u in str(sources_str).split(' | ') if u.strip()]
-    else:
-        urls = [str(sources_str).strip()] if sources_str else []
+    urls = []
+    # If it's a JSON array string
+    try:
+        parsed = json.loads(sources_str)
+        if isinstance(parsed, list):
+            urls = parsed
+    except:
+        pass
+    
+    # Fallback to custom separators
+    if not urls:
+        if ' ||| ' in str(sources_str):
+            urls = [u.strip() for u in str(sources_str).split(' ||| ') if u.strip()]
+        elif ' | ' in str(sources_str):
+            urls = [u.strip() for u in str(sources_str).split(' | ') if u.strip()]
+        else:
+            urls = [str(sources_str).strip()] if sources_str else []
     
     result = []
     for url in urls:
         url = str(url).strip()
         # Filter out invalid URLs
-        if len(url) < 5 or url.lower() in ['none', 'null', 'unknown', '[null]']:
+        if len(url) < 3 or url.lower() in ['none', 'null', 'unknown', '[null]']:
             continue
-        try:
-            domain = urlparse(url).netloc.replace('www.', '')
-            if not domain:
+            
+        is_url = url.startswith('http') or url.startswith('www.')
+        if is_url:
+            try:
+                domain = urlparse(url if url.startswith('http') else 'https://'+url).netloc.replace('www.', '')
+                if not domain:
+                    domain = "Source"
+            except:
                 domain = "Source"
-        except:
-            domain = "Source"
-        result.append({"name": domain, "url": url})
-    
-    return result
+            result.append({"name": domain, "url": url})
+        else:
+            # It's an explicit source name (e.g. Telegram channel or GDELT_Network)
+            domain = url
+            final_url = f"https://t.me/{domain}" if domain != 'GDELT_Network' else "#"
+            result.append({"name": domain, "url": final_url})
+            
+    # Remove exact duplicates
+    seen = set()
+    unique_result = []
+    for r in result:
+        # We can't hash dicts, so we use a tuple key
+        key = (r['name'], r['url'])
+        if key not in seen:
+            seen.add(key)
+            unique_result.append(r)
+            
+    return unique_result
 
 
 def load_orbat_data():
@@ -638,9 +666,9 @@ def main():
             
             # Sources — fallback chain: urls_list → sources_list → ai_report_json
             sources_str = row.get('urls_list') or ''
-            if not sources_str:
+            if not sources_str or sources_str == '[]' or sources_str == '[""]' or sources_str == '[null]':
                 sources_str = row.get('sources_list') or ''
-            if not sources_str and ai_data:
+            if (not sources_str or sources_str == '[]' or sources_str == '[""]') and ai_data:
                 agg = ai_data.get('Aggregated Sources', [])
                 if agg:
                     sources_str = ' | '.join(str(s) for s in agg if s)
