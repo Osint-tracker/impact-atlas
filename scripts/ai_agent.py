@@ -1473,30 +1473,35 @@ RAW TEXT:
     # MODEL: qwen/qwen3-vl-235b-a22b-instruct (MANDATORY HARD CONSTRAINT)
     # =========================================================================
 
-    def _step_visionary(self, soldier_data: dict, base64_frames: list) -> dict | None:
+    def _step_visionary(self, soldier_data: dict, frame_dicts: list) -> dict | None:
         """
-        Role: Surgical IMINT Verification & Equipment ID.
+        Role: Surgical IMINT Verification & Equipment ID with per-frame analysis.
         
         Activates ONLY when Base64-encoded keyframes are available.
         Cross-references The Soldier's text extraction against visual evidence.
         Identifies military hardware variants and assesses kinetic damage.
+        Produces per-frame analysis for the IMINT Evidence Feed.
         
         Args:
             soldier_data (dict): Output from The Soldier (text-extracted intel).
-            base64_frames (list): List of Base64 data URL strings 
-                                  (e.g., "data:image/jpeg;base64,...").
+            frame_dicts (list): List of enriched frame dicts from MediaProcessor,
+                                each containing: base64_data, delta_score,
+                                frame_index, selection_reason.
         
         Returns:
-            dict: Structured IMINT report or None on failure.
+            dict: Structured IMINT report (with `analyzed_frames` array) or None on failure.
         """
-        if not base64_frames:
+        if not frame_dicts:
             return None
         
         print("   \U0001f441\ufe0f Step V: The Visionary (IMINT) analyzing visual evidence...")
-        print(f"      \U0001f4f8 Base64 frames to analyze: {len(base64_frames)}")
+        print(f"      \U0001f4f8 Enriched frames to analyze: {len(frame_dicts)}")
         
         # Build text context from Soldier's extraction
         soldier_summary = json.dumps(soldier_data, indent=2, default=str)[:8000]
+        
+        # Build frame label list for per-frame analysis instruction
+        frame_labels = ", ".join([f"Frame {i+1}" for i in range(len(frame_dicts[:4]))])
         
         # Construct multimodal message content (text + Base64 images)
         # Format: array of content items per OpenRouter VLM spec
@@ -1506,17 +1511,31 @@ RAW TEXT:
                 "text": f"""SOLDIER TEXT INTEL (Cross-reference this against the images):
 {soldier_summary}
 
+You are receiving {len(frame_dicts[:4])} numbered frames: {frame_labels}.
 Analyze the attached visual evidence. CONFIRM, CONTRADICT, or ENRICH the text intel above.
+
+IMPORTANT: In addition to your standard analysis, add a "per_frame_analysis" array to your JSON output.
+For EACH frame, provide:
+{{
+  "per_frame_analysis": [
+    {{
+      "frame_id": 1,
+      "confidence": 0.0-1.0,
+      "explanation": "What you see in THIS specific frame (1-2 sentences max)"
+    }}
+  ]
+}}
 Output ONLY valid JSON per your instructions."""
             }
         ]
         
         # Attach each Base64 frame as an image_url content item
         # Cap at 4 frames to avoid token overflow on the VLM
-        for b64_data_url in base64_frames[:4]:
+        for fd in frame_dicts[:4]:
+            b64_url = fd.get('base64_data', '') if isinstance(fd, dict) else str(fd)
             content_items.append({
                 "type": "image_url",
-                "image_url": {"url": str(b64_data_url)}
+                "image_url": {"url": str(b64_url)}
             })
         
         try:
@@ -1553,6 +1572,26 @@ Output ONLY valid JSON per your instructions."""
                 geo_clues = parsed.get('geo_clues', [])
                 if geo_clues:
                     print(f"      \U0001f4cd Geo Clues: {geo_clues[:5]}")
+                
+                # --- BUILD ANALYZED_FRAMES: Merge VLM per-frame analysis with MediaProcessor metadata ---
+                vlm_per_frame = parsed.pop('per_frame_analysis', [])  # Extract and remove from parsed
+                analyzed_frames = []
+                for i, fd in enumerate(frame_dicts[:4]):
+                    frame_meta = fd if isinstance(fd, dict) else {"base64_data": str(fd)}
+                    # Find matching VLM analysis for this frame (by frame_id = i+1)
+                    vlm_match = next((pf for pf in vlm_per_frame if pf.get('frame_id') == i + 1), {})
+                    
+                    analyzed_frames.append({
+                        "frame_id": i + 1,
+                        "confidence": vlm_match.get('confidence', v_conf),  # Fallback to aggregate confidence
+                        "selection_reason": frame_meta.get('selection_reason', 'Keyframe'),
+                        "explanation": vlm_match.get('explanation', parsed.get('visual_confirmation', {}).get('visual_summary', '')),
+                        "base64_data": frame_meta.get('base64_data', ''),
+                        "delta_score": frame_meta.get('delta_score', 0.0)
+                    })
+                
+                parsed['analyzed_frames'] = analyzed_frames
+                print(f"      📋 IMINT Feed: {len(analyzed_frames)} frames with per-frame analysis.")
                 
                 return parsed
             else:
@@ -2928,26 +2967,26 @@ def process_row(self, row):
         # --- MEDIA PROCESSING: Extract Base64 keyframes via MediaProcessor ---
         # Raw URLs cannot be passed directly to OpenRouter (anti-hotlinking, MP4 format).
         # MediaProcessor streams via FFmpeg, extracts scene-change keyframes, encodes to Base64.
-        all_b64_frames = []
+        all_frame_dicts = []  # List[dict] with base64_data, delta_score, frame_index, selection_reason
         if MediaProcessor is not None:
             media_proc = MediaProcessor()
             for m_url in media_urls_raw:
                 frames = media_proc.extract_keyframes(str(m_url))
-                all_b64_frames.extend(frames)
-                if len(all_b64_frames) >= 4:  # Cap total frames for VLM
-                    all_b64_frames = all_b64_frames[:4]
+                all_frame_dicts.extend(frames)
+                if len(all_frame_dicts) >= 4:  # Cap total frames for VLM
+                    all_frame_dicts = all_frame_dicts[:4]
                     break
             
-            if all_b64_frames:
-                print(f"      \U0001f4f8 MediaProcessor: {len(all_b64_frames)} keyframes extracted from {len(media_urls_raw)} media files.")
+            if all_frame_dicts:
+                print(f"      \U0001f4f8 MediaProcessor: {len(all_frame_dicts)} keyframes extracted from {len(media_urls_raw)} media files.")
             else:
                 print(f"      \u26a0\ufe0f MediaProcessor: No keyframes extracted (dead links or unsupported format). Visionary bypassed.")
         else:
             print("      \u26a0\ufe0f MediaProcessor unavailable (opencv-python-headless not installed). Visionary bypassed.")
         
         # --- INVOKE THE VISIONARY (only if we have frames) ---
-        if all_b64_frames:
-            visionary_out = self._step_visionary(soldier_out, all_b64_frames)
+        if all_frame_dicts:
+            visionary_out = self._step_visionary(soldier_out, all_frame_dicts)
         
         if visionary_out:
             # A. Override visual_evidence flag for TIE calculation

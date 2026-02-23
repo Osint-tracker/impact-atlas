@@ -16,7 +16,7 @@
 import os
 import base64
 import logging
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 import cv2
 import numpy as np
@@ -51,7 +51,7 @@ class MediaProcessor:
         os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = self._FFMPEG_OPTIONS
         logger.info("MediaProcessor initialized (anti-hotlinking headers set).")
 
-    def extract_keyframes(self, media_url: str) -> List[str]:
+    def extract_keyframes(self, media_url: str) -> List[Dict]:
         """
         Extract top keyframes from a media URL (video or image).
 
@@ -63,8 +63,12 @@ class MediaProcessor:
             media_url: Direct URL to the media file (image or video).
 
         Returns:
-            List of Base64-encoded JPEG strings as data URLs
-            (e.g., "data:image/jpeg;base64,..."). Empty list on failure.
+            List of dicts, each containing:
+              - base64_data: Base64 data URL string
+              - delta_score: float (scene-change magnitude, 0 for images)
+              - frame_index: int (source frame position)
+              - selection_reason: str (why this frame was chosen)
+            Empty list on failure.
         """
         if not media_url or not isinstance(media_url, str):
             return []
@@ -92,10 +96,10 @@ class MediaProcessor:
             logger.error(f"MediaProcessor: Exception processing {media_url[:80]}...: {e}")
             return []
 
-    def _process_video_stream(self, cap: cv2.VideoCapture, fps: float) -> List[str]:
+    def _process_video_stream(self, cap: cv2.VideoCapture, fps: float) -> List[Dict]:
         """
         Process a video stream: sample at 1 FPS, rank by scene-change delta,
-        return top MAX_KEYFRAMES frames as Base64.
+        return top MAX_KEYFRAMES frames as enriched dicts.
         """
         # Frame sampling interval: 1 frame per second
         sample_interval = max(1, int(round(fps)))
@@ -104,9 +108,9 @@ class MediaProcessor:
         frame_index: int = 0
         sampled_count: int = 0
 
-        # Priority queue: (delta_score, frame_bgr)
+        # Priority queue: (delta_score, frame_index, frame_bgr)
         # We keep track of top-N by delta score
-        top_frames: List[Tuple[float, np.ndarray]] = []
+        top_frames: List[Tuple[float, int, np.ndarray]] = []
 
         try:
             while True:
@@ -134,12 +138,12 @@ class MediaProcessor:
 
                     # Maintain top-N frames
                     if len(top_frames) < self.MAX_KEYFRAMES:
-                        top_frames.append((delta_score, frame.copy()))
+                        top_frames.append((delta_score, frame_index, frame.copy()))
                     else:
                         # Replace the lowest-scoring frame if this one is better
                         min_idx = min(range(len(top_frames)), key=lambda i: top_frames[i][0])
                         if delta_score > top_frames[min_idx][0]:
-                            top_frames[min_idx] = (delta_score, frame.copy())
+                            top_frames[min_idx] = (delta_score, frame_index, frame.copy())
 
                 prev_gray = gray
 
@@ -154,12 +158,19 @@ class MediaProcessor:
         # Sort by delta score descending (highest scene change first)
         top_frames.sort(key=lambda x: x[0], reverse=True)
 
-        # Compress and encode
-        result: List[str] = []
-        for _score, frame_bgr in top_frames:
+        # Compress, encode, and build enriched result dicts
+        result: List[Dict] = []
+        for rank, (score, f_idx, frame_bgr) in enumerate(top_frames):
             b64 = self._compress_and_encode(frame_bgr)
             if b64:
-                result.append(b64)
+                # Determine selection reason label
+                reason = "Max Delta / Scene Change" if rank == 0 else "High Delta / Scene Change"
+                result.append({
+                    "base64_data": b64,
+                    "delta_score": round(score, 2),
+                    "frame_index": f_idx,
+                    "selection_reason": reason
+                })
 
         logger.info(
             f"MediaProcessor: Extracted {len(result)} keyframes "
@@ -167,15 +178,23 @@ class MediaProcessor:
         )
         return result
 
-    def _process_single_image(self, cap: cv2.VideoCapture) -> List[str]:
-        """Process a single image (or 1-frame stream) and return as Base64."""
+    def _process_single_image(self, cap: cv2.VideoCapture) -> List[Dict]:
+        """Process a single image (or 1-frame stream) and return as enriched dict."""
         try:
             ret, frame = cap.read()
             if not ret or frame is None:
                 return []
 
             b64 = self._compress_and_encode(frame)
-            return [b64] if b64 else []
+            if not b64:
+                return []
+
+            return [{
+                "base64_data": b64,
+                "delta_score": 0.0,
+                "frame_index": 1,
+                "selection_reason": "Single Frame / Static Image"
+            }]
 
         finally:
             cap.release()

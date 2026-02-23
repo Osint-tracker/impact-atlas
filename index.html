@@ -726,7 +726,7 @@
     .ttb-tooltip {
       display: none;
       position: absolute;
-      bottom: calc(100% + 10px);
+      top: calc(100% + 10px);
       right: -10px;
       width: 260px;
       background: rgba(15, 23, 42, 0.97);
@@ -748,11 +748,11 @@
     .ttb-tooltip::after {
       content: '';
       position: absolute;
-      top: 100%;
+      bottom: 100%;
       right: 20px;
       border-width: 6px;
       border-style: solid;
-      border-color: #334155 transparent transparent transparent;
+      border-color: transparent transparent #334155 transparent;
     }
 
     .ttb-tooltip .tt-title {
@@ -1328,7 +1328,7 @@
           <div class="ttb-divider"></div>
           <div class="ttb-persistence-wrap">
             <label class="ttb-persistence">
-              <input type="checkbox" id="ttbPersistence" checked onchange="toggleTacticalPersistence()">
+              <input type="checkbox" id="ttbPersistence" onchange="toggleTacticalPersistence()">
               <div class="ttb-pip"></div>
               <span>PERSIST</span>
               <i class="fa-solid fa-circle-info" style="font-size: 0.6rem; margin-left: 2px; opacity: 0.6;"></i>
@@ -1337,7 +1337,7 @@
               <div class="tt-title"><i class="fa-solid fa-shield-halved"></i> Tactical Persistence</div>
               When enabled, high-impact events remain visible even outside your selected time window:
               <div class="tt-rule"><i class="fa-solid fa-chevron-right"></i><span>Events with <strong
-                    style="color:#f59e0b">T.I.E. Score &gt; 80</strong></span></div>
+                    style="color:#f59e0b">T.I.E. Score &ge; 100</strong></span></div>
               <div class="tt-rule"><i class="fa-solid fa-chevron-right"></i><span>Events classified as <strong
                     style="color:#22c55e">MANOEUVRE</strong> or <strong
                     style="color:#22c55e">SHAPING_OFFENSIVE</strong></span></div>
@@ -1588,6 +1588,22 @@
                 <div id="modalUnitsList" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
               </div>
 
+              <!-- IMINT EVIDENCE FEED -->
+              <div id="imint-evidence-feed"
+                style="display:none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                  <i class="fa-solid fa-camera" style="color:#f59e0b; font-size:0.8rem;"></i>
+                  <span
+                    style="font-size:0.75rem; text-transform:uppercase; color:#94a3b8; letter-spacing:1px; font-weight:600;">IMINT
+                    EVIDENCE FEED</span>
+                  <span id="imintFrameCount"
+                    style="font-size:0.65rem; background:#f59e0b22; color:#f59e0b; padding:1px 6px; border-radius:3px; font-family:'JetBrains Mono', monospace; font-weight:600;"></span>
+                </div>
+                <div id="imintFilmstrip" class="imint-filmstrip">
+                  <!-- Frame cards injected by JS -->
+                </div>
+              </div>
+
               <div id="modalVideoContainer" class="dossier-media"></div>
               <div id="modalJuxtapose"></div>
             </div>
@@ -1723,6 +1739,16 @@
 
           </div>
         </div>
+      </div>
+
+      <!-- IMINT LIGHTBOX -->
+      <div id="imintLightbox" class="imint-lightbox" onclick="this.style.display='none'" style="display:none;">
+        <span
+          style="position:absolute; top:20px; right:30px; font-size:2rem; color:#f8fafc; cursor:pointer; z-index:10;"
+          onclick="document.getElementById('imintLightbox').style.display='none'">&times;</span>
+        <img id="imintLightboxImg" src="" alt="IMINT Frame"
+          style="max-width:92vw; max-height:90vh; border-radius:8px; box-shadow:0 25px 60px rgba(0,0,0,0.7);"
+          onclick="event.stopPropagation()">
       </div>
 
       <!-- PLAYFRA MAP MODAL (IFRAME) -->
@@ -1895,6 +1921,159 @@
           </div>
         </div>
       </div>
+
+      <style>
+        /* === IMINT Evidence Feed Styles === */
+        .imint-filmstrip {
+          display: flex;
+          gap: 12px;
+          overflow-x: auto;
+          padding-bottom: 6px;
+          scroll-behavior: smooth;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .imint-filmstrip::-webkit-scrollbar {
+          height: 4px;
+        }
+
+        .imint-filmstrip::-webkit-scrollbar-track {
+          background: #0f172a;
+          border-radius: 2px;
+        }
+
+        .imint-filmstrip::-webkit-scrollbar-thumb {
+          background: #334155;
+          border-radius: 2px;
+        }
+
+        .imint-filmstrip::-webkit-scrollbar-thumb:hover {
+          background: #475569;
+        }
+
+        .imint-frame-card {
+          flex: 0 0 220px;
+          background: #1e293b;
+          border-radius: 8px;
+          padding: 10px;
+          border: 1px solid #334155;
+          transition: border-color 0.2s;
+        }
+
+        .imint-frame-card:hover {
+          border-color: #475569;
+        }
+
+        .imint-frame-card.imint-contradicted {
+          border: 1px solid #f59e0b;
+        }
+
+        .imint-frame-card .imint-thumb {
+          width: 100%;
+          height: 130px;
+          object-fit: cover;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: opacity 0.2s;
+          background: #0f172a;
+        }
+
+        .imint-frame-card .imint-thumb:hover {
+          opacity: 0.85;
+        }
+
+        .imint-meta-row {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-top: 8px;
+          flex-wrap: wrap;
+        }
+
+        .imint-confidence-badge {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 0.7rem;
+          font-weight: 700;
+          color: #f59e0b;
+          background: rgba(245, 158, 11, 0.12);
+          border: 1px solid rgba(245, 158, 11, 0.3);
+          padding: 1px 6px;
+          border-radius: 3px;
+          white-space: nowrap;
+        }
+
+        .imint-selection-tag {
+          font-size: 0.6rem;
+          color: #94a3b8;
+          background: rgba(100, 116, 139, 0.15);
+          padding: 1px 5px;
+          border-radius: 3px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          max-width: 120px;
+        }
+
+        .imint-frame-id {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 0.6rem;
+          color: #64748b;
+          margin-left: auto;
+        }
+
+        .imint-explanation {
+          font-size: 0.78rem;
+          line-height: 1.4;
+          color: #cbd5e1;
+          margin-top: 6px;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .imint-explanation.expanded {
+          -webkit-line-clamp: unset;
+          display: block;
+        }
+
+        .imint-read-more {
+          font-size: 0.7rem;
+          color: #f59e0b;
+          cursor: pointer;
+          margin-top: 3px;
+          display: inline-block;
+          user-select: none;
+        }
+
+        .imint-read-more:hover {
+          text-decoration: underline;
+        }
+
+        .imint-lightbox {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(0, 0, 0, 0.92);
+          z-index: 99999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+        }
+
+        /* Vertical stack mode when <=3 frames */
+        .imint-filmstrip.imint-stack {
+          flex-direction: column;
+        }
+
+        .imint-filmstrip.imint-stack .imint-frame-card {
+          flex: 0 0 auto;
+          width: 100%;
+        }
+      </style>
 
       <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 

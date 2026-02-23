@@ -710,6 +710,23 @@ def main():
             raw_units = ai_data.get('military_units_detected', [])
             enriched_units = enrich_units(raw_units, orbat_data)
             
+            # --- IMINT Evidence Feed: Extract Visionary per-frame analysis ---
+            visual_analysis = []
+            tactics_data = ai_data.get('tactics', {})
+            visionary_report = tactics_data.get('visionary_report', {}) if isinstance(tactics_data, dict) else {}
+            if visionary_report and isinstance(visionary_report, dict):
+                analyzed_frames = visionary_report.get('analyzed_frames', [])
+                v_status = visionary_report.get('visual_confirmation', {}).get('verification_status', '')
+                for af in analyzed_frames:
+                    visual_analysis.append({
+                        "frame_id": af.get('frame_id', 0),
+                        "confidence": af.get('confidence', 0),
+                        "selection_reason": af.get('selection_reason', ''),
+                        "explanation": af.get('explanation', ''),
+                        "base64_data": af.get('base64_data', ''),
+                        "verification_status": v_status
+                    })
+            
             # Build GeoJSON Feature
             feature = {
                 "type": "Feature",
@@ -746,6 +763,9 @@ def main():
                     "sources_list": json.dumps(structured_sources),
                     
                     "units": json.dumps(enriched_units),
+                    
+                    # IMINT Evidence Feed (per-frame Visionary analysis)
+                    "visual_analysis": json.dumps(visual_analysis) if visual_analysis else "",
                     
                     # Marker Style
                     "marker_radius": radius,

@@ -28,7 +28,7 @@
 
   // Tactical Time Command State
   let tacticalTimeWindowHours = 0; // 0 = ALL (no filter)
-  let tacticalPersistence = true;  // Default: ON
+  let tacticalPersistence = false;  // Default: OFF
 
   // Central helper to define what is civilian
   function isCivilianEvent(e) {
@@ -95,40 +95,6 @@
     const iconClass = getIconClass(e.type);
     const size = (e.intensity || 0.2) >= 0.8 ? 34 : 26;
     const iconSize = Math.floor(size / 1.8);
-
-    // --- TASK 5: Directional Manoeuvre Indicator ---
-    const cat = (e.category || '').toUpperCase();
-    if (cat === 'MANOEUVRE' || cat === 'MANEUVER') {
-      const directionMap = {
-        'north': 0, 'n': 0,
-        'north-east': 45, 'ne': 45, 'northeast': 45,
-        'east': 90, 'e': 90,
-        'south-east': 135, 'se': 135, 'southeast': 135,
-        'south': 180, 's': 180,
-        'south-west': 225, 'sw': 225, 'southwest': 225,
-        'west': 270, 'w': 270,
-        'north-west': 315, 'nw': 315, 'northwest': 315
-      };
-      const rawDir = (e.direction || e.manoeuvre_direction || '').toLowerCase().trim();
-      const rotation = directionMap[rawDir] !== undefined ? directionMap[rawDir] : null;
-
-      const arrowHtml = rotation !== null
-        ? `<div class="manoeuvre-marker"><div class="manoeuvre-arrow" style="transform: rotate(${rotation}deg);"><i class="fa-solid fa-arrow-up"></i></div></div>`
-        : `<div class="manoeuvre-marker"><div class="manoeuvre-arrow"><i class="fa-solid fa-arrows-up-down-left-right"></i></div></div>`;
-
-      const mMarker = L.marker([e.lat, e.lon], {
-        icon: L.divIcon({
-          className: 'custom-icon-marker',
-          html: arrowHtml,
-          iconSize: [32, 32]
-        })
-      });
-      mMarker.bindPopup(createPopupContent(e));
-      mMarker.on('popupopen', function () {
-        if (window.fetchHistoricalWeatherImpact) window.fetchHistoricalWeatherImpact(e);
-      });
-      return mMarker;
-    }
 
     // Standard marker
     const marker = L.marker([e.lat, e.lon], {
@@ -778,15 +744,17 @@
             }
 
             // 6. Tactical Time Window Filter
-            if (tacticalTimeWindowHours > 0) {
-              const cutoff = Date.now() - (tacticalTimeWindowHours * 3600000);
+            if (tacticalTimeWindowHours > 0 && window.globalEvents && window.globalEvents.length > 0) {
+              // Use the most recent event as reference point (not Date.now())
+              const maxTimestamp = Math.max(...window.globalEvents.map(ev => ev.timestamp || 0));
+              const cutoff = maxTimestamp - (tacticalTimeWindowHours * 3600000);
               if (e.timestamp < cutoff) {
                 // Event is outside the time window
                 if (tacticalPersistence) {
-                  // Persistence ON: keep if TIE > 80 or category is MANOEUVRE/SHAPING_OFFENSIVE
+                  // Persistence ON: keep if TIE >= 100 or category is MANOEUVRE/SHAPING_OFFENSIVE
                   const tieScore = e.tie_total || e.tie_score || 0;
                   const eCat = (e.category || '').toUpperCase();
-                  const isPersistent = tieScore > 80 || eCat === 'MANOEUVRE' || eCat === 'MANEUVER' || eCat === 'SHAPING_OFFENSIVE';
+                  const isPersistent = tieScore >= 100 || eCat === 'MANOEUVRE' || eCat === 'MANEUVER' || eCat === 'SHAPING_OFFENSIVE';
                   if (!isPersistent) return false;
                 } else {
                   return false; // Persistence OFF: strict cutoff
@@ -971,7 +939,8 @@
                 label: unit.display_name || unit.unit_name || unit.unit_id,
                 type: 'UNIT',
                 lat: parseFloat(lat),
-                lon: parseFloat(lon)
+                lon: parseFloat(lon),
+                _unitData: unit
               });
             }
           }
@@ -987,40 +956,65 @@
               label: feature.properties?.name || key,
               type: 'OWL',
               lat: feature.geometry.coordinates[1],
-              lon: feature.geometry.coordinates[0]
+              lon: feature.geometry.coordinates[0],
+              _unitData: feature.properties || null
             });
           }
         });
       }
 
-      // 3. Search event cities/locations
+      // 3. Search city/location names (deduplicated by location)
       if (window.globalEvents) {
-        const seenLocations = new Set();
+        const seenCities = new Set();
         window.globalEvents.forEach(evt => {
-          const loc = (evt.location_precision || evt.title || '').toLowerCase();
-          if (loc.includes(q) && !seenLocations.has(loc.substring(0, 30))) {
-            seenLocations.add(loc.substring(0, 30));
+          const locName = (evt.location_precision || '').toLowerCase();
+          if (locName && locName.includes(q) && !seenCities.has(locName)) {
+            seenCities.add(locName);
             results.push({
-              label: evt.title || evt.location_precision || 'Event',
+              label: evt.location_precision,
+              type: 'CITY',
+              lat: evt.lat,
+              lon: evt.lon,
+              _eventData: null // City - no specific event
+            });
+          }
+        });
+      }
+
+      // 4. Search event titles
+      if (window.globalEvents) {
+        window.globalEvents.forEach(evt => {
+          const title = (evt.title || '').toLowerCase();
+          if (title.includes(q)) {
+            results.push({
+              label: evt.title || 'Event',
               type: 'EVENT',
               lat: evt.lat,
-              lon: evt.lon
+              lon: evt.lon,
+              _eventData: evt
             });
           }
         });
       }
 
-      // Render results (max 6)
-      const limited = results.slice(0, 6);
+      // Render results (max 8, prioritize: UNIT > CITY > EVENT)
+      const sorted = results.sort((a, b) => {
+        const order = { UNIT: 0, OWL: 1, CITY: 2, EVENT: 3 };
+        return (order[a.type] || 9) - (order[b.type] || 9);
+      });
+      const limited = sorted.slice(0, 8);
       if (limited.length === 0) {
         resultsBox.classList.remove('visible');
         return;
       }
 
-      resultsBox.innerHTML = limited.map(r => `
-        <div class="qs-item" data-lat="${r.lat}" data-lon="${r.lon}">
+      // Store reference data for click handlers
+      window._qsResults = limited;
+
+      resultsBox.innerHTML = limited.map((r, idx) => `
+        <div class="qs-item" data-idx="${idx}" data-lat="${r.lat}" data-lon="${r.lon}">
           <span class="qs-type">${r.type}</span>
-          <span>${r.label.length > 40 ? r.label.substring(0, 40) + '...' : r.label}</span>
+          <span>${r.label.length > 45 ? r.label.substring(0, 45) + '...' : r.label}</span>
         </div>
       `).join('');
 
@@ -1029,11 +1023,23 @@
       // Bind click handlers
       resultsBox.querySelectorAll('.qs-item').forEach(item => {
         item.addEventListener('click', () => {
+          const idx = parseInt(item.dataset.idx);
+          const r = window._qsResults[idx];
           const lat = parseFloat(item.dataset.lat);
           const lon = parseFloat(item.dataset.lon);
+
+          // FlyTo in all cases
           if (map && !isNaN(lat) && !isNaN(lon)) {
             map.flyTo([lat, lon], 12, { duration: 1.5 });
           }
+
+          // Open modal based on type
+          if (r && r.type === 'EVENT' && r._eventData && window.openModal) {
+            setTimeout(() => window.openModal(r._eventData), 800);
+          } else if (r && (r.type === 'UNIT' || r.type === 'OWL') && r._unitData && window.openUnitModal) {
+            setTimeout(() => window.openUnitModal(r._unitData), 800);
+          }
+
           resultsBox.classList.remove('visible');
           input.value = '';
         });
@@ -2490,6 +2496,62 @@
         // Show section with "No units detected" placeholder
         unitsContainer.style.display = 'block';
         unitsList.innerHTML = '<span style="opacity: 0.5; font-style: italic;">No units detected for this event</span>';
+      }
+    }
+
+    // --- 1.6 IMINT EVIDENCE FEED ---
+    const imintFeed = document.getElementById('imint-evidence-feed');
+    const imintFilmstrip = document.getElementById('imintFilmstrip');
+    const imintCount = document.getElementById('imintFrameCount');
+
+    if (imintFeed && imintFilmstrip) {
+      let frames = [];
+      try {
+        if (eventData.visual_analysis) {
+          frames = typeof eventData.visual_analysis === 'string'
+            ? JSON.parse(eventData.visual_analysis)
+            : eventData.visual_analysis;
+        }
+      } catch (e) {
+        console.warn("Failed to parse visual_analysis:", e);
+      }
+
+      if (frames && frames.length > 0) {
+        imintFeed.style.display = 'block';
+        imintCount.innerText = frames.length + ' FRAMES';
+
+        // Choose layout mode: filmstrip (>3) or vertical stack (<=3)
+        imintFilmstrip.className = frames.length > 3
+          ? 'imint-filmstrip'
+          : 'imint-filmstrip imint-stack';
+
+        imintFilmstrip.innerHTML = frames.map((f, idx) => {
+          const conf = Math.round((f.confidence || 0) * 100);
+          const isContradicted = (f.explanation || '').toUpperCase().includes('CONTRADICT')
+            || (f.verification_status || '').toUpperCase().includes('CONTRADICT');
+          const cardClass = 'imint-frame-card' + (isContradicted ? ' imint-contradicted' : '');
+          const explId = `imint-expl-${idx}`;
+
+          return `
+            <div class="${cardClass}">
+              <img class="imint-thumb"
+                   src="${f.base64_data || ''}"
+                   alt="Frame ${f.frame_id || idx + 1}"
+                   onclick="document.getElementById('imintLightboxImg').src=this.src; document.getElementById('imintLightbox').style.display='flex';"
+                   onerror="this.style.display='none'">
+              <div class="imint-meta-row">
+                <span class="imint-confidence-badge">${conf}%</span>
+                <span class="imint-selection-tag" title="${f.selection_reason || ''}">${f.selection_reason || 'Keyframe'}</span>
+                <span class="imint-frame-id">F${f.frame_id || idx + 1}</span>
+              </div>
+              <div class="imint-explanation" id="${explId}">${f.explanation || 'No analysis available.'}</div>
+              <span class="imint-read-more" onclick="var el=document.getElementById('${explId}'); el.classList.toggle('expanded'); this.innerText=el.classList.contains('expanded')?'Show Less':'Read More';">Read More</span>
+            </div>
+          `;
+        }).join('');
+      } else {
+        imintFeed.style.display = 'none';
+        imintFilmstrip.innerHTML = '';
       }
     }
 
