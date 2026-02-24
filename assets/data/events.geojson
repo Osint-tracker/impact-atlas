@@ -26,7 +26,7 @@
         "intensity_score": 6.0,
         "ai_reasoning": "[EN] The destruction of Su-30 aircraft and targeting of critical infrastructure in Krasnodar Krai demonstrates Ukraine's growing capability to conduct deep strikes, undermining Russian air superiority and logistical operations. The car bomb in Moscow signals a potential escalation in covert operations, increasing pressure on Russian leadership. The EU's extended sanctions further isolate Russia economically, compounding its strategic vulnerabilities.  \n[IT] La distruzione degli aerei Su-30 e il targeting di infrastrutture critiche nel Krai di",
         "has_video": false,
-        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/MAKS23_NAFO/77524\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/MAKS23_NAFO/76835\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/MAKS23_NAFO/76706\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/MAKS23_NAFO/77159\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/MAKS23_NAFO/76999\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/MAKS23_NAFO/76422\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/MAKS23_NAFO/77268\"}]",
+        "sources_list": "[{\"name\": \"MAKS23_NAFO\", \"url\": \"https://t.me/MAKS23_NAFO/77524\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 14.0,
@@ -58,7 +58,7 @@
         "intensity_score": 8.0,
         "ai_reasoning": "[EN] The potential Russian strike underscores heightened escalation risks, likely aiming to degrade Ukrainian infrastructure and morale ahead of winter. This aligns with Russia's broader strategy to exhaust Ukraine's defensive capabilities and strain Western support. The use of 800 drones signals a shift toward mass saturation tactics, complicating Ukrainian air defense efforts.  \n[IT] Il potenziale attacco russo evidenzia rischi di escalation, mirando a indebolire infrastrutture e morale ucraini prima dell'invern",
         "has_video": false,
-        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/noel_reports/38891\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/noel_reports/38882\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/MAKS23_NAFO/77481\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/MAKS23_NAFO/77483\"}]",
+        "sources_list": "[{\"name\": \"noel_reports\", \"url\": \"https://t.me/noel_reports/38891\"}, {\"name\": \"MAKS23_NAFO\", \"url\": \"https://t.me/MAKS23_NAFO/77481\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 13.9,
@@ -90,7 +90,7 @@
         "intensity_score": 6.0,
         "ai_reasoning": "[EN] The strikes in Odesa disrupt Ukrainian logistics and military readiness, weakening their defensive posture in the Black Sea region. Targeting railway infrastructure near Korosten further isolates Ukrainian forces, complicating resupply efforts. This aligns with Russia's broader strategy to degrade Ukraine's operational capacity and secure maritime dominance.  \n[IT] Gli attacchi a Odessa compromettono la logistica e la prontezza militare ucraina, indebolendo la loro posizione difens",
         "has_video": false,
-        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76184\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76161\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76038\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/75962\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76138\"}]",
+        "sources_list": "[{\"name\": \"rybar\", \"url\": \"https://t.me/rybar/76184\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 12.2,
@@ -122,7 +122,7 @@
         "intensity_score": 6.0,
         "ai_reasoning": "[EN] The intensified strikes on Odesa’s port and bridges aim to disrupt Ukraine’s maritime logistics, crippling its export capabilities and isolating southern regions. This aligns with Russia’s broader strategy to weaken Ukraine’s economic resilience and military supply lines. The power outages further strain civilian infrastructure, amplifying pressure on Kyiv to divert resources from frontline operations.  \n[IT] Gli attacchi intensificati sul porto e sui ponti di Odessa mirano a interrompere",
         "has_video": false,
-        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76121\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76046\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/75992\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/75967\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76017\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/rybar/76079\"}]",
+        "sources_list": "[{\"name\": \"rybar\", \"url\": \"https://t.me/rybar/76121\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 10.6,
@@ -154,7 +154,7 @@
         "intensity_score": 7.0,
         "ai_reasoning": "[EN] The strikes in Sumy and Zhytomyr regions indicate a deliberate Russian effort to disrupt Ukrainian logistics and supply lines, targeting areas critical to Kyiv's defensive operations. This escalation underscores Moscow's strategy to weaken Ukraine's northern front, potentially diverting resources from other key battlegrounds. The high TARGET score reflects the strategic importance of these regions in the broader conflict.\n\n[IT] Gli attacchi nelle regioni di Sumy e Zhytomyr evidenziano uno",
         "has_video": false,
-        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7521\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7500\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7465\"}]",
+        "sources_list": "[{\"name\": \"lost_armour\", \"url\": \"https://t.me/lost_armour/7521\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 14.0,
@@ -186,7 +186,7 @@
         "intensity_score": 7.0,
         "ai_reasoning": "[EN] The strikes demonstrate Russia's continued ability to project force across multiple fronts simultaneously, degrading Ukraine's defensive cohesion. Targeting logistics hubs like Odessa suggests a strategic shift to disrupt NATO supply routes via the Black Sea. The sustained tempo indicates Moscow is testing Ukrainian air defenses ahead of potential winter offensives.  \n\n[IT] I colpi dimostrano la capacità russa di mantenere pressione su più fronti, logorando le difese ucraine. Il targeting di Odessa riv",
         "has_video": true,
-        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7508\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7440\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7484\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7502\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7473\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7452\"}]",
+        "sources_list": "[{\"name\": \"lost_armour\", \"url\": \"https://t.me/lost_armour/7508\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 12.3,
@@ -218,7 +218,7 @@
         "intensity_score": 5.0,
         "ai_reasoning": "[EN] The Rubicon Center's operations in Donbass indicate a shift towards precision targeting, likely aimed at degrading enemy logistics and morale. The high EFFECT score suggests successful disruption, potentially altering local dynamics in the broader Russo-Ukrainian conflict. This aligns with global trends of increased reliance on specialized units for asymmetric warfare.  \n[IT] Le operazioni del Centro Rubicon nel Donbass segnalano un passaggio verso il targeting di precisione, probabilmente mirato a indebol",
         "has_video": true,
-        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7486\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7477\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7466\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7443\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7455\"}]",
+        "sources_list": "[{\"name\": \"lost_armour\", \"url\": \"https://t.me/lost_armour/7486\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 8.5,
@@ -250,7 +250,7 @@
         "intensity_score": 3.0,
         "ai_reasoning": "[EN] The interception of Ukrainian drones over Russian regions underscores Kyiv's persistent efforts to project force into Russian territory, despite limited tactical success. This event highlights Russia's robust air defense capabilities, which continue to mitigate Ukrainian drone operations. Such incursions, though low-impact, strain Russian defensive resources and signal Ukraine's intent to maintain pressure on multiple fronts.  \n[IT] L'intercettazione di droni ucraini sopra le regioni russe evidenzia i continui sforzi di",
         "has_video": false,
-        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/voenkorKotenok/69541\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/voenkorKotenok/69471\"}]",
+        "sources_list": "[{\"name\": \"voenkorKotenok\", \"url\": \"https://t.me/voenkorKotenok/69541\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 4.0,
@@ -5050,7 +5050,7 @@
         "intensity_score": 8.0,
         "ai_reasoning": "[EN] The warning highlights a critical escalation risk, potentially marking a shift from localized skirmishes to a broader, high-intensity offensive, which could strain Ukraine's defensive capabilities and escalate regional tensions. This aligns with Russia's broader strategy to destabilize Ukraine ahead of winter, leveraging air superiority to maximize psychological and material impact.  \n[IT] L'avvertimento sottolinea un rischio critico di escalation, potenzialmente segnando un passaggio da scontri localizzati a",
         "has_video": false,
-        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/noel_reports/38891\"}, {\"name\": \"northwestmoinfo.com\", \"url\": \"https://www.northwestmoinfo.com/syndicated-article/?id=1651782\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/noel_reports/38882\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/MAKS23_NAFO/77481\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/MAKS23_NAFO/77483\"}]",
+        "sources_list": "[{\"name\": \"noel_reports\", \"url\": \"https://t.me/noel_reports/38891\"}, {\"name\": \"northwestmoinfo.com\", \"url\": \"https://www.northwestmoinfo.com/syndicated-article/?id=1651782\"}, {\"name\": \"MAKS23_NAFO\", \"url\": \"https://t.me/MAKS23_NAFO/77481\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 14.0,
@@ -5082,7 +5082,7 @@
         "intensity_score": 8.0,
         "ai_reasoning": "[EN] The high Kinetic score (8) indicates a deliberate escalation in Russia's campaign to degrade Ukraine's energy infrastructure, aiming to cripple civilian morale and industrial capacity ahead of winter. The broad Target score (8) reflects strategic intent to disrupt logistics and command nodes across multiple fronts, complicating Ukrainian counteroffensive planning. The moderate Effect score (6) suggests partial success, but Ukrainian air defenses and resilience mitigate long-term operational impact.  \n\n[IT] L'elevato punteggio",
         "has_video": false,
-        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/MAKS23_NAFO/76212\"}]",
+        "sources_list": "[{\"name\": \"MAKS23_NAFO\", \"url\": \"https://t.me/MAKS23_NAFO/76212\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 14.0,
@@ -5114,7 +5114,7 @@
         "intensity_score": 7.0,
         "ai_reasoning": "[EN] The strikes demonstrate Russia's continued ability to project force across multiple fronts, maintaining pressure on Ukrainian defenses and infrastructure. Targeting diverse regions like Donbas and Odessa suggests a strategy to disrupt logistics and morale, complicating Ukraine's counteroffensive efforts. This aligns with Russia's broader aim to degrade Ukraine's operational capacity and prolong the conflict.\n\n[IT] Gli attacchi dimostrano la capacità continua della Russia di proiettare forza su più fronti, mantenendo la pressione sulle",
         "has_video": true,
-        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7508\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7440\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7484\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7435\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7398\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7413\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7502\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7473\"}]",
+        "sources_list": "[{\"name\": \"lost_armour\", \"url\": \"https://t.me/lost_armour/7508\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 10.6,
@@ -5146,7 +5146,7 @@
         "intensity_score": 5.0,
         "ai_reasoning": "[EN] The Rubicon Operators' operations in Donbass, targeting 73 locations, indicate a sustained focus on degrading adversary capabilities in contested regions, potentially shifting local tactical dynamics. With a moderate kinetic score and high effect score, these actions likely disrupted enemy logistics or command structures, though the strategic value remains ambiguous. This aligns with broader efforts to maintain pressure on Russian-aligned forces, complicating their operational flexibility.  \n[IT] Le operazioni degli operatori di Rubicon nel Donb",
         "has_video": true,
-        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7486\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7477\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7416\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7466\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7443\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/lost_armour/7455\"}]",
+        "sources_list": "[{\"name\": \"lost_armour\", \"url\": \"https://t.me/lost_armour/7486\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 8.5,
@@ -5178,7 +5178,7 @@
         "intensity_score": 6.0,
         "ai_reasoning": "[EN] The interception of 64 Ukrainian drones in Bryansk Oblast underscores a significant escalation in Ukrainian drone operations, targeting critical Russian regions. The high strategic value (8) indicates Ukraine's intent to disrupt Russian logistics and morale, though the low effect score (3) suggests limited success. This aligns with Ukraine's broader strategy to stretch Russian defenses and exploit vulnerabilities in rear areas.  \n[IT] L'intercettazione di 64 droni ucraini nell'Oblast di Bryansk eviden",
         "has_video": false,
-        "sources_list": "[{\"name\": \"t.me\", \"url\": \"https://t.me/voenkorKotenok/69454\"}, {\"name\": \"t.me\", \"url\": \"https://t.me/voenkorKotenok/69407\"}]",
+        "sources_list": "[{\"name\": \"voenkorKotenok\", \"url\": \"https://t.me/voenkorKotenok/69454\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 8.9,
@@ -5274,7 +5274,7 @@
         "intensity_score": 7.0,
         "ai_reasoning": "[EN] The strike near the Polish border escalates regional tensions, risking NATO spillover due to proximity to allied territory. Hypersonic missile use signals Russia's willingness to deploy advanced capabilities, deterring Western intervention. Infrastructure damage in Kyiv undermines Ukraine's resilience, straining its energy grid and civilian morale.  \n\n[IT] Il colpo vicino al confine polacco aumenta le tensioni regionali, rischiando un coinvolgimento della NATO per la vicinanza al territorio alleato",
         "has_video": false,
-        "sources_list": "[{\"name\": \"gdnonline.com:443\", \"url\": \"https://www.gdnonline.com:443/Details/1372967\"}, {\"name\": \"article.wn.com\", \"url\": \"https://article.wn.com/view/2025/12/30/Russia_Vows_Retaliation_After_Drone_Attack_on_Putin_s_Reside/\"}, {\"name\": \"cbc.bb\", \"url\": \"https://www.cbc.bb/news/international-news/ukraine-denies-russian-claim-that-drone-attack-targeted-putins-residences/\"}, {\"name\": \"dailyexcelsior.com\", \"url\": \"https://www.dailyexcelsior.com/kremlin-says-to-toughen-stance-in-talks-after-ukraines-alleged-attack-on-putins-residence/\"}, {\"name\": \"article.wn.com\", \"url\": \"https://article.wn.com/view/2025/12/29/Im_very_angry_Trump_reacts_to_Putins_claim_of_Ukraine_drone_/\"}]",
+        "sources_list": "[{\"name\": \"gdnonline.com:443\", \"url\": \"https://www.gdnonline.com:443/Details/1372967\"}, {\"name\": \"article.wn.com\", \"url\": \"https://article.wn.com/view/2025/12/30/Russia_Vows_Retaliation_After_Drone_Attack_on_Putin_s_Reside/\"}, {\"name\": \"cbc.bb\", \"url\": \"https://www.cbc.bb/news/international-news/ukraine-denies-russian-claim-that-drone-attack-targeted-putins-residences/\"}, {\"name\": \"dailyexcelsior.com\", \"url\": \"https://www.dailyexcelsior.com/kremlin-says-to-toughen-stance-in-talks-after-ukraines-alleged-attack-on-putins-residence/\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 14.0,
@@ -5626,7 +5626,7 @@
         "intensity_score": 1.0,
         "ai_reasoning": "[EN] The transfer of material from Moscow to the U.S. suggests a potential escalation in intelligence or diplomatic exchanges, possibly linked to high-level geopolitical tensions. Given the association with President Putin, this could indicate a strategic maneuver to influence or de-escalate bilateral relations. The high target score underscores the significance of this event in shaping U.S.-Russia dynamics.\n\n[IT] Il trasferimento di materiale da Mosca agli Stati Uniti suggerisce una potenziale escalation negli scambi",
         "has_video": false,
-        "sources_list": "[{\"name\": \"volksstimme.de\", \"url\": \"https://www.volksstimme.de/deutschland-und-welt/politik/angriff-auf-putin-residenz-moskau-ubergibt-usa-material-4173904\"}, {\"name\": \"t-online.de\", \"url\": \"https://www.t-online.de/nachrichten/ausland/id_101063920/angriff-auf-putin-residenz-moskau-uebergibt-usa-material.html\"}, {\"name\": \"nw.de\", \"url\": \"https://www.nw.de/nachrichten/politik/24242955_Angriff-auf-Putin-Residenz-Moskau-uebergibt-USA-Material.html\"}, {\"name\": \"nw.de\", \"url\": \"https://www.nw.de/nachrichten/nachrichten/24242955_Angriff-auf-Putin-Residenz-Moskau-uebergibt-USA-Material.html\"}]",
+        "sources_list": "[{\"name\": \"volksstimme.de\", \"url\": \"https://www.volksstimme.de/deutschland-und-welt/politik/angriff-auf-putin-residenz-moskau-ubergibt-usa-material-4173904\"}, {\"name\": \"t-online.de\", \"url\": \"https://www.t-online.de/nachrichten/ausland/id_101063920/angriff-auf-putin-residenz-moskau-uebergibt-usa-material.html\"}, {\"name\": \"nw.de\", \"url\": \"https://www.nw.de/nachrichten/politik/24242955_Angriff-auf-Putin-Residenz-Moskau-uebergibt-USA-Material.html\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 4.0,
@@ -5786,7 +5786,7 @@
         "intensity_score": 1.0,
         "ai_reasoning": "[EN] The alleged attack, if fabricated, serves as a potential disinformation tactic to destabilize U.S.-Ukraine relations, leveraging the high strategic value of the target to amplify its psychological impact. This aligns with broader Russian strategies to sow discord among Western allies and undermine Ukraine's international support. The low kinetic and effect scores suggest minimal physical impact but significant potential for strategic manipulation.\n\n[IT] L'attacco presunto, se fabbricato, rappresenta una tattica di disinform",
         "has_video": false,
-        "sources_list": "[{\"name\": \"unn.ua\", \"url\": \"https://unn.ua/news/ataka-na-rezydentsiiu-putina-kreml-orhanizuvav-prymityvnyi-feik-shchob-posvaryty-ssha-i-ukrainu-tspd\"}, {\"name\": \"pressorg24.com\", \"url\": \"http://pressorg24.com/news?id=812519\"}, {\"name\": \"unn.ua\", \"url\": \"https://unn.ua/ru/news/ataka-na-rezidentsiyu-putina-kreml-organizoval-primitivnii-feik-chtobi-possorit-ssha-i-ukrainu-tspd\"}]",
+        "sources_list": "[{\"name\": \"unn.ua\", \"url\": \"https://unn.ua/news/ataka-na-rezydentsiiu-putina-kreml-orhanizuvav-prymityvnyi-feik-shchob-posvaryty-ssha-i-ukrainu-tspd\"}, {\"name\": \"pressorg24.com\", \"url\": \"http://pressorg24.com/news?id=812519\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 4.0,
@@ -8474,7 +8474,7 @@
         "intensity_score": 1.0,
         "ai_reasoning": "[EN] The power outage adjustments in Kyiv indicate ongoing vulnerabilities in Ukraine's energy infrastructure, likely exacerbated by the conflict. This highlights the need for sustained international support to bolster energy resilience. The low T.I.E. scores suggest minimal immediate tactical impact but underscore long-term strategic concerns.\n\n[IT] Le modifiche alle interruzioni di corrente a Kiev evidenziano le vulnerabilità persistenti dell'infrastruttura energetica ucraina, aggravate dal conflitto. Ciò sott",
         "has_video": false,
-        "sources_list": "[{\"name\": \"kyiv.tsn.ua\", \"url\": \"https://kyiv.tsn.ua/kyiv/dlia-chastyny-kyyeva-ta-oblasti-skasovano-ekstreni-vidkliuchennia-svitla-2996789.html\"}, {\"name\": \"kyiv.tsn.ua\", \"url\": \"https://kyiv.tsn.ua/kyiv/ekstreni-vidkliuchennia-u-kyyevi-ekspert-nazvav-prychynu-skasuvannia-hrafikiv-2996843.html\"}]",
+        "sources_list": "[{\"name\": \"kyiv.tsn.ua\", \"url\": \"https://kyiv.tsn.ua/kyiv/dlia-chastyny-kyyeva-ta-oblasti-skasovano-ekstreni-vidkliuchennia-svitla-2996789.html\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 4.0,
@@ -21702,6 +21702,38 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          36.192248,
+          51.7270357
+        ]
+      },
+      "properties": {
+        "id": "2adf488f-74ac-4979-bcbd-2f32c90b78df",
+        "title": "Ukrainian Forces Destroy Equipment in Kursk and Slobozhansk Directions",
+        "description": "Ukrainian Forces conducted operations resulting in the destruction of 4 vehicles, 9 personnel shelters, 2 communication antennas, a field ammunition depot, and a Murom-M surveillance complex in the Kursk and Slobozhansk directions.",
+        "date": "2026-02-22 16:15:47",
+        "tie_total": 43.0,
+        "vec_k": 6.0,
+        "vec_t": 5.0,
+        "vec_e": 7.0,
+        "reliability": 40,
+        "bias_score": 2.8,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 6.0,
+        "ai_reasoning": "[EN] The destruction of key Russian assets (Murom-M, comms, ammo) degrades local ISR and logistics, forcing redeployment and disrupting offensive tempo. This aligns with Ukraine's strategy of asymmetric attrition to offset Russia's numerical advantage. The moderate T.I.E. scores reflect tactical gains but limited strategic impact without follow-on operations.  \n\n[IT] La distruzione di asset russi chiave (Murom-M, comunicazioni, munizioni) riduce le capacità IS",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"MAKS23_NAFO\", \"url\": \"https://t.me/MAKS23_NAFO\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 8.3,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           35.1182867,
           47.8507859
         ]
@@ -21862,6 +21894,38 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          24.0315921,
+          49.841952
+        ]
+      },
+      "properties": {
+        "id": "45b2ce94-eee9-434b-8002-f270e3ea7575",
+        "title": "Alleged Financial Support for Explosive Components in Lviv",
+        "description": "A report indicates that 60 thousand hryvnias were allegedly promised to an individual involved in a terrorist attack in Lviv by Russian curators. The funds were reportedly intended for purchasing components for explosives rather than addressing personal financial issues.",
+        "date": "2026-02-22 16:23:24",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 1.0,
+        "vec_e": 1.0,
+        "reliability": 15,
+        "bias_score": 0.8,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The low T.I.E. scores suggest this event is likely disinformation or a failed operation, but it underscores Russia's persistent efforts to destabilize Ukraine through covert financial networks. If verified, it would expose a shift toward funding localized sabotage over direct attacks, complicating Ukrainian counterintelligence efforts. Globally, this aligns with Russia's hybrid warfare tactics, blending financial and kinetic operations to erode stability.  \n\n[IT] I bassi punteggi T.I.E. indicano",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"MAKS23_NAFO\", \"url\": \"https://t.me/MAKS23_NAFO\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           33.4079326,
           46.5421715
         ]
@@ -21958,6 +22022,38 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          40.1081444,
+          44.6012959
+        ]
+      },
+      "properties": {
+        "id": "622c6f20-46a2-4c2c-a244-5b159fdaed6b",
+        "title": "Ukrainian Machine Gunner Engages Russian Drones on Southern Front",
+        "description": "During a combat sortie on the Southern Front, a Ukrainian machine gunner operating from a Mi-8 helicopter successfully shot down seven Russian Shahed-136 drones.",
+        "date": "2026-02-22 13:58:44",
+        "tie_total": 47.0,
+        "vec_k": 3.0,
+        "vec_t": 6.0,
+        "vec_e": 7.0,
+        "reliability": 40,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 3.0,
+        "ai_reasoning": "[EN] The engagement demonstrates Ukraine's evolving counter-drone capabilities, potentially forcing Russia to adapt its drone tactics and allocate more resources to electronic warfare or drone swarms. This incident underscores the increasing reliance on drones in modern warfare, highlighting the need for both sides to innovate in aerial defense systems. The Southern Front remains a critical theater, with such engagements shaping the operational tempo and resource allocation for both forces.\n\n[IT] L'ingaggio evidenzia le crescenti capacità ucraine di contrasto ai",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"MAKS23_NAFO\", \"url\": \"https://t.me/MAKS23_NAFO\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 8.7,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           30.5241361,
           50.4500336
         ]
@@ -21983,6 +22079,70 @@
         "visual_analysis": "",
         "marker_radius": 4.0,
         "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.6063916,
+          55.625578
+        ]
+      },
+      "properties": {
+        "id": "7a51b3bc-a66d-488e-a8bc-e7ba9c7f749d",
+        "title": "Iran Agrees to Arms Supply Deal with Russia",
+        "description": "Iran has reportedly entered into a secret agreement with Russia for the supply of military equipment valued at $500 million. The deal includes the provision of 500 9K333 Verba air defense launchers and 2,500 missiles over three years. The agreement was signed in Moscow in December, and recent cargo flights from Russia to Iran have been noted. Iran is also seeking to acquire Su-35 fighter jets from Russia.",
+        "date": "2026-02-22 20:40:00",
+        "tie_total": 0.0,
+        "vec_k": 7.0,
+        "vec_t": 1.0,
+        "vec_e": 1.0,
+        "reliability": 40,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 7.0,
+        "ai_reasoning": "[EN] This deal significantly enhances Iran's air defense capabilities, potentially altering regional power dynamics and complicating future Israeli or U.S. strike options. The Su-35 acquisition would further shift the military balance in the Middle East, emboldening Iranian proxies. Russia gains a strategic foothold in the region, leveraging Iran as a conduit for influence.  \n\n[IT] Questo accordo potenzia notevolmente le capacità di difesa aerea dell'Iran, alterando gli equilibri",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"parabellumcommunity\", \"url\": \"https://t.me/parabellumcommunity\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.5241361,
+          50.4500336
+        ]
+      },
+      "properties": {
+        "id": "7a71a77c-5724-4dc6-8cd1-f3a226fac723",
+        "title": "Russian Forces Adjust Strike Tactics in Urban Areas",
+        "description": "Russian Forces have modified their strike tactics, targeting water supply infrastructure in major cities including Kyiv, Odesa, Kharkiv, and Dnipro. Damage to pumping and treatment plants may lead to water supply disruptions, affecting pressure and quality. Prolonged outages could result in public health risks and operational challenges for businesses, hospitals, and schools.",
+        "date": "2026-02-22 16:32:39",
+        "tie_total": 84.0,
+        "vec_k": 1.0,
+        "vec_t": 9.0,
+        "vec_e": 10.0,
+        "reliability": 40,
+        "bias_score": 2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] Targeting water infrastructure escalates Russia's strategy to degrade civilian resilience, aiming to strain public health systems and disrupt urban functionality, thereby weakening Ukraine's operational capacity. This aligns with broader Russian efforts to destabilize governance and morale in key urban centers. The high TARGET and EFFECT scores underscore the strategic significance and potential long-term damage to Ukraine's societal and economic stability.  \n[IT] Il targeting delle infrastrutture idriche intensifica la strategia russa per minare la",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"MAKS23_NAFO\", \"url\": \"https://t.me/MAKS23_NAFO\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 12.4,
+        "marker_color": "#ef4444"
       }
     },
     {
@@ -22054,6 +22214,38 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          37.4194003,
+          48.5760732
+        ]
+      },
+      "properties": {
+        "id": "9008439a-f2d4-456f-ad85-1d03f04e9e1e",
+        "title": "Russian Junior Lieutenant Killed near Novohryhorivka",
+        "description": "On February 4, 2026, Russian junior lieutenant Oleksandr Batotsyrenov was killed near Novohryhorivka in the Zaporizhzhia region during Ukrainian fire preparation for an offensive in the Oleksandrivka direction. He was noted for his skills as an FPV drone operator and had previously served as a special forces member and artillery platoon commander.",
+        "date": "2026-02-22 14:35:37",
+        "tie_total": 15.0,
+        "vec_k": 3.0,
+        "vec_t": 3.0,
+        "vec_e": 7.0,
+        "reliability": 30,
+        "bias_score": -4.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 3.0,
+        "ai_reasoning": "[EN] The loss of a skilled FPV drone operator degrades Russian tactical reconnaissance and precision strike capabilities in Zaporizhzhia, potentially weakening defensive preparations against anticipated Ukrainian offensives. This aligns with Ukraine's broader strategy of attrition against specialized Russian personnel ahead of major operations. The moderate EFFECT score (7) reflects disproportionate operational impact relative to rank due to niche expertise.  \n\n[IT] La perdita di un operatore di droni FPV qualificato riduce le capacità",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"noel_reports\", \"url\": \"https://t.me/noel_reports\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 5.5,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           33.4079326,
           46.5421715
         ]
@@ -22111,6 +22303,38 @@
         "visual_analysis": "",
         "marker_radius": 4.3,
         "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.4079326,
+          46.5421715
+        ]
+      },
+      "properties": {
+        "id": "9b417c1f-edd3-42ae-b826-7c6be0b8c127",
+        "title": "Drone Awareness Initiative Established in Kherson",
+        "description": "A community resource named 'Kherson: Air' has been created to inform the civilian population about the risks of drone attacks. The platform provides data on unmanned aerial vehicles (UAVs) in Kherson and its suburbs, utilizing detection stations and additional information sources. Communication unrelated to current drone information is prohibited in the associated chat.",
+        "date": "2026-02-22 15:14:23",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 1.0,
+        "vec_e": 1.0,
+        "reliability": 40,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The establishment of 'Kherson: Air' reflects a strategic shift toward civilian protection and information warfare, aiming to mitigate panic and enhance resilience against drone threats. This initiative underscores the growing reliance on UAVs in the conflict, signaling a need for adaptive civilian defense mechanisms. Globally, it aligns with broader trends of integrating technology into urban warfare strategies.\n\n[IT] La creazione di 'Kherson: Air' evidenzia un cambiamento strategico verso la protezione civile e la guerra",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"kherson_non_fake\", \"url\": \"https://t.me/kherson_non_fake\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
       }
     },
     {
@@ -22203,6 +22427,38 @@
         "ai_reasoning": "[EN] The missile alerts in Sevastopol underscore heightened psychological warfare and disruption tactics, aiming to destabilize civilian morale and operational readiness in a key Russian naval hub. This aligns with Ukraine's broader strategy to pressure Russian-held territories and degrade logistical support for ongoing operations. The low T.I.E. scores suggest minimal immediate tactical impact but highlight persistent vulnerabilities in Russian-controlled areas.  \n[IT] Gli allarmi missilistici a Sebastopoli evidenziano una guerra psicologica e tat",
         "has_video": false,
         "sources_list": "[{\"name\": \"noel_reports\", \"url\": \"https://t.me/noel_reports\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          27.9534,
+          53.7098
+        ]
+      },
+      "properties": {
+        "id": "b0c6bbb0-6537-40bd-b2a8-20bbdaa6e474",
+        "title": "Russian Forces Attack on Druzhba Pipeline",
+        "description": "In February 2026, the Belarusian company Gomeltransneft 'Druzhba' reported a loss of 82% in its pumping volumes due to an attack on the Druzhba pipeline by Russian forces. This incident resulted in a significant reduction in profits, with the company already having reduced pumping volumes at the beginning of 2022, leading to equipment conservation and salary reductions for personnel.",
+        "date": "2026-02-22 17:18:49",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 1.0,
+        "vec_e": 1.0,
+        "reliability": 40,
+        "bias_score": 2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The attack on Druzhba pipeline cripples Belarus' energy export capabilities, forcing Minsk into deeper economic dependence on Moscow. This aligns with Russia's strategy to eliminate alternative revenue streams for its vassal states. The 82% volume loss exceeds typical sabotage thresholds, indicating a deliberate escalation in economic warfare tactics.  \n\n[IT] L'attacco al gasdotto Druzhba paralizza le capacità di esportazione energetica della Bielorussia, spingendo M",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"MAKS23_NAFO\", \"url\": \"https://t.me/MAKS23_NAFO\"}]",
         "units": "[]",
         "visual_analysis": "",
         "marker_radius": 4.0,
@@ -22374,6 +22630,38 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          37.6063916,
+          55.625578
+        ]
+      },
+      "properties": {
+        "id": "cf33b003-4943-49b8-92e2-1bd5e57f305e",
+        "title": "Drones Reported Near Moscow",
+        "description": "Drones were observed in proximity to Moscow, prompting the activation of air defense systems. Russian media indicated that all airports in Moscow have been closed, halting both incoming and outgoing flights.",
+        "date": "2026-02-22 13:20:28",
+        "tie_total": 26.0,
+        "vec_k": 1.0,
+        "vec_t": 8.0,
+        "vec_e": 3.0,
+        "reliability": 30,
+        "bias_score": -4.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The drone activity near Moscow underscores heightened vulnerabilities in Russia's capital, potentially signaling a shift in Ukrainian tactics to target high-value urban centers. This incident disrupts Moscow's air traffic, impacting both civilian and military logistics, and may force Russia to allocate additional resources to air defense in critical areas. Globally, this highlights Ukraine's capability to project threats deep into Russian territory, escalating the psychological and operational strain on Moscow.\n\n[IT] L'attività dei droni vicino a Mos",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"noel_reports\", \"url\": \"https://t.me/noel_reports\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 6.6,
+        "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           36.5873394,
           50.5955595
         ]
@@ -22438,6 +22726,38 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          36.2656849,
+          47.6655382
+        ]
+      },
+      "properties": {
+        "id": "d013cd06-d118-4297-8e30-895c2752021f",
+        "title": "Ukrainian Forces Regained Control in Huliaipole Direction",
+        "description": "Ukrainian Forces regained control of Danylivka, Nechaivka, Stepove, and Verbove. Control remains unclear in Yehorivka, Kyrpychne, Pryvillya, and Berezove due to ongoing fighting. Combat activity continues south of Verbove near Novohryhorivka, with additional fighting reported towards Kalynivske and Zlahoda. The situation is difficult to assess due to operational security and reporting restrictions.",
+        "date": "2026-02-22 13:50:41",
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 10.0,
+        "vec_e": 1.0,
+        "reliability": 30,
+        "bias_score": -3.2,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] Ukrainian gains near Huliaipole disrupt Russian defensive cohesion in southern Zaporizhzhia, but unclear control lines risk overextension. The high strategic value (TARGET:10) reflects this axis' role as a potential gateway to Melitopol, yet low KINETIC (1) suggests limited immediate offensive momentum. Persistent fog of war undermines Ukraine's ability to consolidate gains operationally.  \n\n[IT] I progressi ucraini vicino a Hulia",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"noel_reports\", \"url\": \"https://t.me/noel_reports\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           33.4079326,
           46.5421715
         ]
@@ -22495,6 +22815,70 @@
         "visual_analysis": "",
         "marker_radius": 7.9,
         "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.8816326,
+          50.3984937
+        ]
+      },
+      "properties": {
+        "id": "e00da8a3-336f-4038-bcfc-a1b38bfe9957",
+        "title": "Russian Forces Attack in Kyiv Region",
+        "description": "The Russian attack on the Kyiv region resulted in 17 injuries, including four children. Over 100 homes sustained various types of damage.",
+        "date": "2026-02-22 15:10:39",
+        "tie_total": 82.0,
+        "vec_k": 6.0,
+        "vec_t": 8.0,
+        "vec_e": 5.0,
+        "reliability": 40,
+        "bias_score": 2.8,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 6.0,
+        "ai_reasoning": "[EN] The attack underscores Russia's continued ability to project force near Kyiv, signaling persistent operational reach despite Ukrainian defenses. Targeting civilian infrastructure (TARGET: 8) aims to degrade morale and disrupt logistics, though moderate damage (EFFECT: 5) suggests limited tactical success. This aligns with Russia's broader strategy of attrition to strain Ukraine's resilience.  \n\n[IT] L'attacco dimostra la capacità russa di colpire vicino a Kiev, indicando una portata oper",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"MAKS23_NAFO\", \"url\": \"https://t.me/MAKS23_NAFO\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 12.2,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.6063916,
+          55.625578
+        ]
+      },
+      "properties": {
+        "id": "e19851db-6cc9-4b08-b328-b9250402528d",
+        "title": "Unknown Drone Raid Affects Moscow Airports",
+        "description": "On February 22, 2026, a drone raid occurred in Moscow, leading to the suspension of flight operations at Vnukovo, Domodedovo, Sheremetyevo, and Zhukovsky airports. The identity of the drones involved remains unknown.",
+        "date": "2026-02-22 12:59:29",
+        "tie_total": 88.0,
+        "vec_k": 8.0,
+        "vec_t": 8.0,
+        "vec_e": 5.0,
+        "reliability": 40,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 8.0,
+        "ai_reasoning": "[EN] The drone raid's high kinetic score (8) indicates a significant escalation in asymmetric warfare tactics, likely aimed at disrupting Russian logistical and command nodes. Targeting multiple high-value airports (target score: 8) suggests a coordinated effort to undermine domestic stability and project power deep into Russian territory. The moderate effect score (5) implies operational disruption but no decisive damage, signaling a psychological rather than kinetic victory.  \n\n[IT] L'elevato punteggio cinetico (8)",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"MAKS23_NAFO\", \"url\": \"https://t.me/MAKS23_NAFO\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 12.8,
+        "marker_color": "#f59e0b"
       }
     },
     {
@@ -22591,6 +22975,102 @@
         "visual_analysis": "",
         "marker_radius": 14.0,
         "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.4194003,
+          48.5760732
+        ]
+      },
+      "properties": {
+        "id": "f4dbabc0-e5b4-48b7-a892-9a1888c0a475",
+        "title": "Russian Forces Personnel Eliminated near Novohryhorivka",
+        "description": "On February 4, 2026, Junior Lieutenant Batotsyrenov Alexander Mikhailovich, a member of the 29th Guards Combined Arms Army and a drone operator, was reported eliminated near Novohryhorivka, Ukraine. The incident involved engagement between Ukrainian Forces and Russian Forces.",
+        "date": "2026-02-22 15:08:10",
+        "tie_total": 35.0,
+        "vec_k": 3.0,
+        "vec_t": 5.0,
+        "vec_e": 7.0,
+        "reliability": 40,
+        "bias_score": 2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 3.0,
+        "ai_reasoning": "[EN] The elimination of a specialized drone operator degrades Russian ISR capabilities in the sector, potentially creating localized blind spots for artillery correction and reconnaissance. The moderate TARGET score reflects the operational value of drone operators, while the higher EFFECT score indicates successful Ukrainian targeting of technical personnel. This aligns with Ukraine's broader strategy of attrition against Russia's skilled personnel pool.  \n\n[IT] L'eliminazione di un operatore di droni specializzato riduce le capacità di ISR russe",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"MAKS23_NAFO\", \"url\": \"https://t.me/MAKS23_NAFO\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 7.5,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.4753409,
+          55.8489556
+        ]
+      },
+      "properties": {
+        "id": "f77e7f1e-f585-4c3f-b08d-cb36d4b5749b",
+        "title": "Hong Kong-flagged Tanker Transporting Russian Diesel Approaches Cuba",
+        "description": "The tanker Sea Horse, flagged in Hong Kong, is en route to Cuba carrying Russian diesel amid increased U.S. efforts to block fuel supplies to the island. The vessel's destination was initially declared as Havana but has since changed multiple times. Analysts indicate that the fuel was likely transferred at sea near Cyprus. Cuba faces significant fuel shortages, impacting daily life and essential services.",
+        "date": "2026-02-22 16:48:10",
+        "tie_total": 2.0,
+        "vec_k": 1.0,
+        "vec_t": 1.0,
+        "vec_e": 9.0,
+        "reliability": 40,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] This event underscores Russia's strategic use of third-party flagged vessels to circumvent U.S. sanctions, reinforcing its ability to maintain critical supply lines to allies like Cuba despite geopolitical pressure. The fuel transfer near Cyprus highlights the growing complexity of maritime logistics in evading sanctions, which could prompt further U.S. countermeasures. This aligns with Russia's broader strategy of leveraging energy exports to sustain alliances and destabilize U.S. influence in the Western Hemisphere.  \n[IT] Questo evento evidenzia l",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"parabellumcommunity\", \"url\": \"https://t.me/parabellumcommunity\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 4.2,
+        "marker_color": "#ef4444"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.4079326,
+          46.5421715
+        ]
+      },
+      "properties": {
+        "id": "f87c6f48-a454-4ad6-914d-c65e116a1215",
+        "title": "Russian Artillery Strikes in Kherson",
+        "description": "On February 22, 2026, at approximately 21:40, Russian artillery conducted strikes in the Dniprovskyi and Korabelnyi districts of Kherson. Witnesses reported periodic artillery fire in the Dniprovskyi district after 18:30. Visual documentation of the evening situation in residential areas was noted.",
+        "date": "2026-02-22 19:53:07",
+        "tie_total": 5.0,
+        "vec_k": 4.0,
+        "vec_t": 2.0,
+        "vec_e": 4.0,
+        "reliability": 60,
+        "bias_score": 2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 4.0,
+        "ai_reasoning": "[EN] The strikes indicate a continued Russian focus on attritional warfare, targeting civilian areas to undermine Ukrainian morale and infrastructure. This aligns with Russia's broader strategy of destabilizing Ukrainian-held territories, despite minimal strategic gain. The low T.I.E. scores suggest limited operational impact but highlight persistent psychological and humanitarian strain.  \n[IT] Gli attacchi evidenziano una continua strategia russa di guerra logorante, mirata a indebolire il morale e le infrastrutture",
+        "has_video": true,
+        "sources_list": "[{\"name\": \"kherson_non_fake\", \"url\": \"https://t.me/kherson_non_fake\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 4.5,
+        "marker_color": "#eab308"
       }
     },
     {

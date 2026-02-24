@@ -82,9 +82,53 @@ class OrbatTracker {
                 ? `<span style="background:#ef444433; color:#ef4444; padding:1px 6px; border-radius:4px; font-size:0.65rem; font-weight:700; margin-left:auto; font-family:'JetBrains Mono', monospace;"><i class="fa-solid fa-skull" style="font-size:0.6rem; margin-right:3px;"></i>${casCount}</span>`
                 : '';
 
+            // ====== SBS COMBAT BADGES - HUNTER LEVEL ======
+            const avgTie = parseFloat(unit.avg_tie || 0);
+            const engCount = parseInt(unit.engagement_count || 0);
+            const primaryTactic = (unit.primary_tactic || '').toUpperCase();
+
+            let hunterLevel = 0;
+            let hunterName = '';
+            let hunterIcon = '';
+            let hunterColor = '';
+
+            if (engCount > 0) {
+                // Level 3: LEGENDARY — Strategic Asset kills
+                if (avgTie >= 90 || primaryTactic.includes('STRATEGIC') || primaryTactic.includes('DEEP_STRIKE')) {
+                    hunterLevel = 3;
+                    hunterName = 'LEGENDARY';
+                    hunterIcon = 'fa-crown';
+                    hunterColor = '#f59e0b';
+                }
+                // Level 2: PREDATOR — High-Value Asset kills
+                else if (avgTie >= 60 || primaryTactic.includes('MANOEUVRE') || primaryTactic.includes('SHAPING')) {
+                    hunterLevel = 2;
+                    hunterName = 'PREDATOR';
+                    hunterIcon = 'fa-crosshairs';
+                    hunterColor = '#ef4444';
+                }
+                // Level 1: STALKER — Standard kills
+                else {
+                    hunterLevel = 1;
+                    hunterName = 'STALKER';
+                    hunterIcon = 'fa-eye';
+                    hunterColor = '#64748b';
+                }
+            }
+
+            const hunterBadge = hunterLevel > 0
+                ? `<div class="hunter-badge" style="display:flex; align-items:center; gap:4px; margin-top:4px; padding:2px 8px; border-radius:3px; background:${hunterColor}15; border:1px solid ${hunterColor}40; width:fit-content;">
+                     <i class="fa-solid ${hunterIcon}" style="font-size:0.55rem; color:${hunterColor};"></i>
+                     <span style="font-family:'JetBrains Mono', monospace; font-size:0.6rem; font-weight:700; color:${hunterColor}; letter-spacing:1px;">${hunterName}</span>
+                     ${hunterLevel >= 2 ? `<span style="font-size:0.55rem; color:#475569;">LV${hunterLevel}</span>` : ''}
+                   </div>`
+                : '';
+
+            const eliteGlow = hunterLevel >= 2 ? 'box-shadow: 0 0 8px rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.2);' : '';
+
             // Inner HTML Structure
             el.innerHTML = `
-                <div class="hud-card ${statusClass}">
+                <div class="hud-card ${statusClass}" style="${eliteGlow}">
                     
                     <div class="hud-header">
                         <span class="hud-unit-name">
@@ -95,6 +139,8 @@ class OrbatTracker {
                         <span class="hud-status-dot"></span> 
                     </div>
 
+                    ${hunterBadge}
+
                     <div class="hud-details">
                         <div class="hud-meta-row">
                              <div><span class="hud-label">STR:</span> ${strengthDisplay}</div>
@@ -102,6 +148,7 @@ class OrbatTracker {
                         </div>
                         <div class="hud-meta-row">
                             <div><span class="hud-label">UPD:</span> ${this.formatTimeAgo(unit.last_seen_date)}</div>
+                            ${engCount > 0 ? `<div style="text-align:right;"><span class="hud-label">ENG:</span> <span style="color:#f59e0b; font-weight:700;">${engCount}</span></div>` : ''}
                         </div>
 
                         ${unit.subordination ? `<div class="unit-sub" style="margin-top:4px;">CMD: ${unit.subordination}</div>` : ''}

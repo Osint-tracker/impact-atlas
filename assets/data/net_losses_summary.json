@@ -1,0 +1,387 @@
+{
+  "generated_at": "2026-02-24T16:51:11.162482",
+  "source": "Oryx (oryxspioenkop.com)",
+  "disclaimer": "These are visually confirmed minimums. Actual losses are likely higher for both sides.",
+  "global": {
+    "RU": {
+      "total_lost": 24136,
+      "destroyed": 18799,
+      "damaged": 955,
+      "abandoned": 1206,
+      "captured_by_enemy": 3176,
+      "captured_from_enemy": 1408,
+      "net_loss": 22728
+    },
+    "UA": {
+      "total_lost": 11443,
+      "destroyed": 8755,
+      "damaged": 640,
+      "abandoned": 640,
+      "captured_by_enemy": 1408,
+      "captured_from_enemy": 3176,
+      "net_loss": 8267
+    }
+  },
+  "categories": {
+    "AA Guns": {
+      "RU": {
+        "total_lost": 28,
+        "destroyed": 17,
+        "damaged": 2,
+        "abandoned": 2,
+        "captured_by_enemy": 7,
+        "captured_from_enemy": 4,
+        "net_loss": 24
+      },
+      "UA": {
+        "total_lost": 48,
+        "destroyed": 38,
+        "damaged": 5,
+        "abandoned": 1,
+        "captured_by_enemy": 4,
+        "captured_from_enemy": 7,
+        "net_loss": 41
+      }
+    },
+    "AFVs": {
+      "RU": {
+        "total_lost": 2388,
+        "destroyed": 1948,
+        "damaged": 38,
+        "abandoned": 126,
+        "captured_by_enemy": 276,
+        "captured_from_enemy": 86,
+        "net_loss": 2302
+      },
+      "UA": {
+        "total_lost": 510,
+        "destroyed": 393,
+        "damaged": 16,
+        "abandoned": 15,
+        "captured_by_enemy": 86,
+        "captured_from_enemy": 276,
+        "net_loss": 234
+      }
+    },
+    "APCs": {
+      "RU": {
+        "total_lost": 722,
+        "destroyed": 568,
+        "damaged": 18,
+        "abandoned": 42,
+        "captured_by_enemy": 94,
+        "captured_from_enemy": 161,
+        "net_loss": 561
+      },
+      "UA": {
+        "total_lost": 1291,
+        "destroyed": 949,
+        "damaged": 40,
+        "abandoned": 141,
+        "captured_by_enemy": 161,
+        "captured_from_enemy": 94,
+        "net_loss": 1197
+      }
+    },
+    "Artillery and Missile Support ": {
+      "RU": {
+        "total_lost": 172,
+        "destroyed": 109,
+        "damaged": 2,
+        "abandoned": 1,
+        "captured_by_enemy": 60,
+        "captured_from_enemy": 0,
+        "net_loss": 172
+      },
+      "UA": {
+        "total_lost": 0,
+        "destroyed": 0,
+        "damaged": 0,
+        "abandoned": 0,
+        "captured_by_enemy": 0,
+        "captured_from_enemy": 60,
+        "net_loss": -60
+      }
+    },
+    "Comms": {
+      "RU": {
+        "total_lost": 315,
+        "destroyed": 220,
+        "damaged": 5,
+        "abandoned": 4,
+        "captured_by_enemy": 86,
+        "captured_from_enemy": 0,
+        "net_loss": 315
+      },
+      "UA": {
+        "total_lost": 0,
+        "destroyed": 0,
+        "damaged": 0,
+        "abandoned": 0,
+        "captured_by_enemy": 0,
+        "captured_from_enemy": 86,
+        "net_loss": -86
+      }
+    },
+    "Engineering": {
+      "RU": {
+        "total_lost": 714,
+        "destroyed": 446,
+        "damaged": 50,
+        "abandoned": 62,
+        "captured_by_enemy": 156,
+        "captured_from_enemy": 36,
+        "net_loss": 678
+      },
+      "UA": {
+        "total_lost": 272,
+        "destroyed": 180,
+        "damaged": 25,
+        "abandoned": 31,
+        "captured_by_enemy": 36,
+        "captured_from_enemy": 156,
+        "net_loss": 116
+      }
+    },
+    "IFVs": {
+      "RU": {
+        "total_lost": 6380,
+        "destroyed": 5108,
+        "damaged": 158,
+        "abandoned": 483,
+        "captured_by_enemy": 631,
+        "captured_from_enemy": 168,
+        "net_loss": 6212
+      },
+      "UA": {
+        "total_lost": 1546,
+        "destroyed": 1166,
+        "damaged": 68,
+        "abandoned": 144,
+        "captured_by_enemy": 168,
+        "captured_from_enemy": 631,
+        "net_loss": 915
+      }
+    },
+    "IMVs": {
+      "RU": {
+        "total_lost": 414,
+        "destroyed": 333,
+        "damaged": 18,
+        "abandoned": 12,
+        "captured_by_enemy": 51,
+        "captured_from_enemy": 172,
+        "net_loss": 242
+      },
+      "UA": {
+        "total_lost": 1560,
+        "destroyed": 1236,
+        "damaged": 55,
+        "abandoned": 97,
+        "captured_by_enemy": 172,
+        "captured_from_enemy": 51,
+        "net_loss": 1509
+      }
+    },
+    "MRAPs": {
+      "RU": {
+        "total_lost": 63,
+        "destroyed": 46,
+        "damaged": 5,
+        "abandoned": 1,
+        "captured_by_enemy": 11,
+        "captured_from_enemy": 66,
+        "net_loss": -3
+      },
+      "UA": {
+        "total_lost": 874,
+        "destroyed": 694,
+        "damaged": 41,
+        "abandoned": 73,
+        "captured_by_enemy": 66,
+        "captured_from_enemy": 11,
+        "net_loss": 863
+      }
+    },
+    "Radars": {
+      "RU": {
+        "total_lost": 0,
+        "destroyed": 0,
+        "damaged": 0,
+        "abandoned": 0,
+        "captured_by_enemy": 0,
+        "captured_from_enemy": 14,
+        "net_loss": -14
+      },
+      "UA": {
+        "total_lost": 144,
+        "destroyed": 107,
+        "damaged": 22,
+        "abandoned": 1,
+        "captured_by_enemy": 14,
+        "captured_from_enemy": 0,
+        "net_loss": 144
+      }
+    },
+    "Rocket and Missile Artillery": {
+      "RU": {
+        "total_lost": 557,
+        "destroyed": 456,
+        "damaged": 45,
+        "abandoned": 2,
+        "captured_by_enemy": 54,
+        "captured_from_enemy": 0,
+        "net_loss": 557
+      },
+      "UA": {
+        "total_lost": 0,
+        "destroyed": 0,
+        "damaged": 0,
+        "abandoned": 0,
+        "captured_by_enemy": 0,
+        "captured_from_enemy": 54,
+        "net_loss": -54
+      }
+    },
+    "SAM Systems": {
+      "RU": {
+        "total_lost": 383,
+        "destroyed": 289,
+        "damaged": 66,
+        "abandoned": 4,
+        "captured_by_enemy": 24,
+        "captured_from_enemy": 6,
+        "net_loss": 377
+      },
+      "UA": {
+        "total_lost": 178,
+        "destroyed": 151,
+        "damaged": 20,
+        "abandoned": 1,
+        "captured_by_enemy": 6,
+        "captured_from_enemy": 24,
+        "net_loss": 154
+      }
+    },
+    "SP Artillery": {
+      "RU": {
+        "total_lost": 998,
+        "destroyed": 830,
+        "damaged": 53,
+        "abandoned": 7,
+        "captured_by_enemy": 108,
+        "captured_from_enemy": 26,
+        "net_loss": 972
+      },
+      "UA": {
+        "total_lost": 791,
+        "destroyed": 668,
+        "damaged": 96,
+        "abandoned": 1,
+        "captured_by_enemy": 26,
+        "captured_from_enemy": 108,
+        "net_loss": 683
+      }
+    },
+    "Self-Propelled Anti-Tank Missi": {
+      "RU": {
+        "total_lost": 47,
+        "destroyed": 22,
+        "damaged": 1,
+        "abandoned": 4,
+        "captured_by_enemy": 20,
+        "captured_from_enemy": 10,
+        "net_loss": 37
+      },
+      "UA": {
+        "total_lost": 19,
+        "destroyed": 7,
+        "damaged": 1,
+        "abandoned": 1,
+        "captured_by_enemy": 10,
+        "captured_from_enemy": 20,
+        "net_loss": -1
+      }
+    },
+    "Tanks": {
+      "RU": {
+        "total_lost": 4341,
+        "destroyed": 3247,
+        "damaged": 159,
+        "abandoned": 395,
+        "captured_by_enemy": 540,
+        "captured_from_enemy": 151,
+        "net_loss": 4190
+      },
+      "UA": {
+        "total_lost": 1389,
+        "destroyed": 1056,
+        "damaged": 84,
+        "abandoned": 98,
+        "captured_by_enemy": 151,
+        "captured_from_enemy": 540,
+        "net_loss": 849
+      }
+    },
+    "Towed Artillery": {
+      "RU": {
+        "total_lost": 549,
+        "destroyed": 340,
+        "damaged": 105,
+        "abandoned": 5,
+        "captured_by_enemy": 99,
+        "captured_from_enemy": 22,
+        "net_loss": 527
+      },
+      "UA": {
+        "total_lost": 261,
+        "destroyed": 151,
+        "damaged": 85,
+        "abandoned": 3,
+        "captured_by_enemy": 22,
+        "captured_from_enemy": 99,
+        "net_loss": 162
+      }
+    },
+    "Trucks": {
+      "RU": {
+        "total_lost": 4539,
+        "destroyed": 3789,
+        "damaged": 108,
+        "abandoned": 55,
+        "captured_by_enemy": 587,
+        "captured_from_enemy": 206,
+        "net_loss": 4333
+      },
+      "UA": {
+        "total_lost": 1330,
+        "destroyed": 1068,
+        "damaged": 38,
+        "abandoned": 18,
+        "captured_by_enemy": 206,
+        "captured_from_enemy": 587,
+        "net_loss": 743
+      }
+    },
+    "Unmanned Ground Vehicles": {
+      "RU": {
+        "total_lost": 0,
+        "destroyed": 0,
+        "damaged": 0,
+        "abandoned": 0,
+        "captured_by_enemy": 0,
+        "captured_from_enemy": 1,
+        "net_loss": -1
+      },
+      "UA": {
+        "total_lost": 188,
+        "destroyed": 177,
+        "damaged": 6,
+        "abandoned": 4,
+        "captured_by_enemy": 1,
+        "captured_from_enemy": 0,
+        "net_loss": 188
+      }
+    }
+  }
+}

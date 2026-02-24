@@ -1263,6 +1263,16 @@
                 time window are shown.</div>
             </div>
           </div>
+          <div class="ttb-divider"></div>
+          <!-- Performance Filters -->
+          <button class="ttb-btn perf-filter-btn" data-filter="elite" onclick="togglePerformanceFilter('elite')"
+            title="Show only high-value engagements (T.I.E. ≥ 80 or T ≥ 8)">
+            <i class="fa-solid fa-star" style="font-size:0.6rem;"></i> ELITE
+          </button>
+          <button class="ttb-btn perf-filter-btn" data-filter="attrition" onclick="togglePerformanceFilter('attrition')"
+            title="Show only events with major confirmed effect (E ≥ 7)">
+            <i class="fa-solid fa-skull" style="font-size:0.6rem;"></i> ATTRITION
+          </button>
         </div>
 
         <div id="map"></div>
@@ -1430,6 +1440,12 @@
                 <button class="loss-tab" onclick="filterLosses('artillery')">ARTILLERY</button>
                 <button class="loss-tab" onclick="filterLosses('air')">AIR</button>
                 <button class="loss-tab" onclick="filterLosses('hvt')">HVTs</button>
+                <div style="margin-left:auto;">
+                  <button class="loss-tab" id="netBalanceToggle" onclick="toggleNetBalance()"
+                    style="background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.3); color:#f59e0b;">
+                    <i class="fa-solid fa-scale-balanced"></i> NET
+                  </button>
+                </div>
               </div>
               <div class="loss-feed-container" id="equipment-ticker-wrapper">
                 <div class="loss-feed-list" id="ticker-content">

@@ -1,262 +1,333 @@
+"""
+Equipment Loss Scraper v3.0 — War Ledger Edition
+Scrapes Oryx (RU + UA pages) and WarSpotting for verified equipment losses.
+Produces:
+  1. external_losses.json — Individual item-level losses (legacy format, enriched)
+  2. net_losses_summary.json — Per-category Net Loss aggregation for the War Ledger UI
+"""
 import requests
 import json
 import datetime
 import re
 import os
-import time
 import sys
 from bs4 import BeautifulSoup
 
 # Configuration
-OUTPUT_FILE = os.path.join(os.path.dirname(__file__), '../assets/data/external_losses.json')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_FILE = os.path.join(BASE_DIR, '../assets/data/external_losses.json')
+NET_SUMMARY_FILE = os.path.join(BASE_DIR, '../assets/data/net_losses_summary.json')
 
-# Helper for safe printing on Windows consoles
+# Windows Unicode Fix
+sys.stdout.reconfigure(encoding='utf-8')
+
 def safe_print(msg):
     try:
         print(msg)
     except UnicodeEncodeError:
         print(msg.encode('ascii', 'ignore').decode('ascii'))
 
-class LossProvider:
-    def __init__(self, name):
-        self.name = name
-        self.losses = []
 
-    def fetch(self):
-        raise NotImplementedError("Subclasses must implement fetch()")
+# =============================================================================
+# ORYX CATEGORY MAPPING — Normalize H3 titles to standard categories
+# =============================================================================
+CATEGORY_MAP = {
+    'tanks': 'Tanks',
+    'armoured fighting vehicles': 'AFVs',
+    'infantry fighting vehicles': 'IFVs',
+    'armoured personnel carriers': 'APCs',
+    'mine-resistant ambush protected': 'MRAPs',
+    'infantry mobility vehicles': 'IMVs',
+    'communications stations': 'Comms',
+    'engineering vehicles': 'Engineering',
+    'command posts': 'Command Posts',
+    'anti-tank guided missiles': 'ATGM',
+    'man-portable air defence systems': 'MANPADS',
+    'heavy mortars': 'Heavy Mortars',
+    'towed artillery': 'Towed Artillery',
+    'self-propelled artillery': 'SP Artillery',
+    'multiple rocket launchers': 'MLRS',
+    'anti-aircraft guns': 'AA Guns',
+    'self-propelled anti-aircraft guns': 'SP AA Guns',
+    'surface-to-air missile systems': 'SAM Systems',
+    'radars': 'Radars',
+    'jammers': 'EW/Jammers',
+    'aircraft': 'Aircraft',
+    'helicopters': 'Helicopters',
+    'unmanned combat aerial vehicles': 'UCAV',
+    'reconnaissance uavs': 'Recon UAVs',
+    'naval ships': 'Naval',
+    'trucks': 'Trucks',
+    'jeeps': 'Jeeps',
+}
 
-    def get_losses(self):
-        return self.losses
 
-class WarSpottingProvider(LossProvider):
+class OryxDualProvider:
+    """Scrapes both Oryx RU-loss and UA-loss pages, extracting per-category aggregates."""
+
+    ORYX_PAGES = {
+        'RU': 'https://www.oryxspioenkop.com/2022/02/attack-on-europe-documenting-equipment.html',
+        'UA': 'https://www.oryxspioenkop.com/2022/02/attack-on-europe-documenting-ukrainian.html',
+    }
+
     def __init__(self):
-        super().__init__("WarSpotting")
-        # Trying a slightly different search endpoint closer to their API usage or standard view
-        self.url = "https://ukr.warspotting.net/search/?belligerent=2&weapon=0&model=&date_from=&date_to=&id_from=&id_to=&status=0"
+        self.name = "Oryx"
+        self.item_losses = []       # Individual items (legacy format)
+        self.category_stats = {}    # Per-faction, per-category aggregate {faction: {category: {...}}}
 
     def fetch(self):
-        safe_print(f"[{self.name}] Connecting to {self.url}...")
-        try:
-            # Enhanced Headers to mimic a real browser request to bypass 403
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Referer': 'https://ukr.warspotting.net/',
-                'Connection': 'keep-alive',
-                'Upgrade-Insecure-Requests': '1',
-                'Sec-Fetch-Dest': 'document',
-                'Sec-Fetch-Mode': 'navigate',
-                'Sec-Fetch-Site': 'same-origin',
-                'Sec-Fetch-User': '?1'
-            }
-            
-            session = requests.Session()
-            response = session.get(self.url, headers=headers, timeout=20)
-            
-            if response.status_code == 403:
-                safe_print(f"[{self.name}] Access Denied (403). WarSpotting Cloudflare protection is active.")
-                return 
-
-            response.raise_for_status()
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            cards = soup.find_all('div', class_='card') 
-            count = 0
-            for card in cards:
-                try:
-                    text_content = card.get_text(" ", strip=True)
-                    
-                    model = "Unknown"
-                    header = card.find('h5') or card.find('h4')
-                    if header:
-                        model = header.get_text(strip=True)
-                    
-                    date_match = re.search(r'\d{4}-\d{2}-\d{2}', text_content)
-                    date = date_match.group(0) if date_match else "2024-01-01"
-
-                    status = "Destroyed"
-                    if "damaged" in text_content.lower(): status = "Damaged"
-                    if "abandoned" in text_content.lower(): status = "Abandoned"
-                    if "captured" in text_content.lower(): status = "Captured"
-                    
-                    link_tag = card.find('a', href=True)
-                    proof_url = f"https://ukr.warspotting.net{link_tag['href']}" if link_tag else "#"
-
-                    self.losses.append({
-                        "date": date,
-                        "model": model,
-                        "type": "Ground Asset",
-                        "country": "RUS",
-                        "status": status,
-                        "proof_url": proof_url
-                    })
-                    count += 1
-                except:
-                    continue
-            
-            safe_print(f"[{self.name}] Parsed {count} items.")
-            
-        except Exception as e:
-            safe_print(f"[{self.name}] Scraping Error: {e}")
-
-class DeepStateProvider(LossProvider):
-    def __init__(self):
-        super().__init__("DeepState")
-        # DeepState API - trying multiple known endpoints
-        self.endpoints = [
-            "https://deepstatemap.live/api/history/public",
-            "https://api.deepstatemap.live/api/v1/history",
-            "https://deepstatemap.live/api/losses"  # Speculative losses endpoint
-        ]
-
-    def fetch(self):
-        safe_print(f"[{self.name}] Attempting to connect to DeepState API...")
-        
-        for url in self.endpoints:
-            try:
-                headers = {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                    'Accept': 'application/json',
-                    'Origin': 'https://deepstatemap.live',
-                    'Referer': 'https://deepstatemap.live/'
-                }
-                
-                response = requests.get(url, headers=headers, timeout=10)
-                
-                if response.status_code == 200:
-                    safe_print(f"[{self.name}] Connected to: {url}")
-                    
-                    try:
-                        data = response.json()
-                        
-                        # Debug: Print the structure of the response
-                        if isinstance(data, dict):
-                            safe_print(f"[{self.name}] Response keys: {list(data.keys())[:5]}")
-                            # Try to find a list of events/losses
-                            for key in ['data', 'losses', 'events', 'items', 'history']:
-                                if key in data and isinstance(data[key], list):
-                                    items = data[key]
-                                    safe_print(f"[{self.name}] Found '{key}' with {len(items)} items.")
-                                    self._parse_items(items)
-                                    return
-                        elif isinstance(data, list):
-                            safe_print(f"[{self.name}] Response is a list with {len(data)} items.")
-                            self._parse_items(data)
-                            return
-                        else:
-                            safe_print(f"[{self.name}] Unexpected response type: {type(data)}")
-                            
-                    except json.JSONDecodeError:
-                        safe_print(f"[{self.name}] Response is not valid JSON.")
-                        continue
-                else:
-                    safe_print(f"[{self.name}] {url} returned status {response.status_code}")
-                    
-            except Exception as e:
-                safe_print(f"[{self.name}] Error with {url}: {e}")
-                continue
-        
-        safe_print(f"[{self.name}] Could not retrieve usable data from any endpoint.")
-    
-    def _parse_items(self, items):
-        """Attempt to parse items from DeepState into our loss format."""
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
         today = datetime.datetime.now().strftime("%Y-%m-%d")
-        count = 0
-        
-        for item in items[:100]:  # Limit to first 100 to avoid overwhelming
+
+        for faction, url in self.ORYX_PAGES.items():
+            safe_print(f"[{self.name}] Scraping {faction} losses from Oryx...")
             try:
-                # Try common field names
-                model = item.get('name') or item.get('title') or item.get('type') or item.get('model') or "Unknown Unit"
-                date = item.get('date') or item.get('timestamp') or item.get('created_at') or today
-                status = item.get('status') or item.get('state') or "Reported"
-                
-                # Normalize date if it's a timestamp
-                if isinstance(date, (int, float)):
-                    date = datetime.datetime.fromtimestamp(date).strftime("%Y-%m-%d")
-                
-                self.losses.append({
-                    "date": str(date)[:10],  # Ensure YYYY-MM-DD format
-                    "model": str(model),
-                    "type": "DeepState Report",
-                    "country": "RUS",  # Assuming Russian losses
-                    "status": str(status),
-                    "proof_url": "https://deepstatemap.live/"
-                })
-                count += 1
-            except Exception:
-                continue
+                response = requests.get(url, headers=headers, timeout=30)
+                response.raise_for_status()
+                soup = BeautifulSoup(response.text, 'html.parser')
+
+                # ---- PHASE 1: Parse H3 category headers for aggregate counts ----
+                h3_tags = soup.find_all('h3')
+                faction_stats = {}
+                global_total = None
+
+                for h3 in h3_tags:
+                    text = h3.get_text(strip=True)
+                    if not text or len(text) < 10:
+                        continue
+
+                    # Match pattern: "CategoryName(COUNT, of which destroyed: X, damaged: Y, abandoned: Z, captured: W)"
+                    # Or the global summary: "Russia - 24136, of which: destroyed: 18799, ..."
+                    cat_match = re.match(
+                        r'^(.+?)\s*\(?(\d[\d,]*)\s*,\s*of which\s*:?\s*destroyed:\s*(\d[\d,]*)\s*,?\s*damaged:\s*(\d[\d,]*)\s*,?\s*abandoned:\s*(\d[\d,]*)\s*,?\s*captured:\s*(\d[\d,]*)',
+                        text, re.IGNORECASE
+                    )
+                    if not cat_match:
+                        continue
+
+                    raw_cat = cat_match.group(1).strip().rstrip('(').strip()
+                    total = int(cat_match.group(2).replace(',', ''))
+                    destroyed = int(cat_match.group(3).replace(',', ''))
+                    damaged = int(cat_match.group(4).replace(',', ''))
+                    abandoned = int(cat_match.group(5).replace(',', ''))
+                    captured = int(cat_match.group(6).replace(',', ''))
+
+                    # Skip aggregate lines (e.g. "Russia - 24136" or "Losses excluding...")
+                    if any(skip in raw_cat.lower() for skip in ['russia', 'ukraine', 'losses excluding', 'losses of armoured combat']):
+                        if global_total is None:
+                            global_total = {
+                                'total': total, 'destroyed': destroyed,
+                                'damaged': damaged, 'abandoned': abandoned, 'captured': captured
+                            }
+                        continue
+
+                    # Normalize category name
+                    cat_key = raw_cat.lower()
+                    std_cat = None
+                    for pattern, mapped in CATEGORY_MAP.items():
+                        if pattern in cat_key:
+                            std_cat = mapped
+                            break
+                    if not std_cat:
+                        std_cat = raw_cat[:30]
+
+                    faction_stats[std_cat] = {
+                        'total': total,
+                        'destroyed': destroyed,
+                        'damaged': damaged,
+                        'abandoned': abandoned,
+                        'captured': captured
+                    }
+
+                self.category_stats[faction] = {
+                    'global': global_total or {},
+                    'categories': faction_stats
+                }
+
+                safe_print(f"[{self.name}] {faction}: Global total = {global_total.get('total', '?') if global_total else '?'}, {len(faction_stats)} categories parsed")
+                for cat, s in faction_stats.items():
+                    safe_print(f"   {cat}: {s['total']} (D:{s['destroyed']} Dam:{s['damaged']} Ab:{s['abandoned']} Cap:{s['captured']})")
+
+                # ---- PHASE 2: Parse individual <li> items for the item-level feed ----
+                li_items = soup.find_all('li')
+                count = 0
+                current_category = 'Vehicle'
+
+                for li in li_items:
+                    text = li.get_text(strip=True)
+                    if not any(k in text.lower() for k in ['destroyed', 'damaged', 'abandoned', 'captured']):
+                        continue
+                    if not re.match(r'^\d+', text):
+                        continue
+
+                    try:
+                        parts = text.split(':')
+                        if len(parts) < 2:
+                            continue
+                        raw_model = parts[0].strip()
+                        model = re.sub(r'^\d+\s+', '', raw_model)
+
+                        # Count individual statuses from the parenthesized entries
+                        destroyed_count = len(re.findall(r'destroyed', text, re.IGNORECASE))
+                        damaged_count = len(re.findall(r'damaged', text, re.IGNORECASE))
+                        captured_count = len(re.findall(r'captured', text, re.IGNORECASE))
+                        abandoned_count = len(re.findall(r'abandoned', text, re.IGNORECASE))
+
+                        # Determine dominant status
+                        status_counts = {
+                            'Destroyed': destroyed_count,
+                            'Damaged': damaged_count,
+                            'Captured': captured_count,
+                            'Abandoned': abandoned_count
+                        }
+                        status = max(status_counts, key=status_counts.get)
+
+                        # Try to classify category from model name
+                        model_lower = model.lower()
+                        cat = 'Vehicle'
+                        if re.match(r'^t-\d', model_lower):
+                            cat = 'Tanks'
+                        elif any(k in model_lower for k in ['bmp', 'bmd', 'bradley', 'cv90', 'marder']):
+                            cat = 'IFVs'
+                        elif any(k in model_lower for k in ['btr', 'stryker', 'spartan']):
+                            cat = 'APCs'
+                        elif any(k in model_lower for k in ['su-', 'mig-', 'tu-', 'an-', 'il-']):
+                            cat = 'Aircraft'
+                        elif any(k in model_lower for k in ['mi-', 'ka-', 'ah-']):
+                            cat = 'Helicopters'
+                        elif any(k in model_lower for k in ['s-300', 's-400', 'buk', 'tor', 'pantsir', 'osa', 'patriot', 'nasams', 'iris']):
+                            cat = 'SAM Systems'
+                        elif any(k in model_lower for k in ['msta', 'gvozdika', 'akatsiya', 'giatsint', 'pzh', 'caesar', 'krab', 'dana']):
+                            cat = 'SP Artillery'
+                        elif any(k in model_lower for k in ['grad', 'uragan', 'smerch', 'tornado', 'himars', 'mlrs']):
+                            cat = 'MLRS'
+
+                        link_tags = li.find_all('a', href=True)
+                        proof_url = link_tags[0]['href'] if link_tags else self.ORYX_PAGES[faction]
+
+                        self.item_losses.append({
+                            "date": today,
+                            "model": model,
+                            "type": cat,
+                            "country": faction,
+                            "status": status,
+                            "proof_url": proof_url,
+                            "source_tag": "Oryx"
+                        })
+                        count += 1
+                    except Exception:
+                        continue
+
+                safe_print(f"[{self.name}] {faction}: {count} individual items parsed")
+
+            except Exception as e:
+                safe_print(f"[{self.name}] Error scraping {faction}: {e}")
+
+    def build_net_summary(self):
+        """Calculate Net Loss for each faction/category.
         
-        safe_print(f"[{self.name}] Parsed {count} items.")
+        Net Loss = Total Losses - Captured from Enemy
+        Where 'Captured from Enemy' = the opponent's 'captured' count for that category.
+        """
+        ru_stats = self.category_stats.get('RU', {}).get('categories', {})
+        ua_stats = self.category_stats.get('UA', {}).get('categories', {})
+        ru_global = self.category_stats.get('RU', {}).get('global', {})
+        ua_global = self.category_stats.get('UA', {}).get('global', {})
 
-class OryxProvider(LossProvider):
-    def __init__(self):
-        super().__init__("Oryx")
-        self.url = "https://www.oryxspioenkop.com/2022/02/attack-on-europe-documenting-equipment.html"
+        # All categories from both sides
+        all_cats = sorted(set(list(ru_stats.keys()) + list(ua_stats.keys())))
 
-    def fetch(self):
-        safe_print(f"[{self.name}] Connecting to Oryx...")
-        try:
-            headers = {'User-Agent': 'Mozilla/5.0'}
-            response = requests.get(self.url, headers=headers, timeout=15)
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            list_items = soup.find_all('li')
-            count = 0
-            today = datetime.datetime.now().strftime("%Y-%m-%d")
-            
-            for li in list_items:
-                text = li.get_text(strip=True)
-                if not any(k in text.lower() for k in ['destroyed', 'damaged', 'abandoned', 'captured']):
-                    continue
-                if not re.match(r'^\d+', text):
-                    continue
+        summary = {
+            'generated_at': datetime.datetime.now().isoformat(),
+            'source': 'Oryx (oryxspioenkop.com)',
+            'disclaimer': 'These are visually confirmed minimums. Actual losses are likely higher for both sides.',
+            'global': {
+                'RU': {
+                    'total_lost': ru_global.get('total', 0),
+                    'destroyed': ru_global.get('destroyed', 0),
+                    'damaged': ru_global.get('damaged', 0),
+                    'abandoned': ru_global.get('abandoned', 0),
+                    'captured_by_enemy': ru_global.get('captured', 0),
+                    'captured_from_enemy': ua_global.get('captured', 0),
+                    'net_loss': ru_global.get('total', 0) - ua_global.get('captured', 0),
+                },
+                'UA': {
+                    'total_lost': ua_global.get('total', 0),
+                    'destroyed': ua_global.get('destroyed', 0),
+                    'damaged': ua_global.get('damaged', 0),
+                    'abandoned': ua_global.get('abandoned', 0),
+                    'captured_by_enemy': ua_global.get('captured', 0),
+                    'captured_from_enemy': ru_global.get('captured', 0),
+                    'net_loss': ua_global.get('total', 0) - ru_global.get('captured', 0),
+                }
+            },
+            'categories': {}
+        }
 
-                try:
-                    parts = text.split(':')
-                    if len(parts) < 2: continue
-                    raw_model = parts[0].strip()
-                    model = re.sub(r'^\d+\s+', '', raw_model)
-                    
-                    self.losses.append({
-                        "date": today,
-                        "model": model,
-                        "type": "Vehicle",
-                        "country": "RUS",
-                        "status": "Verified Loss",
-                        "proof_url": self.url
-                    })
-                    count += 1
-                except:
-                    continue
-                    
-            safe_print(f"[{self.name}] Found {count} lines of equipment.")
+        for cat in all_cats:
+            ru_cat = ru_stats.get(cat, {'total': 0, 'destroyed': 0, 'damaged': 0, 'abandoned': 0, 'captured': 0})
+            ua_cat = ua_stats.get(cat, {'total': 0, 'destroyed': 0, 'damaged': 0, 'abandoned': 0, 'captured': 0})
 
-        except Exception as e:
-            safe_print(f"[{self.name}] Error: {e}")
+            summary['categories'][cat] = {
+                'RU': {
+                    'total_lost': ru_cat['total'],
+                    'destroyed': ru_cat['destroyed'],
+                    'damaged': ru_cat['damaged'],
+                    'abandoned': ru_cat['abandoned'],
+                    'captured_by_enemy': ru_cat['captured'],
+                    'captured_from_enemy': ua_cat['captured'],
+                    'net_loss': ru_cat['total'] - ua_cat['captured'],
+                },
+                'UA': {
+                    'total_lost': ua_cat['total'],
+                    'destroyed': ua_cat['destroyed'],
+                    'damaged': ua_cat['damaged'],
+                    'abandoned': ua_cat['abandoned'],
+                    'captured_by_enemy': ua_cat['captured'],
+                    'captured_from_enemy': ru_cat['captured'],
+                    'net_loss': ua_cat['total'] - ru_cat['captured'],
+                }
+            }
+
+        return summary
+
 
 def main():
-    safe_print("=== STARTING REAL SCRAPING ===")
-    
-    providers = [WarSpottingProvider(), OryxProvider(), DeepStateProvider()]
-    all_losses = []
+    safe_print("╔══════════════════════════════════════════════╗")
+    safe_print("║   WAR LEDGER — Equipment Loss Scraper v3.0  ║")
+    safe_print("╚══════════════════════════════════════════════╝")
 
-    for p in providers:
-        p.fetch()
-        all_losses.extend(p.get_losses())
+    oryx = OryxDualProvider()
+    oryx.fetch()
 
-    if not all_losses:
-        safe_print("WARN: No data found. Check internet connection or site layout changes.")
+    # Write item-level losses (legacy format)
+    all_losses = sorted(oryx.item_losses, key=lambda x: x['date'], reverse=True)
+
+    if all_losses:
+        os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
+        with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
+            json.dump(all_losses, f, indent=2, ensure_ascii=False)
+        safe_print(f"\n[SUCCESS] Wrote {len(all_losses)} individual items to {OUTPUT_FILE}")
     else:
-        final_json = sorted(all_losses, key=lambda x: x['date'], reverse=True)
-        
-        try:
-            os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
-            with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
-                json.dump(final_json, f, indent=2)
-            safe_print(f"[SUCCESS] Wrote {len(final_json)} items to {OUTPUT_FILE}")
-        except Exception as e:
-            safe_print(f"[ERROR] Failed to write JSON: {e}")
+        safe_print("[WARN] No individual items scraped.")
+
+    # Write Net Loss summary
+    net_summary = oryx.build_net_summary()
+    if net_summary['categories']:
+        with open(NET_SUMMARY_FILE, 'w', encoding='utf-8') as f:
+            json.dump(net_summary, f, indent=2, ensure_ascii=False)
+        safe_print(f"[SUCCESS] Wrote Net Loss summary to {NET_SUMMARY_FILE}")
+
+        # Print summary
+        safe_print("\n═══ WAR LEDGER SUMMARY ═══")
+        for faction in ['RU', 'UA']:
+            g = net_summary['global'][faction]
+            safe_print(f"\n  {faction} GLOBAL: Total Lost={g['total_lost']}, Captured from Enemy={g['captured_from_enemy']}, NET LOSS={g['net_loss']}")
+    else:
+        safe_print("[WARN] No summary generated.")
+
 
 if __name__ == "__main__":
     main()

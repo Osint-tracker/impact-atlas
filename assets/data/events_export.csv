@@ -1,12 +1,12 @@
 ID,Date,Title,Lat,Lon,TIE,K,T,E,Reliability,Bias,HasVideo,Sources
-fus_332428_1768864389,2026-01-23,Ukrainian Forces Conduct Operations in Lipetsk and,45.7684014,39.0261044,100.0,6.0,8.0,7.0,60,3.8,0,7
-fus_332462_1768864389,2026-01-23,Ukrainian President Warns of Potential Russian Str,50.3984937,30.8816326,99.0,8.0,8.0,7.0,57,2.3,0,4
-fus_418394_1768864393,2026-01-24,Russian Forces Conduct Strikes in Odesa Region,46.4843023,30.7322878,82.0,6.0,8.0,5.0,77,-4.9,0,5
-fus_418441_1768864394,2026-01-23,Russian Forces Intensify Strikes in Odesa Region,46.4843023,30.7322878,66.0,6.0,8.0,5.0,76,-4.8,0,6
-fus_462186_1768864395,2026-01-23,Russian Forces Conduct Strikes in Sumy Region,50.4500336,30.5241361,100.0,7.0,8.0,6.0,60,-1.2,0,3
-fus_462192_1768864395,2026-01-23,Russian Forces Conduct Strikes in Ukraine,46.3013422,30.6549271,83.0,7.0,6.0,7.0,80,-2.0,1,6
-fus_462205_1768864395,2026-01-23,Rubicon Operators Conduct Operations in Donbass,48.0279261,37.954765,45.0,5.0,5.0,7.0,80,-3.2,1,5
-fus_467435_1768864395,2026-01-23,Ukrainian Drones Intercepted over Russian Regions,53.2423778,34.3668288,0.0,3.0,2.0,1.0,60,-3.2,0,2
+fus_332428_1768864389,2026-01-23,Ukrainian Forces Conduct Operations in Lipetsk and,45.7684014,39.0261044,100.0,6.0,8.0,7.0,60,3.8,0,1
+fus_332462_1768864389,2026-01-23,Ukrainian President Warns of Potential Russian Str,50.3984937,30.8816326,99.0,8.0,8.0,7.0,57,2.3,0,2
+fus_418394_1768864393,2026-01-24,Russian Forces Conduct Strikes in Odesa Region,46.4843023,30.7322878,82.0,6.0,8.0,5.0,77,-4.9,0,1
+fus_418441_1768864394,2026-01-23,Russian Forces Intensify Strikes in Odesa Region,46.4843023,30.7322878,66.0,6.0,8.0,5.0,76,-4.8,0,1
+fus_462186_1768864395,2026-01-23,Russian Forces Conduct Strikes in Sumy Region,50.4500336,30.5241361,100.0,7.0,8.0,6.0,60,-1.2,0,1
+fus_462192_1768864395,2026-01-23,Russian Forces Conduct Strikes in Ukraine,46.3013422,30.6549271,83.0,7.0,6.0,7.0,80,-2.0,1,1
+fus_462205_1768864395,2026-01-23,Rubicon Operators Conduct Operations in Donbass,48.0279261,37.954765,45.0,5.0,5.0,7.0,80,-3.2,1,1
+fus_467435_1768864395,2026-01-23,Ukrainian Drones Intercepted over Russian Regions,53.2423778,34.3668288,0.0,3.0,2.0,1.0,60,-3.2,0,1
 fus_669674_1768864469,2026-01-02 11:14:04,Russian Forces Release AI-Generated Video of Strik,57.9791414,33.2537994,0.0,1.0,10.0,1.0,40,-2.0,0,1
 fus_669733_1768864469,2026-01-24,Russian Forces Conduct Drone and Missile Attacks i,48.662589,34.9501715,100.0,8.0,8.0,6.0,59,0.5,0,12
 fus_669984_1768864409,2026-01-23,Ukrainian Drones Allegedly Attack Russian Presiden,58.5374396,31.273806,0.0,3.0,9.0,1.0,56,-5.3,0,5
@@ -156,14 +156,14 @@ fus_678204_1768864489,2026-01-09 05:57:19,Russian Forces Bombardment in Lviv,49.
 fus_678206_1768864489,2026-01-09 01:14:43,Russian Missile Strike Reported in Lviv Region,49.8397526,24.0436699,0.0,7.0,8.0,1.0,40,0.0,0,1
 fus_678489_1768864490,2026-01-10 15:00:00+00:00,Russian Forces Attack in Ukraine,50.4500336,30.5241361,6.0,4.0,2.0,5.0,40,0.0,0,1
 fus_678698_1768864492,2026-01-10 14:45:00+00:00,Power Outages Lifted in Kyiv Region,50.4500336,30.5241361,0.0,1.0,1.0,2.0,50,0.0,0,1
-fus_332462_1769034251,2026-01-23,Ukrainian President Warns of Potential Russian Str,50.3984937,30.8816326,100.0,8.0,8.0,7.0,56,1.7,0,5
+fus_332462_1769034251,2026-01-23,Ukrainian President Warns of Potential Russian Str,50.3984937,30.8816326,100.0,8.0,8.0,7.0,56,1.7,0,3
 fus_333408_1769034260,2026-01-23,Russian Forces Conduct Drone and Missile Strikes A,50.9080532,28.3867504,100.0,8.0,8.0,6.0,57,1.8,0,1
-fus_462192_1769034270,2026-01-23,Russian Forces Conduct Strikes in Ukraine,46.3013422,30.6549271,66.0,7.0,6.0,7.0,80,-2.0,1,8
-fus_462205_1769034270,2026-01-23,Rubicon Operators Conduct Operations in Donbass,48.0279261,37.954765,45.0,5.0,5.0,7.0,80,-3.2,1,6
-fus_467510_1769034273,2026-02-07,Ukrainian Forces Drone Operations Intercepted in M,48.7081906,44.5153353,49.0,6.0,8.0,3.0,60,-3.2,0,2
+fus_462192_1769034270,2026-01-23,Russian Forces Conduct Strikes in Ukraine,46.3013422,30.6549271,66.0,7.0,6.0,7.0,80,-2.0,1,1
+fus_462205_1769034270,2026-01-23,Rubicon Operators Conduct Operations in Donbass,48.0279261,37.954765,45.0,5.0,5.0,7.0,80,-3.2,1,1
+fus_467510_1769034273,2026-02-07,Ukrainian Forces Drone Operations Intercepted in M,48.7081906,44.5153353,49.0,6.0,8.0,3.0,60,-3.2,0,1
 fus_669673_1769034365,2026-01-02 11:28:56,Ukrainian Intelligence Operation Conducted to Misl,46.5421715,33.4079326,0.0,1.0,1.0,1.0,70,2.0,1,2
 fus_669674_1769034365,2026-01-02 11:14:04,Russian Forces Release AI-Generated Video of Strik,57.9791414,33.2537994,0.0,1.0,10.0,1.0,40,-2.0,0,1
-fus_669984_1769034366,2026-01-23,Russian Forces Conduct Missile Strike near Ukraini,50.4500336,30.5241361,100.0,7.0,8.0,6.0,55,-2.8,0,5
+fus_669984_1769034366,2026-01-23,Russian Forces Conduct Missile Strike near Ukraini,50.4500336,30.5241361,100.0,7.0,8.0,6.0,55,-2.8,0,4
 fus_670138_1769034367,2026-01-09 23:28:29,Ukrainian MiG-29MU1 Strikes Russian Forces,49.3450457,23.5001337,45.0,7.0,5.0,7.0,50,2.0,0,1
 fus_670927_1769034369,2026-01-10 06:19:50,Russian Forces Conduct Drone Strikes in Kryvyi Rih,47.9102734,33.3917703,100.0,8.0,8.0,6.0,85,-5.6,0,1
 fus_670929_1769034369,2026-01-09 20:04:50,Russian Forces Conduct Strikes on Energy Infrastru,50.4500336,30.5241361,100.0,7.0,8.0,6.0,85,-4.4,0,1
@@ -174,12 +174,12 @@ fus_671145_1769034370,2026-01-10 04:40:36,Russian Forces Conduct Strikes in Ukra
 fus_671214_1769034371,2026-01-02 08:32:03,Ukrainian UAVs Engaged over Russian Regions,53.1956255,50.1014927,0.0,8.0,9.0,1.0,40,-2.0,0,1
 fus_671977_1769034376,2026-01-23,Russian Authorities Claim Ukrainian Drone Targeted,58.5209862,31.2757862,0.0,3.0,10.0,1.0,63,-2.0,0,1
 fus_674965_1769034395,2026-01-02 00:00:00+00:00,Ukrainian Drone Strike Reported in Occupied Ukrain,50.429608,30.4558968,15.0,3.0,3.0,7.0,50,0.0,0,1
-fus_675018_1769034396,2026-01-01 23:45:00+00:00,Unknown Forces Transfer Material to United States,55.625578,37.6063916,0.0,1.0,10.0,1.0,60,0.0,0,4
+fus_675018_1769034396,2026-01-01 23:45:00+00:00,Unknown Forces Transfer Material to United States,55.625578,37.6063916,0.0,1.0,10.0,1.0,60,0.0,0,3
 fus_675097_1769034397,2026-01-01 23:30:00+00:00,Ukrainian Drone Destroyed by Russian Air Defense n,55.625578,37.6063916,100.0,3.0,9.0,7.0,50,-2.0,0,1
 fus_675110_1769034397,2026-01-01 23:30:00+00:00,Russian Forces Sentenced for Coordination of Airst,47.8507859,35.1182867,0.0,1.0,8.0,1.0,70,6.4,0,1
 fus_675127_1769034397,2026-01-01 23:30:00+00:00,Ukrainian Drone Targeted Russian Presidential Resi,55.625578,37.6063916,0.0,3.0,10.0,1.0,50,0.0,0,1
 fus_675269_1769034399,2026-01-02 11:30:00+00:00,Polish Volunteer Dies from Wounds Sustained in Kha,49.9923181,36.2310146,7.0,2.0,3.0,4.0,50,2.0,0,1
-fus_675307_1769034399,2026-01-02 11:30:00+00:00,Unknown Actors Allegedly Attack Residence of Russi,55.625578,37.6063916,0.0,1.0,10.0,1.0,60,2.0,0,3
+fus_675307_1769034399,2026-01-02 11:30:00+00:00,Unknown Actors Allegedly Attack Residence of Russi,55.625578,37.6063916,0.0,1.0,10.0,1.0,60,2.0,0,2
 fus_675332_1769034400,2026-01-02 11:30:00+00:00,Unknown Actor Conducts Drone Strike in Kherson,46.5421715,33.4079326,44.0,3.0,5.0,7.0,50,0.8,0,1
 fus_675416_1769034401,2026-01-04 14:05:48,Tanker QENDIL Ran Aground off the Coast of Turkey,55.7410091,37.5742726,0.0,1.0,1.0,2.0,40,0.0,0,1
 fus_675440_1769034401,2026-01-04 10:11:26,Russian Personnel Increased Surveillance near Norw,55.7537369,37.5962931,0.0,1.0,1.0,1.0,40,0.0,0,1
@@ -263,7 +263,7 @@ fus_678548_1769034469,2026-01-10 15:00:00+00:00,Russian Forces Strike City of Sl
 fus_678593_1769034470,2026-01-10 15:00:00+00:00,Explosion Reported in Chernihiv,51.272593,31.7417235,10.0,3.0,4.0,3.0,50,-3.2,0,1
 fus_678602_1769034470,2026-01-10 15:00:00+00:00,Winter Weather Affects Operations in Kiev,50.4500336,30.5241361,0.0,1.0,1.0,1.0,50,-2.0,0,1
 fus_678603_1769034470,2026-01-10 15:00:00+00:00,Unknown Forces Conduct Attack in Kyiv,50.4500336,30.5241361,49.0,6.0,8.0,3.0,50,0.0,0,1
-fus_678698_1769034472,2026-01-10 14:45:00+00:00,Power Outage Management in Kyiv Region,50.4500336,30.5241361,0.0,1.0,1.0,1.0,60,2.0,0,2
+fus_678698_1769034472,2026-01-10 14:45:00+00:00,Power Outage Management in Kyiv Region,50.4500336,30.5241361,0.0,1.0,1.0,1.0,60,2.0,0,1
 fus_678754_1769034473,2026-01-17 07:24:21,Czech President Announces Military Support for Ukr,50.4500336,30.5241361,0.0,3.0,1.0,1.0,45,0.0,0,2
 fus_678767_1769034473,2026-01-16 16:36:52,Ukrainian Officials Discuss Energy Support with UK,50.4500336,30.5241361,100.0,7.0,9.0,7.0,40,0.8,0,1
 fus_678798_1769034475,2026-01-16 12:21:56,Ukrainian Government Reports on Energy Situation i,50.4500336,30.5241361,0.0,1.0,2.0,1.0,45,0.0,0,2
@@ -677,32 +677,47 @@ f2a3256b-2872-4a1c-a8b8-44991e0ec8cc,2026-02-19 08:28:30,Ukrainian Air Defense E
 178e56b5-5f7a-4ab4-923f-e1190e7077ea,2026-02-22 21:50:24,Ukrainian Forces Conduct Counteroffensive Operatio,49.2724587,38.9150477,100.0,7.0,8.0,7.0,40,2.0,0,1
 1c5225ab-35b7-40f6-9934-577276438a7c,2026-02-23 16:22:02,Slovakia Halts Emergency Electricity Supplies to U,51.5264787,46.0539232,0.0,1.0,1.0,1.0,40,0.0,0,1
 26a6688f-ab53-4e18-86d8-5be1b3c01f77,2026-02-22 21:14:25,Russian Forces Conduct Artillery Strike in Kherson,46.5421715,33.4079326,9.0,4.0,3.0,4.0,40,0.0,0,1
+2adf488f-74ac-4979-bcbd-2f32c90b78df,2026-02-22 16:15:47,Ukrainian Forces Destroy Equipment in Kursk and Sl,51.7270357,36.192248,43.0,6.0,5.0,7.0,40,2.8,0,1
 2d3ab817-4190-4095-8e5a-303106602afc,2026-02-23 12:54:41,Russian Forces Display Underground Facilities in Z,47.8507859,35.1182867,0.0,1.0,1.0,1.0,40,0.0,0,1
 3b42e327-2359-4e1b-87d9-6f662db65622,2026-02-23 14:55:58,Unknown Drone Attack Reported in Central Kherson,46.5421715,33.4079326,4.0,3.0,2.0,4.0,40,0.0,0,1
 3d1aaf37-dabb-4f90-8b8f-fcc9748986ef,2026-02-23 13:42:50,Ukrainian Forces Conduct Operations in Dnipropetro,57.052505,53.990612,100.0,7.0,9.0,6.0,60,0.6,1,1
 3ef61063-b835-4378-ba7e-5209edb65e1d,2026-02-23 10:47:49,UAV Strike on Vehicle in Central Kherson,46.5421715,33.4079326,13.0,3.0,3.0,6.0,40,0.0,0,1
 431b4400-cf93-434e-a089-6552242ea32b,2026-02-23 08:42:12,Russian Artillery Strikes Residential Area in Kher,46.5421715,33.4079326,5.0,4.0,2.0,4.0,40,2.0,0,1
+45b2ce94-eee9-434b-8002-f270e3ea7575,2026-02-22 16:23:24,Alleged Financial Support for Explosive Components,49.841952,24.0315921,0.0,1.0,1.0,1.0,15,0.8,0,1
 52ae78c2-5798-439b-8df8-3e2a7f36092b,2026-02-23 15:00:06,Russian Artillery Strike Reported in Northern Dist,46.5421715,33.4079326,5.0,4.0,2.0,4.0,40,-1.6,0,1
 548c1b48-b8ec-4fe2-91ba-648a7fc68b1e,2026-02-23 12:35:50,Ukrainian President Comments on Drone Technology i,53.7098,27.9534,72.0,6.0,6.0,7.0,40,1.6,0,1
 567bb0c8-085a-4bc5-b8b6-5bc7552fc09c,2026-02-23 06:33:06,Ukrainian Intelligence Conducts Contingency Planni,50.58826,30.25909,0.0,1.0,1.0,1.0,40,3.2,0,1
+622c6f20-46a2-4c2c-a244-5b159fdaed6b,2026-02-22 13:58:44,Ukrainian Machine Gunner Engages Russian Drones on,44.6012959,40.1081444,47.0,3.0,6.0,7.0,40,0.0,0,1
 71fcea61-fbeb-4f54-8950-8a997649a82f,2026-02-23 09:34:27,Mexican Personnel Join Ukrainian International Leg,50.4500336,30.5241361,0.0,1.0,1.0,1.0,40,0.0,0,1
+7a51b3bc-a66d-488e-a8bc-e7ba9c7f749d,2026-02-22 20:40:00,Iran Agrees to Arms Supply Deal with Russia,55.625578,37.6063916,0.0,7.0,1.0,1.0,40,0.0,0,1
+7a71a77c-5724-4dc6-8cd1-f3a226fac723,2026-02-22 16:32:39,Russian Forces Adjust Strike Tactics in Urban Area,50.4500336,30.5241361,84.0,1.0,9.0,10.0,40,2.0,0,1
 80cef7c6-aa67-487d-aad4-9469beac10b9,2026-02-23 15:07:44,Russian Forces Attack Evacuation Vehicle in Kharki,49.9945657,36.2488934,4.0,2.0,2.0,4.0,40,0.0,0,1
 8da53aef-fa1a-40e2-a0b4-41f7c308e8d5,2026-02-23 10:19:57,Ukrainian Forces Strike Russian Missile Division i,45.2835044,34.2008188,58.0,8.0,5.0,7.0,40,2.0,0,1
+9008439a-f2d4-456f-ad85-1d03f04e9e1e,2026-02-22 14:35:37,Russian Junior Lieutenant Killed near Novohryhoriv,48.5760732,37.4194003,15.0,3.0,3.0,7.0,30,-4.0,0,1
 9239626e-24a6-4342-a2d4-5332075a2998,2026-02-23 08:31:43,Russian Forces Shell Civilian Areas in Kherson,46.5421715,33.4079326,5.0,4.0,2.0,4.0,40,2.0,0,1
 94010e16-8e6a-44c6-848c-e6f079f29f68,2026-02-22 22:32:38,UAV Attack Reported in Sevastopol,44.6054434,33.5220842,3.0,3.0,2.0,3.0,30,-4.0,0,1
+9b417c1f-edd3-42ae-b826-7c6be0b8c127,2026-02-22 15:14:23,Drone Awareness Initiative Established in Kherson,46.5421715,33.4079326,0.0,1.0,1.0,1.0,40,0.0,0,1
 9f665f22-6bde-422d-b513-5bc79dfc5d49,2026-02-23 09:13:08,Expansion of Mandatory Evacuation Zone Announced i,46.5421715,33.4079326,0.0,1.0,1.0,1.0,40,2.0,0,1
 a0c08ff8-721f-4094-b7c9-c20779a382cc,2026-02-23 15:59:34,Ukrainian Forces Strike Oil Depot in Luhansk,49.2724587,38.9150477,78.0,3.0,9.0,6.0,40,2.0,0,1
 a4e30825-5d12-40c1-96c1-11226a8d0ba9,2026-02-23 11:43:03,Missile Alerts Issued in Sevastopol,44.6054434,33.5220842,0.0,1.0,1.0,1.0,30,-4.0,0,1
+b0c6bbb0-6537-40bd-b2a8-20bbdaa6e474,2026-02-22 17:18:49,Russian Forces Attack on Druzhba Pipeline,53.7098,27.9534,0.0,1.0,1.0,1.0,40,2.0,0,1
 b7001374-1f99-4755-911c-0a535eef94cc,2026-02-23 10:59:22,Russian Drone Strike Reported in Kherson,46.5421715,33.4079326,9.0,3.0,2.0,7.0,60,0.0,1,1
 b7d6c894-5a57-4af4-9ae6-bd8ff3c9b913,2026-02-23 14:11:31,Ukrainian Forces Strike Missile Division in Crimea,45.2835044,34.2008188,100.0,6.0,8.0,7.0,30,-2.8,0,1
 c3f1adcf-1ea6-4e3b-98de-8e3832eeec8a,2026-02-23 08:17:56,Ukrainian Drones Attack Oil Pumping Station in Tat,54.9005008,52.2963777,100.0,7.0,9.0,6.0,30,-5.8,0,1
 c7db9006-6093-43cc-b22d-0713d51ea87c,2026-02-23 11:45:47,Fragment of Iskander-M Missile Found in Kyiv,50.4500336,30.5241361,0.0,7.0,2.0,2.0,40,0.0,0,1
 cf2be7ba-d5a4-4d04-9456-9390581a217b,2026-02-23 09:03:46,Civilian Flight Departed from Kyiv,50.4500336,30.5241361,0.0,1.0,1.0,1.0,40,2.0,0,1
+cf33b003-4943-49b8-92e2-1bd5e57f305e,2026-02-22 13:20:28,Drones Reported Near Moscow,55.625578,37.6063916,26.0,1.0,8.0,3.0,30,-4.0,0,1
 cf6c99f7-9f2d-4af6-b029-a3e8ca641a7e,2026-02-22 23:10:36,Russian Air Defenses Engaged in Belgorod,50.5955595,36.5873394,82.0,6.0,8.0,5.0,30,-4.0,0,1
 cfb8d6d9-f412-4298-8b70-411dc391e281,2026-02-22 22:25:57,Unknown Forces Conduct Shelling in Central Kherson,46.5421715,33.4079326,16.0,4.0,5.0,3.0,40,0.0,0,1
+d013cd06-d118-4297-8e30-895c2752021f,2026-02-22 13:50:41,Ukrainian Forces Regained Control in Huliaipole Di,47.6655382,36.2656849,0.0,1.0,10.0,1.0,30,-3.2,0,1
 d1c30543-7a8f-40ae-9cc6-a3f35d9bfbe5,2026-02-23 10:16:25,Russian Artillery Shelling Reported in Central Khe,46.5421715,33.4079326,38.0,7.0,5.0,6.0,40,2.0,0,1
 dc66eb8b-e73d-4bd5-b087-c990fe572829,2026-02-22 22:07:01,Ukrainian Drones Reported Near Belgorod Thermal Po,50.5955595,36.5873394,39.0,6.0,8.0,3.0,30,-4.0,0,1
+e00da8a3-336f-4038-bcfc-a1b38bfe9957,2026-02-22 15:10:39,Russian Forces Attack in Kyiv Region,50.3984937,30.8816326,82.0,6.0,8.0,5.0,40,2.8,0,1
+e19851db-6cc9-4b08-b328-b9250402528d,2026-02-22 12:59:29,Unknown Drone Raid Affects Moscow Airports,55.625578,37.6063916,88.0,8.0,8.0,5.0,40,0.0,0,1
 e8887ed8-7b52-406a-a5ea-4a03c3c50e19,2026-02-23 17:00:27,Russian Forces Attack Police Vehicle in Kherson,46.5421715,33.4079326,8.0,3.0,3.0,4.0,40,3.2,0,1
 ecbea862-e29b-4999-9be1-0d8170baa5c3,2026-02-23 14:03:12,Russian Artillery Strikes in Central Kherson,46.5421715,33.4079326,23.0,5.0,5.0,4.0,40,2.0,0,1
 f10f1006-9748-41b4-ba31-b7a17793b9e2,2026-02-23 02:07:05,Ukrainian Forces Attack Pumping Station near Almet,54.9005008,52.2963777,100.0,7.0,9.0,6.0,40,0.0,0,1
+f4dbabc0-e5b4-48b7-a892-9a1888c0a475,2026-02-22 15:08:10,Russian Forces Personnel Eliminated near Novohryho,48.5760732,37.4194003,35.0,3.0,5.0,7.0,40,2.0,0,1
+f77e7f1e-f585-4c3f-b08d-cb36d4b5749b,2026-02-22 16:48:10,Hong Kong-flagged Tanker Transporting Russian Dies,55.8489556,37.4753409,2.0,1.0,1.0,9.0,40,0.0,0,1
+f87c6f48-a454-4ad6-914d-c65e116a1215,2026-02-22 19:53:07,Russian Artillery Strikes in Kherson,46.5421715,33.4079326,5.0,4.0,2.0,4.0,60,2.0,1,1
 fd3b0b5b-a3c4-4307-b52f-cc4075565ec7,2026-02-23 11:14:59,Ukrainian Defense Forces Conduct Operations in Ter,47.8297542,36.1324657,4.0,1.0,3.0,3.0,40,2.0,0,1

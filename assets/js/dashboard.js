@@ -118,10 +118,12 @@ class EquipmentTicker {
         this.content = document.getElementById('ticker-content');
         this.allData = [];
         this.data = [];
+        this.netSummary = null;
+        this.viewMode = 'gross'; // 'gross' or 'net'
         if (!this.content) {
             console.warn('⚠️ EquipmentTicker: #ticker-content not found at construction, will retry at render');
         }
-        console.log('📦 EquipmentTicker v2.0 constructed', { container: !!this.container, content: !!this.content });
+        console.log('📦 EquipmentTicker v3.0 (War Ledger) constructed', { container: !!this.container, content: !!this.content });
     }
 
     // --- DATA LOADING ---
@@ -184,8 +186,24 @@ class EquipmentTicker {
         this.allData = [...internalLosses, ...externalLosses]
             .sort((a, b) => new Date(b.date) - new Date(a.date));
         this.data = this.allData;
+
+        // Load Net Loss Summary
+        try {
+            const netRes = await fetch('assets/data/net_losses_summary.json');
+            if (netRes.ok) {
+                this.netSummary = await netRes.json();
+                console.log('[WarLedger] Net Loss summary loaded');
+            }
+        } catch (err) {
+            console.warn('Could not load net loss summary:', err);
+        }
+
         this._renderAttritionMatrix();
-        this.render();
+        if (this.viewMode === 'net') {
+            this._renderNetBalance();
+        } else {
+            this.render();
+        }
     }
 
     filterByCategory(category) {
@@ -336,6 +354,111 @@ class EquipmentTicker {
         }, 5000);
     }
 
+    // --- NET BALANCE VIEW (War Ledger) ---
+    _renderNetBalance() {
+        if (!this.content) {
+            this.content = document.getElementById('ticker-content');
+        }
+        if (!this.content || !this.netSummary) {
+            console.warn('[WarLedger] Cannot render net balance — missing content or summary');
+            if (this.content) this.content.innerHTML = '<div class="loss-card holo placeholder">Net Loss data unavailable.</div>';
+            return;
+        }
+
+        const cats = this.netSummary.categories;
+        const globalRU = this.netSummary.global?.RU || {};
+        const globalUA = this.netSummary.global?.UA || {};
+
+        // Key combat categories to display
+        const displayCats = ['Tanks', 'AFVs', 'IFVs', 'APCs', 'MRAPs', 'SP Artillery', 'MLRS', 'SAM Systems', 'Towed Artillery'];
+        const maxLoss = Math.max(
+            ...displayCats.map(c => Math.max(cats[c]?.RU?.total_lost || 0, cats[c]?.UA?.total_lost || 0))
+        ) || 1;
+
+        let html = `
+        <div class="net-balance-header" style="display:flex; justify-content:space-between; padding:6px 12px; margin-bottom:8px; font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:#94a3b8; font-weight:700; letter-spacing:1px;">
+            <span>CATEGORY</span>
+            <span style="display:flex; gap:20px;">
+                <span style="color:#ef4444;">🇷🇺 RU NET</span>
+                <span style="color:#3b82f6;">🇺🇦 UA NET</span>
+            </span>
+        </div>`;
+
+        displayCats.forEach(cat => {
+            if (!cats[cat]) return;
+            const ru = cats[cat].RU || {};
+            const ua = cats[cat].UA || {};
+
+            const ruTotal = ru.total_lost || 0;
+            const ruCaptured = ru.captured_from_enemy || 0;
+            const ruNet = ru.net_loss || 0;
+            const ruIsGain = ruNet < 0;
+
+            const uaTotal = ua.total_lost || 0;
+            const uaCaptured = ua.captured_from_enemy || 0;
+            const uaNet = ua.net_loss || 0;
+            const uaIsGain = uaNet < 0;
+
+            const ruBarW = Math.round((ruTotal / maxLoss) * 100);
+            const ruCapW = ruTotal > 0 ? Math.round((ruCaptured / ruTotal) * 100) : 0;
+            const uaBarW = Math.round((uaTotal / maxLoss) * 100);
+            const uaCapW = uaTotal > 0 ? Math.round((uaCaptured / uaTotal) * 100) : 0;
+
+            html += `
+            <div class="net-balance-row" style="background:rgba(15,23,42,0.6); border:1px solid #1e293b; border-radius:6px; padding:8px 12px; margin-bottom:6px; transition: all 0.3s ease;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <span style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; font-weight:700; color:#cbd5e1; text-transform:uppercase; letter-spacing:0.5px;">${cat}</span>
+                </div>
+                
+                <!-- RU Bar -->
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px;">
+                    <span style="width:16px; font-size:0.65rem; color:#ef4444; font-weight:700;">RU</span>
+                    <div style="flex:1; height:14px; background:#1e293b; border-radius:3px; position:relative; overflow:hidden;">
+                        <div style="position:absolute; left:0; top:0; height:100%; width:${ruBarW}%; background: linear-gradient(90deg, #ef4444, #b91c1c); border-radius:3px; transition: width 0.8s ease;"></div>
+                        ${ruCaptured > 0 ? `<div style="position:absolute; right:${100 - ruBarW}%; top:0; height:100%; width:${ruCapW * ruBarW / 100}%; background:rgba(245,158,11,0.6); border-radius:0 3px 3px 0; margin-left:auto;" title="Captured from enemy: ${ruCaptured}"></div>` : ''}
+                    </div>
+                    <span style="min-width:70px; text-align:right; font-family:'JetBrains Mono', monospace; font-size:0.7rem; font-weight:700; color:${ruIsGain ? '#f59e0b' : '#ef4444'};">${ruTotal} <span style="color:#64748b;">→</span> ${ruNet}</span>
+                </div>
+
+                <!-- UA Bar -->
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="width:16px; font-size:0.65rem; color:#3b82f6; font-weight:700;">UA</span>
+                    <div style="flex:1; height:14px; background:#1e293b; border-radius:3px; position:relative; overflow:hidden;">
+                        <div style="position:absolute; left:0; top:0; height:100%; width:${uaBarW}%; background: linear-gradient(90deg, #3b82f6, #1d4ed8); border-radius:3px; transition: width 0.8s ease;"></div>
+                        ${uaCaptured > 0 ? `<div style="position:absolute; right:${100 - uaBarW}%; top:0; height:100%; width:${uaCapW * uaBarW / 100}%; background:rgba(245,158,11,0.6); border-radius:0 3px 3px 0;" title="Captured from enemy: ${uaCaptured}"></div>` : ''}
+                    </div>
+                    <span style="min-width:70px; text-align:right; font-family:'JetBrains Mono', monospace; font-size:0.7rem; font-weight:700; color:${uaIsGain ? '#f59e0b' : '#3b82f6'};">${uaTotal} <span style="color:#64748b;">→</span> ${uaNet}</span>
+                </div>
+            </div>`;
+        });
+
+        // Global Summary Row
+        html += `
+        <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:10px 12px; margin-top:8px;">
+            <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:0.8rem; font-weight:700;">
+                <span style="color:#f59e0b;">GLOBAL NET LOSS</span>
+                <div style="display:flex; gap:16px;">
+                    <span style="color:#ef4444;">🇷🇺 ${(globalRU.net_loss || 0).toLocaleString()}</span>
+                    <span style="color:#3b82f6;">🇺🇦 ${(globalUA.net_loss || 0).toLocaleString()}</span>
+                </div>
+            </div>
+            <div style="font-size:0.6rem; color:#64748b; margin-top:4px; font-family:'JetBrains Mono', monospace;">
+                Ratio: ${globalRU.total_lost && globalUA.total_lost ? (globalRU.net_loss / globalUA.net_loss).toFixed(1) : '?'}:1 (RU:UA)
+            </div>
+        </div>`;
+
+        // Data Integrity Footnote
+        html += `
+        <div class="data-integrity-note" style="margin-top:10px; padding:8px 12px; font-size:0.6rem; color:#475569; font-family:'JetBrains Mono', monospace; background:rgba(15,23,42,0.4); border-radius:4px; border:1px solid #1e293b; line-height:1.4;">
+            <i class="fa-solid fa-shield-halved" style="color:#f59e0b; margin-right:4px;"></i>
+            Both sides reflect <strong style="color:#94a3b8;">visually confirmed minimums</strong>. Actual losses are likely higher.
+            Net Loss accounts for confirmed enemy hardware captures. Source: Oryx/oryxspioenkop.com
+        </div>`;
+
+        this.content.innerHTML = html;
+        console.log('[WarLedger] Net Balance view rendered');
+    }
+
     // --- RENDER ---
     render() {
         // Lazy DOM resolution
@@ -452,12 +575,85 @@ window.filterLosses = function (category) {
     document.querySelectorAll('.loss-tab').forEach(btn => btn.classList.remove('active'));
     if (event && event.target) event.target.classList.add('active');
 
+    // If in net view, switch back to gross
+    if (window.Dashboard.ticker) window.Dashboard.ticker.viewMode = 'gross';
+
     if (category === 'hvt') {
         window.Dashboard.ticker.data = window.Dashboard.ticker.allData.filter(d => (d.tie_total >= 80 || d.vec_t >= 8));
         window.Dashboard.ticker.render();
     } else {
         window.Dashboard.ticker.filterByCategory(category);
     }
+}
+
+// Toggle between Gross/Net view
+window.toggleNetBalance = function () {
+    const ticker = window.Dashboard?.ticker;
+    if (!ticker) return;
+
+    ticker.viewMode = ticker.viewMode === 'gross' ? 'net' : 'gross';
+
+    // Update toggle button
+    const btn = document.getElementById('netBalanceToggle');
+    if (btn) {
+        btn.classList.toggle('active', ticker.viewMode === 'net');
+        btn.innerHTML = ticker.viewMode === 'net'
+            ? '<i class="fa-solid fa-scale-balanced"></i> NET'
+            : '<i class="fa-solid fa-scale-balanced"></i> NET';
+    }
+
+    if (ticker.viewMode === 'net') {
+        ticker._renderNetBalance();
+    } else {
+        ticker.render();
+    }
+}
+
+// =============================================================================
+// GLOBAL PERFORMANCE FILTERS
+// =============================================================================
+window.activePerformanceFilter = null;
+
+window.togglePerformanceFilter = function (filterType) {
+    if (window.activePerformanceFilter === filterType) {
+        // Deactivate
+        window.activePerformanceFilter = null;
+        document.querySelectorAll('.perf-filter-btn').forEach(b => b.classList.remove('active'));
+        // Restore all events
+        if (window.applyTimeFilter) window.applyTimeFilter();
+        return;
+    }
+
+    window.activePerformanceFilter = filterType;
+    document.querySelectorAll('.perf-filter-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.filter === filterType);
+    });
+
+    if (!window.globalEvents) return;
+
+    let filtered = [...window.globalEvents];
+
+    if (filterType === 'elite') {
+        // Show only events with TIE > 80 or high target score
+        filtered = filtered.filter(e => {
+            const tie = parseFloat(e.tie_total || 0);
+            const vecT = parseFloat(e.vec_t || 0);
+            return tie >= 80 || vecT >= 8;
+        });
+    } else if (filterType === 'attrition') {
+        // Show events with high effect scores (major attrition)
+        filtered = filtered.filter(e => {
+            const vecE = parseFloat(e.vec_e || 0);
+            return vecE >= 7;
+        });
+    }
+
+    // Apply to map
+    if (window.updateMapWithEvents) {
+        window.updateMapWithEvents(filtered);
+    }
+    // Update dashboard
+    if (window.Dashboard) window.Dashboard.update(filtered);
 }
 
 // Global IMINT tooltip handlers

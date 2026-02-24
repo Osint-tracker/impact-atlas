@@ -28,59 +28,79 @@ EXTERNAL_LOSSES_PATH = os.path.join(BASE_DIR, '../assets/data/external_losses.js
 
 
 def parse_sources_to_list(sources_str):
-    """Parse sources string to structured list of {name, url}."""
+    """Parse sources string to structured list of {name, url}.
+    
+    Handles:
+    - JSON arrays of URLs: '["https://t.me/rybar/123", "https://tass.com/..."]'
+    - JSON arrays of names: '["Rybar", "GDELT_Network"]'
+    - Pipe-separated legacy: 'https://a.com | https://b.com'
+    """
     if not sources_str or sources_str == '[]':
         return []
     
-    urls = []
-    # If it's a JSON array string
+    items = []
+    # Try JSON parse first
     try:
         parsed = json.loads(sources_str)
         if isinstance(parsed, list):
-            urls = parsed
+            items = parsed
     except:
         pass
     
-    # Fallback to custom separators
-    if not urls:
+    # Fallback to pipe separators
+    if not items:
         if ' ||| ' in str(sources_str):
-            urls = [u.strip() for u in str(sources_str).split(' ||| ') if u.strip()]
+            items = [u.strip() for u in str(sources_str).split(' ||| ') if u.strip()]
         elif ' | ' in str(sources_str):
-            urls = [u.strip() for u in str(sources_str).split(' | ') if u.strip()]
+            items = [u.strip() for u in str(sources_str).split(' | ') if u.strip()]
         else:
-            urls = [str(sources_str).strip()] if sources_str else []
+            items = [str(sources_str).strip()] if sources_str else []
     
     result = []
-    for url in urls:
-        url = str(url).strip()
-        # Filter out invalid URLs
-        if len(url) < 3 or url.lower() in ['none', 'null', 'unknown', '[null]']:
+    for item in items:
+        item = str(item).strip()
+        if len(item) < 3 or item.lower() in ['none', 'null', 'unknown', '[null]']:
             continue
             
-        is_url = url.startswith('http') or url.startswith('www.')
+        is_url = item.startswith('http') or item.startswith('www.')
         if is_url:
-            try:
-                domain = urlparse(url if url.startswith('http') else 'https://'+url).netloc.replace('www.', '')
-                if not domain:
+            url = item
+            # Special handling for t.me URLs: extract channel name as display
+            if 't.me/' in url:
+                # https://t.me/rybar/76184 -> channel = "rybar"
+                try:
+                    parts = url.split('t.me/')[1].split('/')
+                    channel_name = parts[0] if parts else 't.me'
+                    result.append({"name": channel_name, "url": url})
+                except:
+                    result.append({"name": "Telegram", "url": url})
+            else:
+                try:
+                    domain = urlparse(url if url.startswith('http') else 'https://'+url).netloc.replace('www.', '')
+                    if not domain:
+                        domain = "Source"
+                except:
                     domain = "Source"
-            except:
-                domain = "Source"
-            result.append({"name": domain, "url": url})
+                result.append({"name": domain, "url": url})
         else:
-            # It's an explicit source name (e.g. Telegram channel or GDELT_Network)
-            domain = url
-            final_url = f"https://t.me/{domain}" if domain != 'GDELT_Network' else "#"
-            result.append({"name": domain, "url": final_url})
+            # Plain name (e.g. channel name "Rybar" or "GDELT_Network")
+            if item == 'GDELT_Network':
+                result.append({"name": "GDELT", "url": "#"})
+            else:
+                result.append({"name": item, "url": f"https://t.me/{item}"})
             
-    # Remove exact duplicates
-    seen = set()
+    # Deduplicate: group by channel/domain, keep first URL per name
+    seen_names = {}
     unique_result = []
     for r in result:
-        # We can't hash dicts, so we use a tuple key
-        key = (r['name'], r['url'])
-        if key not in seen:
-            seen.add(key)
+        key = r['name'].lower()
+        if key not in seen_names:
+            seen_names[key] = r
             unique_result.append(r)
+        else:
+            # If we already have this source but with a '#' url, upgrade it
+            if seen_names[key]['url'] == '#' and r['url'] != '#':
+                seen_names[key]['url'] = r['url']
             
     return unique_result
 
