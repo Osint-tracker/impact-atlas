@@ -762,6 +762,18 @@
               }
             }
 
+            // 7. Global Performance Filter (ELITE / ATTRITION)
+            if (window.activePerformanceFilter) {
+              if (window.activePerformanceFilter === 'elite') {
+                const tie = parseFloat(e.tie_total || e.tie_score || 0);
+                const vecT = parseFloat(e.vec_t || 0);
+                if (tie < 80 && vecT < 8) return false;
+              } else if (window.activePerformanceFilter === 'attrition') {
+                const vecE = parseFloat(e.vec_e || 0);
+                if (vecE < 7) return false;
+              }
+            }
+
             return true;
           });
 

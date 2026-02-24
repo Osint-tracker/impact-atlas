@@ -26,6 +26,25 @@ ORBAT_JSON_PATH = os.path.join(BASE_DIR, '../assets/data/orbat_units.json')
 STRATEGIC_TRENDS_PATH = os.path.join(BASE_DIR, '../assets/data/strategic_trends.json')
 EXTERNAL_LOSSES_PATH = os.path.join(BASE_DIR, '../assets/data/external_losses.json')
 
+import datetime as _dt
+
+def _date_to_epoch_ms(date_str):
+    """Convert a date string to Unix epoch milliseconds.
+    Supports: '2026-01-23 12:30:00+00:00', '2026-01-23 12:30:00', '2026-01-23'
+    Returns 0 on failure."""
+    if not date_str or not isinstance(date_str, str):
+        return 0
+    date_str = date_str.strip()
+    for fmt in ('%Y-%m-%d %H:%M:%S%z', '%Y-%m-%d %H:%M:%S', '%Y-%m-%d'):
+        try:
+            dt = _dt.datetime.strptime(date_str[:len(fmt)+5], fmt)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=_dt.timezone.utc)
+            return int(dt.timestamp() * 1000)
+        except (ValueError, OverflowError):
+            continue
+    return 0
+
 
 def parse_sources_to_list(sources_str):
     """Parse sources string to structured list of {name, url}.
@@ -787,6 +806,7 @@ def main():
                     "title": title,
                     "description": description,
                     "date": date,
+                    "timestamp": _date_to_epoch_ms(date),
                     
                     # TIE Metrics
                     "tie_total": round(tie_score, 1),

@@ -150,10 +150,9 @@ class OryxDualProvider:
                 for cat, s in faction_stats.items():
                     safe_print(f"   {cat}: {s['total']} (D:{s['destroyed']} Dam:{s['damaged']} Ab:{s['abandoned']} Cap:{s['captured']})")
 
-                # ---- PHASE 2: Parse individual <li> items for the item-level feed ----
+                # ---- PHASE 2: Parse individual <li> items — expand each entry ----
                 li_items = soup.find_all('li')
                 count = 0
-                current_category = 'Vehicle'
 
                 for li in li_items:
                     text = li.get_text(strip=True)
@@ -169,58 +168,66 @@ class OryxDualProvider:
                         raw_model = parts[0].strip()
                         model = re.sub(r'^\d+\s+', '', raw_model)
 
-                        # Count individual statuses from the parenthesized entries
-                        destroyed_count = len(re.findall(r'destroyed', text, re.IGNORECASE))
-                        damaged_count = len(re.findall(r'damaged', text, re.IGNORECASE))
-                        captured_count = len(re.findall(r'captured', text, re.IGNORECASE))
-                        abandoned_count = len(re.findall(r'abandoned', text, re.IGNORECASE))
-
-                        # Determine dominant status
-                        status_counts = {
-                            'Destroyed': destroyed_count,
-                            'Damaged': damaged_count,
-                            'Captured': captured_count,
-                            'Abandoned': abandoned_count
-                        }
-                        status = max(status_counts, key=status_counts.get)
-
-                        # Try to classify category from model name
+                        # Classify category from model name
                         model_lower = model.lower()
                         cat = 'Vehicle'
                         if re.match(r'^t-\d', model_lower):
                             cat = 'Tanks'
                         elif any(k in model_lower for k in ['bmp', 'bmd', 'bradley', 'cv90', 'marder']):
                             cat = 'IFVs'
-                        elif any(k in model_lower for k in ['btr', 'stryker', 'spartan']):
+                        elif any(k in model_lower for k in ['btr', 'stryker', 'spartan', 'mastiff', 'wolfhound']):
                             cat = 'APCs'
-                        elif any(k in model_lower for k in ['su-', 'mig-', 'tu-', 'an-', 'il-']):
+                        elif any(k in model_lower for k in ['su-', 'mig-', 'tu-', 'an-', 'il-', 'f-16', 'a-10']):
                             cat = 'Aircraft'
-                        elif any(k in model_lower for k in ['mi-', 'ka-', 'ah-']):
+                        elif any(k in model_lower for k in ['mi-', 'ka-', 'ah-', 'uh-']):
                             cat = 'Helicopters'
-                        elif any(k in model_lower for k in ['s-300', 's-400', 'buk', 'tor', 'pantsir', 'osa', 'patriot', 'nasams', 'iris']):
+                        elif any(k in model_lower for k in ['s-300', 's-400', 'buk', 'tor', 'pantsir', 'osa', 'patriot', 'nasams', 'iris', 'gepard']):
                             cat = 'SAM Systems'
-                        elif any(k in model_lower for k in ['msta', 'gvozdika', 'akatsiya', 'giatsint', 'pzh', 'caesar', 'krab', 'dana']):
+                        elif any(k in model_lower for k in ['msta', 'gvozdika', 'akatsiya', 'giatsint', 'pzh', 'caesar', 'krab', 'dana', 'nona', 'vasilek']):
                             cat = 'SP Artillery'
-                        elif any(k in model_lower for k in ['grad', 'uragan', 'smerch', 'tornado', 'himars', 'mlrs']):
+                        elif any(k in model_lower for k in ['grad', 'uragan', 'smerch', 'tornado', 'himars', 'mlrs', 'bm-21', 'bm-27']):
                             cat = 'MLRS'
 
+                        # Collect proof URLs from <a> tags
                         link_tags = li.find_all('a', href=True)
-                        proof_url = link_tags[0]['href'] if link_tags else self.ORYX_PAGES[faction]
+                        proof_urls = [a['href'] for a in link_tags if a['href'].startswith('http')]
+                        default_proof = proof_urls[0] if proof_urls else self.ORYX_PAGES[faction]
 
-                        self.item_losses.append({
-                            "date": today,
-                            "model": model,
-                            "type": cat,
-                            "country": faction,
-                            "status": status,
-                            "proof_url": proof_url,
-                            "source_tag": "Oryx"
-                        })
-                        count += 1
+                        # EXPAND: Parse each parenthesized entry "(N, status)" 
+                        entries = re.findall(r'\(([^)]+)\)', text)
+                        proof_idx = 0
+                        for entry in entries:
+                            entry_lower = entry.lower()
+                            # Determine status of this entry
+                            if 'destroyed' in entry_lower:
+                                status = 'Destroyed'
+                            elif 'captured' in entry_lower:
+                                status = 'Captured'
+                            elif 'damaged' in entry_lower:
+                                status = 'Damaged'
+                            elif 'abandoned' in entry_lower:
+                                status = 'Abandoned'
+                            else:
+                                continue
+
+                            # Get matching proof URL if available
+                            proof = proof_urls[proof_idx] if proof_idx < len(proof_urls) else default_proof
+                            proof_idx += 1
+
+                            self.item_losses.append({
+                                "date": today,
+                                "model": model,
+                                "type": cat,
+                                "country": faction,
+                                "status": status,
+                                "proof_url": proof,
+                                "source_tag": "Oryx"
+                            })
+                            count += 1
                     except Exception:
                         continue
 
-                safe_print(f"[{self.name}] {faction}: {count} individual items parsed")
+                safe_print(f"[{self.name}] {faction}: {count} individual items expanded")
 
             except Exception as e:
                 safe_print(f"[{self.name}] Error scraping {faction}: {e}")

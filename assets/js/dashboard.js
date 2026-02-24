@@ -354,7 +354,7 @@ class EquipmentTicker {
         }, 5000);
     }
 
-    // --- NET BALANCE VIEW (War Ledger) ---
+    // --- NET BALANCE VIEW (War Ledger v2) ---
     _renderNetBalance() {
         if (!this.content) {
             this.content = document.getElementById('ticker-content');
@@ -365,23 +365,36 @@ class EquipmentTicker {
             return;
         }
 
+        // SVG silhouettes for each category
+        const CAT_SVG = {
+            'Tanks': `<svg viewBox="0 0 64 32" fill="currentColor" width="36" height="18"><path d="M8 24h48l4-6H56l-2-4h-8V8H18v6h-8l-2 4H4l4 6zm10-14h28v4H18v-4zm-4 6h36l1 2H13l1-2z"/><circle cx="14" cy="24" r="3"/><circle cx="26" cy="24" r="3"/><circle cx="38" cy="24" r="3"/><circle cx="50" cy="24" r="3"/></svg>`,
+            'AFVs': `<svg viewBox="0 0 64 32" fill="currentColor" width="36" height="18"><rect x="8" y="10" width="48" height="14" rx="3"/><rect x="20" y="4" width="20" height="8" rx="2"/><circle cx="14" cy="26" r="3"/><circle cx="26" cy="26" r="3"/><circle cx="38" cy="26" r="3"/><circle cx="50" cy="26" r="3"/></svg>`,
+            'IFVs': `<svg viewBox="0 0 64 32" fill="currentColor" width="36" height="18"><rect x="6" y="10" width="52" height="14" rx="3"/><rect x="24" y="4" width="16" height="8" rx="2"/><line x1="32" y1="4" x2="40" y2="0" stroke="currentColor" stroke-width="2"/><circle cx="14" cy="26" r="3"/><circle cx="26" cy="26" r="3"/><circle cx="38" cy="26" r="3"/><circle cx="50" cy="26" r="3"/></svg>`,
+            'APCs': `<svg viewBox="0 0 64 32" fill="currentColor" width="36" height="18"><rect x="6" y="8" width="52" height="16" rx="4"/><circle cx="14" cy="26" r="3"/><circle cx="50" cy="26" r="3"/><rect x="30" y="4" width="8" height="6" rx="1"/></svg>`,
+            'MRAPs': `<svg viewBox="0 0 64 32" fill="currentColor" width="36" height="18"><path d="M10 12h44c2 0 4 2 4 4v8H6v-8c0-2 2-4 4-4z"/><rect x="14" y="6" width="36" height="8" rx="3"/><circle cx="16" cy="26" r="4"/><circle cx="48" cy="26" r="4"/></svg>`,
+            'SP Artillery': `<svg viewBox="0 0 64 32" fill="currentColor" width="36" height="18"><rect x="8" y="14" width="44" height="12" rx="2"/><circle cx="16" cy="28" r="3"/><circle cx="28" cy="28" r="3"/><circle cx="40" cy="28" r="3"/><line x1="32" y1="16" x2="60" y2="4" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>`,
+            'Towed Artillery': `<svg viewBox="0 0 64 32" fill="currentColor" width="36" height="18"><line x1="20" y1="20" x2="58" y2="6" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="24" r="5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="18" width="20" height="8" rx="2"/><line x1="6" y1="28" x2="16" y2="20" stroke="currentColor" stroke-width="2"/></svg>`,
+            'MLRS': `<svg viewBox="0 0 64 32" fill="currentColor" width="36" height="18"><rect x="6" y="16" width="36" height="10" rx="2"/><circle cx="14" cy="28" r="3"/><circle cx="34" cy="28" r="3"/><rect x="24" y="6" width="28" height="12" rx="1" transform="rotate(-15 38 12)"/><line x1="30" y1="10" x2="30" y2="16" stroke="currentColor" stroke-width="1"/><line x1="36" y1="8" x2="36" y2="16" stroke="currentColor" stroke-width="1"/><line x1="42" y1="6" x2="42" y2="16" stroke="currentColor" stroke-width="1"/></svg>`,
+            'SAM Systems': `<svg viewBox="0 0 64 32" fill="currentColor" width="36" height="18"><rect x="10" y="18" width="32" height="8" rx="2"/><circle cx="16" cy="28" r="3"/><circle cx="36" cy="28" r="3"/><rect x="20" y="10" width="24" height="10" rx="2"/><path d="M48 12l8-8v6l-8 4z"/><circle cx="56" cy="6" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>`,
+            'Aircraft': `<svg viewBox="0 0 64 32" fill="currentColor" width="36" height="18"><path d="M58 16l-16-4V6l-3-2-3 2v6L20 16l-8-3-4 1 6 4-8 2v3l10-2 12 4h6l-4-4 16-2 6 3 4-1-6-5z"/></svg>`,
+            'Helicopters': `<svg viewBox="0 0 64 32" fill="currentColor" width="36" height="18"><ellipse cx="24" cy="18" rx="14" ry="8"/><path d="M38 16h16l4 4H38z"/><line x1="4" y1="10" x2="44" y2="10" stroke="currentColor" stroke-width="2"/><line x1="24" y1="10" x2="24" y2="14" stroke="currentColor" stroke-width="2"/><line x1="18" y1="26" x2="14" y2="30" stroke="currentColor" stroke-width="2"/><line x1="30" y1="26" x2="34" y2="30" stroke="currentColor" stroke-width="2"/></svg>`,
+        };
+
         const cats = this.netSummary.categories;
         const globalRU = this.netSummary.global?.RU || {};
         const globalUA = this.netSummary.global?.UA || {};
 
-        // Key combat categories to display
-        const displayCats = ['Tanks', 'AFVs', 'IFVs', 'APCs', 'MRAPs', 'SP Artillery', 'MLRS', 'SAM Systems', 'Towed Artillery'];
+        const displayCats = ['Tanks', 'AFVs', 'IFVs', 'APCs', 'MRAPs', 'SP Artillery', 'Towed Artillery', 'MLRS', 'SAM Systems'];
         const maxLoss = Math.max(
             ...displayCats.map(c => Math.max(cats[c]?.RU?.total_lost || 0, cats[c]?.UA?.total_lost || 0))
         ) || 1;
 
+        // LEGEND
         let html = `
-        <div class="net-balance-header" style="display:flex; justify-content:space-between; padding:6px 12px; margin-bottom:8px; font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:#94a3b8; font-weight:700; letter-spacing:1px;">
-            <span>CATEGORY</span>
-            <span style="display:flex; gap:20px;">
-                <span style="color:#ef4444;">🇷🇺 RU NET</span>
-                <span style="color:#3b82f6;">🇺🇦 UA NET</span>
-            </span>
+        <div style="display:flex; gap:10px; padding:6px 10px; margin-bottom:6px; font-family:'JetBrains Mono',monospace; font-size:0.6rem; color:#64748b; align-items:center; flex-wrap:wrap;">
+            <span><span style="display:inline-block;width:10px;height:10px;background:#ef4444;border-radius:2px;margin-right:3px;vertical-align:middle;"></span>RU Losses</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:#3b82f6;border-radius:2px;margin-right:3px;vertical-align:middle;"></span>UA Losses</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:#f59e0b;border-radius:2px;margin-right:3px;vertical-align:middle;"></span>Captured from Enemy</span>
         </div>`;
 
         displayCats.forEach(cat => {
@@ -390,73 +403,83 @@ class EquipmentTicker {
             const ua = cats[cat].UA || {};
 
             const ruTotal = ru.total_lost || 0;
-            const ruCaptured = ru.captured_from_enemy || 0;
+            const ruCap = ru.captured_from_enemy || 0;
             const ruNet = ru.net_loss || 0;
-            const ruIsGain = ruNet < 0;
-
             const uaTotal = ua.total_lost || 0;
-            const uaCaptured = ua.captured_from_enemy || 0;
+            const uaCap = ua.captured_from_enemy || 0;
             const uaNet = ua.net_loss || 0;
-            const uaIsGain = uaNet < 0;
 
-            const ruBarW = Math.round((ruTotal / maxLoss) * 100);
-            const ruCapW = ruTotal > 0 ? Math.round((ruCaptured / ruTotal) * 100) : 0;
-            const uaBarW = Math.round((uaTotal / maxLoss) * 100);
-            const uaCapW = uaTotal > 0 ? Math.round((uaCaptured / uaTotal) * 100) : 0;
+            const ruPct = Math.round((ruTotal / maxLoss) * 100);
+            const uaPct = Math.round((uaTotal / maxLoss) * 100);
+            const ruCapPct = ruTotal > 0 ? (ruCap / ruTotal * 100) : 0;
+            const uaCapPct = uaTotal > 0 ? (uaCap / uaTotal * 100) : 0;
+
+            const svgIcon = CAT_SVG[cat] || CAT_SVG['AFVs'];
+            const ratio = uaTotal > 0 ? (ruTotal / uaTotal).toFixed(1) : '∞';
 
             html += `
-            <div class="net-balance-row" style="background:rgba(15,23,42,0.6); border:1px solid #1e293b; border-radius:6px; padding:8px 12px; margin-bottom:6px; transition: all 0.3s ease;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                    <span style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; font-weight:700; color:#cbd5e1; text-transform:uppercase; letter-spacing:0.5px;">${cat}</span>
-                </div>
+            <div style="display:grid; grid-template-columns:44px 1fr; gap:6px; background:rgba(15,23,42,0.7); border:1px solid #1e293b; border-radius:6px; padding:8px; margin-bottom:5px; transition:all 0.3s ease; align-items:center;"
+                 onmouseenter="this.style.borderColor='#334155'" onmouseleave="this.style.borderColor='#1e293b'">
                 
-                <!-- RU Bar -->
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px;">
-                    <span style="width:16px; font-size:0.65rem; color:#ef4444; font-weight:700;">RU</span>
-                    <div style="flex:1; height:14px; background:#1e293b; border-radius:3px; position:relative; overflow:hidden;">
-                        <div style="position:absolute; left:0; top:0; height:100%; width:${ruBarW}%; background: linear-gradient(90deg, #ef4444, #b91c1c); border-radius:3px; transition: width 0.8s ease;"></div>
-                        ${ruCaptured > 0 ? `<div style="position:absolute; right:${100 - ruBarW}%; top:0; height:100%; width:${ruCapW * ruBarW / 100}%; background:rgba(245,158,11,0.6); border-radius:0 3px 3px 0; margin-left:auto;" title="Captured from enemy: ${ruCaptured}"></div>` : ''}
-                    </div>
-                    <span style="min-width:70px; text-align:right; font-family:'JetBrains Mono', monospace; font-size:0.7rem; font-weight:700; color:${ruIsGain ? '#f59e0b' : '#ef4444'};">${ruTotal} <span style="color:#64748b;">→</span> ${ruNet}</span>
+                <!-- Icon Column -->
+                <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                    <div style="color:#94a3b8; opacity:0.7;">${svgIcon}</div>
+                    <span style="font-family:'JetBrains Mono',monospace; font-size:0.55rem; color:#64748b; font-weight:700; letter-spacing:0.5px; text-align:center; line-height:1;">${cat.replace(' Artillery', '').replace('Systems', '')}</span>
                 </div>
 
-                <!-- UA Bar -->
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="width:16px; font-size:0.65rem; color:#3b82f6; font-weight:700;">UA</span>
-                    <div style="flex:1; height:14px; background:#1e293b; border-radius:3px; position:relative; overflow:hidden;">
-                        <div style="position:absolute; left:0; top:0; height:100%; width:${uaBarW}%; background: linear-gradient(90deg, #3b82f6, #1d4ed8); border-radius:3px; transition: width 0.8s ease;"></div>
-                        ${uaCaptured > 0 ? `<div style="position:absolute; right:${100 - uaBarW}%; top:0; height:100%; width:${uaCapW * uaBarW / 100}%; background:rgba(245,158,11,0.6); border-radius:0 3px 3px 0;" title="Captured from enemy: ${uaCaptured}"></div>` : ''}
+                <!-- Bars Column -->
+                <div style="display:flex; flex-direction:column; gap:3px;">
+                    <!-- RU -->
+                    <div style="display:flex; align-items:center; gap:4px;">
+                        <div style="flex:1; height:16px; background:#1e293b; border-radius:3px; position:relative; overflow:hidden;">
+                            <div style="position:absolute;left:0;top:0;height:100%;width:${ruPct}%;background:linear-gradient(90deg,#dc2626,#991b1b);border-radius:3px;transition:width 0.8s ease;"></div>
+                            ${ruCap > 0 ? `<div style="position:absolute;right:${100 - ruPct}%;top:0;height:100%;width:${Math.max(ruCapPct * ruPct / 100, 2)}%;background:#f59e0b;opacity:0.7;border-radius:0 3px 3px 0;" title="+${ruCap} captured from UA"></div>` : ''}
+                            <span style="position:absolute;left:6px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#fef2f2;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.8);">${ruTotal.toLocaleString()}</span>
+                        </div>
+                        <span style="min-width:52px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:700;color:#ef4444;">NET ${ruNet.toLocaleString()}</span>
                     </div>
-                    <span style="min-width:70px; text-align:right; font-family:'JetBrains Mono', monospace; font-size:0.7rem; font-weight:700; color:${uaIsGain ? '#f59e0b' : '#3b82f6'};">${uaTotal} <span style="color:#64748b;">→</span> ${uaNet}</span>
+                    <!-- UA -->
+                    <div style="display:flex; align-items:center; gap:4px;">
+                        <div style="flex:1; height:16px; background:#1e293b; border-radius:3px; position:relative; overflow:hidden;">
+                            <div style="position:absolute;left:0;top:0;height:100%;width:${uaPct}%;background:linear-gradient(90deg,#2563eb,#1e40af);border-radius:3px;transition:width 0.8s ease;"></div>
+                            ${uaCap > 0 ? `<div style="position:absolute;right:${100 - uaPct}%;top:0;height:100%;width:${Math.max(uaCapPct * uaPct / 100, 2)}%;background:#f59e0b;opacity:0.7;border-radius:0 3px 3px 0;" title="+${uaCap} captured from RU"></div>` : ''}
+                            <span style="position:absolute;left:6px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#eff6ff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.8);">${uaTotal.toLocaleString()}</span>
+                        </div>
+                        <span style="min-width:52px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:700;color:#3b82f6;">NET ${uaNet.toLocaleString()}</span>
+                    </div>
+                    <!-- Ratio -->
+                    <div style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:0.5rem;color:#475569;">RATIO ${ratio}:1</div>
                 </div>
             </div>`;
         });
 
-        // Global Summary Row
+        // GLOBAL TOTALS
         html += `
-        <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:10px 12px; margin-top:8px;">
-            <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:0.8rem; font-weight:700;">
-                <span style="color:#f59e0b;">GLOBAL NET LOSS</span>
-                <div style="display:flex; gap:16px;">
-                    <span style="color:#ef4444;">🇷🇺 ${(globalRU.net_loss || 0).toLocaleString()}</span>
-                    <span style="color:#3b82f6;">🇺🇦 ${(globalUA.net_loss || 0).toLocaleString()}</span>
-                </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
+            <div style="background:rgba(220,38,38,0.08); border:1px solid rgba(220,38,38,0.25); border-radius:6px; padding:8px 10px; text-align:center;">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#94a3b8;letter-spacing:1px;">🇷🇺 RU TOTAL</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:#ef4444;">${(globalRU.total_lost || 0).toLocaleString()}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#f59e0b;">+${(globalRU.captured_from_enemy || 0).toLocaleString()} recaptured</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:700;color:#fca5a5;margin-top:2px;">NET: ${(globalRU.net_loss || 0).toLocaleString()}</div>
             </div>
-            <div style="font-size:0.6rem; color:#64748b; margin-top:4px; font-family:'JetBrains Mono', monospace;">
-                Ratio: ${globalRU.total_lost && globalUA.total_lost ? (globalRU.net_loss / globalUA.net_loss).toFixed(1) : '?'}:1 (RU:UA)
+            <div style="background:rgba(37,99,235,0.08); border:1px solid rgba(37,99,235,0.25); border-radius:6px; padding:8px 10px; text-align:center;">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#94a3b8;letter-spacing:1px;">🇺🇦 UA TOTAL</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:#3b82f6;">${(globalUA.total_lost || 0).toLocaleString()}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#f59e0b;">+${(globalUA.captured_from_enemy || 0).toLocaleString()} recaptured</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:700;color:#93c5fd;margin-top:2px;">NET: ${(globalUA.net_loss || 0).toLocaleString()}</div>
             </div>
         </div>`;
 
         // Data Integrity Footnote
         html += `
-        <div class="data-integrity-note" style="margin-top:10px; padding:8px 12px; font-size:0.6rem; color:#475569; font-family:'JetBrains Mono', monospace; background:rgba(15,23,42,0.4); border-radius:4px; border:1px solid #1e293b; line-height:1.4;">
-            <i class="fa-solid fa-shield-halved" style="color:#f59e0b; margin-right:4px;"></i>
-            Both sides reflect <strong style="color:#94a3b8;">visually confirmed minimums</strong>. Actual losses are likely higher.
-            Net Loss accounts for confirmed enemy hardware captures. Source: Oryx/oryxspioenkop.com
+        <div style="margin-top:8px; padding:6px 10px; font-size:0.55rem; color:#475569; font-family:'JetBrains Mono',monospace; background:rgba(15,23,42,0.4); border-radius:4px; border:1px solid #1e293b; line-height:1.4;">
+            <i class="fa-solid fa-shield-halved" style="color:#f59e0b;margin-right:4px;"></i>
+            UA data = visually confirmed minimums · RU data = visual confirmations · Net Loss = Total - Captured from Enemy ·
+            Source: <a href="https://www.oryxspioenkop.com" target="_blank" style="color:#f59e0b;text-decoration:none;">oryxspioenkop.com</a>
         </div>`;
 
         this.content.innerHTML = html;
-        console.log('[WarLedger] Net Balance view rendered');
+        console.log('[WarLedger] Net Balance v2 rendered');
     }
 
     // --- RENDER ---
@@ -619,41 +642,17 @@ window.togglePerformanceFilter = function (filterType) {
         // Deactivate
         window.activePerformanceFilter = null;
         document.querySelectorAll('.perf-filter-btn').forEach(b => b.classList.remove('active'));
-        // Restore all events
-        if (window.applyTimeFilter) window.applyTimeFilter();
-        return;
-    }
-
-    window.activePerformanceFilter = filterType;
-    document.querySelectorAll('.perf-filter-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.filter === filterType);
-    });
-
-    if (!window.globalEvents) return;
-
-    let filtered = [...window.globalEvents];
-
-    if (filterType === 'elite') {
-        // Show only events with TIE > 80 or high target score
-        filtered = filtered.filter(e => {
-            const tie = parseFloat(e.tie_total || 0);
-            const vecT = parseFloat(e.vec_t || 0);
-            return tie >= 80 || vecT >= 8;
-        });
-    } else if (filterType === 'attrition') {
-        // Show events with high effect scores (major attrition)
-        filtered = filtered.filter(e => {
-            const vecE = parseFloat(e.vec_e || 0);
-            return vecE >= 7;
+    } else {
+        window.activePerformanceFilter = filterType;
+        document.querySelectorAll('.perf-filter-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.filter === filterType);
         });
     }
 
-    // Apply to map
-    if (window.updateMapWithEvents) {
-        window.updateMapWithEvents(filtered);
+    // Re-trigger the main map filter pipeline
+    if (window.applyMapFilters) {
+        window.applyMapFilters();
     }
-    // Update dashboard
-    if (window.Dashboard) window.Dashboard.update(filtered);
 }
 
 // Global IMINT tooltip handlers
