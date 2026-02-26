@@ -18,7 +18,7 @@ def fetch_gdelt_window(start_str, end_str):
     """
     Esegue una singola chiamata API per una finestra temporale specifica.
     """
-    url = "https://api.gdeltproject.org/api/v2/doc/doc"
+    url = "http://api.gdeltproject.org/api/v2/doc/doc"
 
     # QUERY AMPIA: Tutto ciò che menziona Ucraina, Russia, Putin o Zelensky.
     # Non filtriamo per paese di origine, vogliamo vedere tutto.

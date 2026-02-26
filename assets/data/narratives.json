@@ -1,914 +1,892 @@
 {
-  "generated_at": "2026-02-23T22:00:35.687359",
+  "generated_at": "2026-02-26T21:05:58.307808",
   "narratives": [
     {
-      "cluster_id": "nar_20260223_e35a",
+      "cluster_id": "nar_20260226_f29d",
       "centroid": [
-        49.9923,
-        36.231
+        54.9148,
+        33.2989
       ],
       "geometry": {
         "type": "Polygon",
         "coordinates": [
           [
             [
-              36.25101,
-              49.99232
+              33.31891,
+              54.91482
             ],
             [
-              36.25092,
-              49.99036
+              33.31881,
+              54.91286
             ],
             [
-              36.25063,
-              49.98842
+              33.31852,
+              54.91092
             ],
             [
-              36.25015,
-              49.98651
+              33.31804,
+              54.90902
             ],
             [
-              36.24949,
-              49.98466
+              33.31738,
+              54.90717
             ],
             [
-              36.24865,
-              49.98289
+              33.31654,
+              54.9054
             ],
             [
-              36.24764,
-              49.98121
+              33.31553,
+              54.90371
             ],
             [
-              36.24647,
-              49.97963
+              33.31437,
+              54.90214
             ],
             [
-              36.24516,
-              49.97818
+              33.31305,
+              54.90068
             ],
             [
-              36.2437,
-              49.97686
+              33.31159,
+              54.89936
             ],
             [
-              36.24213,
-              49.97569
+              33.31002,
+              54.89819
             ],
             [
-              36.24044,
-              49.97468
+              33.30833,
+              54.89719
             ],
             [
-              36.23867,
-              49.97384
+              33.30656,
+              54.89635
             ],
             [
-              36.23682,
-              49.97318
+              33.30471,
+              54.89568
             ],
             [
-              36.23492,
-              49.9727
+              33.30281,
+              54.89521
             ],
             [
-              36.23297,
-              49.97241
+              33.30087,
+              54.89492
             ],
             [
-              36.23101,
-              49.97232
+              33.29891,
+              54.89482
             ],
             [
-              36.22905,
-              49.97241
+              33.29694,
+              54.89492
             ],
             [
-              36.22711,
-              49.9727
+              33.295,
+              54.89521
             ],
             [
-              36.22521,
-              49.97318
+              33.2931,
+              54.89568
             ],
             [
-              36.22336,
-              49.97384
+              33.29125,
+              54.89635
             ],
             [
-              36.22159,
-              49.97468
+              33.28948,
+              54.89719
             ],
             [
-              36.2199,
-              49.97569
+              33.28779,
+              54.89819
             ],
             [
-              36.21833,
-              49.97686
+              33.28622,
+              54.89936
             ],
             [
-              36.21687,
-              49.97818
+              33.28476,
+              54.90068
             ],
             [
-              36.21555,
-              49.97963
+              33.28344,
+              54.90214
             ],
             [
-              36.21439,
-              49.98121
+              33.28228,
+              54.90371
             ],
             [
-              36.21338,
-              49.98289
+              33.28127,
+              54.9054
             ],
             [
-              36.21254,
-              49.98466
+              33.28043,
+              54.90717
             ],
             [
-              36.21188,
-              49.98651
+              33.27977,
+              54.90902
             ],
             [
-              36.2114,
-              49.98842
+              33.27929,
+              54.91092
             ],
             [
-              36.21111,
-              49.99036
+              33.279,
+              54.91286
             ],
             [
-              36.21101,
-              49.99232
+              33.27891,
+              54.91482
             ],
             [
-              36.21111,
-              49.99428
+              33.279,
+              54.91678
             ],
             [
-              36.2114,
-              49.99622
+              33.27929,
+              54.91873
             ],
             [
-              36.21188,
-              49.99812
+              33.27977,
+              54.92063
             ],
             [
-              36.21254,
-              49.99997
+              33.28043,
+              54.92248
             ],
             [
-              36.21338,
-              50.00175
+              33.28127,
+              54.92425
             ],
             [
-              36.21439,
-              50.00343
+              33.28228,
+              54.92594
             ],
             [
-              36.21555,
-              50.00501
+              33.28344,
+              54.92751
             ],
             [
-              36.21687,
-              50.00646
+              33.28476,
+              54.92897
             ],
             [
-              36.21833,
-              50.00778
+              33.28622,
+              54.93028
             ],
             [
-              36.2199,
-              50.00895
+              33.28779,
+              54.93145
             ],
             [
-              36.22159,
-              50.00996
+              33.28948,
+              54.93246
             ],
             [
-              36.22336,
-              50.0108
+              33.29125,
+              54.9333
             ],
             [
-              36.22521,
-              50.01146
+              33.2931,
+              54.93396
             ],
             [
-              36.22711,
-              50.01193
+              33.295,
+              54.93444
             ],
             [
-              36.22905,
-              50.01222
+              33.29694,
+              54.93473
             ],
             [
-              36.23101,
-              50.01232
+              33.29891,
+              54.93482
             ],
             [
-              36.23297,
-              50.01222
+              33.30087,
+              54.93473
             ],
             [
-              36.23492,
-              50.01193
+              33.30281,
+              54.93444
             ],
             [
-              36.23682,
-              50.01146
+              33.30471,
+              54.93396
             ],
             [
-              36.23867,
-              50.0108
+              33.30656,
+              54.9333
             ],
             [
-              36.24044,
-              50.00996
+              33.30833,
+              54.93246
             ],
             [
-              36.24213,
-              50.00895
+              33.31002,
+              54.93145
             ],
             [
-              36.2437,
-              50.00778
+              33.31159,
+              54.93028
             ],
             [
-              36.24516,
-              50.00646
+              33.31305,
+              54.92897
             ],
             [
-              36.24647,
-              50.00501
+              33.31437,
+              54.92751
             ],
             [
-              36.24764,
-              50.00343
+              33.31553,
+              54.92594
             ],
             [
-              36.24865,
-              50.00175
+              33.31654,
+              54.92425
             ],
             [
-              36.24949,
-              49.99997
+              33.31738,
+              54.92248
             ],
             [
-              36.25015,
-              49.99812
+              33.31804,
+              54.92063
             ],
             [
-              36.25063,
-              49.99622
+              33.31852,
+              54.91873
             ],
             [
-              36.25092,
-              49.99428
+              33.31881,
+              54.91678
             ],
             [
-              36.25101,
-              49.99232
+              33.31891,
+              54.91482
             ]
           ]
         ]
       },
       "meta": {
-        "title": "Kharkiv Urban Drone Terror Campaign",
-        "summary": "Russian forces conducted a coordinated series of drone strikes targeting residential high-rise buildings in Kharkiv over a two-day period, deliberately inflicting civilian casualties and property damage to undermine morale and security. The attacks prompted Ukrainian leadership to order urgent defensive measures, including enhanced air protection for the city.",
-        "primary_tactic": "ATTRITION",
-        "tactic_color": "#f59e0b",
-        "intensity": 5.0,
-        "event_count": 5,
-        "date_range": [
-          "2026-01-25",
-          "2026-01-26"
-        ],
-        "strategic_context": "SHAPING_OPERATION"
-      },
-      "event_ids": [
-        "8f69645a-5ddf-4246-a465-d4902323f93c",
-        "60b5d03c-484b-4905-b91f-663d22f3ca44",
-        "6f8238be-ba86-49d4-8032-60b2177cc6bf",
-        "83394ba3-cce2-4eb0-b04a-cac632c83595",
-        "8209c693-d1ad-4adb-a039-fe56bf92f15f"
-      ]
-    },
-    {
-      "cluster_id": "nar_20260223_cb75",
-      "centroid": [
-        50.4497,
-        30.5222
-      ],
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              30.50637,
-              50.42684
-            ],
-            [
-              30.50442,
-              50.42662
-            ],
-            [
-              30.50246,
-              50.42658
-            ],
-            [
-              30.5005,
-              50.42675
-            ],
-            [
-              30.49857,
-              50.4271
-            ],
-            [
-              30.49668,
-              50.42764
-            ],
-            [
-              30.49486,
-              50.42836
-            ],
-            [
-              30.49311,
-              50.42926
-            ],
-            [
-              30.49147,
-              50.43032
-            ],
-            [
-              30.48993,
-              50.43154
-            ],
-            [
-              30.48852,
-              50.43291
-            ],
-            [
-              30.48725,
-              50.43441
-            ],
-            [
-              30.48613,
-              50.43602
-            ],
-            [
-              30.48518,
-              50.43774
-            ],
-            [
-              30.4844,
-              50.43954
-            ],
-            [
-              30.4838,
-              50.44141
-            ],
-            [
-              30.48339,
-              50.44332
-            ],
-            [
-              30.48316,
-              50.44527
-            ],
-            [
-              30.48313,
-              50.44724
-            ],
-            [
-              30.48329,
-              50.44919
-            ],
-            [
-              30.48365,
-              50.45112
-            ],
-            [
-              30.48419,
-              50.45301
-            ],
-            [
-              30.48491,
-              50.45484
-            ],
-            [
-              30.48581,
-              50.45658
-            ],
-            [
-              30.48687,
-              50.45823
-            ],
-            [
-              30.48809,
-              50.45977
-            ],
-            [
-              30.48946,
-              50.46118
-            ],
-            [
-              30.49095,
-              50.46245
-            ],
-            [
-              30.49257,
-              50.46356
-            ],
-            [
-              30.49428,
-              50.46451
-            ],
-            [
-              30.49608,
-              50.46529
-            ],
-            [
-              30.49795,
-              50.46589
-            ],
-            [
-              30.49987,
-              50.46631
-            ],
-            [
-              30.52089,
-              50.46977
-            ],
-            [
-              30.52284,
-              50.46999
-            ],
-            [
-              30.5248,
-              50.47002
-            ],
-            [
-              30.52676,
-              50.46986
-            ],
-            [
-              30.52869,
-              50.46951
-            ],
-            [
-              30.53057,
-              50.46897
-            ],
-            [
-              30.5324,
-              50.46825
-            ],
-            [
-              30.53414,
-              50.46735
-            ],
-            [
-              30.53579,
-              50.46629
-            ],
-            [
-              30.53733,
-              50.46506
-            ],
-            [
-              30.53874,
-              50.4637
-            ],
-            [
-              30.54001,
-              50.4622
-            ],
-            [
-              30.54112,
-              50.46059
-            ],
-            [
-              30.54208,
-              50.45887
-            ],
-            [
-              30.54286,
-              50.45707
-            ],
-            [
-              30.54346,
-              50.4552
-            ],
-            [
-              30.54387,
-              50.45328
-            ],
-            [
-              30.54409,
-              50.45133
-            ],
-            [
-              30.54413,
-              50.44937
-            ],
-            [
-              30.54396,
-              50.44741
-            ],
-            [
-              30.54361,
-              50.44548
-            ],
-            [
-              30.54307,
-              50.4436
-            ],
-            [
-              30.54235,
-              50.44177
-            ],
-            [
-              30.54145,
-              50.44003
-            ],
-            [
-              30.54039,
-              50.43838
-            ],
-            [
-              30.53917,
-              50.43684
-            ],
-            [
-              30.5378,
-              50.43543
-            ],
-            [
-              30.5363,
-              50.43416
-            ],
-            [
-              30.53469,
-              50.43304
-            ],
-            [
-              30.53297,
-              50.43209
-            ],
-            [
-              30.53117,
-              50.43131
-            ],
-            [
-              30.5293,
-              50.43071
-            ],
-            [
-              30.52739,
-              50.4303
-            ],
-            [
-              30.50637,
-              50.42684
-            ]
-          ]
-        ]
-      },
-      "meta": {
-        "title": "Winter Assault on Kyiv's Critical Infrastructure",
-        "summary": "Russian forces conducted a coordinated missile and drone strike targeting Kyiv's power grid and cultural sites, aiming to degrade civilian morale and strain emergency services during winter. The attack resulted in widespread blackouts, necessitating evacuations, and caused collateral damage to a UNESCO World Heritage site.",
-        "primary_tactic": "ATTRITION",
-        "tactic_color": "#f59e0b",
-        "intensity": 5.0,
-        "event_count": 11,
-        "date_range": [
-          "2026-01-25",
-          "2026-01-26"
-        ],
-        "strategic_context": "SHAPING_OPERATION"
-      },
-      "event_ids": [
-        "f75f5fb4-69b6-4bbd-b841-ea9a5b4202aa",
-        "1e7e205a-ff34-4a8b-8272-60781607e435",
-        "3354cc4b-45e9-45a3-81d0-1c4a8e13bdce",
-        "64548c61-6353-4f86-9b96-8d31243c0b33",
-        "b33daf79-b2aa-49e2-b09a-95d077cecc3c",
-        "a78cba09-d6b0-4935-8d46-f389b4e52ef4",
-        "71720de2-1e97-4d6e-9b5b-27d8cb66248f",
-        "3c6afc41-f740-4e6a-b476-8b0002b507d8",
-        "4a2fa809-b2a5-45cd-bbd0-6abf0843a29d",
-        "698bf9aa-5003-49b1-90a2-1f0b787e1c90",
-        "a9830079-4447-4a0f-8d9e-52cb87c300e9"
-      ]
-    },
-    {
-      "cluster_id": "nar_20260223_7ad4",
-      "centroid": [
-        48.5046,
-        32.2627
-      ],
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              32.2491,
-              48.48111
-            ],
-            [
-              32.24712,
-              48.48112
-            ],
-            [
-              32.24514,
-              48.48133
-            ],
-            [
-              32.2432,
-              48.48174
-            ],
-            [
-              32.2413,
-              48.48234
-            ],
-            [
-              32.23948,
-              48.48312
-            ],
-            [
-              32.23774,
-              48.48408
-            ],
-            [
-              32.2361,
-              48.48521
-            ],
-            [
-              32.23458,
-              48.48649
-            ],
-            [
-              32.2332,
-              48.48792
-            ],
-            [
-              32.23197,
-              48.48948
-            ],
-            [
-              32.2309,
-              48.49116
-            ],
-            [
-              32.23,
-              48.49293
-            ],
-            [
-              32.22928,
-              48.49478
-            ],
-            [
-              32.22875,
-              48.49669
-            ],
-            [
-              32.22841,
-              48.49865
-            ],
-            [
-              32.22826,
-              48.50063
-            ],
-            [
-              32.22832,
-              48.50262
-            ],
-            [
-              32.22857,
-              48.50459
-            ],
-            [
-              32.22901,
-              48.50653
-            ],
-            [
-              32.22965,
-              48.50841
-            ],
-            [
-              32.23047,
-              48.51022
-            ],
-            [
-              32.23146,
-              48.51194
-            ],
-            [
-              32.23262,
-              48.51356
-            ],
-            [
-              32.23394,
-              48.51505
-            ],
-            [
-              32.23539,
-              48.5164
-            ],
-            [
-              32.23697,
-              48.5176
-            ],
-            [
-              32.23867,
-              48.51864
-            ],
-            [
-              32.25604,
-              48.52813
-            ],
-            [
-              32.2578,
-              48.52898
-            ],
-            [
-              32.25963,
-              48.52966
-            ],
-            [
-              32.26153,
-              48.53016
-            ],
-            [
-              32.26346,
-              48.53046
-            ],
-            [
-              32.26541,
-              48.53058
-            ],
-            [
-              32.26737,
-              48.5305
-            ],
-            [
-              32.26931,
-              48.53024
-            ],
-            [
-              32.27121,
-              48.52978
-            ],
-            [
-              32.27306,
-              48.52915
-            ],
-            [
-              32.27484,
-              48.52833
-            ],
-            [
-              32.27653,
-              48.52735
-            ],
-            [
-              32.27812,
-              48.5262
-            ],
-            [
-              32.27959,
-              48.5249
-            ],
-            [
-              32.2882,
-              48.51651
-            ],
-            [
-              32.28952,
-              48.51509
-            ],
-            [
-              32.2907,
-              48.51355
-            ],
-            [
-              32.29172,
-              48.51191
-            ],
-            [
-              32.29258,
-              48.51017
-            ],
-            [
-              32.29327,
-              48.50836
-            ],
-            [
-              32.29377,
-              48.50649
-            ],
-            [
-              32.2941,
-              48.50457
-            ],
-            [
-              32.29424,
-              48.50264
-            ],
-            [
-              32.29419,
-              48.5007
-            ],
-            [
-              32.29395,
-              48.49878
-            ],
-            [
-              32.29353,
-              48.49689
-            ],
-            [
-              32.29292,
-              48.49505
-            ],
-            [
-              32.29214,
-              48.49327
-            ],
-            [
-              32.2912,
-              48.49158
-            ],
-            [
-              32.29009,
-              48.48999
-            ],
-            [
-              32.28884,
-              48.48851
-            ],
-            [
-              32.28744,
-              48.48716
-            ],
-            [
-              32.28593,
-              48.48596
-            ],
-            [
-              32.2843,
-              48.4849
-            ],
-            [
-              32.28258,
-              48.48401
-            ],
-            [
-              32.28078,
-              48.48329
-            ],
-            [
-              32.27892,
-              48.48274
-            ],
-            [
-              32.27702,
-              48.48238
-            ],
-            [
-              32.27509,
-              48.48221
-            ],
-            [
-              32.2491,
-              48.48111
-            ]
-          ]
-        ]
-      },
-      "meta": {
-        "title": "Multi-Domain Disruption Campaign",
-        "summary": "Russia executed a coordinated multi-domain operation combining a novel drone attack in Ukraine with cyber attacks on Polish infrastructure and maritime provocations, demonstrating an intent to degrade adversary capabilities and test responses across theaters. The operation showcased technological adaptation in drone warfare while expanding conflict pressure points beyond the immediate battlefield.",
+        "title": "Dorogobuzh Fertilizer Plant Strike",
+        "summary": "Ukrainian forces executed a precision drone strike targeting critical ammonium nitrate production and storage infrastructure at a chemical plant in Dorogobuzh, aiming to degrade Russia's military-industrial logistics by eliminating a key source of explosive precursors. The attack triggered a catastrophic chain of explosions, inflicting severe, potentially irreparable damage to the facility and eliminating approximately 10% of Russia's domestic ammonium nitrate production capacity.",
         "primary_tactic": "SHAPING",
         "tactic_color": "#8b5cf6",
         "intensity": 5.0,
         "event_count": 3,
         "date_range": [
-          "2026-01-25",
-          "2026-01-26"
+          "2026-02-26",
+          "2026-02-26"
         ],
         "strategic_context": "SHAPING_OPERATION"
       },
       "event_ids": [
-        "a20c6ed1-4342-4fee-97ee-3b214bcb1a80",
-        "768c9a13-28df-4bc4-be6f-1e6f5cf38b42",
-        "db1856ac-b0ea-476c-9ff4-c67d8b3746a1"
+        "2968eb99-fe57-449e-8ca8-53bc458e6843",
+        "78a71ffe-cfeb-4eaa-8525-a792c3edc130",
+        "26942cce-1060-4a1c-bb65-a0ca510a8834"
       ]
     },
     {
-      "cluster_id": "nar_20260223_1e4b",
+      "cluster_id": "nar_20260226_ba08",
+      "centroid": [
+        46.6337,
+        32.6502
+      ],
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              32.72412,
+              46.64598
+            ],
+            [
+              32.72606,
+              46.64568
+            ],
+            [
+              32.72796,
+              46.64519
+            ],
+            [
+              32.7298,
+              46.64451
+            ],
+            [
+              32.73157,
+              46.64366
+            ],
+            [
+              32.73325,
+              46.64264
+            ],
+            [
+              32.73481,
+              46.64146
+            ],
+            [
+              32.73626,
+              46.64013
+            ],
+            [
+              32.73757,
+              46.63867
+            ],
+            [
+              32.73873,
+              46.63709
+            ],
+            [
+              32.73972,
+              46.6354
+            ],
+            [
+              32.74055,
+              46.63361
+            ],
+            [
+              32.7412,
+              46.63176
+            ],
+            [
+              32.74166,
+              46.62986
+            ],
+            [
+              32.74194,
+              46.62791
+            ],
+            [
+              32.74202,
+              46.62595
+            ],
+            [
+              32.74191,
+              46.62399
+            ],
+            [
+              32.74161,
+              46.62205
+            ],
+            [
+              32.74112,
+              46.62015
+            ],
+            [
+              32.74044,
+              46.61831
+            ],
+            [
+              32.73959,
+              46.61654
+            ],
+            [
+              32.73857,
+              46.61486
+            ],
+            [
+              32.73739,
+              46.61329
+            ],
+            [
+              32.73606,
+              46.61185
+            ],
+            [
+              32.7346,
+              46.61054
+            ],
+            [
+              32.73301,
+              46.60938
+            ],
+            [
+              32.73132,
+              46.60839
+            ],
+            [
+              32.72954,
+              46.60756
+            ],
+            [
+              32.72769,
+              46.60691
+            ],
+            [
+              32.72578,
+              46.60645
+            ],
+            [
+              32.72384,
+              46.60617
+            ],
+            [
+              32.72188,
+              46.60609
+            ],
+            [
+              32.71992,
+              46.6062
+            ],
+            [
+              32.61226,
+              46.61757
+            ],
+            [
+              32.61032,
+              46.61787
+            ],
+            [
+              32.60842,
+              46.61836
+            ],
+            [
+              32.60658,
+              46.61903
+            ],
+            [
+              32.60481,
+              46.61988
+            ],
+            [
+              32.60313,
+              46.6209
+            ],
+            [
+              32.60156,
+              46.62209
+            ],
+            [
+              32.60012,
+              46.62341
+            ],
+            [
+              32.59881,
+              46.62488
+            ],
+            [
+              32.59765,
+              46.62646
+            ],
+            [
+              32.59666,
+              46.62815
+            ],
+            [
+              32.59583,
+              46.62993
+            ],
+            [
+              32.59518,
+              46.63178
+            ],
+            [
+              32.59472,
+              46.63369
+            ],
+            [
+              32.59444,
+              46.63564
+            ],
+            [
+              32.59436,
+              46.6376
+            ],
+            [
+              32.59447,
+              46.63956
+            ],
+            [
+              32.59477,
+              46.6415
+            ],
+            [
+              32.59526,
+              46.6434
+            ],
+            [
+              32.59594,
+              46.64524
+            ],
+            [
+              32.59679,
+              46.64701
+            ],
+            [
+              32.59781,
+              46.64868
+            ],
+            [
+              32.59899,
+              46.65025
+            ],
+            [
+              32.60032,
+              46.6517
+            ],
+            [
+              32.60178,
+              46.653
+            ],
+            [
+              32.60336,
+              46.65416
+            ],
+            [
+              32.60506,
+              46.65516
+            ],
+            [
+              32.60684,
+              46.65599
+            ],
+            [
+              32.60869,
+              46.65663
+            ],
+            [
+              32.61059,
+              46.6571
+            ],
+            [
+              32.61254,
+              46.65737
+            ],
+            [
+              32.6145,
+              46.65746
+            ],
+            [
+              32.61646,
+              46.65735
+            ],
+            [
+              32.72412,
+              46.64598
+            ]
+          ]
+        ]
+      },
+      "meta": {
+        "title": "Kherson Oblast Reconnaissance and Strike Activity",
+        "summary": "Russian forces conducted aerial reconnaissance and launched a missile strike targeting infrastructure in Mykolaiv Oblast from Kherson Oblast, indicating a shaping operation to degrade Ukrainian rear-area capabilities. The activity demonstrates a coordinated effort to disrupt Ukrainian logistics and command centers in the southern theater.",
+        "primary_tactic": "SHAPING",
+        "tactic_color": "#8b5cf6",
+        "intensity": 5.0,
+        "event_count": 3,
+        "date_range": [
+          "2026-02-24",
+          "2026-02-26"
+        ],
+        "strategic_context": "SHAPING_OPERATION"
+      },
+      "event_ids": [
+        "89e5fcc7-8abd-48ce-998f-b253750085f5",
+        "725d2159-62a3-4630-9d0d-faf89e22d9e8",
+        "3ef85d5b-cd9e-44fc-9285-f1cba7150770"
+      ]
+    },
+    {
+      "cluster_id": "nar_20260226_daca",
+      "centroid": [
+        54.9005,
+        52.2964
+      ],
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              52.31638,
+              54.9005
+            ],
+            [
+              52.31628,
+              54.89854
+            ],
+            [
+              52.31599,
+              54.8966
+            ],
+            [
+              52.31552,
+              54.8947
+            ],
+            [
+              52.31486,
+              54.89285
+            ],
+            [
+              52.31402,
+              54.89107
+            ],
+            [
+              52.31301,
+              54.88939
+            ],
+            [
+              52.31184,
+              54.88781
+            ],
+            [
+              52.31052,
+              54.88636
+            ],
+            [
+              52.30907,
+              54.88504
+            ],
+            [
+              52.30749,
+              54.88387
+            ],
+            [
+              52.30581,
+              54.88286
+            ],
+            [
+              52.30403,
+              54.88202
+            ],
+            [
+              52.30218,
+              54.88136
+            ],
+            [
+              52.30028,
+              54.88089
+            ],
+            [
+              52.29834,
+              54.8806
+            ],
+            [
+              52.29638,
+              54.8805
+            ],
+            [
+              52.29442,
+              54.8806
+            ],
+            [
+              52.29248,
+              54.88089
+            ],
+            [
+              52.29057,
+              54.88136
+            ],
+            [
+              52.28872,
+              54.88202
+            ],
+            [
+              52.28695,
+              54.88286
+            ],
+            [
+              52.28527,
+              54.88387
+            ],
+            [
+              52.28369,
+              54.88504
+            ],
+            [
+              52.28224,
+              54.88636
+            ],
+            [
+              52.28092,
+              54.88781
+            ],
+            [
+              52.27975,
+              54.88939
+            ],
+            [
+              52.27874,
+              54.89107
+            ],
+            [
+              52.2779,
+              54.89285
+            ],
+            [
+              52.27724,
+              54.8947
+            ],
+            [
+              52.27676,
+              54.8966
+            ],
+            [
+              52.27647,
+              54.89854
+            ],
+            [
+              52.27638,
+              54.9005
+            ],
+            [
+              52.27647,
+              54.90246
+            ],
+            [
+              52.27676,
+              54.9044
+            ],
+            [
+              52.27724,
+              54.90631
+            ],
+            [
+              52.2779,
+              54.90815
+            ],
+            [
+              52.27874,
+              54.90993
+            ],
+            [
+              52.27975,
+              54.91161
+            ],
+            [
+              52.28092,
+              54.91319
+            ],
+            [
+              52.28224,
+              54.91464
+            ],
+            [
+              52.28369,
+              54.91596
+            ],
+            [
+              52.28527,
+              54.91713
+            ],
+            [
+              52.28695,
+              54.91814
+            ],
+            [
+              52.28872,
+              54.91898
+            ],
+            [
+              52.29057,
+              54.91964
+            ],
+            [
+              52.29248,
+              54.92012
+            ],
+            [
+              52.29442,
+              54.9204
+            ],
+            [
+              52.29638,
+              54.9205
+            ],
+            [
+              52.29834,
+              54.9204
+            ],
+            [
+              52.30028,
+              54.92012
+            ],
+            [
+              52.30218,
+              54.91964
+            ],
+            [
+              52.30403,
+              54.91898
+            ],
+            [
+              52.30581,
+              54.91814
+            ],
+            [
+              52.30749,
+              54.91713
+            ],
+            [
+              52.30907,
+              54.91596
+            ],
+            [
+              52.31052,
+              54.91464
+            ],
+            [
+              52.31184,
+              54.91319
+            ],
+            [
+              52.31301,
+              54.91161
+            ],
+            [
+              52.31402,
+              54.90993
+            ],
+            [
+              52.31486,
+              54.90815
+            ],
+            [
+              52.31552,
+              54.90631
+            ],
+            [
+              52.31599,
+              54.9044
+            ],
+            [
+              52.31628,
+              54.90246
+            ],
+            [
+              52.31638,
+              54.9005
+            ]
+          ]
+        ]
+      },
+      "meta": {
+        "title": "Deep Strike on Almetyevsk Oil Hub",
+        "summary": "Ukrainian forces conducted a long-range drone strike against the critical Kaleikino oil pumping station in Tatarstan, a major node in Russia's Druzhba pipeline system, aiming to degrade Russia's strategic energy logistics and fuel reserves. The operation successfully ignited a major, sustained fire at the facility, causing significant damage to storage infrastructure with a high risk of cascading destruction.",
+        "primary_tactic": "LOGISTICS",
+        "tactic_color": "#22c55e",
+        "intensity": 5.0,
+        "event_count": 3,
+        "date_range": [
+          "2026-02-23",
+          "2026-02-24"
+        ],
+        "strategic_context": "SHAPING_OPERATION"
+      },
+      "event_ids": [
+        "f393b4b9-7081-485e-873a-e451fc5c9acf",
+        "c3f1adcf-1ea6-4e3b-98de-8e3832eeec8a",
+        "f10f1006-9748-41b4-ba31-b7a17793b9e2"
+      ]
+    },
+    {
+      "cluster_id": "nar_20260226_1e4b",
       "centroid": [
         48.0078,
         37.8607
@@ -1181,17 +1159,17 @@
         ]
       },
       "meta": {
-        "title": "Tactical Activity Cluster (3 events)",
-        "summary": "Multiple correlated military events detected in this area.",
-        "primary_tactic": "UNKNOWN",
-        "tactic_color": "#94a3b8",
+        "title": "Donetsk Precision Strike & Attrition Campaign",
+        "summary": "Ukrainian forces executed a coordinated multi-domain attack in the Donetsk region, employing long-range artillery, drone swarms, and sniper teams to degrade Russian air defenses and frontline combat power. The operation successfully destroyed a key SAM system and inflicted significant vehicle and personnel losses, disrupting local Russian operations.",
+        "primary_tactic": "ATTRITION",
+        "tactic_color": "#f59e0b",
         "intensity": 5.0,
         "event_count": 3,
         "date_range": [
           "2026-02-01",
           "2026-02-02"
         ],
-        "strategic_context": "UNKNOWN"
+        "strategic_context": "SHAPING_OPERATION"
       },
       "event_ids": [
         "7f95003a-dca7-438c-a85f-4c1f4dc27444",
@@ -1200,7 +1178,7 @@
       ]
     },
     {
-      "cluster_id": "nar_20260223_9f48",
+      "cluster_id": "nar_20260226_9f48",
       "centroid": [
         48.3139,
         37.2835
@@ -1481,17 +1459,17 @@
         ]
       },
       "meta": {
-        "title": "Tactical Activity Cluster (3 events)",
-        "summary": "Multiple correlated military events detected in this area.",
-        "primary_tactic": "UNKNOWN",
-        "tactic_color": "#94a3b8",
+        "title": "Myrnohrad Defense & Deep Strike Campaign",
+        "summary": "Ukrainian forces conducted a coordinated deep-strike campaign against high-value Russian logistics and command nodes in Crimea and Donetsk, while simultaneously repelling localized Russian mechanized assaults aimed at encircling Myrnohrad. The successful disruption of Russian offensive shaping operations around Myrnohrad was significant enough to force Russian state media to retract a premature victory declaration.",
+        "primary_tactic": "SHAPING",
+        "tactic_color": "#8b5cf6",
         "intensity": 5.0,
         "event_count": 3,
         "date_range": [
           "2026-02-14",
           "2026-02-15"
         ],
-        "strategic_context": "UNKNOWN"
+        "strategic_context": "DEFENSIVE_HOLD"
       },
       "event_ids": [
         "85c46a70-3a9f-4237-aa13-922ee1ef24d4",
@@ -1500,7 +1478,7 @@
       ]
     },
     {
-      "cluster_id": "nar_20260223_2ac4",
+      "cluster_id": "nar_20260226_2ac4",
       "centroid": [
         46.4843,
         30.7323
@@ -1773,314 +1751,22 @@
         ]
       },
       "meta": {
-        "title": "Tactical Activity Cluster (3 events)",
-        "summary": "Multiple correlated military events detected in this area.",
-        "primary_tactic": "UNKNOWN",
-        "tactic_color": "#94a3b8",
+        "title": "Drone Strike on Odesa Residential Complex",
+        "summary": "Russian forces conducted a precision drone strike targeting a high-rise residential building in Odesa, resulting in secondary fires and civilian casualties. The attack demonstrates a continued pattern of shaping the operational environment through long-range strikes against urban centers.",
+        "primary_tactic": "SHAPING",
+        "tactic_color": "#8b5cf6",
         "intensity": 5.0,
         "event_count": 3,
         "date_range": [
           "2026-02-08",
           "2026-02-09"
         ],
-        "strategic_context": "UNKNOWN"
+        "strategic_context": "SHAPING_OPERATION"
       },
       "event_ids": [
         "bf74cb09-cde8-4886-ab4e-affd743000b6",
         "8853184b-c398-491b-a94e-b07786abbc4b",
         "cb5b923e-f012-4d3e-8ad3-61c7a37b3b3c"
-      ]
-    },
-    {
-      "cluster_id": "nar_20260223_7061",
-      "centroid": [
-        49.7133,
-        37.6142
-      ],
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              37.6342,
-              49.7133
-            ],
-            [
-              37.6341,
-              49.71134
-            ],
-            [
-              37.63381,
-              49.70939
-            ],
-            [
-              37.63334,
-              49.70749
-            ],
-            [
-              37.63268,
-              49.70564
-            ],
-            [
-              37.63184,
-              49.70387
-            ],
-            [
-              37.63083,
-              49.70218
-            ],
-            [
-              37.62966,
-              49.70061
-            ],
-            [
-              37.62834,
-              49.69915
-            ],
-            [
-              37.62689,
-              49.69784
-            ],
-            [
-              37.62531,
-              49.69667
-            ],
-            [
-              37.62363,
-              49.69566
-            ],
-            [
-              37.62185,
-              49.69482
-            ],
-            [
-              37.62,
-              49.69416
-            ],
-            [
-              37.6181,
-              49.69368
-            ],
-            [
-              37.61616,
-              49.69339
-            ],
-            [
-              37.6142,
-              49.6933
-            ],
-            [
-              37.61224,
-              49.69339
-            ],
-            [
-              37.6103,
-              49.69368
-            ],
-            [
-              37.60839,
-              49.69416
-            ],
-            [
-              37.60655,
-              49.69482
-            ],
-            [
-              37.60477,
-              49.69566
-            ],
-            [
-              37.60309,
-              49.69667
-            ],
-            [
-              37.60151,
-              49.69784
-            ],
-            [
-              37.60006,
-              49.69915
-            ],
-            [
-              37.59874,
-              49.70061
-            ],
-            [
-              37.59757,
-              49.70218
-            ],
-            [
-              37.59656,
-              49.70387
-            ],
-            [
-              37.59572,
-              49.70564
-            ],
-            [
-              37.59506,
-              49.70749
-            ],
-            [
-              37.59458,
-              49.70939
-            ],
-            [
-              37.5943,
-              49.71134
-            ],
-            [
-              37.5942,
-              49.7133
-            ],
-            [
-              37.5943,
-              49.71526
-            ],
-            [
-              37.59458,
-              49.7172
-            ],
-            [
-              37.59506,
-              49.7191
-            ],
-            [
-              37.59572,
-              49.72095
-            ],
-            [
-              37.59656,
-              49.72272
-            ],
-            [
-              37.59757,
-              49.72441
-            ],
-            [
-              37.59874,
-              49.72598
-            ],
-            [
-              37.60006,
-              49.72744
-            ],
-            [
-              37.60151,
-              49.72876
-            ],
-            [
-              37.60309,
-              49.72993
-            ],
-            [
-              37.60477,
-              49.73093
-            ],
-            [
-              37.60655,
-              49.73177
-            ],
-            [
-              37.60839,
-              49.73244
-            ],
-            [
-              37.6103,
-              49.73291
-            ],
-            [
-              37.61224,
-              49.7332
-            ],
-            [
-              37.6142,
-              49.7333
-            ],
-            [
-              37.61616,
-              49.7332
-            ],
-            [
-              37.6181,
-              49.73291
-            ],
-            [
-              37.62,
-              49.73244
-            ],
-            [
-              37.62185,
-              49.73177
-            ],
-            [
-              37.62363,
-              49.73093
-            ],
-            [
-              37.62531,
-              49.72993
-            ],
-            [
-              37.62689,
-              49.72876
-            ],
-            [
-              37.62834,
-              49.72744
-            ],
-            [
-              37.62966,
-              49.72598
-            ],
-            [
-              37.63083,
-              49.72441
-            ],
-            [
-              37.63184,
-              49.72272
-            ],
-            [
-              37.63268,
-              49.72095
-            ],
-            [
-              37.63334,
-              49.7191
-            ],
-            [
-              37.63381,
-              49.7172
-            ],
-            [
-              37.6341,
-              49.71526
-            ],
-            [
-              37.6342,
-              49.7133
-            ]
-          ]
-        ]
-      },
-      "meta": {
-        "title": "Kupyansk Urban Clearance Operation",
-        "summary": "Ukrainian forces are executing a systematic clearance of Russian troops from Kupyansk, with near-completion in central neighborhoods, while successfully blocking Russian reinforcement attempts from the north. The operation includes targeted special forces actions to eliminate and capture remaining Russian holdouts, consolidating Ukrainian control over the city.",
-        "primary_tactic": "ATTRITION",
-        "tactic_color": "#f59e0b",
-        "intensity": 5.0,
-        "event_count": 3,
-        "date_range": [
-          "2026-01-25",
-          "2026-01-26"
-        ],
-        "strategic_context": "OFFENSIVE_PUSH"
-      },
-      "event_ids": [
-        "59e1485e-d037-4051-ad77-e077e61cb4bd",
-        "56b15a7d-8494-4d8e-8092-ee20ad9e3c13",
-        "57c9878d-1cde-4584-a837-788e4e922497"
       ]
     }
   ]

@@ -733,14 +733,19 @@
 
             // 5. Smart Text Search
             if (searchTerm) {
+              const searchId = String(e.id || e.event_id || '').toLowerCase();
+              if (searchId === searchTerm) return true; // Direct exact match for ID
+
               const inTitle = (e.title || '').toLowerCase().includes(searchTerm);
               const inDesc = (e.description || '').toLowerCase().includes(searchTerm);
               const inLoc = (e.location_precision || '').toLowerCase().includes(searchTerm);
 
+              const inVis = (e.visual_analysis || '').toLowerCase().includes(searchTerm);
+
               const isDateMatch = (e.date || '').includes(searchTerm);
               const isSmartActor = (searchTerm.includes('russia') && e.actor === 'RUS') || (searchTerm.includes('ukrain') && e.actor === 'UKR');
 
-              if (!inTitle && !inDesc && !inLoc && !isDateMatch && !isSmartActor) return false;
+              if (!inTitle && !inDesc && !inLoc && !inVis && !isDateMatch && !isSmartActor) return false;
             }
 
             // 6. Tactical Time Window Filter
@@ -2655,6 +2660,7 @@
         sourceListEl.innerHTML = `<span style="color:#64748b; font-style:italic; font-size:0.8rem;">No explicit sources listed.</span>`;
       } else {
         // Backend now sends [{name, url}] objects
+        let telegramUrls = [];
         let validHtml = sources.map(src => {
           let displayName, url;
 
@@ -2699,6 +2705,10 @@
             url = 'https://' + url;
           }
 
+          if (url.includes('t.me/')) {
+            telegramUrls.push(url);
+          }
+
           // Favicon domain (use t.me for Telegram, otherwise actual domain)
           let faviconDomain = displayName;
           try {
@@ -2716,6 +2726,30 @@
         }).filter(Boolean).join('');
 
         sourceListEl.innerHTML = validHtml || `<span style="color:#64748b; font-style:italic; font-size:0.8rem;">No explicit sources listed.</span>`;
+
+        // --- INJECT TELEGRAM EMBED IFRAME ---
+        const videoContainer = document.getElementById('modalVideoContainer');
+        if (videoContainer) {
+          videoContainer.innerHTML = '';
+          videoContainer.style.display = 'none';
+          if (telegramUrls.length > 0) {
+            let embedUrl = telegramUrls[0].trim();
+            if (!embedUrl.includes('?embed=')) {
+              embedUrl = embedUrl.split('?')[0] + '?embed=1';
+            }
+
+            videoContainer.innerHTML = `
+                    <div style="margin-top:20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top:15px;">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                            <i class="fa-brands fa-telegram" style="color:#38bdf8; font-size:1.1rem;"></i>
+                            <h5 style="color:#94a3b8; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; margin:0;">PRIMARY SOURCE MEDIA</h5>
+                        </div>
+                        <iframe src="${embedUrl}" style="width: 100%; height: 500px; border: none; border-radius: 8px; overflow: hidden; background: #fff;" allow="fullscreen"></iframe>
+                    </div>
+                `;
+            videoContainer.style.display = 'block';
+          }
+        }
       }
     }
 

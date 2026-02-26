@@ -45,9 +45,9 @@ def save_raw_events(events_list):
 
         try:
             cursor.execute("""
-                INSERT INTO raw_signals (event_hash, source_type, source_name, date_published, text_content, media_urls)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (ev_hash, ev['type'], ev['source'], ev['date'], ev['text'], media_urls))
+                INSERT INTO raw_signals (event_hash, source_type, source_name, date_published, text_content, media_urls, url)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (ev_hash, ev['type'], ev['source'], ev['date'], ev['text'], media_urls, ev.get('url')))
             saved_count += 1
         except sqlite3.IntegrityError:
             continue  # Già esiste, saltiamo

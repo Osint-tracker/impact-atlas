@@ -102,10 +102,16 @@ def parse_sources_to_list(sources_str):
                     domain = "Source"
                 result.append({"name": domain, "url": url})
         else:
-            # Plain name (e.g. channel name "Rybar" or "GDELT_Network")
+            # Plain name (e.g. channel name "Rybar" or "GDELT_Network" or a domain "tass.com")
+            import re as _re
             if item == 'GDELT_Network':
                 result.append({"name": "GDELT", "url": "#"})
-            else:
+            elif '.' in item and not item.startswith('@'):
+                # Looks like a domain name (has dots, e.g. "dailyadvance.com") — NOT a Telegram handle
+                url = f"https://{item}" if not item.startswith('http') else item
+                result.append({"name": item, "url": url})
+            elif _re.match(r'^[A-Za-z0-9_]+$', item):
+                # Looks like a Telegram handle (alphanumeric + underscore only)
                 result.append({"name": item, "url": f"https://t.me/{item}"})
             
     # Deduplicate: group by channel/domain, keep first URL per name
@@ -647,6 +653,35 @@ def main():
     """)
     
     rows = cursor.fetchall()
+    
+    # Pre-build lookup: event_id → actual Telegram deep links from raw_signals
+    # This resolves channel-only URLs (e.g. t.me/rybar) to specific messages (t.me/rybar/76184)
+    tg_deeplinks = {}  # {event_id: {channel_name: url_with_msg_id}}
+    try:
+        cursor.execute("""
+            SELECT cluster_id, url, source_name 
+            FROM raw_signals 
+            WHERE url LIKE '%t.me/%/%' AND cluster_id IS NOT NULL
+        """)
+        for sig in cursor.fetchall():
+            cid = sig['cluster_id']
+            url = sig['url']
+            if not cid or not url:
+                continue
+            # Extract channel name from URL
+            try:
+                channel = url.split('t.me/')[1].split('/')[0]
+            except:
+                continue
+            if cid not in tg_deeplinks:
+                tg_deeplinks[cid] = {}
+            # Keep the first deep link per channel per event
+            if channel not in tg_deeplinks[cid]:
+                tg_deeplinks[cid][channel] = url
+        print(f"[INFO] Built Telegram deep-link lookup: {len(tg_deeplinks)} events with deep links")
+    except Exception as e:
+        print(f"[WARN] Could not build deep-link lookup: {e}")
+    
     print(f"[INFO] Found {len(rows)} completed events")
     
     print(f"[INFO] Found {len(rows)} completed events")
@@ -703,15 +738,56 @@ def main():
             ai_summary = row.get('ai_summary') or ''
             has_video = bool(row.get('has_video'))
             
-            # Sources — fallback chain: urls_list → sources_list → ai_report_json
-            sources_str = row.get('urls_list') or ''
-            if not sources_str or sources_str == '[]' or sources_str == '[""]' or sources_str == '[null]':
-                sources_str = row.get('sources_list') or ''
-            if (not sources_str or sources_str == '[]' or sources_str == '[""]') and ai_data:
+            # Sources — MERGE urls_list + sources_list + ai_report_json for best coverage
+            all_url_strs = []
+            
+            # Collect from urls_list (usually has actual deep links)  
+            urls_list_str = row.get('urls_list') or ''
+            if urls_list_str and urls_list_str not in ('[]', '[""]', '[null]'):
+                all_url_strs.append(urls_list_str)
+            
+            # Collect from sources_list (usually has channel names)
+            sources_list_str = row.get('sources_list') or ''
+            if sources_list_str and sources_list_str not in ('[]', '[""]', '[null]'):
+                all_url_strs.append(sources_list_str)
+            
+            # Collect from ai_report_json
+            if ai_data:
                 agg = ai_data.get('Aggregated Sources', [])
                 if agg:
-                    sources_str = ' | '.join(str(s) for s in agg if s)
-            structured_sources = parse_sources_to_list(sources_str)
+                    all_url_strs.append(' | '.join(str(s) for s in agg if s))
+            
+            # Parse all sources into a combined pool
+            combined_sources = []
+            for src_str in all_url_strs:
+                combined_sources.extend(parse_sources_to_list(src_str))
+            
+            # Deduplicate by name (keep first occurrence with a real URL)
+            seen = {}
+            structured_sources = []
+            for s in combined_sources:
+                key = s['name'].lower()
+                if key not in seen:
+                    seen[key] = s
+                    structured_sources.append(s)
+                else:
+                    # Upgrade: prefer a URL with a message ID over channel-only
+                    existing = seen[key]
+                    if (existing['url'] == '#' or not '/' in existing['url'].split('t.me/')[-1] if 't.me/' in existing['url'] else False) and s['url'] != '#':
+                        existing['url'] = s['url']
+            
+            # Resolve channel-only Telegram URLs to deep links using raw_signals lookup
+            event_deeplinks = tg_deeplinks.get(event_id, {})
+            if event_deeplinks:
+                for s in structured_sources:
+                    url = s.get('url', '')
+                    if 't.me/' in url:
+                        channel = url.split('t.me/')[1].split('/')[0]
+                        # If current URL has no message ID, upgrade from lookup
+                        after_channel = url.split('t.me/' + channel)[-1]
+                        if not after_channel or after_channel == '/':
+                            if channel in event_deeplinks:
+                                s['url'] = event_deeplinks[channel]
             
             # Coordinates (extracted from JSON blob - no DB column exists)
             lat = None
@@ -763,9 +839,35 @@ def main():
                 except Exception as e:
                     print(f"[WARN] Error parsing ai_report_json for {event_id}: {e}")
             
-            # Skip if no coordinates
+            # --- IMINT Evidence Feed: Extract Visionary per-frame analysis ---
+            visual_analysis = []
+            if ai_data:
+                tactics_data = ai_data.get('tactics', {})
+                visionary_report = tactics_data.get('visionary_report', {}) if isinstance(tactics_data, dict) else {}
+                if visionary_report and isinstance(visionary_report, dict):
+                    analyzed_frames = visionary_report.get('analyzed_frames', [])
+                    v_status = visionary_report.get('visual_confirmation', {}).get('verification_status', '')
+                    for af in analyzed_frames:
+                        visual_analysis.append({
+                            "frame_id": af.get('frame_id', 0),
+                            "confidence": af.get('confidence', 0),
+                            "selection_reason": af.get('selection_reason', ''),
+                            "explanation": af.get('explanation', ''),
+                            "base64_data": af.get('base64_data', ''),
+                            "verification_status": v_status
+                        })
+            
+            # Skip if no coordinates, EXCEPT if we have high-value IMINT evidence
             if not lat or not lon or float(lat) == 0 or float(lon) == 0:
-                continue
+                if visual_analysis:
+                    # Map to a central "Unmapped Intelligence" zone in Ukraine with slight scatter
+                    import hashlib
+                    h1 = int(hashlib.md5(event_id.encode('utf-8')).hexdigest()[:8], 16)
+                    h2 = int(hashlib.md5(event_id.encode('utf-8')[::-1]).hexdigest()[:8], 16)
+                    lat = 48.5 + (h1 % 1000) / 500.0
+                    lon = 31.2 + (h2 % 1000) / 500.0
+                else:
+                    continue
 
             # Note: events without sources are still valuable for the map
             # (intelligence data, TIE scores, description are still present)
@@ -774,25 +876,8 @@ def main():
             radius, color = get_marker_style(tie_score, e_score)
             
             # Enrich Units
-            raw_units = ai_data.get('military_units_detected', [])
+            raw_units = ai_data.get('military_units_detected', []) if ai_data else []
             enriched_units = enrich_units(raw_units, orbat_data)
-            
-            # --- IMINT Evidence Feed: Extract Visionary per-frame analysis ---
-            visual_analysis = []
-            tactics_data = ai_data.get('tactics', {})
-            visionary_report = tactics_data.get('visionary_report', {}) if isinstance(tactics_data, dict) else {}
-            if visionary_report and isinstance(visionary_report, dict):
-                analyzed_frames = visionary_report.get('analyzed_frames', [])
-                v_status = visionary_report.get('visual_confirmation', {}).get('verification_status', '')
-                for af in analyzed_frames:
-                    visual_analysis.append({
-                        "frame_id": af.get('frame_id', 0),
-                        "confidence": af.get('confidence', 0),
-                        "selection_reason": af.get('selection_reason', ''),
-                        "explanation": af.get('explanation', ''),
-                        "base64_data": af.get('base64_data', ''),
-                        "verification_status": v_status
-                    })
             
             # Build GeoJSON Feature
             feature = {

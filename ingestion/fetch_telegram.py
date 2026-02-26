@@ -167,6 +167,7 @@ async def fetch_channel_history(client, channel_name, start_date, end_date=None)
                 'source': channel_name,     # Nome canale
                 'type': 'TELEGRAM',         # Tipo fonte
                 'date': date_str,           # Data stringa
+                'url': f"https://t.me/{channel_name}/{message.id}",  # Deep link to message
                 'media_urls': json.dumps(media_urls) # URL Multimediali
             }
 

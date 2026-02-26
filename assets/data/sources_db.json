@@ -207,6 +207,21 @@
             "type": "state_media_de"
         },
         "__UKRAINE_INSTITUTIONS_MEDIA__": "TIER B/C - STATE & INDEPENDENT",
+        "noel_reports": {
+            "reliability": 80,
+            "bias": 3,
+            "type": "osint_ua"
+        },
+        "noelreports": {
+            "reliability": 80,
+            "bias": 3,
+            "type": "osint_ua"
+        },
+        "noel report": {
+            "reliability": 80,
+            "bias": 3,
+            "type": "osint_ua"
+        },
         "united24": {
             "reliability": 50,
             "bias": 5,
