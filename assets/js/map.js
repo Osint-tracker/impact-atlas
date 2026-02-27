@@ -2734,7 +2734,12 @@
           videoContainer.style.display = 'none';
           if (telegramUrls.length > 0) {
             let tgUrl = telegramUrls[0].trim();
-            let postPath = tgUrl.replace('https://t.me/', '').replace('http://t.me/', '').split('?')[0];
+            let embedUrl = tgUrl;
+            if (!embedUrl.includes('?embed=')) {
+              embedUrl = embedUrl.split('?')[0] + '?embed=1&dark=1';
+            } else if (!embedUrl.includes('dark=')) {
+              embedUrl += '&dark=1';
+            }
 
             videoContainer.innerHTML = `
                     <div style="margin-top:20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top:15px;">
@@ -2742,24 +2747,10 @@
                             <i class="fa-brands fa-telegram" style="color:#38bdf8; font-size:1.1rem;"></i>
                             <h5 style="color:#94a3b8; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; margin:0;">PRIMARY SOURCE MEDIA</h5>
                         </div>
-                        <div id="tg-embed-wrapper" style="width: 100%; border-radius: 8px; overflow: hidden; min-height: 100px; background: rgba(0,0,0,0.2);"></div>
+                        <iframe src="${embedUrl}" style="width: 100%; height: 500px; border: none; border-radius: 8px; overflow: hidden; background: #fff;" allow="fullscreen"></iframe>
                     </div>
                 `;
             videoContainer.style.display = 'block';
-
-            // Programmatically inject the official Telegram widget script
-            // This bypasses X-Frame-Options issues associated with raw iframes
-            const wrapper = document.getElementById('tg-embed-wrapper');
-            if (wrapper && postPath) {
-              const script = document.createElement('script');
-              script.async = true;
-              script.src = "https://telegram.org/js/telegram-widget.js?22";
-              script.setAttribute('data-telegram-post', postPath);
-              script.setAttribute('data-width', '100%');
-              script.setAttribute('data-color', '38bdf8');
-              script.setAttribute('data-dark', '1');
-              wrapper.appendChild(script);
-            }
           }
         }
       }
