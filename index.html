@@ -36,6 +36,156 @@
   <link rel="stylesheet" href="assets/css/dossier_styles.css?v=2">
 
   <style>
+    /* ==========================================
+       V2 ARCHITECTURE VARIABLES & LAYOUT RULES
+       ========================================== */
+    :root {
+      --slate-900: #0f172a;
+      --slate-800: #1e293b;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-400: #94a3b8;
+      --slate-300: #cbd5e1;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --amber-500: #f59e0b;
+      --amber-400: #fbbf24;
+      --cyan-500: #06b6d4;
+      --gray-500: #6b7280;
+      --text-main: #f8fafc;
+      --bg-main: #000000;
+    }
+
+    body,
+    html {
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+    }
+
+    /* MAIN CONTAINER (Rigid 100vh flex layout) */
+    .app-container {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* 1. NAVIGATION RAIL */
+    .nav-rail {
+      width: 65px;
+      min-width: 65px;
+      height: 100%;
+      background-color: var(--slate-900);
+      border-right: 1px solid var(--slate-700);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 15px;
+      z-index: 50;
+    }
+
+    .nav-item {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--slate-400);
+      border-radius: 6px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 1.1rem;
+    }
+
+    .nav-item:hover {
+      color: var(--slate-200);
+      background-color: var(--slate-800);
+    }
+
+    .nav-item.active {
+      color: var(--slate-900);
+      background-color: var(--amber-500);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+    }
+
+    /* 2. ACTIVE PANEL BUCKET (Sidebar) */
+    .sidebar-container {
+      width: 25%;
+      min-width: 300px;
+      max-width: 400px;
+      height: 100%;
+      position: relative;
+      background-color: var(--slate-800);
+      border-right: 1px solid var(--slate-700);
+      display: flex;
+      flex-direction: column;
+      z-index: 40;
+      overflow: hidden;
+    }
+
+    .active-panel {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+    }
+
+    /* 3. DOSSIER OVERRIDE STATE */
+    .dossier-panel {
+      width: 100%;
+      height: 100%;
+      background-color: var(--slate-900);
+      position: absolute;
+      top: 0;
+      left: 100%;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 45;
+      display: flex;
+      flex-direction: column;
+      overflow-y: hidden;
+      box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .sidebar-container.dossier-active .active-panel {
+      transform: translateX(-30%);
+      opacity: 0.3;
+    }
+
+    .sidebar-container.dossier-active .dossier-panel {
+      transform: translateX(-100%);
+    }
+
+    /* OVERRIDES FOR LEGACY INDEX.HTML CLASSES TO FIT V2 */
+    .dashboard-container {
+      display: flex;
+      height: 100%;
+      width: 100%;
+      /* Instead of taking full screen, let app-container handle it */
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background-color: #1a1a1a;
+      overflow: hidden;
+      height: 100%;
+    }
+
     /* --- CSS FOR TOOLTIPS AND TABS --- */
     /* (Keeping existing styles that do not conflict) */
     .intensity-badge-wrapper {
@@ -1043,168 +1193,346 @@
 
 <body>
 
-  <header class="acled-header">
-    <div class="header-content">
-      <div class="brand">
-        <h1>IMPACT<span>ATLAS</span></h1>
-        <span class="subtitle" style="color:#94a3b8; font-size:0.8rem; margin-left:10px;">Global Conflict Monitor</span>
+  <div class="app-container">
+
+    <!-- 1. NAVIGATION RAIL -->
+    <nav class="nav-rail">
+      <div class="nav-item active" title="Live Feed" onclick="switchSidebarTab('layers')">
+        <i class="fas fa-satellite-dish"></i>
       </div>
-      <nav>
-        <a href="#" class="active">Dashboard</a>
-        <a href="#methodology">Methodology</a>
-        <a href="#data">Export Data</a>
-        <a href="#" class="btn-primary" style="padding: 5px 15px;">Login</a>
-      </nav>
-    </div>
-  </header>
-
-  <div class="dashboard-container">
-
-    <aside class="sidebar">
-
-      <div class="sidebar-tabs">
-        <button class="s-tab-btn active" onclick="switchSidebarTab('layers')">
-          <i class="fa-solid fa-layer-group"></i> MAPS
-        </button>
-        <button class="s-tab-btn" onclick="switchSidebarTab('orbat')">
-          <i class="fa-solid fa-shield-halved"></i> ORBAT
-        </button>
+      <div class="nav-item" title="ORBAT Tracker" onclick="switchSidebarTab('orbat')">
+        <i class="fas fa-shield-alt"></i>
       </div>
+      <div class="nav-item" title="Map Filters" onclick="switchSidebarTab('filters')">
+        <i class="fas fa-layer-group"></i>
+      </div>
+      <div class="nav-item" title="Equipment Losses" onclick="switchSidebarTab('losses')">
+        <i class="fas fa-crosshairs"></i>
+      </div>
+    </nav>
 
-      <div class="sidebar-content-wrapper">
+    <header class="acled-header" style="display: none;">
+      <div class="header-content">
+        <div class="brand">
+          <h1>IMPACT<span>ATLAS</span></h1>
+          <span class="subtitle" style="color:#94a3b8; font-size:0.8rem; margin-left:10px;">Global Conflict
+            Monitor</span>
+        </div>
+        <nav>
+          <a href="#" class="active">Dashboard</a>
+          <a href="#methodology">Methodology</a>
+          <a href="#data">Export Data</a>
+          <a href="#" class="btn-primary" style="padding: 5px 15px;">Login</a>
+        </nav>
+      </div>
+    </header>
 
-        <div id="sidebar-tab-layers" class="s-tab-content active">
-          <div class="sidebar-scroll-area">
+    <!-- 2. SIDEBAR CONTAINER (Active Panel + Dossier Panel) -->
+    <div class="sidebar-container" id="sidebarContainer">
 
-            <div class="layer-section-title">FRONTLINE SOURCE</div>
+      <!-- ACTIVE PANEL BUCKET (Holds scrolling lists, feeds) -->
+      <div class="active-panel" id="activePanelBucket">
 
-            <div class="map-layer-card active" onclick="selectMapSource(this, 'deepstate')">
-              <div class="card-header">
-                <div>
-                  <span class="card-title">PROJECT OWL</span>
-                  <span class="badge-source badge-ua" style="background: #f59e0b; color:black;">LIVE</span>
+        <div class="sidebar-tabs">
+          <button class="s-tab-btn active" onclick="switchSidebarTab('layers')">
+            <i class="fa-solid fa-layer-group"></i> MAPS
+          </button>
+          <button class="s-tab-btn" onclick="switchSidebarTab('orbat')">
+            <i class="fa-solid fa-shield-halved"></i> ORBAT
+          </button>
+        </div>
+
+        <div class="sidebar-content-wrapper">
+
+          <div id="sidebar-tab-layers" class="s-tab-content active">
+            <div class="sidebar-scroll-area">
+
+              <div class="layer-section-title">FRONTLINE SOURCE</div>
+
+              <div class="map-layer-card active" onclick="selectMapSource(this, 'deepstate')">
+                <div class="card-header">
+                  <div>
+                    <span class="card-title">PROJECT OWL</span>
+                    <span class="badge-source badge-ua" style="background: #f59e0b; color:black;">LIVE</span>
+                  </div>
+                  <i class="fa-solid fa-circle-dot status-dot" style="color: #22c55e;"></i>
                 </div>
-                <i class="fa-solid fa-circle-dot status-dot" style="color: #22c55e;"></i>
+                <div class="card-desc">Real-time frontline & unit tracking. Primary Intelligence Source.</div>
               </div>
-              <div class="card-desc">Real-time frontline & unit tracking. Primary Intelligence Source.</div>
-            </div>
 
-            <div class="map-layer-card" onclick="openPlayfraModal()">
-              <div class="card-header">
-                <div>
-                  <span class="card-title">TACTICAL DEEP MAP</span>
-                  <span class="badge-source badge-us" style="background:#8b5cf6; color:white;">PLAYFRA</span>
+              <div class="map-layer-card" onclick="openPlayfraModal()">
+                <div class="card-header">
+                  <div>
+                    <span class="card-title">TACTICAL DEEP MAP</span>
+                    <span class="badge-source badge-us" style="background:#8b5cf6; color:white;">PLAYFRA</span>
+                  </div>
+                  <i class="fa-solid fa-satellite status-dot" style="color: #cbd5e1;"></i>
                 </div>
-                <i class="fa-solid fa-satellite status-dot" style="color: #cbd5e1;"></i>
+                <div class="card-desc" style="margin-bottom: 5px;">High-resolution tactical map overlay.</div>
               </div>
-              <div class="card-desc" style="margin-bottom: 5px;">High-resolution tactical map overlay.</div>
-            </div>
 
-            <div class="map-layer-card" onclick="window.open('https://deepstatemap.live/en', '_blank')"
-              style="cursor: pointer;">
-              <div class="card-header">
-                <div>
-                  <span class="card-title">DEEPSTATE (EXTERNAL)</span>
-                  <span class="badge-source badge-ua" style="background:#b91c1c; color:#f8fafc;">LINK</span>
+              <div class="map-layer-card" onclick="window.open('https://deepstatemap.live/en', '_blank')"
+                style="cursor: pointer;">
+                <div class="card-header">
+                  <div>
+                    <span class="card-title">DEEPSTATE (EXTERNAL)</span>
+                    <span class="badge-source badge-ua" style="background:#b91c1c; color:#f8fafc;">LINK</span>
+                  </div>
+                  <i class="fa-solid fa-external-link-alt status-dot" style="color: #94a3b8;"></i>
                 </div>
-                <i class="fa-solid fa-external-link-alt status-dot" style="color: #94a3b8;"></i>
+                <div class="card-desc">Opens the official website in a new tab.</div>
               </div>
-              <div class="card-desc">Opens the official website in a new tab.</div>
-            </div>
 
-            <!-- Rybar Removed -->
+              <!-- Rybar Removed -->
 
-            <div class="layer-section-title">EXTRA DATA</div>
+              <div class="layer-section-title">EXTRA DATA</div>
 
-            <label class="tech-toggle-row">
-              <span class="tech-toggle-label">Weather Radar</span>
-              <input type="checkbox" onchange="toggleTechLayer('radar', this)">
-              <div class="tech-switch"></div>
-            </label>
+              <label class="tech-toggle-row">
+                <span class="tech-toggle-label">Weather Radar</span>
+                <input type="checkbox" onchange="toggleTechLayer('radar', this)">
+                <div class="tech-switch"></div>
+              </label>
 
-            <label class="tech-toggle-row">
-              <span class="tech-toggle-label">
-                NASA FIRMS (Thermal)
-              </span>
-              <input type="checkbox" onchange="toggleTechLayer('firms', this)">
-              <div class="tech-switch"></div>
-            </label>
-            <label class="tech-toggle-row" style="align-items: flex-start;">
-              <div style="display:flex; flex-direction:column;">
-                <span class="tech-toggle-label" data-tooltip="Real-time cloud cover & fog degrading drone operations.">
-                  Drone V.F.R. (Visibility)
+              <label class="tech-toggle-row">
+                <span class="tech-toggle-label">
+                  NASA FIRMS (Thermal)
                 </span>
-                <span style="font-size: 0.65rem; color: #64748b; margin-top: 2px;">Clouds >70% or Vis &lt;3km</span>
+                <input type="checkbox" onchange="toggleTechLayer('firms', this)">
+                <div class="tech-switch"></div>
+              </label>
+              <label class="tech-toggle-row" style="align-items: flex-start;">
+                <div style="display:flex; flex-direction:column;">
+                  <span class="tech-toggle-label"
+                    data-tooltip="Real-time cloud cover & fog degrading drone operations.">
+                    Drone V.F.R. (Visibility)
+                  </span>
+                  <span style="font-size: 0.65rem; color: #64748b; margin-top: 2px;">Clouds >70% or Vis &lt;3km</span>
+                </div>
+                <input type="checkbox" onchange="toggleTechLayer('vfr', this)">
+                <div class="tech-switch" style="margin-top: 2px;"></div>
+              </label>
+
+              <label class="tech-toggle-row">
+                <span class="tech-toggle-label">Satellite (HIR)</span>
+                <input type="checkbox" onchange="toggleTechLayer('satellite', this)">
+                <div class="tech-switch"></div>
+              </label>
+
+              <div class="layer-section-title">VIEW OPTIONS</div>
+
+              <label class="tech-toggle-row">
+                <span class="tech-toggle-label">Show Events</span>
+                <input type="checkbox" checked onchange="toggleTechLayer('events', this)">
+                <div class="tech-switch"></div>
+              </label>
+
+              <label class="tech-toggle-row">
+                <span class="tech-toggle-label">Fortifications</span>
+                <input type="checkbox" checked onchange="toggleTechLayer('fortifications', this)">
+                <div class="tech-switch"></div>
+              </label>
+
+              <label class="tech-toggle-row">
+                <span class="tech-toggle-label">
+                  ORBAT Units (Live)
+                </span>
+                <input type="checkbox" onchange="toggleTechLayer('units', this)">
+                <div class="tech-switch"></div>
+              </label>
+
+              <label class="tech-toggle-row">
+                <span class="tech-toggle-label">
+                  Strategic Context (AI)
+                </span>
+                <input type="checkbox" onchange="toggleTechLayer('narratives', this)">
+                <div class="tech-switch"></div>
+              </label>
+
+              <div class="layer-section-title">TACTICAL ENVIRONMENT</div>
+              <div class="filter-block" style="border-bottom: none; padding-bottom: 0;">
+                <label style="font-size: 0.75rem; letter-spacing: 1px; color: #94a3b8;"><i class="fas fa-truck-monster"
+                    style="color: #f59e0b; margin-right: 6px;"></i> MOBILITY INDEX</label>
+                <div id="mobility-index" class="mobility-widget">
+                  <span style="color:#64748b; font-size: 0.8rem;">INITIALIZING SENSORS...</span>
+                </div>
               </div>
-              <input type="checkbox" onchange="toggleTechLayer('vfr', this)">
-              <div class="tech-switch" style="margin-top: 2px;"></div>
-            </label>
 
-            <label class="tech-toggle-row">
-              <span class="tech-toggle-label">Satellite (HIR)</span>
-              <input type="checkbox" onchange="toggleTechLayer('satellite', this)">
-              <div class="tech-switch"></div>
-            </label>
+            </div>
+          </div>
 
-            <div class="layer-section-title">VIEW OPTIONS</div>
-
-            <label class="tech-toggle-row">
-              <span class="tech-toggle-label">Show Events</span>
-              <input type="checkbox" checked onchange="toggleTechLayer('events', this)">
-              <div class="tech-switch"></div>
-            </label>
-
-            <label class="tech-toggle-row">
-              <span class="tech-toggle-label">Fortifications</span>
-              <input type="checkbox" checked onchange="toggleTechLayer('fortifications', this)">
-              <div class="tech-switch"></div>
-            </label>
-
-            <label class="tech-toggle-row">
-              <span class="tech-toggle-label">
-                ORBAT Units (Live)
-              </span>
-              <input type="checkbox" onchange="toggleTechLayer('units', this)">
-              <div class="tech-switch"></div>
-            </label>
-
-            <label class="tech-toggle-row">
-              <span class="tech-toggle-label">
-                Strategic Context (AI)
-              </span>
-              <input type="checkbox" onchange="toggleTechLayer('narratives', this)">
-              <div class="tech-switch"></div>
-            </label>
-
-            </label>
-
-            <div class="layer-section-title">TACTICAL ENVIRONMENT</div>
-            <div class="filter-block" style="border-bottom: none; padding-bottom: 0;">
-              <label style="font-size: 0.75rem; letter-spacing: 1px; color: #94a3b8;"><i class="fas fa-truck-monster"
-                  style="color: #f59e0b; margin-right: 6px;"></i> MOBILITY INDEX</label>
-              <div id="mobility-index" class="mobility-widget">
-                <span style="color:#64748b; font-size: 0.8rem;">INITIALIZING SENSORS...</span>
+          <div id="sidebar-tab-orbat" class="s-tab-content">
+            <div class="orbat-container">
+              <div class="sidebar-tabs" style="background: rgba(0,0,0,0.4); justify-content: space-between;">
+                <button class="s-tab-btn active" style="font-size: 0.8rem;" onclick="switchOrbatTab('UA')">UA
+                  FORCES</button>
+                <button class="s-tab-btn" style="font-size: 0.8rem;" onclick="switchOrbatTab('RU')">RU FORCES</button>
+              </div>
+              <div id="orbat-list" class="orbat-list">
+                <!-- Units injected by JS -->
               </div>
             </div>
+          </div>
 
+        </div> <!-- End sidebar-content-wrapper -->
+      </div> <!-- End active-panel -->
+
+      <!-- DOSSIER PANEL (Slide-in Override) -->
+      <div class="dossier-panel" id="dossierPanelBucket">
+
+        <!-- DOSSIER TOP ROW -->
+        <div
+          style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid var(--slate-700); background: var(--slate-900);">
+          <button onclick="closeDossierPanel()"
+            style="background: transparent; border: 1px solid var(--slate-600); color: var(--slate-300); padding: 4px 10px; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            <i class="fas fa-chevron-left" style="font-size: 0.65rem;"></i> BACK TO FEED
+          </button>
+          <div style="display: flex; gap: 8px;">
+            <button style="background: transparent; border: none; color: var(--slate-400); cursor: pointer;"><i
+                class="fas fa-external-link-alt"></i></button>
+            <button style="background: transparent; border: none; color: var(--slate-400); cursor: pointer;"><i
+                class="fas fa-share-nodes"></i></button>
           </div>
         </div>
 
-        <div id="sidebar-tab-orbat" class="s-tab-content">
-          <div class="orbat-container">
-            <div class="sidebar-tabs" style="background: rgba(0,0,0,0.4); justify-content: space-between;">
-              <button class="s-tab-btn active" style="font-size: 0.8rem;" onclick="switchOrbatTab('UA')">UA
-                FORCES</button>
-              <button class="s-tab-btn" style="font-size: 0.8rem;" onclick="switchOrbatTab('RU')">RU FORCES</button>
-            </div>
-            <div id="orbat-list" class="orbat-list">
-              <!-- Units injected by JS -->
+        <!-- DOSSIER HERO HEADER -->
+        <div
+          style="background: #0f291e; padding: 20px; border-bottom: 1px solid var(--slate-700); position: relative; overflow: hidden;">
+          <!-- Grid overlay for aesthetic -->
+          <div
+            style="position: absolute; top:0; left:0; right:0; bottom:0; background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 20px 20px; opacity: 0.4; pointer-events: none;">
+          </div>
+
+          <div style="position: relative; z-index: 10;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <div
+                  style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #86efac; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px;">
+                  STRATEGIC ASSESSMENT</div>
+                <h2
+                  style="margin: 0; font-size: 1.4rem; color: #f8fafc; font-weight: 700; line-height: 1.2; max-width: 90%;">
+                  Deep Strike on Almetyevsk Oil Hub</h2>
+              </div>
+              <!-- T.I.E. Score Widget -->
+              <div
+                style="background: rgba(0,0,0,0.4); border: 1px solid var(--amber-500); border-radius: 6px; padding: 6px 12px; text-align: center; display: flex; flex-direction: column; align-items: center; min-width: 60px;">
+                <span
+                  style="font-size: 0.6rem; color: var(--amber-500); font-weight: 700; letter-spacing: 1px;">T.I.E.</span>
+                <span
+                  style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; color: #f8fafc; font-weight: 800; line-height: 1;">94</span>
+              </div>
             </div>
           </div>
         </div>
 
-      </div>
-    </aside>
+        <!-- SCROLLABLE DOSSIER CONTENT -->
+        <div style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px;">
+
+          <!-- Badges Row -->
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <span
+              style="background: var(--slate-800); border: 1px solid var(--slate-600); color: var(--slate-200); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;"><i
+                class="fas fa-fire" style="color: #ef4444;"></i> KINETIC_STRIKE</span>
+            <span
+              style="background: var(--slate-800); border: 1px solid var(--slate-600); color: var(--slate-200); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;"><i
+                class="fas fa-industry" style="color: var(--amber-500);"></i> INFRASTRUCTURE</span>
+            <span
+              style="background: rgba(6, 182, 212, 0.1); border: 1px solid var(--cyan-500); color: var(--cyan-500); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; font-family: 'JetBrains Mono', monospace;">GEO-VERIFIED</span>
+          </div>
+
+          <!-- Stats Grid -->
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+            <div
+              style="background: var(--slate-800); border: 1px solid var(--slate-700); border-radius: 6px; padding: 10px;">
+              <div
+                style="font-size: 0.65rem; color: var(--slate-400); text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">
+                DATE/TIME</div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--slate-100);">
+                2024-05-12<Br>04:22Z</div>
+            </div>
+            <div
+              style="background: var(--slate-800); border: 1px solid var(--slate-700); border-radius: 6px; padding: 10px;">
+              <div
+                style="font-size: 0.65rem; color: var(--slate-400); text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">
+                COORDINATES</div>
+              <div
+                style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--cyan-500); cursor: pointer;">
+                54.91N<Br>52.32E</div>
+            </div>
+            <div
+              style="background: var(--slate-800); border: 1px solid var(--slate-700); border-radius: 6px; padding: 10px;">
+              <div
+                style="font-size: 0.65rem; color: var(--slate-400); text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">
+                ACTOR</div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--slate-100);">
+                HUR/GUR<Br>(UA)</div>
+            </div>
+          </div>
+
+          <p style="font-size: 0.9rem; color: var(--slate-300); line-height: 1.6; margin: 0;">Multiple kamikaze UAVs
+            struck the Elhov refinery in Almetyevsk, Tatarstan. Sources report severe damage to the primary distillation
+            column, likely halting operations for weeks. This facility processes crude oil critical to the Russian
+            military logistics chain.</p>
+
+          <!-- Tactical Kill Chain -->
+          <div>
+            <h4
+              style="font-size: 0.75rem; color: var(--slate-400); text-transform: uppercase; border-bottom: 1px solid var(--slate-700); padding-bottom: 5px; margin-bottom: 15px;">
+              <i class="fas fa-link" style="margin-right: 6px;"></i> TACTICAL KILL CHAIN
+            </h4>
+
+            <div style="display: flex; flex-direction: column; gap: 0; padding-left: 10px; position: relative;">
+              <!-- Vertical Line connecting nodes -->
+              <div
+                style="position: absolute; left: 24px; top: 15px; bottom: 15px; width: 2px; border-left: 2px dashed var(--slate-600);">
+              </div>
+
+              <!-- Node 1 -->
+              <div style="display: flex; gap: 15px; padding-bottom: 20px; position: relative; z-index: 2;">
+                <div
+                  style="width: 30px; height: 30px; border-radius: 50%; background: var(--slate-800); border: 2px solid var(--slate-500); display: flex; align-items: center; justify-content: center; color: var(--slate-400); flex-shrink: 0;">
+                  <i class="fas fa-plane-departure" style="font-size: 0.7rem;"></i>
+                </div>
+                <div>
+                  <div style="font-weight: 600; font-size: 0.85rem; color: var(--slate-200); margin-bottom: 2px;">Launch
+                    Detected</div>
+                  <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--slate-500);">
+                    02:15Z - Sumy Region</div>
+                </div>
+              </div>
+
+              <!-- Node 2 (Primary Event) -->
+              <div style="display: flex; gap: 15px; padding-bottom: 20px; position: relative; z-index: 2;">
+                <div
+                  style="width: 30px; height: 30px; border-radius: 50%; background: rgba(245, 158, 11, 0.2); border: 2px solid var(--amber-500); display: flex; align-items: center; justify-content: center; color: var(--amber-500); flex-shrink: 0; box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);">
+                  <i class="fas fa-crosshairs" style="font-size: 0.7rem;"></i>
+                </div>
+                <div>
+                  <div style="font-weight: 600; font-size: 0.85rem; color: var(--amber-500); margin-bottom: 2px;">Target
+                    Impact</div>
+                  <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--slate-500);">
+                    04:22Z - Almetyevsk</div>
+                </div>
+              </div>
+
+              <!-- Node 3 -->
+              <div style="display: flex; gap: 15px; position: relative; z-index: 2;">
+                <div
+                  style="width: 30px; height: 30px; border-radius: 50%; background: var(--slate-800); border: 2px solid var(--slate-500); display: flex; align-items: center; justify-content: center; color: var(--slate-400); flex-shrink: 0;">
+                  <i class="fas fa-satellite" style="font-size: 0.7rem;"></i>
+                </div>
+                <div>
+                  <div style="font-weight: 600; font-size: 0.85rem; color: var(--slate-200); margin-bottom: 2px;">BDA
+                    Confirmation</div>
+                  <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--slate-500);">
+                    08:10Z - NASA FIRMS / SAR</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div> <!-- End dossier-panel -->
+    </div> <!-- End sidebar-container -->
 
     <main class="main-content">
 
@@ -1683,7 +2011,8 @@
           style="max-width: 95vw; height: 95vh; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
           <div
             style="background: #0f172a; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155;">
-            <h3 style="margin: 0; color: #f8fafc; font-size: 1rem;"><i class="fa-solid fa-satellite"></i> TACTICAL DEEP
+            <h3 style="margin: 0; color: #f8fafc; font-size: 1rem;"><i class="fa-solid fa-satellite"></i> TACTICAL
+              DEEP
               MAP (PLAYFRA)</h3>
             <span class="close-modal" onclick="closePlayfraModal()"
               style="position: static; color: #ef4444; font-size: 1.5rem; cursor: pointer;">&times;</span>
@@ -2055,6 +2384,21 @@
           document.getElementById('playfraModal').style.display = 'none';
         }
 
+        // --- DOSSIER PANEL OVERRIDE LOGIC (NEW V2) ---
+        function openDossierPanel() {
+          const sidebarContainer = document.getElementById('sidebarContainer');
+          if (sidebarContainer) {
+            sidebarContainer.classList.add('dossier-active');
+          }
+        }
+
+        function closeDossierPanel() {
+          const sidebarContainer = document.getElementById('sidebarContainer');
+          if (sidebarContainer) {
+            sidebarContainer.classList.remove('dossier-active');
+          }
+        }
+
         // --- SIDEBAR TAB LOGIC (NEW) ---
         function switchSidebarTab(tabName) {
           // 1. Reset buttons
@@ -2107,7 +2451,7 @@
         window.setTimeWindow = window.setTimeWindow || function () { };
         window.toggleTacticalPersistence = window.toggleTacticalPersistence || function () { };
       </script>
-
+  </div>
 </body>
 
 </html>
