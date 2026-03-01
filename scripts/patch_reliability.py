@@ -34,7 +34,7 @@ def calculate_retroactive_score(row, current_json):
     """
     text_dossier = (row['full_text_dossier'] or "").lower()
     description = (current_json.get('editorial', {}).get(
-        'description_it', "") or "").lower()
+        'description_en', "") or "").lower()
     full_content = f"{text_dossier} {description}"
 
     urls = parse_list_field(row['urls_list'])

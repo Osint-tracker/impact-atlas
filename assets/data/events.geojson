@@ -24558,6 +24558,39 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          45.18383,
+          54.18671
+        ]
+      },
+      "properties": {
+        "id": "2797cf16-add1-430e-b190-a618634a3bd2",
+        "title": "Ukrainian Drone Strikes Impact Fiber Optic Plant in Saransk",
+        "description": "The fiber optic plant 'Optikovolovonnye sistemy' in Saransk, Russia, has not resumed operations following drone strikes attributed to Ukrainian forces in April-May 2025. The plant had six production lines capable of producing 2,000 km of fiber optic cable daily, with an annual output of approximately 4 million kilometers.",
+        "date": "2026-02-26 09:54:54",
+        "timestamp": 1772099694000,
+        "tie_total": 100.0,
+        "vec_k": 7.0,
+        "vec_t": 9.0,
+        "vec_e": 8.0,
+        "reliability": 50,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 7.0,
+        "ai_reasoning": "[EN] The disruption of 'Optikovolovonnye sistemy' significantly hampers Russia's telecommunications infrastructure, impacting military and civilian communications. This aligns with Ukraine's broader strategy to degrade Russia's logistical and operational capabilities. The high TARGET and EFFECT scores underscore the strategic importance of this facility and the success of the strike.  \n[IT] L'interruzione di 'Optikovolovonnye sistemy' compromette gravemente le infrastrutture di telecomunic",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"MAKS23_NAFO\", \"url\": \"https://t.me/MAKS23_NAFO/86526\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 14.0,
+        "marker_color": "#ef4444"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           33.2989051,
           54.9148236
         ]
@@ -24723,6 +24756,39 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          35.1182867,
+          47.8507859
+        ]
+      },
+      "properties": {
+        "id": "609b5ba8-91cc-4ccc-b0df-f00181ff3a91",
+        "title": "Unknown Forces Conduct Night Attack in Zaporizhzhia",
+        "description": "On February 26, 2026, a night attack in Zaporizhzhia resulted in damage to the 'Epicenter' building due to shrapnel. No injuries were reported among employees, who were in designated safe areas as per security protocols.",
+        "date": "2026-02-26 11:17:23",
+        "timestamp": 1772104643000,
+        "tie_total": 3.0,
+        "vec_k": 3.0,
+        "vec_t": 2.0,
+        "vec_e": 3.0,
+        "reliability": 50,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 3.0,
+        "ai_reasoning": "[EN] The attack underscores persistent vulnerabilities in Zaporizhzhia’s security infrastructure, despite adherence to safety protocols. Its low kinetic and strategic impact suggests a probing or harassing tactic rather than a decisive operation. This aligns with broader patterns of destabilization efforts in Ukraine’s rear areas to strain resources and morale.  \n[IT] L'attacco evidenzia le persistenti vulnerabilità nell'infrastruttura di sicurezza di Zaporizhzhia, nonostante il",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"MAKS23_NAFO\", \"url\": \"https://t.me/MAKS23_NAFO/86542\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 4.3,
+        "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           33.2989051,
           54.9148236
         ]
@@ -24855,6 +24921,39 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          32.6143593,
+          46.637456
+        ]
+      },
+      "properties": {
+        "id": "89e5fcc7-8abd-48ce-998f-b253750085f5",
+        "title": "Russian Missile Movement Detected near Kherson Region",
+        "description": "A Russian air-to-surface missile (Kh-31P) was reported moving through the Beryslav district of the Kherson region towards the Mykolaiv region. No further details on the trajectory or potential targets were provided.",
+        "date": "2026-02-26 11:09:09",
+        "timestamp": 1772104149000,
+        "tie_total": 0.0,
+        "vec_k": 7.0,
+        "vec_t": 8.0,
+        "vec_e": 2.0,
+        "reliability": 50,
+        "bias_score": -2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 7.0,
+        "ai_reasoning": "[EN] The movement of a Kh-31P missile near Kherson signals potential Russian intent to escalate strikes on Mykolaiv's infrastructure or military positions, given its precision strike capability. The high TARGET score (8) underscores Mykolaiv's strategic importance as a logistics hub for Ukrainian forces in the south. Limited EFFECT (2) suggests either a failed launch or diversionary tactic, but its presence alone pressures Ukrainian air defenses.  \n\n[IT] Lo spostamento di un",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"kherson_non_fake\", \"url\": \"https://t.me/kherson_non_fake/27933\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           34.3927394,
           45.7119746
         ]
@@ -24954,6 +25053,39 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          33.4079326,
+          46.5421715
+        ]
+      },
+      "properties": {
+        "id": "ca0d0763-2012-47ef-bba7-ea238f672e8f",
+        "title": "Russian Forces Conduct Strikes in Kherson Region",
+        "description": "On February 26, 2026, Russian Forces launched a series of strikes from the occupied area of Nechaievo targeting the Kherson region. The specific impact and casualties resulting from these strikes are currently unreported.",
+        "date": "2026-02-26 10:03:25",
+        "timestamp": 1772100205000,
+        "tie_total": 20.0,
+        "vec_k": 5.0,
+        "vec_t": 4.0,
+        "vec_e": 5.0,
+        "reliability": 50,
+        "bias_score": 1.2,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 5.0,
+        "ai_reasoning": "[EN] The strikes signal continued Russian pressure on Ukrainian defensive lines in the south, likely aimed at disrupting logistics and morale. The moderate T.I.E. scores suggest a tactical probing operation rather than a decisive offensive. This aligns with Russia's broader strategy of attrition in secondary sectors while focusing resources on eastern fronts.  \n\n[IT] I colpi indicano una pressione russa continua sulle linee difensive ucraine nel sud, probabilmente mirata a interrompere logistica e morale.",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"kherson_non_fake\", \"url\": \"https://t.me/kherson_non_fake/27932\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 6.0,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           25.5960082,
           49.5577398
         ]
@@ -24980,6 +25112,138 @@
         "visual_analysis": "",
         "marker_radius": 5.3,
         "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.8622574,
+          47.997797
+        ]
+      },
+      "properties": {
+        "id": "40e931cc-6cb1-4835-b503-e8748ace1045",
+        "title": "Ukrainian Forces Destroy Tanks in Donetsk Region",
+        "description": "In the Donetsk region, border guards and UAV operators from the Phoenix unit of the Pomsta brigade reported the destruction of two Russian tanks.",
+        "date": "2026-03-01 14:23:54",
+        "timestamp": 1772375034000,
+        "tie_total": 41.0,
+        "vec_k": 5.0,
+        "vec_t": 5.0,
+        "vec_e": 7.0,
+        "reliability": 50,
+        "bias_score": 2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 5.0,
+        "ai_reasoning": "[EN] The destruction of two Russian tanks in Donetsk demonstrates Ukrainian forces' continued ability to leverage UAVs for precision strikes, degrading Russian armored capabilities in a contested region. This tactical success underscores Ukraine's evolving asymmetric warfare strategies, which are critical in countering Russia's numerical superiority. Such losses may compel Russia to reassess its deployment of heavy armor in vulnerable areas, potentially slowing offensive operations.  \n[IT] La distruzione di due carri armati russi nella regione di Don",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"MAKS23_NAFO\", \"url\": \"https://t.me/MAKS23_NAFO/87173\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 8.1,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.4079326,
+          46.5421715
+        ]
+      },
+      "properties": {
+        "id": "6e93ab81-64d8-46eb-a381-0b50b09a1998",
+        "title": "Russian Artillery Strike on Civilian Areas in Kherson",
+        "description": "On March 1, 2026, at approximately 16:48, Russian artillery targeted residential areas in the Ship District of Kherson. Eyewitnesses reported that the strike impacted the courtyard of multi-story buildings in the Zhilposelok area.",
+        "date": "2026-03-01 14:50:41",
+        "timestamp": 1772376641000,
+        "tie_total": 5.0,
+        "vec_k": 4.0,
+        "vec_t": 2.0,
+        "vec_e": 4.0,
+        "reliability": 50,
+        "bias_score": 2.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 4.0,
+        "ai_reasoning": "[EN] The strike underscores Russia's continued disregard for civilian safety, likely aimed at instilling fear and disrupting Ukrainian morale in contested regions. This tactic aligns with broader Russian efforts to destabilize Ukrainian-held territories, despite minimal strategic military gain. Such actions risk further international condemnation and potential escalation of sanctions.  \n[IT] L'attacco evidenzia il continuo disprezzo della Russia per la sicurezza civile, probabilmente mirato a instillare paura e destabilizzare il morale ucraino nelle",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"kherson_non_fake\", \"url\": \"https://t.me/kherson_non_fake/28023\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 4.5,
+        "marker_color": "#eab308"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.4079326,
+          46.5421715
+        ]
+      },
+      "properties": {
+        "id": "8d4ac364-a2a8-49c0-85ca-62510253f57b",
+        "title": "Russian Forces Occupy Kherson City",
+        "description": "On March 1, 2022, Russian Forces occupied the territory of Kherson city. From February 24 to 28, they surrounded the city, encountering resistance near the Antonivskyi Bridge. Following their advance, Russian units moved into the Korabelnyi district. Reports indicated clashes and the establishment of checkpoints by Russian Forces. By 06:00, Russian infantry entered the Korabelnyi area, with further movements reported throughout the morning.",
+        "date": "2026-03-01 14:36:23",
+        "timestamp": 1772375783000,
+        "tie_total": 32.0,
+        "vec_k": 5.0,
+        "vec_t": 5.0,
+        "vec_e": 5.0,
+        "reliability": 70,
+        "bias_score": 3.2,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 5.0,
+        "ai_reasoning": "[EN] The occupation of Kherson grants Russia control over a key southern Ukrainian city, enabling logistical access to Crimea and consolidating their hold on the Black Sea region. This move disrupts Ukrainian supply lines and reinforces Russia’s strategic depth in southern Ukraine. Globally, it signals Russia’s intent to secure territorial gains despite international condemnation.  \n[IT] L'occupazione di Kherson conferisce alla Russia il controllo di una città chiave nel sud dell'Ucraina, facilit",
+        "has_video": true,
+        "sources_list": "[{\"name\": \"kherson_non_fake\", \"url\": \"https://t.me/kherson_non_fake/28014\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 7.2,
+        "marker_color": "#f59e0b"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.1182867,
+          47.8507859
+        ]
+      },
+      "properties": {
+        "id": "f1772d85-297e-4653-91fc-19c2334ce0fc",
+        "title": "Potential Street Fighting Threat Identified in Zaporizhzhia",
+        "description": "Reports indicate a potential threat of street fighting in Zaporizhzhia. The situation is being monitored by local authorities and security agencies. No specific details on troop movements or engagements have been confirmed at this time.",
+        "date": "2026-03-01 14:30:00+00:00",
+        "timestamp": 0,
+        "tie_total": 0.0,
+        "vec_k": 1.0,
+        "vec_t": 1.0,
+        "vec_e": 1.0,
+        "reliability": 40,
+        "bias_score": 0.0,
+        "classification": "UNKNOWN",
+        "target_type": "UNKNOWN",
+        "intensity_score": 1.0,
+        "ai_reasoning": "[EN] The potential for street fighting in Zaporizhzhia, while currently low in intensity, could disrupt civilian life and strain local security resources, complicating broader Ukrainian defensive operations in the region. This aligns with Russia's broader strategy to destabilize key urban centers, though the lack of confirmed troop movements suggests limited immediate escalation. Monitoring this threat is critical to preempting any sudden shifts in the conflict dynamics.  \n[IT] Il potenziale di scontri urbani a Z",
+        "has_video": false,
+        "sources_list": "[{\"name\": \"glavred.info\", \"url\": \"https://glavred.info\"}]",
+        "units": "[]",
+        "visual_analysis": "",
+        "marker_radius": 4.0,
+        "marker_color": "#64748b"
       }
     }
   ]

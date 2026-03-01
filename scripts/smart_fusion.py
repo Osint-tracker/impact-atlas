@@ -121,7 +121,7 @@ def main():
                 title = r['full_text_dossier'][:50]
                 if r['ai_report_json']:
                     j = json.loads(r['ai_report_json'])
-                    title = j.get('editorial', {}).get('title_it', title)
+                    title = j.get('editorial', {}).get('title_en', title)
 
                 dt = datetime.fromisoformat(
                     r['last_seen_date']).replace(tzinfo=None)

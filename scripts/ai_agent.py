@@ -2130,21 +2130,14 @@ OR
 
         3. **TONE:** Cold, clinical, robotic. No adjectives like "Brutal", "Massive", "Cynical". Just numbers and facts.
 
-        4. **TRANSLATION RULE (ITALIAN):**
-           - "Enemy" -> "Forze Russe" (o "Forze Ucraine" based on context). NEVER "Il nemico".
-           - "Our defenders" -> "Le forze di difesa ucraine".
-
         OUTPUT REQUIREMENTS:
         1. **Title (EN):** [Who] [Action] [Where]. (e.g. "Russian Infantry Attack Repelled near Sotnytskyi Kozachok").
         2. **Description (EN):** Max 80 words. Focus on kinetics: movements, clashes, casualties.
-        3. **Italian Translation:** RIGOROUSLY NEUTRAL.
 
         OUTPUT JSON:
         {{
             "title_en": "String",
-            "description_en": "String",
-            "title_it": "String",
-            "description_it": "String"
+            "description_en": "String"
         }}
         """
 
@@ -2167,47 +2160,16 @@ OR
             if not parsed_data:
                 return self._get_error_journalist_response()
 
-            # 3. BARRIERA MECCANICA (Python Post-Processing)
-            # Funzione interna di pulizia
-            def sanitize_string(s):
-                if not s:
-                    return ""
-                replacements = {
-                    "il nemico": "le forze avversarie",
-                    "del nemico": "delle forze avversarie",
-                    "al nemico": "alle forze avversarie",
-                    "col nemico": "con le forze avversarie",
-                    "i nostri": "le truppe ucraine",
-                    "le nostre": "le truppe ucraine",
-                    "liberato": "preso il controllo di",
-                    "orchi": "soldati russi",
-                    "terroristi": "incursori"
-                }
-                s_lower = s.lower()
-                for bad, good in replacements.items():
-                    if bad in s_lower:
-                        pattern = re.compile(re.escape(bad), re.IGNORECASE)
-                        s = pattern.sub(good, s)
-                return s
-
-            # Applica sanitizzazione ai campi italiani
-            parsed_data['title_it'] = sanitize_string(
-                parsed_data.get('title_it', ''))
-            parsed_data['description_it'] = sanitize_string(
-                parsed_data.get('description_it', ''))
-
+            # No Italian translation logic anymore
             return parsed_data
 
         except Exception as e:
             print(f"   ❌ Journalist Critical Error: {e}")
             return self._get_error_journalist_response()
 
-    def _get_error_journalist_response(self):
         return {
             "title_en": "Event Processing Error",
-            "description_en": "Data could not be summarized neutrally.",
-            "title_it": "Errore Elaborazione Evento",
-            "description_it": "Impossibile riassumere i dati in modo neutrale."
+            "description_en": "Data could not be summarized neutrally."
         }
 
 # =========================================================================
@@ -2255,11 +2217,10 @@ def _step_5_the_strategist(client_or, final_report):
     2. ANALYZE CONSEQUENCES. Explain the operational or strategic implication.
     3. USE METRICS. Use the T.I.E. scores to guide your assessment.
     4. GLOBAL CONTEXT. Mention how this fits into the broader war.
-    5. BREVITY. Maximum 3 sentences per language. Tone: Cold, Professional, Direct.
+    5. BREVITY. Maximum 3 sentences. Tone: Cold, Professional, Direct.
 
     OUTPUT FORMAT (Strictly follow this):
-    [EN] <Insight in English>
-    [IT] <Insight in Italian>
+    <Insight in English>
     """
 
     try:
@@ -2279,7 +2240,7 @@ def _step_5_the_strategist(client_or, final_report):
 
     except Exception as e:
         print(f"      ⚠️ Strategist Error: {e}")
-        return "[EN] Analysis unavailable.\n[IT] Analisi non disponibile."
+        return "Analysis unavailable."
 
     # =========================================================================
     # 🔄 MAIN PROCESS FLOW

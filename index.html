@@ -803,6 +803,7 @@
       outline: none;
       transition: border-color 0.2s;
       -moz-appearance: textfield;
+      appearance: textfield;
     }
 
     .ttb-custom-input::-webkit-outer-spin-button,
@@ -1953,12 +1954,14 @@
           margin-top: 6px;
           display: -webkit-box;
           -webkit-line-clamp: 3;
+          line-clamp: 3;
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
 
         .imint-explanation.expanded {
           -webkit-line-clamp: unset;
+          line-clamp: unset;
           display: block;
         }
 
