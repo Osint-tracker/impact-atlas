@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impact Atlas | Conflict Monitor</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Merriweather:wght@700&family=Rajdhani:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="preload" href="assets/data/events.geojson" as="fetch" crossorigin>
+
+    <link rel="stylesheet" href="assets/css/style.css?v=4">
+    <link rel="stylesheet" href="assets/css/dossier_styles.css?v=4">
+    <!-- Mapbox GL JS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css" />
+
+    <!-- LEAFLET & PLUGINS (Authoritative Imports) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+    <link rel="stylesheet" href="assets/css/style.css?v=2">
+    <link rel="stylesheet" href="assets/css/dossier_styles.css?v=2">
+
+    <style>
+        /* --- CSS FOR TOOLTIPS AND TABS --- */
+        /* (Keeping existing styles that do not conflict) */
+        .intensity-badge-wrapper {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            position: relative;
+            cursor: help;
+        }
+
+        .info-icon {
+            font-size: 0.7rem;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: serif;
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        .intensity-tooltip {
+            visibility: hidden;
+            width: 240px;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 10000;
+            bottom: 135%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.75rem;
+            border: 1px solid #334155;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            line-height: 1.4;
+            pointer-events: none;
+        }
+
+        .intensity-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #334155 transparent transparent transparent;
+        }
+
+        .intensity-badge-wrapper:hover .intensity-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* --- INTEGRATIONS & OVERRIDES --- */
+
+        /* 1. Styles for Sidebar Tabs */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            /* Important for handling internal scroll */
+        }
+
+        .sidebar-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        .s-tab-btn {
+            flex: 1;
+            padding: 15px;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .s-tab-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .s-tab-btn.active {
+            color: #f59e0b;
+            /* Amber - Your accent color */
+            border-bottom: 2px solid #f59e0b;
+            background: linear-gradient(to top, rgba(245, 158, 11, 0.1), transparent);
+        }
+
+        /* 2. Tab Content Management */
+        .sidebar-content-wrapper {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .s-tab-content {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+
+        .s-tab-content.active {
+            display: flex;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Readaptation of existing Scroll Area */
+        .sidebar-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        /* Custom Slider */
+        input[type="range"] {
+            height: 6px;
+            background: linear-gradient(90deg, #304f79 0%, #f59e0b 50%, #ef4444 100%);
+            border-radius: 3px;
+            outline: none;
+            margin: 10px 0;
+            -webkit-appearance: none;
+            appearance: none;
+            /* Necessary for Chrome/Safari */
+        }
+
+        /* Style of the "dot" you drag */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #f1f5f9;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #334155;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #f59e0b;
+            border: 2px solid #0f172a;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #f59e0b;
+            border: 2px solid #0f172a;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+
+
+        /* Animazione check icon */
+        .toggle-card input:checked~.check-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .check-icon {
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.2s;
+            color: #22c55e;
+        }
+
+        /* ORBAT TRACKER STYLES */
+        .orbat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            color: #e2e8f0;
+        }
+
+        .orbat-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .unit-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+
+        .unit-card:hover {
+            border-color: #f59e0b;
+            transform: translateY(-2px);
+        }
+
+        .unit-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .unit-type-icon {
+            color: #94a3b8;
+        }
+
+        .unit-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+        }
+
+        .unit-badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .unit-sub {
+            font-size: 0.7rem;
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .unit-locate-btn {
+            margin-top: 4px;
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 4px;
+            padding: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .unit-locate-btn:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        /* UNIT DOSSIER MODAL STYLES */
+        .unit-dossier-header {
+            background: #0f172a;
+            padding: 20px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .ud-flag-large {
+            width: 60px;
+            height: 40px;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+
+        .ud-title-group h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #f8fafc;
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .ud-subtitle {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .ud-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .ud-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .ud-panel {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .ud-stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .ud-stat-label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        .ud-stat-value {
+            color: #f8fafc;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .timeline-mini-chart {
+            height: 60px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .ud-events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .ud-event-item {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #64748b;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .ud-event-item:hover {
+            background: rgba(30, 41, 59, 1);
+        }
+    </style>
+    <style>
+        /* NANO TACTICAL TOGGLES (Nano Banana 3 Pro Design) */
+        .tech-toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 14px 16px;
+            /* Tactical spacing */
+            border-radius: 4px;
+            /* Chamfered */
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-toggle-row:hover {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(245, 158, 11, 0.3);
+            /* Amber scan hover */
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.05);
+        }
+
+        .tech-toggle-row input {
+            display: none;
+        }
+
+        .tech-toggle-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-family: 'Rajdhani', sans-serif;
+            /* If available, else generic */
+        }
+
+        /* THE SWITCH RAIL */
+        .tech-switch {
+            width: 48px;
+            height: 24px;
+            background: #0f172a;
+            /* Deep Void */
+            border: 1px solid #334155;
+            border-radius: 2px;
+            /* Sharp edges */
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8);
+        }
+
+        /* THE KNOB (Slider) */
+        .tech-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            background: #475569;
+            /* Slate Machine Grey */
+            border-radius: 1px;
+            /* Sharp */
+            transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* ACTIVE STATE (Amber Energy) */
+        .tech-toggle-row input:checked~.tech-switch {
+            background: rgba(245, 158, 11, 0.15);
+            /* Faint glow background */
+            border-color: #f59e0b;
+        }
+
+        .tech-toggle-row input:checked~.tech-switch::after {
+            transform: translateX(24px);
+            background: #f59e0b;
+            /* Full Amber Power */
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+            border-color: #fbbf24;
+        }
+
+        /* Active Label Light */
+        .tech-toggle-row input:checked~.tech-toggle-label {
+            color: #f1f5f9;
+            text-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+        }
+
+        /* --- TACTICAL MAP MARKERS (NANO STYLE) --- */
+        .narrative-marker-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* The Central Hexagon */
+        .narrative-marker-hex {
+            width: 36px;
+            height: 40px;
+            background: rgba(15, 23, 42, 0.95);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .narrative-marker-hex::before {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: #0f172a;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            z-index: -1;
+        }
+
+        /* Inner Details */
+        .hex-icon {
+            font-size: 12px;
+            margin-bottom: -2px;
+        }
+
+        .hex-score {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        /* The Tactical Ring */
+        .narrative-marker-ring {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 1px dashed;
+            color: inherit;
+            /* Inherits color from inline style */
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: spin-tactical 10s linear infinite;
+            z-index: 1;
+        }
+
+        /* High Intensity Pulse */
+        .pulse-emitter {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes spin-tactical {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        .narrative-polygon {
+            stroke-dasharray: 5, 10;
+            stroke-linecap: square;
+        }
+
+        /* ========================================== */
+        /* TACTICAL TIME COMMAND BAR                  */
+        /* ========================================== */
+        .tactical-time-bar {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 6px;
+            padding: 5px 6px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .ttb-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: #94a3b8;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 5px 12px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .ttb-btn:hover {
+            color: #f8fafc;
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .ttb-btn.active {
+            color: #0f172a;
+            background: #f59e0b;
+            border-color: #f59e0b;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .ttb-divider {
+            width: 1px;
+            height: 20px;
+            background: #334155;
+            margin: 0 4px;
+        }
+
+        .ttb-persistence {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #64748b;
+            font-size: 0.7rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            padding: 0 6px;
+        }
+
+        .ttb-persistence input {
+            display: none;
+        }
+
+        .ttb-persistence .ttb-pip {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #334155;
+            border: 1px solid #475569;
+            transition: all 0.3s;
+        }
+
+        .ttb-persistence input:checked~.ttb-pip {
+            background: #f59e0b;
+            border-color: #fbbf24;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+        }
+
+        .ttb-persistence input:checked~span {
+            color: #f59e0b;
+        }
+
+        /* Persistence Tooltip */
+        .ttb-persistence-wrap {
+            position: relative;
+        }
+
+        .ttb-tooltip {
+            display: none;
+            position: absolute;
+            top: calc(100% + 10px);
+            right: -10px;
+            width: 260px;
+            background: rgba(15, 23, 42, 0.97);
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 12px 14px;
+            color: #cbd5e1;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            letter-spacing: 0;
+            text-transform: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            z-index: 1001;
+            pointer-events: none;
+        }
+
+        .ttb-tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            right: 20px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent transparent #334155 transparent;
+        }
+
+        .ttb-tooltip .tt-title {
+            color: #f59e0b;
+            font-weight: 700;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+            font-family: 'Rajdhani', sans-serif;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .ttb-tooltip .tt-rule {
+            display: flex;
+            gap: 6px;
+            align-items: flex-start;
+            margin-top: 4px;
+        }
+
+        .ttb-tooltip .tt-rule i {
+            color: #f59e0b;
+            margin-top: 2px;
+            font-size: 0.65rem;
+        }
+
+        .ttb-persistence-wrap:hover .ttb-tooltip {
+            display: block;
+        }
+
+        /* Custom Hours Input */
+        .ttb-custom-group {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .ttb-custom-input {
+            width: 38px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid #475569;
+            border-radius: 3px;
+            color: #f8fafc;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 4px 2px;
+            outline: none;
+            transition: border-color 0.2s;
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        .ttb-custom-input::-webkit-outer-spin-button,
+        .ttb-custom-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .ttb-custom-input:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 6px rgba(245, 158, 11, 0.3);
+        }
+
+        .ttb-custom-suffix {
+            color: #64748b;
+            font-size: 0.7rem;
+            font-weight: 700;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        /* ========================================== */
+        /* SKELETON LOADERS                           */
+        /* ========================================== */
+        @keyframes skeleton-pulse {
+            0% {
+                background-position: -200px 0;
+            }
+
+            100% {
+                background-position: calc(200px + 100%) 0;
+            }
+        }
+
+        .skeleton-line {
+            height: 12px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+            background-size: 200px 100%;
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
+        }
+
+        .skeleton-block {
+            border-radius: 6px;
+            background: linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+            background-size: 200px 100%;
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
+        }
+
+        .skeleton-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #1e293b;
+            border-radius: 6px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 200px;
+            flex-shrink: 0;
+        }
+
+        .skeleton-stat {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .skeleton-stat .skeleton-block {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+        }
+
+        .skeleton-stat-text {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* ========================================== */
+        /* COLLAPSIBLE STRATEGIST ACCORDION           */
+        /* ========================================== */
+        .strategist-accordion-toggle {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s;
+        }
+
+        .strategist-accordion-toggle:hover {
+            color: #f59e0b;
+        }
+
+        .strategist-accordion-toggle .chevron {
+            transition: transform 0.3s ease;
+            font-size: 0.7rem;
+        }
+
+        .strategist-accordion-toggle.open .chevron {
+            transform: rotate(180deg);
+        }
+
+        .strategist-accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .strategist-accordion-body.expanded {
+            max-height: 600px;
+        }
+
+        /* ========================================== */
+        /* QUICK SEARCH (MAP OVERLAY)                 */
+        /* ========================================== */
+        .map-quick-search {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 1000;
+            width: 260px;
+        }
+
+        .map-quick-search input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 6px;
+            padding: 8px 12px 8px 34px;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .map-quick-search input:focus {
+            border-color: rgba(245, 158, 11, 0.5);
+        }
+
+        .map-quick-search input::placeholder {
+            color: #64748b;
+        }
+
+        .map-quick-search .qs-icon {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 0.85rem;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .qs-results {
+            display: none;
+            margin-top: 4px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #334155;
+            border-radius: 6px;
+            max-height: 220px;
+            overflow-y: auto;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+        }
+
+        .qs-results.visible {
+            display: block;
+        }
+
+        .qs-item {
+            padding: 8px 12px;
+            color: #cbd5e1;
+            font-size: 0.82rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+            transition: background 0.15s;
+        }
+
+        .qs-item:last-child {
+            border-bottom: none;
+        }
+
+        .qs-item:hover {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f8fafc;
+        }
+
+        .qs-item .qs-type {
+            font-size: 0.65rem;
+            color: #64748b;
+            background: #1e293b;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* ========================================== */
+        /* DIRECTIONAL MANOEUVRE MARKERS               */
+        /* ========================================== */
+        .manoeuvre-marker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .manoeuvre-arrow {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #0f172a;
+            background: #22c55e;
+            border: 2px solid #1e293b;
+            border-radius: 4px;
+            box-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
+            transition: transform 0.3s;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="acled-header">
+        <div class="header-content">
+            <div class="brand">
+                <h1>IMPACT<span>ATLAS</span></h1>
+                <span class="subtitle" style="color:#94a3b8; font-size:0.8rem; margin-left:10px;">Global Conflict
+                    Monitor</span>
+            </div>
+            <nav>
+                <a href="#" class="active">Dashboard</a>
+                <a href="#methodology">Methodology</a>
+                <a href="#data">Export Data</a>
+                <a href="#" class="btn-primary" style="padding: 5px 15px;">Login</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+
+        <aside class="sidebar">
+
+            <div class="sidebar-tabs">
+                <button class="s-tab-btn active" onclick="switchSidebarTab('layers')">
+                    <i class="fa-solid fa-layer-group"></i> MAPS
+                </button>
+                <button class="s-tab-btn" onclick="switchSidebarTab('orbat')">
+                    <i class="fa-solid fa-shield-halved"></i> ORBAT
+                </button>
+            </div>
+
+            <div class="sidebar-content-wrapper">
+
+                <div id="sidebar-tab-layers" class="s-tab-content active">
+                    <div class="sidebar-scroll-area">
+
+                        <div class="layer-section-title">FRONTLINE SOURCE</div>
+
+                        <div class="map-layer-card active" onclick="selectMapSource(this, 'deepstate')">
+                            <div class="card-header">
+                                <div>
+                                    <span class="card-title">PROJECT OWL</span>
+                                    <span class="badge-source badge-ua"
+                                        style="background: #f59e0b; color:black;">LIVE</span>
+                                </div>
+                                <i class="fa-solid fa-circle-dot status-dot" style="color: #22c55e;"></i>
+                            </div>
+                            <div class="card-desc">Real-time frontline & unit tracking. Primary Intelligence Source.
+                            </div>
+                        </div>
+
+                        <div class="map-layer-card" onclick="openPlayfraModal()">
+                            <div class="card-header">
+                                <div>
+                                    <span class="card-title">TACTICAL DEEP MAP</span>
+                                    <span class="badge-source badge-us"
+                                        style="background:#8b5cf6; color:white;">PLAYFRA</span>
+                                </div>
+                                <i class="fa-solid fa-satellite status-dot" style="color: #cbd5e1;"></i>
+                            </div>
+                            <div class="card-desc" style="margin-bottom: 5px;">High-resolution tactical map overlay.
+                            </div>
+                        </div>
+
+                        <div class="map-layer-card" onclick="window.open('https://deepstatemap.live/en', '_blank')"
+                            style="cursor: pointer;">
+                            <div class="card-header">
+                                <div>
+                                    <span class="card-title">DEEPSTATE (EXTERNAL)</span>
+                                    <span class="badge-source badge-ua"
+                                        style="background:#b91c1c; color:#f8fafc;">LINK</span>
+                                </div>
+                                <i class="fa-solid fa-external-link-alt status-dot" style="color: #94a3b8;"></i>
+                            </div>
+                            <div class="card-desc">Opens the official website in a new tab.</div>
+                        </div>
+
+                        <!-- Rybar Removed -->
+
+                        <div class="layer-section-title">EXTRA DATA</div>
+
+                        <label class="tech-toggle-row">
+                            <span class="tech-toggle-label">Weather Radar</span>
+                            <input type="checkbox" onchange="toggleTechLayer('radar', this)">
+                            <div class="tech-switch"></div>
+                        </label>
+
+                        <label class="tech-toggle-row">
+                            <span class="tech-toggle-label">
+                                NASA FIRMS (Thermal)
+                            </span>
+                            <input type="checkbox" onchange="toggleTechLayer('firms', this)">
+                            <div class="tech-switch"></div>
+                        </label>
+                        <label class="tech-toggle-row" style="align-items: flex-start;">
+                            <div style="display:flex; flex-direction:column;">
+                                <span class="tech-toggle-label"
+                                    data-tooltip="Real-time cloud cover & fog degrading drone operations.">
+                                    Drone V.F.R. (Visibility)
+                                </span>
+                                <span style="font-size: 0.65rem; color: #64748b; margin-top: 2px;">Clouds >70% or Vis
+                                    &lt;3km</span>
+                            </div>
+                            <input type="checkbox" onchange="toggleTechLayer('vfr', this)">
+                            <div class="tech-switch" style="margin-top: 2px;"></div>
+                        </label>
+
+                        <label class="tech-toggle-row">
+                            <span class="tech-toggle-label">Satellite (HIR)</span>
+                            <input type="checkbox" onchange="toggleTechLayer('satellite', this)">
+                            <div class="tech-switch"></div>
+                        </label>
+
+                        <div class="layer-section-title">VIEW OPTIONS</div>
+
+                        <label class="tech-toggle-row">
+                            <span class="tech-toggle-label">Show Events</span>
+                            <input type="checkbox" checked onchange="toggleTechLayer('events', this)">
+                            <div class="tech-switch"></div>
+                        </label>
+
+                        <label class="tech-toggle-row">
+                            <span class="tech-toggle-label">Fortifications</span>
+                            <input type="checkbox" checked onchange="toggleTechLayer('fortifications', this)">
+                            <div class="tech-switch"></div>
+                        </label>
+
+                        <label class="tech-toggle-row">
+                            <span class="tech-toggle-label">
+                                ORBAT Units (Live)
+                            </span>
+                            <input type="checkbox" onchange="toggleTechLayer('units', this)">
+                            <div class="tech-switch"></div>
+                        </label>
+
+                        <label class="tech-toggle-row">
+                            <span class="tech-toggle-label">
+                                Strategic Context (AI)
+                            </span>
+                            <input type="checkbox" onchange="toggleTechLayer('narratives', this)">
+                            <div class="tech-switch"></div>
+                        </label>
+
+                        </label>
+
+                        <div class="layer-section-title">TACTICAL ENVIRONMENT</div>
+                        <div class="filter-block" style="border-bottom: none; padding-bottom: 0;">
+                            <label style="font-size: 0.75rem; letter-spacing: 1px; color: #94a3b8;"><i
+                                    class="fas fa-truck-monster" style="color: #f59e0b; margin-right: 6px;"></i>
+                                MOBILITY INDEX</label>
+                            <div id="mobility-index" class="mobility-widget">
+                                <span style="color:#64748b; font-size: 0.8rem;">INITIALIZING SENSORS...</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="sidebar-tab-orbat" class="s-tab-content">
+                    <div class="orbat-container">
+                        <div class="sidebar-tabs" style="background: rgba(0,0,0,0.4); justify-content: space-between;">
+                            <button class="s-tab-btn active" style="font-size: 0.8rem;"
+                                onclick="switchOrbatTab('UA')">UA
+                                FORCES</button>
+                            <button class="s-tab-btn" style="font-size: 0.8rem;" onclick="switchOrbatTab('RU')">RU
+                                FORCES</button>
+                        </div>
+                        <div id="orbat-list" class="orbat-list">
+                            <!-- Units injected by JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <div class="kpi-bar">
+                <div class="kpi-card">
+                    <span class="kpi-label">Total Events</span>
+                    <span class="kpi-value" id="eventCount">0</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">Last Update</span>
+                    <span class="kpi-value" id="lastUpdate" style="font-size:1.2rem;">Loading...</span>
+                </div>
+                <div class="kpi-card" id="categoryStats">
+                    <span class="kpi-label">System Status</span>
+                    <span class="kpi-value" style="color:#f59e0b; font-size:1.2rem;">ONLINE</span>
+                </div>
+            </div>
+
+            <div class="map-container-wrapper" style="position: relative;">
+
+                <!-- QUICK SEARCH (flyTo) -->
+                <div class="map-quick-search" id="quickSearchContainer">
+                    <i class="fa-solid fa-magnifying-glass qs-icon"></i>
+                    <input type="text" id="quickSearchInput" placeholder="Search unit or city..." autocomplete="off">
+                    <div class="qs-results" id="quickSearchResults"></div>
+                </div>
+
+                <!-- TACTICAL TIME COMMAND BAR -->
+                <div class="tactical-time-bar" id="tacticalTimeBar">
+                    <button class="ttb-btn active" onclick="setTimeWindow(24)" data-hours="24">24H</button>
+                    <button class="ttb-btn" onclick="setTimeWindow(48)" data-hours="48">48H</button>
+                    <button class="ttb-btn" onclick="setTimeWindow(72)" data-hours="72">72H</button>
+                    <button class="ttb-btn" onclick="setTimeWindow(0)" data-hours="0">ALL</button>
+                    <div class="ttb-divider"></div>
+                    <div class="ttb-custom-group">
+                        <input type="number" class="ttb-custom-input" id="ttbCustomHours" min="1" max="720"
+                            placeholder="—" title="Custom hours" onchange="setTimeWindow(parseInt(this.value) || 0)">
+                        <span class="ttb-custom-suffix">H</span>
+                    </div>
+                    <div class="ttb-divider"></div>
+                    <div class="ttb-persistence-wrap">
+                        <label class="ttb-persistence">
+                            <input type="checkbox" id="ttbPersistence" onchange="toggleTacticalPersistence()">
+                            <div class="ttb-pip"></div>
+                            <span>PERSIST</span>
+                            <i class="fa-solid fa-circle-info"
+                                style="font-size: 0.6rem; margin-left: 2px; opacity: 0.6;"></i>
+                        </label>
+                        <div class="ttb-tooltip">
+                            <div class="tt-title"><i class="fa-solid fa-shield-halved"></i> Tactical Persistence</div>
+                            When enabled, high-impact events remain visible even outside your selected time window:
+                            <div class="tt-rule"><i class="fa-solid fa-chevron-right"></i><span>Events with <strong
+                                        style="color:#f59e0b">T.I.E. Score &ge; 100</strong></span></div>
+                            <div class="tt-rule"><i class="fa-solid fa-chevron-right"></i><span>Events classified as
+                                    <strong style="color:#22c55e">MANOEUVRE</strong> or <strong
+                                        style="color:#22c55e">SHAPING_OFFENSIVE</strong></span></div>
+                            <div style="margin-top: 8px; color: #64748b; font-size: 0.7rem;">When OFF, only events
+                                within the exact
+                                time window are shown.</div>
+                        </div>
+                    </div>
+                    <div class="ttb-divider"></div>
+                    <!-- Performance Filters -->
+                    <button class="ttb-btn perf-filter-btn" data-filter="elite"
+                        onclick="togglePerformanceFilter('elite')"
+                        title="Show only high-value engagements (T.I.E. ≥ 80 or T ≥ 8)">
+                        <i class="fa-solid fa-star" style="font-size:0.6rem;"></i> ELITE
+                    </button>
+                    <button class="ttb-btn perf-filter-btn" data-filter="attrition"
+                        onclick="togglePerformanceFilter('attrition')"
+                        title="Show only events with major confirmed effect (E ≥ 7)">
+                        <i class="fa-solid fa-skull" style="font-size:0.6rem;"></i> ATTRITION
+                    </button>
+                </div>
+
+                <div id="map"></div>
+
+                <div class="map-overlay-controls">
+                    <button id="heatmapToggle" class="map-btn" onclick="toggleVisualMode()">
+                        <i class="fa-solid fa-layer-group"></i> Heatmap
+                    </button>
+                    <button id="generateReportBtn" class="map-btn" onclick="openReportModal()"
+                        style="margin-right:15px; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.5); color: #f59e0b;">
+                        <i class="fa-solid fa-file-contract"></i> GENERATE REPORT
+                    </button>
+
+                    <div class="slider-container">
+                        <div class="date-display">
+                            <span id="sliderStartDate">...</span>
+                            <span id="sliderCurrentDate" style="color: #f59e0b; font-weight: bold;">LIVE</span>
+                        </div>
+                        <input type="range" id="timeSlider" class="range-slider" min="0" max="100" value="100" disabled>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-section">
+                <div class="chart-card" style="width: 100%;">
+                    <h4 style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-crosshairs" style="color: #f59e0b;"></i> IMPACT MATRIX
+                        <span style="font-size: 0.7rem; color: #64748b; font-weight: 400; letter-spacing: 1px;">T.I.E.
+                            SCATTER
+                            ANALYSIS</span>
+                    </h4>
+                    <div class="chart-wrapper" style="height: 340px; position: relative;">
+                        <div class="matrix-faction-control" id="matrixFactionControl">
+                            <button class="mf-btn active" data-faction="MIXED">MIXED</button>
+                            <button class="mf-btn" data-faction="RU">RU SIDE</button>
+                            <button class="mf-btn" data-faction="UA">UA SIDE</button>
+                        </div>
+                        <canvas id="impactMatrixChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HVT CAROUSEL: High Value Targets Feed -->
+            <div id="hvt-carousel-section" class="hvt-carousel-section">
+                <div class="hvt-header">
+                    <div class="hvt-header-left">
+                        <i class="fa-solid fa-bullseye" style="color: #f59e0b;"></i>
+                        <span class="hvt-title">HIGH VALUE TARGETS</span>
+                        <span class="hvt-subtitle">PRIORITY EVENTS FEED</span>
+                    </div>
+                    <span class="hvt-count" id="hvtCount">0</span>
+                </div>
+                <div id="hvt-carousel" class="hvt-carousel-track">
+                    <!-- JS injects HVT cards here -->
+                    <!-- Skeleton Loader: HVT Threat Feed -->
+                    <div class="skeleton-card">
+                        <div class="skeleton-line" style="width: 60%;"></div>
+                        <div class="skeleton-line" style="width: 90%;"></div>
+                        <div class="skeleton-line" style="width: 40%;"></div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="skeleton-line" style="width: 50%;"></div>
+                        <div class="skeleton-line" style="width: 80%;"></div>
+                        <div class="skeleton-line" style="width: 35%;"></div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="skeleton-line" style="width: 70%;"></div>
+                        <div class="skeleton-line" style="width: 85%;"></div>
+                        <div class="skeleton-line" style="width: 45%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-section-wrapper">
+
+                <div class="view-switcher">
+                    <button class="view-btn active" onclick="switchView('visual', this)">
+                        <i class="fa-solid fa-gauge-high"></i> TACTICAL
+                    </button>
+                    <button class="view-btn" onclick="switchView('kanban', this)">
+                        <i class="fa-solid fa-clipboard-list"></i> WAR ROOM
+                    </button>
+                    <button class="view-btn" onclick="switchView('intel', this)">
+                        <i class="fa-solid fa-satellite-dish"></i> INTEL FEED
+                    </button>
+                </div>
+
+                <div id="view-kanban" class="view-container">
+                    <div class="kanban-board">
+                        <!-- Colonna 1: Ground Ops -->
+                        <div id="col-ground" class="kanban-column">
+                            <div class="column-header">
+                                <span>GROUND OPS</span>
+                                <span class="count-badge badge-source" style="background:#334155;">0</span>
+                            </div>
+                            <div class="column-content"></div>
+                        </div>
+
+                        <!-- Colonna 2: Air/Strike -->
+                        <div id="col-air" class="kanban-column">
+                            <div class="column-header">
+                                <span>AIR / STRIKE</span>
+                                <span class="count-badge badge-source" style="background:#334155;">0</span>
+                            </div>
+                            <div class="column-content"></div>
+                        </div>
+
+                        <!-- Colonna 3: Strategic/Civil -->
+                        <div id="col-strat" class="kanban-column">
+                            <div class="column-header">
+                                <span>STRATEGIC / CIVIL</span>
+                                <span class="count-badge badge-source" style="background:#334155;">0</span>
+                            </div>
+                            <div class="column-content"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-visual" class="view-container active">
+                    <div class="tactical-dashboard-grid">
+
+                        <!-- 1. OPERATIONAL TEMPO (Redesigned - Minimalist) -->
+                        <div class="dashboard-panel momentum-panel">
+                            <div class="panel-header">
+                                <h4><i class="fa-solid fa-gauge-high"></i> OPERATIONAL TEMPO (48H)</h4>
+                                <div class="info-icon-wrapper"
+                                    data-tooltip="Ratio of Offensive (Manoeuvre/Shaping) vs Static (Attrition) events.">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                </div>
+                            </div>
+                            <div class="tempo-widget">
+                                <div class="tempo-bar-container">
+                                    <div class="tempo-labels">
+                                        <span class="tempo-label-left">STATIC</span>
+                                        <span class="tempo-label-right">OFFENSIVE</span>
+                                    </div>
+                                    <div class="tempo-bar-track">
+                                        <div class="tempo-bar-fill" id="tempoBarFill"></div>
+                                        <div class="tempo-marker" id="tempoMarker"></div>
+                                    </div>
+                                </div>
+                                <div class="tempo-readout">
+                                    <div class="tempo-value" id="momentumValue">--</div>
+                                    <div class="tempo-status" id="momentumStatus">CALCULATING...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. TACTICAL GRAVEYARD (Equipment Losses + Attrition) -->
+                        <div class="dashboard-panel ticker-panel">
+                            <div class="panel-header">
+                                <h4><i class="fa-solid fa-skull-crossbones"></i> TACTICAL GRAVEYARD</h4>
+                                <span class="live-dot"></span>
+                            </div>
+
+                            <!-- Attrition Ratio Mirror Chart Container -->
+                            <div class="attrition-mirror-container" id="attrition-mirror-chart">
+                                <!-- Populated by JS -->
+                                <div style="flex:1; text-align:center; padding:10px; color:#64748b; font-size:0.75rem;">
+                                    Initializing
+                                    Attrition Matrix...</div>
+                            </div>
+
+                            <div class="loss-filter-tabs">
+                                <button class="loss-tab active" onclick="filterLosses('all')">ALL</button>
+                                <button class="loss-tab" onclick="filterLosses('tank')">TANKS</button>
+                                <button class="loss-tab" onclick="filterLosses('artillery')">ARTILLERY</button>
+                                <button class="loss-tab" onclick="filterLosses('air')">AIR</button>
+                                <button class="loss-tab" onclick="filterLosses('hvt')">HVTs</button>
+                                <div style="margin-left:auto;">
+                                    <button class="loss-tab" id="netBalanceToggle" onclick="toggleNetBalance()"
+                                        style="background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.3); color:#f59e0b;">
+                                        <i class="fa-solid fa-scale-balanced"></i> NET
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="loss-feed-container" id="equipment-ticker-wrapper">
+                                <div class="loss-feed-list" id="ticker-content">
+                                    <!-- Skeleton Loader: Equipment Losses -->
+                                    <div style="display: flex; flex-direction: column; gap: 8px; padding: 8px;">
+                                        <div class="skeleton-line" style="width: 100%; height: 28px;"></div>
+                                        <div class="skeleton-line" style="width: 90%; height: 28px;"></div>
+                                        <div class="skeleton-line" style="width: 75%; height: 28px;"></div>
+                                        <div class="skeleton-line" style="width: 85%; height: 28px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="view-intel" class="view-container">
+                    <div class="intel-layout">
+                        <div class="intel-list" id="intel-list-content">
+                        </div>
+                        <div class="intel-detail" id="intel-detail-content">
+                            <div
+                                style="height:100%; display:flex; align-items:center; justify-content:center; color:#64748b; flex-direction:column;">
+                                <i class="fa-solid fa-crosshairs"
+                                    style="font-size:3rem; margin-bottom:15px; opacity:0.3;"></i>
+                                <p>Select an event from the feed to view the dossier.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Dashboard specific scripts loaded later -->
+            <link rel="stylesheet" href="assets/css/dashboard.css">
+            <script src="assets/js/dashboard.js"></script>
+
+            <div id="videoModal" class="modal-overlay" onclick="closeModal(event)">
+                <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+                    <span class="close-modal" onclick="closeModal(event)">&times;</span>
+
+                    <div class="dossier-grid">
+
+                        <!-- LEFT COLUMN: CONTEXT -->
+                        <div class="dossier-left">
+                            <div class="dossier-header-group">
+                                <h3 id="modalTitle">Event Title</h3>
+                                <div class="dossier-meta-row">
+                                    <span id="modalDate">YYYY-MM-DD</span>
+                                    <span class="dossier-separator">|</span>
+                                    <span id="modalType" class="dossier-tag">TYPE</span>
+                                </div>
+                            </div>
+
+                            <div id="modalDesc" class="dossier-description">
+                                Event description...
+                            </div>
+
+                            <!-- UNITS INVOLVED -->
+                            <div id="modalUnits" class="dossier-units-container"
+                                style="display:none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                                <div
+                                    style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 1px; margin-bottom: 8px; font-weight: 600;">
+                                    Detected Units</div>
+                                <div id="modalUnitsList" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                            </div>
+
+                            <!-- IMINT EVIDENCE FEED -->
+                            <div id="imint-evidence-feed"
+                                style="display:none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                                    <i class="fa-solid fa-camera" style="color:#f59e0b; font-size:0.8rem;"></i>
+                                    <span
+                                        style="font-size:0.75rem; text-transform:uppercase; color:#94a3b8; letter-spacing:1px; font-weight:600;">IMINT
+                                        EVIDENCE FEED</span>
+                                    <span id="imintFrameCount"
+                                        style="font-size:0.65rem; background:#f59e0b22; color:#f59e0b; padding:1px 6px; border-radius:3px; font-family:'JetBrains Mono', monospace; font-weight:600;"></span>
+                                </div>
+                                <div id="imintFilmstrip" class="imint-filmstrip">
+                                    <!-- Frame cards injected by JS -->
+                                </div>
+                            </div>
+
+                            <div id="modalVideoContainer" class="dossier-media"></div>
+                            <div id="modalJuxtapose"></div>
+                        </div>
+
+                        <!-- RIGHT COLUMN: INTEL -->
+                        <div class="dossier-right">
+
+                            <!-- CARD 1: METRICS (Radar + Bars) -->
+                            <div class="dossier-card metrics-card">
+                                <div class="card-label">
+                                    T.I.E. SCORE
+                                    <div class="info-icon-wrapper pos-bottom">
+                                        <div class="info-icon">i</div>
+                                        <div class="tooltip-card">
+                                            <div class="tooltip-header">T.I.E. Score</div>
+                                            <div class="tooltip-body">
+                                                Composite metric (0-100) measuring event significance:<br><br>
+                                                • <strong>Kinetic (K)</strong>: Violence/Intensity<br>
+                                                • <strong>Target (T)</strong>: Strategic value<br>
+                                                • <strong>Effect (E)</strong>: Confirmed success
+                                            </div>
+                                            <div class="tooltip-footer">Formula: (T^1.6) × (E/10) × K-Mult</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tie-radar-container">
+                                    <canvas id="tieRadarChart"></canvas>
+                                </div>
+
+                                <div class="tie-bars-container" id="tieBarsContent">
+                                    <!-- Bars inserted via JS -->
+                                </div>
+                            </div>
+
+                            <!-- CARD 2: METADATA (Split Layout: Sources | Metrics) -->
+                            <div class="dossier-card metadata-card">
+                                <div class="card-label">INTELLIGENCE METADATA</div>
+
+                                <div class="metadata-split-grid">
+                                    <!-- LEFT: Sources List -->
+                                    <div class="metadata-col sources-col">
+                                        <div class="meta-label">SOURCES</div>
+                                        <div class="source-list" id="modal-source-list">
+                                            <!-- Populated by JS -->
+                                        </div>
+                                    </div>
+
+                                    <!-- RIGHT: Reliability & Bias Bars -->
+                                    <div class="metadata-col metrics-col">
+
+                                        <!-- Reliability Bar -->
+                                        <div class="metric-bar-group">
+                                            <div class="meta-label">
+                                                RELIABILITY
+                                                <!-- Tooltip moved to dynamic JS content for context awareness -->
+                                                <span class="metric-value" id="reliability-value"></span>
+                                            </div>
+                                            <!-- Container for dynamic content -->
+                                            <div id="modal-reliability-badge"></div>
+                                        </div>
+
+                                        <!-- Bias Bar -->
+                                        <div class="metric-bar-group">
+                                            <div class="meta-label">
+                                                BIAS SCORE
+                                                <div class="info-icon-wrapper pos-left">
+                                                    <!-- Added pos-left for safety if needed, or default -->
+                                                    <div class="info-icon">i</div>
+                                                    <div class="tooltip-card">
+                                                        <div class="tooltip-header">Bias Score (-10 to +10)</div>
+                                                        <div class="tooltip-body">
+                                                            Indicates narrative leaning:<br>
+                                                            • <span style="color:#ef4444">-10 to -3:</span>
+                                                            Pro-Russian<br>
+                                                            • <span style="color:#94a3b8">-3 to +3:</span> Neutral<br>
+                                                            • <span style="color:#3b82f6">+3 to +10:</span>
+                                                            Pro-Ukrainian
+                                                        </div>
+                                                        <div class="tooltip-footer">Calculated via HBC Formula.</div>
+                                                    </div>
+                                                </div>
+                                                <span class="metric-value" id="bias-value">0</span>
+                                            </div>
+                                            <div class="bias-meter-container" id="modal-bias-meter">
+                                                <div class="bias-marker" id="bias-marker"></div>
+                                            </div>
+                                            <div class="bias-label">
+                                                <span class="bias-pole pro-ru">PRO-RU</span>
+                                                <span class="bias-pole neutral">NEUTRAL</span>
+                                                <span class="bias-pole pro-ua">PRO-UA</span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- BOTTOM ROW: STRATEGIST (Collapsible Accordion) -->
+                        <div class="dossier-bottom">
+                            <div class="strategist-box">
+                                <div class="strategist-header" style="cursor: pointer;"
+                                    onclick="toggleStrategistAccordion()">
+                                    <span>
+                                        <i class="fa-solid fa-robot"></i> THE STRATEGIST
+                                        <div class="info-icon-wrapper">
+                                            <div class="info-icon">i</div>
+                                            <div class="tooltip-card">
+                                                <div class="tooltip-header">AI Strategist Evaluation</div>
+                                                <div class="tooltip-body">
+                                                    Generates strategic assessments analyzing the "So What?" of each
+                                                    event.<br><br>
+                                                    Evaluates operational implications and broader war context.
+                                                </div>
+                                                <div class="tooltip-footer">Analysis generated by DeepSeek-V3
+                                                    (Bilingual).</div>
+                                            </div>
+                                        </div>
+                                    </span>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span class="ai-tag">Generated by AI - CONFIDENTIAL</span>
+                                        <button class="strategist-accordion-toggle" id="strategistToggleBtn"
+                                            type="button">
+                                            <span>EXPAND</span>
+                                            <i class="fa-solid fa-chevron-down chevron"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="strategist-accordion-body" id="strategistAccordionBody">
+                                    <div class="strategist-content" id="modal-strategist-content">
+                                        AI ASSESSMENT: Analysis in progress...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- IMINT LIGHTBOX -->
+            <div id="imintLightbox" class="imint-lightbox" onclick="this.style.display='none'" style="display:none;">
+                <span
+                    style="position:absolute; top:20px; right:30px; font-size:2rem; color:#f8fafc; cursor:pointer; z-index:10;"
+                    onclick="document.getElementById('imintLightbox').style.display='none'">&times;</span>
+                <img id="imintLightboxImg" src="" alt="IMINT Frame"
+                    style="max-width:92vw; max-height:90vh; border-radius:8px; box-shadow:0 25px 60px rgba(0,0,0,0.7);"
+                    onclick="event.stopPropagation()">
+            </div>
+
+            <!-- PLAYFRA MAP MODAL (IFRAME) -->
+            <div id="playfraModal" class="modal-overlay"
+                onclick="if(event.target.id==='playfraModal') closePlayfraModal()">
+                <div class="modal-content"
+                    style="max-width: 95vw; height: 95vh; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+                    <div
+                        style="background: #0f172a; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155;">
+                        <h3 style="margin: 0; color: #f8fafc; font-size: 1rem;"><i class="fa-solid fa-satellite"></i>
+                            TACTICAL DEEP
+                            MAP (PLAYFRA)</h3>
+                        <span class="close-modal" onclick="closePlayfraModal()"
+                            style="position: static; color: #ef4444; font-size: 1.5rem; cursor: pointer;">&times;</span>
+                    </div>
+                    <iframe id="playfraIframe" style="flex: 1; width: 100%; border: none;" allow="fullscreen"></iframe>
+                </div>
+            </div>
+
+            <!-- UNIT DOSSIER MODAL -->
+            <div id="unitModal" class="modal-overlay" onclick="closeUnitModal(event)">
+                <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto; padding: 0;">
+                    <span class="close-modal" onclick="closeUnitModal(event)"
+                        style="z-index: 10; margin: 10px;">&times;</span>
+
+                    <div class="unit-dossier-header" id="udHeader">
+                        <div id="udFlagContainer"></div>
+                        <div class="ud-title-group">
+                            <h2 id="udTitle">Unit Name</h2>
+                            <div class="ud-subtitle">
+                                <span id="udFaction">Faction</span> •
+                                <span id="udEchelon">Echelon</span>
+                                <span id="udTypeBadge" class="ud-badge">Type</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ud-content-grid">
+
+                        <!-- Left: Metadata & Stats -->
+                        <div class="ud-left-col" style="display: flex; flex-direction: column; gap: 15px;">
+                            <div class="ud-panel">
+                                <h4 style="margin:0 0 10px 0; color:#cbd5e1; font-size:0.9rem;">OPERATIONAL PROFILE</h4>
+                                <div class="ud-stat-row">
+                                    <span class="ud-stat-label">Branch</span>
+                                    <span class="ud-stat-value" id="udBranch">Unknown</span>
+                                </div>
+                                <div class="ud-stat-row">
+                                    <span class="ud-stat-label">Garrison</span>
+                                    <span class="ud-stat-value" id="udGarrison">N/A</span>
+                                </div>
+                                <div class="ud-stat-row">
+                                    <span class="ud-stat-label">Status</span>
+                                    <span class="ud-stat-value" id="udStatus">ACTIVE</span>
+                                </div>
+                                <div class="ud-stat-row">
+                                    <span class="ud-stat-label">Commander</span>
+                                    <span class="ud-stat-value" id="udCommander">--</span>
+                                </div>
+                                <div class="ud-stat-row">
+                                    <span class="ud-stat-label">Superior Unit</span>
+                                    <span class="ud-stat-value" id="udSuperior">--</span>
+                                </div>
+                                <div class="ud-stat-row">
+                                    <span class="ud-stat-label">District</span>
+                                    <span class="ud-stat-value" id="udDistrict">--</span>
+                                </div>
+                            </div>
+
+                            <div class="ud-panel">
+                                <h4 style="margin:0 0 10px 0; color:#cbd5e1; font-size:0.9rem;">ACTIVITY METRICS</h4>
+                                <div class="ud-stat-row">
+                                    <span class="ud-stat-label">Engagement Freq (30d)</span>
+                                    <span class="ud-stat-value" id="udEngFreq">--</span>
+                                </div>
+                                <div class="ud-stat-row">
+                                    <span class="ud-stat-label">Mentions</span>
+                                    <span class="ud-stat-value" id="udMentions">0</span>
+                                </div>
+                                <div class="ud-stat-row">
+                                    <span class="ud-stat-label">Avg Intensity</span>
+                                    <span class="ud-stat-value" id="udAvgTie">--</span>
+                                </div>
+                                <div class="ud-stat-row">
+                                    <span class="ud-stat-label">Primary Tactic</span>
+                                    <span class="ud-stat-value" id="udTactic" style="font-size:0.75rem;">--</span>
+                                </div>
+                                <div class="ud-stat-row">
+                                    <span class="ud-stat-label">Last Location</span>
+                                    <span class="ud-stat-value" id="udLastLocation"
+                                        style="font-size:0.7rem; font-family:'JetBrains Mono', monospace;">--</span>
+                                </div>
+
+                                <div class="ud-stat-row" id="udEquipmentRow" style="display:none;">
+                                    <span class="ud-stat-label">Equipment</span>
+                                    <span class="ud-stat-value" id="udEquipment">--</span>
+                                </div>
+                                <div class="ud-stat-row" id="udMilUnitRow" style="display:none;">
+                                    <span class="ud-stat-label">Military Unit №</span>
+                                    <span class="ud-stat-value" id="udMilUnit">--</span>
+                                </div>
+                                <div class="ud-stat-row" id="udBaseRow" style="display:none;">
+                                    <span class="ud-stat-label">Base / Station</span>
+                                    <span class="ud-stat-value" id="udBase">--</span>
+                                </div>
+
+                                <h5 style="margin:10px 0 5px 0; color:#64748b; font-size:0.75rem;">ACTIVITY TREND</h5>
+                                <div class="timeline-mini-chart" id="udSparkline"
+                                    style="display:flex; align-items:end; gap:2px; padding:5px;">
+                                    <!-- Spans (bars) injected by JS -->
+                                </div>
+                            </div>
+
+                            <!-- Verified Casualties Panel (UALosses) -->
+                            <div class="ud-panel" id="udCasualtiesPanel" style="display: none;">
+                                <h4
+                                    style="margin:0 0 10px 0; color:#cbd5e1; font-size:0.9rem; display:flex; justify-content:space-between; align-items:center;">
+                                    VERIFIED CASUALTIES
+                                    <span id="udCasualtyBadge"
+                                        style="background:#ef444433; color:#ef4444; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:700; font-family:'JetBrains Mono', monospace;">0</span>
+                                </h4>
+                                <div id="udCasualtiesList"
+                                    style="max-height: 200px; overflow-y: auto; display:flex; flex-direction:column; gap:4px;">
+                                    <!-- Casualty items injected by JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Related Events -->
+                        <div class="ud-right-col">
+                            <div class="ud-panel" style="height: 100%; display: flex; flex-direction: column;">
+                                <h4 style="margin:0 0 10px 0; color:#cbd5e1; font-size:0.9rem;">RECENT ENGAGEMENTS</h4>
+                                <div id="udEventsList" class="ud-events-list">
+                                    <!-- Event Items -->
+                                    <div class="ud-event-item">Loading events...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- REPORT CONFIGURATION MODAL -->
+            <div id="reportModal" class="modal-overlay" onclick="closeReportModal(event)">
+                <div class="modal-content" style="max-width: 500px;">
+                    <span class="close-modal" onclick="closeReportModal(event)">&times;</span>
+                    <div class="modal-header">
+                        <h3><i class="fa-solid fa-file-contract"></i> GENERATE INTELLIGENCE REPORT</h3>
+                    </div>
+                    <div style="padding: 20px 0; color: #cbd5e1;">
+                        <p style="margin-bottom: 20px;">Select the time range for the tactical report.</p>
+
+                        <label style="display:block; margin-bottom:8px; font-weight:bold; color:#94a3b8;">REPORT START
+                            DATE</label>
+                        <input type="date" id="reportStartDate" class="clean-input"
+                            style="width:100%; margin-bottom:20px;">
+
+                        <label style="display:block; margin-bottom:8px; font-weight:bold; color:#94a3b8;">REPORT END
+                            DATE</label>
+                        <div style="display:flex; gap:10px; align-items:center; margin-bottom:20px;">
+                            <input type="date" id="reportEndDate" class="clean-input" style="flex:1;">
+                            <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+                                <input type="checkbox" id="reportLiveToggle" onchange="toggleReportLiveDate()">
+                                <span style="font-size:0.9rem;">Live (Current)</span>
+                            </label>
+                        </div>
+
+                        <button onclick="generateReport()" class="action-btn primary"
+                            style="width:100%; justify-content:center; padding: 12px;">
+                            <i class="fa-solid fa-bolt"></i> GENERATE DOSSIER
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                /* === IMINT Evidence Feed Styles === */
+                .imint-filmstrip {
+                    display: flex;
+                    gap: 12px;
+                    overflow-x: auto;
+                    padding-bottom: 6px;
+                    scroll-behavior: smooth;
+                    -webkit-overflow-scrolling: touch;
+                }
+
+                .imint-filmstrip::-webkit-scrollbar {
+                    height: 4px;
+                }
+
+                .imint-filmstrip::-webkit-scrollbar-track {
+                    background: #0f172a;
+                    border-radius: 2px;
+                }
+
+                .imint-filmstrip::-webkit-scrollbar-thumb {
+                    background: #334155;
+                    border-radius: 2px;
+                }
+
+                .imint-filmstrip::-webkit-scrollbar-thumb:hover {
+                    background: #475569;
+                }
+
+                .imint-frame-card {
+                    flex: 0 0 220px;
+                    background: #1e293b;
+                    border-radius: 8px;
+                    padding: 10px;
+                    border: 1px solid #334155;
+                    transition: border-color 0.2s;
+                }
+
+                .imint-frame-card:hover {
+                    border-color: #475569;
+                }
+
+                .imint-frame-card.imint-contradicted {
+                    border: 1px solid #f59e0b;
+                }
+
+                .imint-frame-card .imint-thumb {
+                    width: 100%;
+                    height: 130px;
+                    object-fit: cover;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    transition: opacity 0.2s;
+                    background: #0f172a;
+                }
+
+                .imint-frame-card .imint-thumb:hover {
+                    opacity: 0.85;
+                }
+
+                .imint-meta-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    margin-top: 8px;
+                    flex-wrap: wrap;
+                }
+
+                .imint-confidence-badge {
+                    font-family: 'JetBrains Mono', monospace;
+                    font-size: 0.7rem;
+                    font-weight: 700;
+                    color: #f59e0b;
+                    background: rgba(245, 158, 11, 0.12);
+                    border: 1px solid rgba(245, 158, 11, 0.3);
+                    padding: 1px 6px;
+                    border-radius: 3px;
+                    white-space: nowrap;
+                }
+
+                .imint-selection-tag {
+                    font-size: 0.6rem;
+                    color: #94a3b8;
+                    background: rgba(100, 116, 139, 0.15);
+                    padding: 1px 5px;
+                    border-radius: 3px;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    max-width: 120px;
+                }
+
+                .imint-frame-id {
+                    font-family: 'JetBrains Mono', monospace;
+                    font-size: 0.6rem;
+                    color: #64748b;
+                    margin-left: auto;
+                }
+
+                .imint-explanation {
+                    font-size: 0.78rem;
+                    line-height: 1.4;
+                    color: #cbd5e1;
+                    margin-top: 6px;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 3;
+                    line-clamp: 3;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+
+                .imint-explanation.expanded {
+                    -webkit-line-clamp: unset;
+                    line-clamp: unset;
+                    display: block;
+                }
+
+                .imint-read-more {
+                    font-size: 0.7rem;
+                    color: #f59e0b;
+                    cursor: pointer;
+                    margin-top: 3px;
+                    display: inline-block;
+                    user-select: none;
+                }
+
+                .imint-read-more:hover {
+                    text-decoration: underline;
+                }
+
+                .imint-lightbox {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: rgba(0, 0, 0, 0.92);
+                    z-index: 99999;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                }
+
+                /* Vertical stack mode when <=3 frames */
+                .imint-filmstrip.imint-stack {
+                    flex-direction: column;
+                }
+
+                .imint-filmstrip.imint-stack .imint-frame-card {
+                    flex: 0 0 auto;
+                    width: 100%;
+                }
+            </style>
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+            <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+            <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+            <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+            <script src="assets/js/charts.js?v=2.2"></script>
+
+            <script src="assets/js/map.js?v=2.2"></script>
+            <script src="assets/js/orbat_tracker.js?v=2.2"></script>
+
+            <script>
+                // --- UI SUPPORT FUNCTIONS ---
+
+                function closeModal(event) {
+                    if (event.target.id === 'videoModal' || event.target.classList.contains('close-modal')) {
+                        document.getElementById('videoModal').style.display = 'none';
+                        const videoContainer = document.getElementById('modalVideoContainer');
+                        if (videoContainer) videoContainer.innerHTML = '';
+                    }
+                }
+
+                // closeUnitModal removed - using definition in map.js
+
+                function switchView(viewName, btn) {
+                    // UI Button Update
+                    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    // View Container Update
+                    document.querySelectorAll('.view-container').forEach(c => c.classList.remove('active'));
+                    document.getElementById('view-' + viewName).classList.add('active');
+                }
+
+                // --- PLAYFRA MAP MODAL LOGIC (NEW) ---
+                function openPlayfraModal() {
+                    const modal = document.getElementById('playfraModal');
+                    const iframe = document.getElementById('playfraIframe');
+                    // Only load iframe src when opened to save bandwidth
+                    if (!iframe.src || iframe.src === window.location.href) {
+                        iframe.src = "https://playframap.github.io/";
+                    }
+                    modal.style.display = 'flex';
+                }
+
+                function closePlayfraModal() {
+                    document.getElementById('playfraModal').style.display = 'none';
+                }
+
+                // --- SIDEBAR TAB LOGIC (NEW) ---
+                function switchSidebarTab(tabName) {
+                    // 1. Reset buttons
+                    document.querySelectorAll('.s-tab-btn').forEach(btn => btn.classList.remove('active'));
+                    // 2. Activate clicked button
+                    const activeBtn = document.querySelector(`.s-tab-btn[onclick="switchSidebarTab('${tabName}')"]`);
+                    if (activeBtn) activeBtn.classList.add('active');
+
+                    // 3. Reset content
+                    document.querySelectorAll('.s-tab-content').forEach(content => content.classList.remove('active'));
+                    // 4. Show right content
+                    document.getElementById(`sidebar-tab-${tabName}`).classList.add('active');
+                }
+
+                // --- MAP SELECTION LOGIC (VISUAL ONLY FOR NOW) ---
+                function selectMapSource(card, sourceName) {
+                    // Reset active cards
+                    document.querySelectorAll('.map-layer-card').forEach(c => {
+                        c.classList.remove('active');
+                        const icon = c.querySelector('.status-dot');
+                        icon.classList.remove('fa-circle-dot');
+                        icon.classList.remove('fa-solid');
+                        icon.classList.add('fa-circle');
+                        icon.classList.add('fa-regular');
+                    });
+
+                    // Activate new card
+                    card.classList.add('active');
+                    const activeIcon = card.querySelector('.status-dot');
+                    activeIcon.classList.remove('fa-circle');
+                    activeIcon.classList.remove('fa-regular');
+                    activeIcon.classList.add('fa-circle-dot');
+                    activeIcon.classList.add('fa-solid');
+
+                    console.log(`Map changed to: ${sourceName}`);
+                    // TODO: Real Leaflet call to change GeoJSON
+                }
+
+                // --- STRATEGIST ACCORDION TOGGLE ---
+                function toggleStrategistAccordion() {
+                    const body = document.getElementById('strategistAccordionBody');
+                    const btn = document.getElementById('strategistToggleBtn');
+                    if (!body || !btn) return;
+                    const isOpen = body.classList.toggle('expanded');
+                    btn.classList.toggle('open', isOpen);
+                    btn.querySelector('span').innerText = isOpen ? 'COLLAPSE' : 'EXPAND';
+                }
+
+                // --- GLOBAL SHIMS (overridden by map.js when ready) ---
+                window.setTimeWindow = window.setTimeWindow || function () { };
+                window.toggleTacticalPersistence = window.toggleTacticalPersistence || function () { };
+            </script>
+
+</body>
+
+</html>

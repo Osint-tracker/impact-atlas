@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impact Atlas - V2 Architecture</title>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --slate-900: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-400: #94a3b8;
+            --slate-300: #cbd5e1;
+            --slate-200: #e2e8f0;
+            --slate-100: #f1f5f9;
+            --amber-500: #f59e0b;
+            --amber-400: #fbbf24;
+            --cyan-500: #06b6d4;
+            --gray-500: #6b7280;
+            --text-main: #f8fafc;
+            --bg-main: #000000;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body,
+        html {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+        }
+
+        /* MAIN CONTAINER (Rigid 100vh flex layout) */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ==========================================
+           1. NAVIGATION RAIL 
+           ========================================== */
+        .nav-rail {
+            width: 65px;
+            min-width: 65px;
+            height: 100%;
+            background-color: var(--slate-900);
+            border-right: 1px solid var(--slate-700);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 15px;
+            /* Tighter padding for high density */
+            z-index: 50;
+        }
+
+        .nav-item {
+            width: 40px;
+            /* high density */
+            height: 40px;
+            /* high density */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--slate-400);
+            border-radius: 6px;
+            margin-bottom: 10px;
+            /* high density */
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.1rem;
+        }
+
+        .nav-item:hover {
+            color: var(--slate-200);
+            background-color: var(--slate-800);
+        }
+
+        .nav-item.active {
+            color: var(--slate-900);
+            background-color: var(--amber-500);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+        }
+
+        /* ==========================================
+           2. ACTIVE PANEL BUCKET (Sidebar)
+           ========================================== */
+        .sidebar-container {
+            width: 25%;
+            min-width: 300px;
+            /* high density */
+            max-width: 400px;
+            height: 100%;
+            position: relative;
+            background-color: var(--slate-800);
+            border-right: 1px solid var(--slate-700);
+            display: flex;
+            flex-direction: column;
+            z-index: 40;
+            overflow: hidden;
+            /* Crucial for sliding inner panels */
+        }
+
+        .active-panel {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+        }
+
+        /* General List Styling for Feed */
+        .panel-header {
+            padding: 12px 16px;
+            /* High density */
+            border-bottom: 1px solid var(--slate-700);
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        .panel-title {
+            font-size: 0.95rem;
+            /* High density */
+            font-weight: 600;
+            color: var(--amber-500);
+            margin-bottom: 4px;
+            /* High density */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            /* High density */
+            text-transform: uppercase;
+            /* Military style */
+            letter-spacing: 0.5px;
+        }
+
+        .panel-subtitle {
+            font-size: 0.65rem;
+            /* Micro-typography */
+            color: var(--slate-400);
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+        }
+
+        .list-container {
+            padding: 8px;
+            /* High density */
+            flex-grow: 1;
+        }
+
+        .list-item {
+            padding: 10px;
+            /* High density */
+            border: 1px solid transparent;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 4px;
+        }
+
+        .list-item:hover {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: rgba(51, 65, 85, 0.8);
+        }
+
+        .list-item-time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            /* Micro-typography */
+            color: var(--slate-400);
+            margin-bottom: 4px;
+            /* High density */
+            text-transform: uppercase;
+        }
+
+        .list-item-title {
+            font-size: 0.8rem;
+            /* High density */
+            font-weight: 500;
+            color: var(--slate-100);
+        }
+
+        /* ==========================================
+           3. DOSSIER OVERRIDE STATE 
+           ========================================== */
+        .dossier-panel {
+            width: 100%;
+            height: 100%;
+            background-color: var(--slate-900);
+            position: absolute;
+            top: 0;
+            left: 100%;
+            /* Hidden to the right by default */
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 45;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+        }
+
+        /* SLIDE-IN ANIMATION CLASSES */
+        .sidebar-container.dossier-active .active-panel {
+            transform: translateX(-30%);
+            /* Parallax effect pushing feed left */
+            opacity: 0.3;
+        }
+
+        .sidebar-container.dossier-active .dossier-panel {
+            transform: translateX(-100%);
+            /* Slide in from right */
+        }
+
+        .dossier-header {
+            padding: 8px 12px;
+            /* High density */
+            border-bottom: 1px solid var(--slate-700);
+            background: rgba(15, 23, 42, 0.95);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 1px solid var(--slate-700);
+            color: var(--slate-400);
+            padding: 4px 8px;
+            /* Tightly padded */
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            /* Smaller, micro-typography */
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--text-main);
+            border-color: var(--slate-400);
+            background: var(--slate-800);
+        }
+
+        /* --- Hero Section & Score --- */
+        .dp-hero {
+            background-color: #0f291e;
+            padding: 12px 16px;
+            /* High density */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .dp-hero-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .dp-hero-kicker {
+            font-family: 'JetBrains Mono', monospace;
+            /* Micro-typography rule */
+            font-size: 0.65rem;
+            color: #a7f3d0;
+            /* Keeping accent */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            /* tracking-wide */
+            font-weight: 600;
+        }
+
+        .dp-hero-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            /* High density */
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.25;
+        }
+
+        .dp-hero-score-box {
+            border: 2px solid var(--amber-500);
+            /* Thick Amber border */
+            padding: 4px 8px;
+            /* High density */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 4px;
+            min-width: 55px;
+            /* High density */
+        }
+
+        .dp-score-val {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--amber-500);
+            font-size: 1.15rem;
+            /* Large enough, but fits high density */
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .dp-score-lbl {
+            font-family: 'JetBrains Mono', monospace;
+            /* Micro-typography rule */
+            font-size: 0.65rem;
+            /* tiny */
+            color: var(--amber-500);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0px;
+        }
+
+        /* --- Content, Badges & Stats --- */
+        .dp-content-area {
+            padding: 12px 16px;
+            /* High density */
+        }
+
+        .dp-badges {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+            /* High density */
+            flex-wrap: wrap;
+        }
+
+        .dp-badge {
+            font-size: 0.65rem;
+            /* Micro-typography */
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            padding: 2px 6px;
+            /* High density */
+            border-radius: 10px;
+            border: 1px solid;
+            text-transform: uppercase;
+        }
+
+        .dp-badge-green {
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.4);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .dp-badge-amber {
+            color: var(--amber-500);
+            border-color: rgba(245, 158, 11, 0.4);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .dp-badge-slate {
+            color: var(--slate-400);
+            border-color: var(--slate-600);
+            background: rgba(148, 163, 184, 0.1);
+        }
+
+        .dp-summary {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            /* High density */
+            line-height: 1.35;
+            /* Tight line height */
+            color: var(--slate-200);
+            margin-bottom: 16px;
+            /* High density */
+        }
+
+        .dp-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            /* High density */
+            margin-bottom: 6px;
+            /* High density */
+        }
+
+        .dp-stat-block {
+            background: var(--slate-800);
+            border: 1px solid var(--slate-700);
+            border-radius: 4px;
+            padding: 6px;
+            /* High density */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dp-stat-lbl {
+            font-family: 'JetBrains Mono', monospace;
+            /* Micro-typography */
+            font-size: 0.65rem;
+            /* tiny */
+            color: var(--slate-400);
+            text-transform: uppercase;
+            letter-spacing: 0px;
+            margin-bottom: 2px;
+            /* High density */
+        }
+
+        .dp-stat-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            /* High density */
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .dp-time-window {
+            background: var(--slate-800);
+            border: 1px solid var(--slate-700);
+            border-radius: 4px;
+            padding: 4px;
+            /* High density */
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            /* Micro-typography */
+            color: var(--slate-400);
+            margin-bottom: 20px;
+            /* High density */
+            text-transform: uppercase;
+        }
+
+        /* --- Tactical Kill Chain UI --- */
+        .kill-chain-container {
+            padding: 0;
+        }
+
+        .kc-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            /* Micro-typography */
+            color: var(--amber-500);
+            margin-bottom: 12px;
+            /* High density */
+            text-transform: uppercase;
+            letter-spacing: 0px;
+            font-weight: 700;
+        }
+
+        .kc-timeline {
+            position: relative;
+            padding-left: 14px;
+            /* High density */
+            margin-left: 6px;
+            /* offset for icon */
+        }
+
+        /* Vertical Dashed Line */
+        .kc-timeline::before {
+            content: '';
+            position: absolute;
+            left: 0px;
+            top: 8px;
+            /* High density align */
+            bottom: 24px;
+            width: 0;
+            border-left: 2px dashed var(--slate-600);
+            /* Dashed! */
+        }
+
+        .kc-node {
+            position: relative;
+            margin-bottom: 12px;
+            /* High density */
+            padding-left: 12px;
+            /* High density */
+        }
+
+        .kc-node:last-child {
+            margin-bottom: 0;
+        }
+
+        .kc-icon {
+            position: absolute;
+            left: -14px;
+            /* Center upon the dashed line */
+            top: 2px;
+            /* High density align */
+            background: var(--slate-900);
+            color: var(--gray-500);
+            font-size: 0.70rem;
+            /* FA icon scale */
+            z-index: 2;
+            padding: 2px 0;
+            /* Cut border underneath */
+        }
+
+        /* Node Styling */
+        .kc-node.shaping .kc-icon {
+            color: var(--cyan-500);
+        }
+
+        .kc-node.strike .kc-icon {
+            color: var(--amber-500);
+            text-shadow: 0 0 10px var(--amber-500);
+        }
+
+        /* Neon glow */
+        .kc-node.bda .kc-icon {
+            color: var(--slate-400);
+        }
+
+        .kc-time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            /* Micro-typography */
+            color: var(--slate-400);
+            margin-bottom: 2px;
+            /* High density */
+            text-transform: uppercase;
+        }
+
+        .kc-content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--slate-700);
+            padding: 6px 8px;
+            /* Very tight padding */
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            /* High density text */
+            line-height: 1.25;
+            /* Tight */
+            color: var(--slate-300);
+        }
+
+        .kc-node.strike .kc-content {
+            border-color: rgba(245, 158, 11, 0.3);
+            background: rgba(245, 158, 11, 0.05);
+            color: var(--text-main);
+        }
+
+        .kc-content strong {
+            color: var(--slate-100);
+            font-size: 0.8rem;
+            /* Slightly larger for emphasis */
+            display: block;
+            /* High density line break */
+            margin-bottom: 2px;
+        }
+
+        .kc-node.strike .kc-content strong {
+            color: var(--amber-500);
+        }
+
+        /* ==========================================
+           4. TACTICAL MAP 
+           ========================================== */
+        .map-area {
+            flex-grow: 1;
+            /* Occupies all remaining space */
+            height: 100%;
+            background-color: #1a1a1a;
+            /* Placeholder */
+            position: relative;
+            background-image: radial-gradient(circle at center, #2a2a2a 0%, #111 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* ==========================================
+           5. ANALYTICS DRAWER 
+           ========================================== */
+        .analytics-drawer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--amber-500);
+            transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            /* Above leaflet controls */
+            display: flex;
+            flex-direction: column;
+            height: 30px;
+            /* High density collapsed state */
+            overflow: hidden;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .analytics-drawer.expanded {
+            height: 280px;
+            /* High density expansion */
+        }
+
+        .drawer-handle {
+            height: 30px;
+            /* High density */
+            min-height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--slate-200);
+            font-family: 'JetBrains Mono', monospace;
+            /* Micro-typography */
+            font-size: 0.7rem;
+            /* High density */
+            letter-spacing: 0px;
+            text-transform: uppercase;
+        }
+
+        .drawer-handle:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--amber-400);
+        }
+
+        .drawer-handle i {
+            margin-right: 8px;
+            /* High density */
+            transition: transform 0.3s;
+        }
+
+        .analytics-drawer.expanded .drawer-handle i {
+            transform: rotate(180deg);
+        }
+
+        .drawer-content {
+            padding: 12px 16px;
+            /* High density */
+            flex-grow: 1;
+            display: flex;
+            gap: 16px;
+            /* High density */
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .analytics-drawer.expanded .drawer-content {
+            opacity: 1;
+            transition-delay: 0.1s;
+            /* fade in slightly after opening */
+        }
+
+        /* Dummy Chart Widgets */
+        .widget {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--slate-700);
+            border-radius: 4px;
+            /* High density */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--slate-400);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            /* High density */
+        }
+
+        .widget i {
+            margin-bottom: 8px;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <!-- 1. NAVIGATION RAIL -->
+        <nav class="nav-rail">
+            <div class="nav-item active" title="Live Feed" onclick="switchTab('feed', this)">
+                <i class="fas fa-satellite-dish"></i>
+            </div>
+            <div class="nav-item" title="ORBAT Tracker" onclick="switchTab('orbat', this)">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="nav-item" title="Map Filters" onclick="switchTab('filters', this)">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <div class="nav-item" title="Equipment Losses" onclick="switchTab('losses', this)">
+                <i class="fas fa-crosshairs"></i>
+            </div>
+        </nav>
+
+        <!-- 2. & 3. SIDEBAR CONTAINER (Active Panel + Dossier Panel) -->
+        <aside class="sidebar-container" id="sidebarContainer">
+
+            <!-- Active Panel (Dynamic feed/list) -->
+            <div class="active-panel" id="activePanel">
+                <div class="panel-header">
+                    <div class="panel-title"><i class="fas fa-satellite-dish"></i> LIVE FEED</div>
+                    <div class="panel-subtitle">AWAITING INCOMING TRANSMISSIONS</div>
+                </div>
+
+                <div class="list-container">
+                    <!-- Click this item to trigger Dossier animation -->
+                    <div class="list-item" onclick="openDossier()">
+                        <div class="list-item-time">14:32Z // 24 FEB</div>
+                        <div class="list-item-title">High-Value Target Neutralized in Sector 7G</div>
+                        <div
+                            style="font-size: 0.65rem; color: var(--amber-500); margin-top: 6px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase;">
+                            <i class="fas fa-bolt"></i> Click to view Tactical Kill Chain
+                        </div>
+                    </div>
+                    <div class="list-item">
+                        <div class="list-item-time">12:15Z // 24 FEB</div>
+                        <div class="list-item-title">Armored column movement detected near border</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dossier Override State -->
+            <div class="dossier-panel">
+
+                <!-- Top Bar -->
+                <div class="dossier-header">
+                    <button class="back-btn" onclick="closeDossier()">
+                        <i class="fas fa-chevron-left"></i> BACK TO FEED
+                    </button>
+                </div>
+
+                <!-- Hero Block -->
+                <div class="dp-hero">
+                    <div class="dp-hero-left">
+                        <div class="dp-hero-kicker">STRATEGIC ASSESSMENT</div>
+                        <div class="dp-hero-title">Deep Strike on Almetyevsk Oil Hub</div>
+                    </div>
+                    <div class="dp-hero-score-box">
+                        <div class="dp-score-val">5.0</div>
+                        <div class="dp-score-lbl">T.I.E. SCORE</div>
+                    </div>
+                </div>
+
+                <div class="dp-content-area">
+
+                    <!-- Badges & Summary -->
+                    <div class="dp-badges">
+                        <span class="dp-badge dp-badge-green">LOGISTICS</span>
+                        <span class="dp-badge dp-badge-amber">HIGH</span>
+                        <span class="dp-badge dp-badge-slate">SHAPING OPERATION</span>
+                    </div>
+
+                    <div class="dp-summary">
+                        Ukrainian forces launched a coordinated drone strike targeting the Almetyevsk refinery complex.
+                        Satellite imagery confirms multiple secondary explosions within the primary distillation sector,
+                        severely degrading processing capacity.
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="dp-stats-grid">
+                        <div class="dp-stat-block">
+                            <div class="dp-stat-lbl">EVENTS</div>
+                            <div class="dp-stat-val">3</div>
+                        </div>
+                        <div class="dp-stat-block">
+                            <div class="dp-stat-lbl">DURATION</div>
+                            <div class="dp-stat-val">1d</div>
+                        </div>
+                        <div class="dp-stat-block">
+                            <div class="dp-stat-lbl">CLUSTER</div>
+                            <div class="dp-stat-val">daca</div>
+                        </div>
+                    </div>
+
+                    <div class="dp-time-window">
+                        TIME WINDOW 2026-02-23 to 2026-02-24
+                    </div>
+
+                    <!-- Tactical Kill Chain Module -->
+                    <div class="kill-chain-container">
+                        <div class="kc-title"><i class="fas fa-link"></i> TACTICAL KILL CHAIN</div>
+
+                        <div class="kc-timeline">
+                            <!-- Shaping Phase -->
+                            <div class="kc-node shaping">
+                                <div class="kc-icon"><i class="fas fa-crosshairs"></i></div>
+                                <div class="kc-time">23 FEB, 18:00Z</div>
+                                <div class="kc-content">
+                                    <strong>Shaping Operation</strong>
+                                    Electronic warfare suppression of local radar networks.
+                                </div>
+                            </div>
+
+                            <!-- Execution Phase -->
+                            <div class="kc-node strike">
+                                <div class="kc-icon"><i class="fas fa-crosshairs"></i></div>
+                                <div class="kc-time">23 FEB, 22:15Z</div>
+                                <div class="kc-content">
+                                    <strong>Master Strike</strong>
+                                    Coordinated precision munitions impact on command center.
+                                </div>
+                            </div>
+
+                            <!-- BDA Phase -->
+                            <div class="kc-node bda">
+                                <div class="kc-icon"><i class="fas fa-square"></i></div>
+                                <div class="kc-time">24 FEB, 04:30Z</div>
+                                <div class="kc-content">
+                                    <strong>Satellite BDA</strong>
+                                    Post-strike assessment confirms target destroyed. No secondary explosions.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- 4. TACTICAL MAP & 5. ANALYTICS DRAWER -->
+        <main class="map-area">
+            <div style="color: var(--slate-700); font-family: 'JetBrains Mono', monospace; font-size: 1.25rem;">
+                <i class="fas fa-map-marked-alt"></i> LEAFLET MAP CONTAINER
+            </div>
+
+            <!-- Analytics Drawer Overlay -->
+            <div class="analytics-drawer" id="analyticsDrawer">
+                <div class="drawer-handle" onclick="toggleDrawer()">
+                    <i class="fas fa-chart-line"></i> <span id="drawerHandleText">Analytics Overview: Expand</span>
+                </div>
+                <div class="drawer-content">
+                    <div class="widget">
+                        <i class="fas fa-chart-bar"></i> Timeline Chart
+                    </div>
+                    <div class="widget">
+                        <i class="fas fa-radar"></i> Radar Chart
+                    </div>
+                    <div class="widget">
+                        <i class="fas fa-chart-pie"></i> Distribution
+                    </div>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            const titles = {
+                'feed': '<i class="fas fa-satellite-dish"></i> LIVE FEED',
+                'orbat': '<i class="fas fa-shield-alt"></i> ORBAT TRACKER',
+                'filters': '<i class="fas fa-layer-group"></i> MAP FILTERS',
+                'losses': '<i class="fas fa-crosshairs"></i> EQUIPMENT LOSSES'
+            };
+            document.querySelector('.panel-title').innerHTML = titles[tabId];
+
+            closeDossier();
+        }
+
+        // Parallax Dossier Sliding Logic
+        function openDossier() {
+            document.getElementById('sidebarContainer').classList.add('dossier-active');
+        }
+
+        function closeDossier() {
+            document.getElementById('sidebarContainer').classList.remove('dossier-active');
+        }
+
+        // Analytics Drawer Expand/Collapse Logic
+        function toggleDrawer() {
+            const drawer = document.getElementById('analyticsDrawer');
+            const handleText = document.getElementById('drawerHandleText');
+
+            drawer.classList.toggle('expanded');
+
+            if (drawer.classList.contains('expanded')) {
+                handleText.textContent = 'Analytics Overview: Collapse';
+            } else {
+                handleText.textContent = 'Analytics Overview: Expand';
+            }
+        }
+    </script>
+
+</body>
+
+</html>
