@@ -36,6 +36,774 @@
   <link rel="stylesheet" href="assets/css/dossier_styles.css?v=2">
 
   <style>
+    /* ==========================================
+       V2 ARCHITECTURE: DESIGN TOKENS & LAYOUT
+       ========================================== */
+    :root {
+      --slate-900: #0f172a;
+      --slate-800: #1e293b;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-400: #94a3b8;
+      --slate-300: #cbd5e1;
+      --slate-200: #e2e8f0;
+      --amber-500: #f59e0b;
+      --amber-400: #fbbf24;
+      --cyan-500: #06b6d4;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --bg-body: #000000;
+      --bg-panel: #0f172a;
+      --font-sans: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --rail-width: 65px;
+      --sidebar-width: 320px;
+      --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg-body);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+    }
+
+    /* --- APP SHELL (100vh rigid flex) --- */
+    .app-shell {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* --- NAVIGATION RAIL (Left, 65px) --- */
+    .nav-rail {
+      width: var(--rail-width);
+      min-width: var(--rail-width);
+      height: 100%;
+      background: #050a12;
+      border-right: 1px solid var(--slate-700);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 10px;
+      z-index: 60;
+      flex-shrink: 0;
+    }
+
+    .nav-rail-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(6, 182, 212, 0.08));
+      border: 1px solid var(--slate-700);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--amber-500);
+      font-size: 1rem;
+      margin-bottom: 16px;
+    }
+
+    .nav-divider {
+      width: 28px;
+      height: 1px;
+      background: var(--slate-700);
+      margin-bottom: 10px;
+    }
+
+    .nav-item {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--slate-500);
+      font-size: 1.1rem;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s var(--ease-out);
+    }
+
+    .nav-item:hover {
+      color: var(--slate-200);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-item.active {
+      color: var(--amber-500);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 8px;
+      height: 26px;
+      width: 3px;
+      background: var(--amber-500);
+      border-radius: 0 3px 3px 0;
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+    }
+
+    .nav-spacer {
+      flex: 1;
+    }
+
+    .nav-bottom {
+      margin-bottom: 10px;
+    }
+
+    /* --- SIDEBAR SHELL (Holds Active Panel + Dossier) --- */
+    .sidebar-shell {
+      width: var(--sidebar-width);
+      min-width: var(--sidebar-width);
+      height: 100%;
+      position: relative;
+      background: var(--slate-800);
+      border-right: 1px solid var(--slate-700);
+      overflow: hidden;
+      z-index: 50;
+      flex-shrink: 0;
+      transition: width 0.35s var(--ease-out), min-width 0.35s var(--ease-out);
+    }
+
+    .app-shell.sidebar-collapsed .sidebar-shell {
+      width: 0;
+      min-width: 0;
+      border-right: none;
+    }
+
+    .app-shell.sidebar-collapsed .nav-item.collapse-btn i {
+      transform: rotate(180deg);
+    }
+
+    /* --- ACTIVE PANEL (existing sidebar content goes here) --- */
+    .active-panel {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      transition: transform 0.35s var(--ease-out), opacity 0.3s;
+    }
+
+    /* --- DOSSIER PANEL (Slide-in Override) --- */
+    .dossier-panel {
+      position: absolute;
+      inset: 0;
+      left: 100%;
+      background: var(--bg-panel);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      transition: transform 0.35s var(--ease-out);
+      box-shadow: -8px 0 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .sidebar-shell.dossier-open .active-panel {
+      transform: translateX(-25%);
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    .sidebar-shell.dossier-open .dossier-panel {
+      transform: translateX(-100%);
+    }
+
+    /* --- DOSSIER STYLES --- */
+    .dossier-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--slate-700);
+      background: rgba(15, 23, 42, 0.95);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .dossier-back-btn {
+      background: transparent;
+      border: 1px solid var(--slate-600);
+      color: var(--slate-300);
+      padding: 3px 8px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .dossier-back-btn:hover {
+      color: var(--text-main);
+      border-color: var(--slate-400);
+      background: var(--slate-800);
+    }
+
+    .dossier-hero {
+      background: #0f291e;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dossier-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 18px 18px;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .hero-left {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+    }
+
+    .hero-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: #a7f3d0;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .hero-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.25;
+    }
+
+    .hero-score-box {
+      position: relative;
+      z-index: 2;
+      border: 2px solid var(--amber-500);
+      padding: 4px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(245, 158, 11, 0.08);
+      border-radius: 4px;
+      min-width: 52px;
+      flex-shrink: 0;
+    }
+
+    .score-val {
+      font-family: var(--font-mono);
+      color: var(--amber-500);
+      font-size: 1.3rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .score-label {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      color: var(--amber-500);
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .dossier-body {
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .dp-badges {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .dp-badge {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 1px solid;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .dp-badge-green {
+      color: #22c55e;
+      border-color: rgba(34, 197, 94, 0.35);
+      background: rgba(34, 197, 94, 0.08);
+    }
+
+    .dp-badge-amber {
+      color: var(--amber-500);
+      border-color: rgba(245, 158, 11, 0.35);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .dp-badge-slate {
+      color: var(--slate-400);
+      border-color: var(--slate-600);
+      background: rgba(148, 163, 184, 0.06);
+    }
+
+    .dp-summary {
+      font-size: 0.78rem;
+      line-height: 1.4;
+      color: var(--slate-200);
+    }
+
+    .dp-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+    }
+
+    .dp-stat-block {
+      background: var(--slate-800);
+      border: 1px solid var(--slate-700);
+      border-radius: 4px;
+      padding: 6px;
+      text-align: center;
+    }
+
+    .dp-stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      color: var(--slate-400);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .dp-stat-value {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Kill Chain */
+    .kc-section-title {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--amber-500);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .kc-timeline {
+      position: relative;
+      padding-left: 16px;
+      margin-left: 8px;
+    }
+
+    .kc-timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      bottom: 20px;
+      width: 0;
+      border-left: 2px dashed var(--slate-600);
+    }
+
+    .kc-node {
+      position: relative;
+      margin-bottom: 10px;
+      padding-left: 14px;
+    }
+
+    .kc-icon {
+      position: absolute;
+      left: -22px;
+      top: 2px;
+      background: var(--bg-panel);
+      font-size: 0.7rem;
+      z-index: 2;
+      padding: 2px 0;
+      color: var(--slate-500);
+    }
+
+    .kc-node.phase-shaping .kc-icon {
+      color: var(--cyan-500);
+    }
+
+    .kc-node.phase-strike .kc-icon {
+      color: var(--amber-500);
+      text-shadow: 0 0 8px var(--amber-500), 0 0 16px rgba(245, 158, 11, 0.4);
+    }
+
+    .kc-node.phase-bda .kc-icon {
+      color: var(--slate-400);
+    }
+
+    .kc-time {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--slate-400);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+      letter-spacing: 0.3px;
+    }
+
+    .kc-content {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid var(--slate-700);
+      padding: 5px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      line-height: 1.3;
+      color: var(--slate-300);
+    }
+
+    .kc-content strong {
+      color: var(--slate-100);
+      font-size: 0.78rem;
+      display: block;
+      margin-bottom: 1px;
+    }
+
+    .kc-node.phase-strike .kc-content {
+      border-color: rgba(245, 158, 11, 0.25);
+      background: rgba(245, 158, 11, 0.04);
+    }
+
+    .kc-node.phase-strike .kc-content strong {
+      color: var(--amber-500);
+    }
+
+    /* --- OVERRIDES FOR EXISTING CLASSES --- */
+    .acled-header {
+      display: none !important;
+    }
+
+    .dashboard-container {
+      display: contents !important;
+    }
+
+    .sidebar {
+      display: contents !important;
+    }
+
+    .main-content {
+      flex: 1 !important;
+      height: 100% !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      position: relative !important;
+    }
+
+    .map-container-wrapper {
+      flex: 1 !important;
+      width: 100% !important;
+      min-height: 0 !important;
+      position: relative !important;
+    }
+
+    #map {
+      width: 100% !important;
+      height: 100% !important;
+      flex-grow: 1 !important;
+    }
+
+    .kpi-bar {
+      display: none !important;
+    }
+
+    .charts-section {
+      display: none !important;
+    }
+
+    .hvt-carousel-section {
+      display: none !important;
+    }
+
+    /* --- MAP TOP BAR --- */
+    .map-topbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 36px;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--slate-700);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      z-index: 1000;
+    }
+
+    .map-topbar-title {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--slate-300);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .map-topbar-title i {
+      color: var(--amber-500);
+    }
+
+    .map-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .map-topbar-clock {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--slate-400);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .map-topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .map-topbar-actions button {
+      background: transparent;
+      border: none;
+      color: var(--slate-400);
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 4px;
+      transition: color 0.2s;
+    }
+
+    .map-topbar-actions button:hover {
+      color: var(--text-main);
+    }
+
+    /* --- ANALYTICS DRAWER --- */
+    .analytics-drawer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(10, 15, 30, 0.96);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--amber-500);
+      transition: height 0.3s var(--ease-out);
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      height: 34px;
+      overflow: hidden;
+      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .analytics-drawer.expanded {
+      height: 280px;
+    }
+
+    .drawer-handle {
+      height: 34px;
+      min-height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--slate-200);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      gap: 8px;
+      transition: color 0.2s;
+    }
+
+    .drawer-handle:hover {
+      color: var(--amber-400);
+    }
+
+    .drawer-handle i {
+      transition: transform 0.3s;
+    }
+
+    .analytics-drawer.expanded .drawer-handle i {
+      transform: rotate(180deg);
+    }
+
+    .drawer-body {
+      flex: 1;
+      padding: 10px 14px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .analytics-drawer.expanded .drawer-body {
+      opacity: 1;
+      transition-delay: 0.08s;
+    }
+
+    .drawer-widget {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--slate-700);
+      border-radius: 6px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer-widget-header {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--slate-400);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .drawer-widget-header i {
+      color: var(--amber-500);
+      font-size: 0.7rem;
+    }
+
+    .drawer-widget-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .drawer-mini-chart {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 3px;
+      padding-top: 5px;
+    }
+
+    .mini-bar {
+      flex: 1;
+      background: var(--amber-500);
+      border-radius: 2px 2px 0 0;
+      min-width: 4px;
+      max-width: 12px;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .mini-bar:hover {
+      opacity: 1;
+    }
+
+    .mini-bar.cyan {
+      background: var(--cyan-500);
+    }
+
+    .mini-bar.red {
+      background: #ef4444;
+    }
+
+    .drawer-big-num {
+      font-family: var(--font-mono);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .drawer-big-label {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      color: var(--slate-400);
+      text-transform: uppercase;
+      margin-top: 2px;
+      letter-spacing: 0.5px;
+    }
+
+    .drawer-donut {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 4px solid var(--slate-700);
+      position: relative;
+      background: conic-gradient(var(--amber-500) 0% 42%, var(--cyan-500) 42% 67%, #ef4444 67% 85%, var(--slate-600) 85% 100%);
+    }
+
+    .drawer-donut-hole {
+      position: absolute;
+      inset: 6px;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--slate-600);
+      border-radius: 3px;
+    }
+
     /* --- CSS FOR TOOLTIPS AND TABS --- */
     /* (Keeping existing styles that do not conflict) */
     .intensity-badge-wrapper {
@@ -1058,153 +1826,255 @@
     </div>
   </header>
 
-  <div class="dashboard-container">
+  <div class="app-shell" id="appShell">
 
-    <aside class="sidebar">
+    <!-- 1. NAVIGATION RAIL -->
+    <nav class="nav-rail">
+      <div class="nav-rail-logo"><i class="fas fa-crosshairs"></i></div>
+      <div class="nav-divider"></div>
+      <div class="nav-item active" title="Maps / Layers" onclick="navSwitchTab('layers', this)"><i
+          class="fas fa-layer-group"></i></div>
+      <div class="nav-item" title="ORBAT Tracker" onclick="navSwitchTab('orbat', this)"><i
+          class="fas fa-shield-alt"></i></div>
+      <div class="nav-spacer"></div>
+      <div class="nav-item nav-bottom collapse-btn" title="Collapse Sidebar" onclick="toggleSidebarCollapse()"><i
+          class="fas fa-angles-left" id="collapseIcon"></i></div>
+    </nav>
 
-      <div class="sidebar-tabs">
-        <button class="s-tab-btn active" onclick="switchSidebarTab('layers')">
-          <i class="fa-solid fa-layer-group"></i> MAPS
-        </button>
-        <button class="s-tab-btn" onclick="switchSidebarTab('orbat')">
-          <i class="fa-solid fa-shield-halved"></i> ORBAT
-        </button>
-      </div>
+    <!-- 2. SIDEBAR SHELL -->
+    <aside class="sidebar-shell" id="sidebarShell">
+      <div class="active-panel" id="activePanelBucket">
 
-      <div class="sidebar-content-wrapper">
+        <div class="dashboard-container">
+          <aside class="sidebar">
 
-        <div id="sidebar-tab-layers" class="s-tab-content active">
-          <div class="sidebar-scroll-area">
+            <div class="sidebar-tabs">
+              <button class="s-tab-btn active" onclick="switchSidebarTab('layers')">
+                <i class="fa-solid fa-layer-group"></i> MAPS
+              </button>
+              <button class="s-tab-btn" onclick="switchSidebarTab('orbat')">
+                <i class="fa-solid fa-shield-halved"></i> ORBAT
+              </button>
+            </div>
 
-            <div class="layer-section-title">FRONTLINE SOURCE</div>
+            <div class="sidebar-content-wrapper">
 
-            <div class="map-layer-card active" onclick="selectMapSource(this, 'deepstate')">
-              <div class="card-header">
-                <div>
-                  <span class="card-title">PROJECT OWL</span>
-                  <span class="badge-source badge-ua" style="background: #f59e0b; color:black;">LIVE</span>
+              <div id="sidebar-tab-layers" class="s-tab-content active">
+                <div class="sidebar-scroll-area">
+
+                  <div class="layer-section-title">FRONTLINE SOURCE</div>
+
+                  <div class="map-layer-card active" onclick="selectMapSource(this, 'deepstate')">
+                    <div class="card-header">
+                      <div>
+                        <span class="card-title">PROJECT OWL</span>
+                        <span class="badge-source badge-ua" style="background: #f59e0b; color:black;">LIVE</span>
+                      </div>
+                      <i class="fa-solid fa-circle-dot status-dot" style="color: #22c55e;"></i>
+                    </div>
+                    <div class="card-desc">Real-time frontline & unit tracking. Primary Intelligence Source.</div>
+                  </div>
+
+                  <div class="map-layer-card" onclick="openPlayfraModal()">
+                    <div class="card-header">
+                      <div>
+                        <span class="card-title">TACTICAL DEEP MAP</span>
+                        <span class="badge-source badge-us" style="background:#8b5cf6; color:white;">PLAYFRA</span>
+                      </div>
+                      <i class="fa-solid fa-satellite status-dot" style="color: #cbd5e1;"></i>
+                    </div>
+                    <div class="card-desc" style="margin-bottom: 5px;">High-resolution tactical map overlay.</div>
+                  </div>
+
+                  <div class="map-layer-card" onclick="window.open('https://deepstatemap.live/en', '_blank')"
+                    style="cursor: pointer;">
+                    <div class="card-header">
+                      <div>
+                        <span class="card-title">DEEPSTATE (EXTERNAL)</span>
+                        <span class="badge-source badge-ua" style="background:#b91c1c; color:#f8fafc;">LINK</span>
+                      </div>
+                      <i class="fa-solid fa-external-link-alt status-dot" style="color: #94a3b8;"></i>
+                    </div>
+                    <div class="card-desc">Opens the official website in a new tab.</div>
+                  </div>
+
+                  <!-- Rybar Removed -->
+
+                  <div class="layer-section-title">EXTRA DATA</div>
+
+                  <label class="tech-toggle-row">
+                    <span class="tech-toggle-label">Weather Radar</span>
+                    <input type="checkbox" onchange="toggleTechLayer('radar', this)">
+                    <div class="tech-switch"></div>
+                  </label>
+
+                  <label class="tech-toggle-row">
+                    <span class="tech-toggle-label">
+                      NASA FIRMS (Thermal)
+                    </span>
+                    <input type="checkbox" onchange="toggleTechLayer('firms', this)">
+                    <div class="tech-switch"></div>
+                  </label>
+                  <label class="tech-toggle-row" style="align-items: flex-start;">
+                    <div style="display:flex; flex-direction:column;">
+                      <span class="tech-toggle-label"
+                        data-tooltip="Real-time cloud cover & fog degrading drone operations.">
+                        Drone V.F.R. (Visibility)
+                      </span>
+                      <span style="font-size: 0.65rem; color: #64748b; margin-top: 2px;">Clouds >70% or Vis
+                        &lt;3km</span>
+                    </div>
+                    <input type="checkbox" onchange="toggleTechLayer('vfr', this)">
+                    <div class="tech-switch" style="margin-top: 2px;"></div>
+                  </label>
+
+                  <label class="tech-toggle-row">
+                    <span class="tech-toggle-label">Satellite (HIR)</span>
+                    <input type="checkbox" onchange="toggleTechLayer('satellite', this)">
+                    <div class="tech-switch"></div>
+                  </label>
+
+                  <div class="layer-section-title">VIEW OPTIONS</div>
+
+                  <label class="tech-toggle-row">
+                    <span class="tech-toggle-label">Show Events</span>
+                    <input type="checkbox" checked onchange="toggleTechLayer('events', this)">
+                    <div class="tech-switch"></div>
+                  </label>
+
+                  <label class="tech-toggle-row">
+                    <span class="tech-toggle-label">Fortifications</span>
+                    <input type="checkbox" checked onchange="toggleTechLayer('fortifications', this)">
+                    <div class="tech-switch"></div>
+                  </label>
+
+                  <label class="tech-toggle-row">
+                    <span class="tech-toggle-label">
+                      ORBAT Units (Live)
+                    </span>
+                    <input type="checkbox" onchange="toggleTechLayer('units', this)">
+                    <div class="tech-switch"></div>
+                  </label>
+
+                  <label class="tech-toggle-row">
+                    <span class="tech-toggle-label">
+                      Strategic Context (AI)
+                    </span>
+                    <input type="checkbox" onchange="toggleTechLayer('narratives', this)">
+                    <div class="tech-switch"></div>
+                  </label>
+
+                  </label>
+
+                  <div class="layer-section-title">TACTICAL ENVIRONMENT</div>
+                  <div class="filter-block" style="border-bottom: none; padding-bottom: 0;">
+                    <label style="font-size: 0.75rem; letter-spacing: 1px; color: #94a3b8;"><i
+                        class="fas fa-truck-monster" style="color: #f59e0b; margin-right: 6px;"></i> MOBILITY
+                      INDEX</label>
+                    <div id="mobility-index" class="mobility-widget">
+                      <span style="color:#64748b; font-size: 0.8rem;">INITIALIZING SENSORS...</span>
+                    </div>
+                  </div>
+
                 </div>
-                <i class="fa-solid fa-circle-dot status-dot" style="color: #22c55e;"></i>
               </div>
-              <div class="card-desc">Real-time frontline & unit tracking. Primary Intelligence Source.</div>
-            </div>
 
-            <div class="map-layer-card" onclick="openPlayfraModal()">
-              <div class="card-header">
-                <div>
-                  <span class="card-title">TACTICAL DEEP MAP</span>
-                  <span class="badge-source badge-us" style="background:#8b5cf6; color:white;">PLAYFRA</span>
+              <div id="sidebar-tab-orbat" class="s-tab-content">
+                <div class="orbat-container">
+                  <div class="sidebar-tabs" style="background: rgba(0,0,0,0.4); justify-content: space-between;">
+                    <button class="s-tab-btn active" style="font-size: 0.8rem;" onclick="switchOrbatTab('UA')">UA
+                      FORCES</button>
+                    <button class="s-tab-btn" style="font-size: 0.8rem;" onclick="switchOrbatTab('RU')">RU
+                      FORCES</button>
+                  </div>
+                  <div id="orbat-list" class="orbat-list">
+                    <!-- Units injected by JS -->
+                  </div>
                 </div>
-                <i class="fa-solid fa-satellite status-dot" style="color: #cbd5e1;"></i>
               </div>
-              <div class="card-desc" style="margin-bottom: 5px;">High-resolution tactical map overlay.</div>
+
             </div>
+          </aside>
+        </div> <!-- end dashboard-container -->
 
-            <div class="map-layer-card" onclick="window.open('https://deepstatemap.live/en', '_blank')"
-              style="cursor: pointer;">
-              <div class="card-header">
-                <div>
-                  <span class="card-title">DEEPSTATE (EXTERNAL)</span>
-                  <span class="badge-source badge-ua" style="background:#b91c1c; color:#f8fafc;">LINK</span>
-                </div>
-                <i class="fa-solid fa-external-link-alt status-dot" style="color: #94a3b8;"></i>
-              </div>
-              <div class="card-desc">Opens the official website in a new tab.</div>
-            </div>
+      </div> <!-- end active-panel -->
 
-            <!-- Rybar Removed -->
-
-            <div class="layer-section-title">EXTRA DATA</div>
-
-            <label class="tech-toggle-row">
-              <span class="tech-toggle-label">Weather Radar</span>
-              <input type="checkbox" onchange="toggleTechLayer('radar', this)">
-              <div class="tech-switch"></div>
-            </label>
-
-            <label class="tech-toggle-row">
-              <span class="tech-toggle-label">
-                NASA FIRMS (Thermal)
-              </span>
-              <input type="checkbox" onchange="toggleTechLayer('firms', this)">
-              <div class="tech-switch"></div>
-            </label>
-            <label class="tech-toggle-row" style="align-items: flex-start;">
-              <div style="display:flex; flex-direction:column;">
-                <span class="tech-toggle-label" data-tooltip="Real-time cloud cover & fog degrading drone operations.">
-                  Drone V.F.R. (Visibility)
-                </span>
-                <span style="font-size: 0.65rem; color: #64748b; margin-top: 2px;">Clouds >70% or Vis &lt;3km</span>
-              </div>
-              <input type="checkbox" onchange="toggleTechLayer('vfr', this)">
-              <div class="tech-switch" style="margin-top: 2px;"></div>
-            </label>
-
-            <label class="tech-toggle-row">
-              <span class="tech-toggle-label">Satellite (HIR)</span>
-              <input type="checkbox" onchange="toggleTechLayer('satellite', this)">
-              <div class="tech-switch"></div>
-            </label>
-
-            <div class="layer-section-title">VIEW OPTIONS</div>
-
-            <label class="tech-toggle-row">
-              <span class="tech-toggle-label">Show Events</span>
-              <input type="checkbox" checked onchange="toggleTechLayer('events', this)">
-              <div class="tech-switch"></div>
-            </label>
-
-            <label class="tech-toggle-row">
-              <span class="tech-toggle-label">Fortifications</span>
-              <input type="checkbox" checked onchange="toggleTechLayer('fortifications', this)">
-              <div class="tech-switch"></div>
-            </label>
-
-            <label class="tech-toggle-row">
-              <span class="tech-toggle-label">
-                ORBAT Units (Live)
-              </span>
-              <input type="checkbox" onchange="toggleTechLayer('units', this)">
-              <div class="tech-switch"></div>
-            </label>
-
-            <label class="tech-toggle-row">
-              <span class="tech-toggle-label">
-                Strategic Context (AI)
-              </span>
-              <input type="checkbox" onchange="toggleTechLayer('narratives', this)">
-              <div class="tech-switch"></div>
-            </label>
-
-            </label>
-
-            <div class="layer-section-title">TACTICAL ENVIRONMENT</div>
-            <div class="filter-block" style="border-bottom: none; padding-bottom: 0;">
-              <label style="font-size: 0.75rem; letter-spacing: 1px; color: #94a3b8;"><i class="fas fa-truck-monster"
-                  style="color: #f59e0b; margin-right: 6px;"></i> MOBILITY INDEX</label>
-              <div id="mobility-index" class="mobility-widget">
-                <span style="color:#64748b; font-size: 0.8rem;">INITIALIZING SENSORS...</span>
-              </div>
-            </div>
-
+      <!-- DOSSIER PANEL (Slide-in Override) -->
+      <div class="dossier-panel" id="dossierPanel">
+        <div class="dossier-topbar">
+          <button class="dossier-back-btn" onclick="closeDossierPanel()">
+            <i class="fas fa-chevron-left" style="font-size:0.55rem;"></i> BACK TO FEED
+          </button>
+          <div style="display:flex;gap:6px;">
+            <button
+              style="background:transparent;border:none;color:var(--slate-500);font-size:0.8rem;cursor:pointer;padding:4px;"
+              title="Open External"><i class="fas fa-external-link-alt"></i></button>
+            <button
+              style="background:transparent;border:none;color:var(--slate-500);font-size:0.8rem;cursor:pointer;padding:4px;"
+              title="Bookmark"><i class="fas fa-bookmark"></i></button>
           </div>
         </div>
-
-        <div id="sidebar-tab-orbat" class="s-tab-content">
-          <div class="orbat-container">
-            <div class="sidebar-tabs" style="background: rgba(0,0,0,0.4); justify-content: space-between;">
-              <button class="s-tab-btn active" style="font-size: 0.8rem;" onclick="switchOrbatTab('UA')">UA
-                FORCES</button>
-              <button class="s-tab-btn" style="font-size: 0.8rem;" onclick="switchOrbatTab('RU')">RU FORCES</button>
+        <div class="dossier-hero">
+          <div class="hero-left">
+            <div class="hero-kicker">Strategic Assessment</div>
+            <div class="hero-title" id="dossierTitle">Deep Strike on Almetyevsk Oil Hub</div>
+          </div>
+          <div class="hero-score-box">
+            <div class="score-val" id="dossierScore">5.0</div>
+            <div class="score-label">T.I.E.</div>
+          </div>
+        </div>
+        <div class="dossier-body" id="dossierBody">
+          <div class="dp-badges">
+            <span class="dp-badge dp-badge-green">LOGISTICS</span>
+            <span class="dp-badge dp-badge-amber">HIGH IMPACT</span>
+            <span class="dp-badge dp-badge-slate">SHAPING OP</span>
+          </div>
+          <div class="dp-summary">
+            Ukrainian forces launched a coordinated drone strike on the Almetyevsk refinery complex in Tatarstan.
+            Satellite imagery confirms multiple secondary explosions within the primary distillation sector,
+            severely degrading processing capacity for the Russian military logistics chain.
+          </div>
+          <div class="dp-stats-grid">
+            <div class="dp-stat-block">
+              <div class="dp-stat-label">Events</div>
+              <div class="dp-stat-value">3</div>
             </div>
-            <div id="orbat-list" class="orbat-list">
-              <!-- Units injected by JS -->
+            <div class="dp-stat-block">
+              <div class="dp-stat-label">Duration</div>
+              <div class="dp-stat-value">1d</div>
+            </div>
+            <div class="dp-stat-block">
+              <div class="dp-stat-label">Cluster</div>
+              <div class="dp-stat-value">daca</div>
+            </div>
+          </div>
+          <div>
+            <div class="kc-section-title"><i class="fas fa-link"></i> TACTICAL KILL CHAIN</div>
+            <div class="kc-timeline">
+              <div class="kc-node phase-shaping">
+                <div class="kc-icon"><i class="fas fa-crosshairs"></i></div>
+                <div class="kc-time">23 FEB, 18:00Z</div>
+                <div class="kc-content"><strong>Shaping Operation</strong>EW suppression of local radar. Detected
+                  long-range drone swarm transiting toward Tatarstan. (Vector: Eastward advance)</div>
+              </div>
+              <div class="kc-node phase-strike">
+                <div class="kc-icon"><i class="fas fa-crosshairs"></i></div>
+                <div class="kc-time">24 FEB, 02:30Z - T.I.E. 5.0</div>
+                <div class="kc-content"><strong>Master Strike - Kalebine Pumping Station</strong>Confirmed impact on
+                  primary node of pipeline. Brushka. (Cascading effect)</div>
+              </div>
+              <div class="kc-node phase-bda">
+                <div class="kc-icon"><i class="fas fa-satellite"></i></div>
+                <div class="kc-time">24 FEB, 06:45Z</div>
+                <div class="kc-content"><strong>BDA - Battle Damage Assessment</strong>Excessive fire confirmed at
+                  infrastructure. Risk of propagation to adjacent storage facility.</div>
+              </div>
             </div>
           </div>
         </div>
-
-      </div>
-    </aside>
+      </div> <!-- end dossier-panel -->
+    </aside> <!-- end sidebar-shell -->
 
     <main class="main-content">
 
@@ -1224,6 +2094,23 @@
       </div>
 
       <div class="map-container-wrapper" style="position: relative;">
+
+        <!-- MAP TOP BAR -->
+        <div class="map-topbar">
+          <div class="map-topbar-title">
+            <i class="fas fa-globe-europe"></i> TACTICAL MAP
+          </div>
+          <div class="map-topbar-right">
+            <div class="map-topbar-clock">
+              <i class="fas fa-clock"></i>
+              <span id="liveClockDisplay">--:--:--Z</span>
+            </div>
+            <div class="map-topbar-actions">
+              <button title="Notifications"><i class="fas fa-bell"></i></button>
+              <button title="User"><i class="fas fa-user-circle"></i></button>
+            </div>
+          </div>
+        </div>
 
         <!-- QUICK SEARCH (flyTo) -->
         <div class="map-quick-search" id="quickSearchContainer">
@@ -2106,8 +2993,128 @@
         // --- GLOBAL SHIMS (overridden by map.js when ready) ---
         window.setTimeWindow = window.setTimeWindow || function () { };
         window.toggleTacticalPersistence = window.toggleTacticalPersistence || function () { };
+
+        // ==========================================
+        // V2 NAV + DOSSIER + DRAWER + CLOCK LOGIC
+        // ==========================================
+
+        // --- NAV RAIL TAB SWITCHING ---
+        function navSwitchTab(tabName, element) {
+          document.querySelectorAll('.nav-rail .nav-item').forEach(el => {
+            if (!el.classList.contains('collapse-btn')) el.classList.remove('active');
+          });
+          element.classList.add('active');
+          // Delegate to existing switchSidebarTab
+          if (typeof switchSidebarTab === 'function') switchSidebarTab(tabName);
+          closeDossierPanel();
+        }
+
+        // --- DOSSIER PANEL ---
+        function openDossierPanel() {
+          const shell = document.getElementById('sidebarShell');
+          if (shell) shell.classList.add('dossier-open');
+        }
+        function closeDossierPanel() {
+          const shell = document.getElementById('sidebarShell');
+          if (shell) shell.classList.remove('dossier-open');
+        }
+
+        // --- SIDEBAR COLLAPSE ---
+        function toggleSidebarCollapse() {
+          const appShell = document.getElementById('appShell');
+          appShell.classList.toggle('sidebar-collapsed');
+          // After transition, invalidate map size so Leaflet redraws
+          setTimeout(function () {
+            if (window.map && typeof window.map.invalidateSize === 'function') {
+              window.map.invalidateSize();
+            }
+          }, 400);
+        }
+
+        // --- ANALYTICS DRAWER ---
+        function toggleAnalyticsDrawer() {
+          const drawer = document.getElementById('analyticsDrawer');
+          const label = document.getElementById('drawerLabel');
+          if (!drawer) return;
+          drawer.classList.toggle('expanded');
+          if (label) {
+            label.textContent = drawer.classList.contains('expanded')
+              ? 'Analytics Overview: Collapse'
+              : 'Analytics Overview: Expand';
+          }
+        }
+
+        // --- LIVE UTC CLOCK ---
+        function updateLiveClock() {
+          var now = new Date();
+          var h = String(now.getUTCHours()).padStart(2, '0');
+          var m = String(now.getUTCMinutes()).padStart(2, '0');
+          var s = String(now.getUTCSeconds()).padStart(2, '0');
+          var el = document.getElementById('liveClockDisplay');
+          if (el) el.textContent = h + ':' + m + ':' + s + 'Z';
+        }
+        setInterval(updateLiveClock, 1000);
+        updateLiveClock();
       </script>
 
+      <!-- ANALYTICS DRAWER (inside map area) -->
+      <div class="analytics-drawer" id="analyticsDrawer">
+        <div class="drawer-handle" onclick="toggleAnalyticsDrawer()">
+          <i class="fas fa-chevron-up"></i>
+          <span id="drawerLabel">Analytics Overview: Expand</span>
+        </div>
+        <div class="drawer-body">
+          <div class="drawer-widget">
+            <div class="drawer-widget-header"><i class="fas fa-chart-bar"></i> TIMELINE</div>
+            <div class="drawer-widget-body">
+              <div class="drawer-mini-chart">
+                <div class="mini-bar" style="height:30%;"></div>
+                <div class="mini-bar" style="height:55%;"></div>
+                <div class="mini-bar cyan" style="height:45%;"></div>
+                <div class="mini-bar" style="height:80%;"></div>
+                <div class="mini-bar cyan" style="height:60%;"></div>
+                <div class="mini-bar" style="height:40%;"></div>
+                <div class="mini-bar red" style="height:90%;"></div>
+                <div class="mini-bar" style="height:35%;"></div>
+                <div class="mini-bar cyan" style="height:50%;"></div>
+                <div class="mini-bar" style="height:70%;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="drawer-widget">
+            <div class="drawer-widget-header"><i class="fas fa-chart-pie"></i> DISTRIBUTION</div>
+            <div class="drawer-widget-body">
+              <div class="drawer-donut">
+                <div class="drawer-donut-hole">42%</div>
+              </div>
+            </div>
+          </div>
+          <div class="drawer-widget">
+            <div class="drawer-widget-header"><i class="fas fa-chart-line"></i> TEMPO</div>
+            <div class="drawer-widget-body" style="flex-direction:column;">
+              <div class="drawer-big-num">147</div>
+              <div class="drawer-big-label">avg events / day</div>
+            </div>
+          </div>
+          <div class="drawer-widget">
+            <div class="drawer-widget-header"><i class="fas fa-bullseye"></i> IMPACT RADAR</div>
+            <div class="drawer-widget-body">
+              <div class="drawer-mini-chart">
+                <div class="mini-bar red" style="height:90%;"></div>
+                <div class="mini-bar" style="height:65%;"></div>
+                <div class="mini-bar cyan" style="height:45%;"></div>
+                <div class="mini-bar" style="height:75%;"></div>
+                <div class="mini-bar red" style="height:55%;"></div>
+                <div class="mini-bar cyan" style="height:85%;"></div>
+                <div class="mini-bar" style="height:40%;"></div>
+                <div class="mini-bar red" style="height:60%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  </div> <!-- end app-shell -->
 </body>
 
 </html>
