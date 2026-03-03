@@ -508,8 +508,24 @@
     }
 
     /* --- OVERRIDES FOR EXISTING CLASSES --- */
+    /* Force body background to pitch black (override style.css :root) */
+    :root {
+      --bg-body: #000000 !important;
+      --bg-surface: #0a0f1e !important;
+    }
+
+    body {
+      background: #000000 !important;
+    }
+
     .acled-header {
       display: none !important;
+      height: 0 !important;
+    }
+
+    header {
+      display: none !important;
+      height: 0 !important;
     }
 
     .dashboard-container {
@@ -518,6 +534,16 @@
 
     .sidebar {
       display: contents !important;
+      height: auto !important;
+      position: static !important;
+      top: auto !important;
+      background: transparent !important;
+      border: none !important;
+    }
+
+    .sidebar-content-wrapper {
+      flex: 1 !important;
+      overflow-y: auto !important;
     }
 
     .main-content {
@@ -527,21 +553,33 @@
       flex-direction: column !important;
       overflow: hidden !important;
       position: relative !important;
+      padding: 0 !important;
+      margin: 0 !important;
     }
 
     .map-container-wrapper {
-      flex: 1 !important;
+      flex: 1 1 0% !important;
       width: 100% !important;
+      height: 100% !important;
       min-height: 0 !important;
       position: relative !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
     }
 
     #map {
       width: 100% !important;
       height: 100% !important;
-      flex-grow: 1 !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      border-radius: 0 !important;
     }
 
+    /* Kill ALL sections that steal vertical space from the map */
     .kpi-bar {
       display: none !important;
     }
@@ -552,6 +590,36 @@
 
     .hvt-carousel-section {
       display: none !important;
+    }
+
+    .timeline-section-wrapper {
+      display: none !important;
+    }
+
+    #equipment-ticker-wrapper {
+      display: none !important;
+    }
+
+    .main-view-tabs {
+      display: none !important;
+    }
+
+    .war-room-panel,
+    .intel-feed-panel,
+    .operational-tempo-frame,
+    .tactical-graveyard-panel,
+    .strategist-wrapper {
+      display: none !important;
+    }
+
+    /* Force active-panel and sidebar-shell backgrounds to V2 dark */
+    .sidebar-shell {
+      background: #080d18 !important;
+    }
+
+    .sidebar-tabs {
+      background: rgba(0, 0, 0, 0.6) !important;
+      border-bottom: 1px solid var(--slate-700) !important;
     }
 
     /* --- MAP TOP BAR --- */
