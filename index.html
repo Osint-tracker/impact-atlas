@@ -660,9 +660,11 @@
       border-color: var(--amber-500) !important;
     }
 
-    .analytics-card canvas {
+    .analytics-card canvas,
+    .sidebar-nav-panel canvas {
       width: 100% !important;
-      min-height: 100px;
+      max-height: 180px !important;
+      min-height: 80px;
     }
 
     /* --- MAP TOP BAR --- */
@@ -3297,9 +3299,12 @@
           if (existingTabs.indexOf(panelId) !== -1) {
             var dc = document.querySelector('.dashboard-container');
             if (dc) dc.style.display = '';
-            // Show the sidebar tabs
-            document.querySelectorAll('.sidebar-tabs').forEach(function (t) { t.style.display = ''; });
-            if (typeof switchSidebarTab === 'function') switchSidebarTab(panelId);
+            // HIDE the sidebar tabs bar — nav rail replaces it
+            document.querySelectorAll('.sidebar-tabs').forEach(function (t) { t.style.display = 'none'; });
+            // Directly toggle the correct s-tab-content
+            document.querySelectorAll('.s-tab-content').forEach(function (c) { c.classList.remove('active'); });
+            var target = document.getElementById('sidebar-tab-' + panelId);
+            if (target) target.classList.add('active');
           } else {
             var dc = document.querySelector('.dashboard-container');
             if (dc) dc.style.display = 'none';
@@ -3415,13 +3420,43 @@
           _analyticsCharts.tempo = new Chart(ctx, { type: 'bar', data: { labels: labels.map(function (l) { return l.substring(5); }), datasets: [{ data: data, backgroundColor: data.map(function (v) { return v >= peak * 0.8 ? '#e94560' : v >= avg ? '#f59e0b' : '#233554'; }), borderRadius: 3, borderSkipped: false }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b', font: { size: 8, family: 'JetBrains Mono' } }, grid: { display: false } }, y: { ticks: { color: '#64748b', font: { size: 8 } }, grid: { color: '#233554' } } } } });
         }
 
-        // --- LOSSES PANEL ---
+        // --- LOSSES PANEL (delegates to Dashboard.ticker for rich data) ---
         function populateLossesPanel() {
-          var events = getLoadedEvents(), container = document.getElementById('lossesContent');
-          if (!container || !events.length) return;
+          var container = document.getElementById('lossesContent');
+          if (!container) return;
+
+          // If Dashboard.ticker is loaded, use its rich rendering
+          if (window.Dashboard && window.Dashboard.ticker && window.Dashboard.ticker.allData && window.Dashboard.ticker.allData.length > 0) {
+            // Temporarily point ticker's content to our panel container
+            var originalContent = window.Dashboard.ticker.content;
+            window.Dashboard.ticker.content = container;
+            // Render the net balance view (the rich one with SVGs, attrition, etc.)
+            if (window.Dashboard.ticker.netSummary) {
+              window.Dashboard.ticker._renderNetBalance();
+            } else {
+              // Fall back to the attrition matrix + gross list
+              window.Dashboard.ticker._renderAttritionMatrix();
+              window.Dashboard.ticker.render();
+              // Combine attrition container + ticker content
+              var attritionEl = document.getElementById('attrition-mirror-chart');
+              if (attritionEl) {
+                container.innerHTML = attritionEl.innerHTML + container.innerHTML;
+              }
+            }
+            // Restore original content reference
+            window.Dashboard.ticker.content = originalContent;
+            return;
+          }
+
+          // Fallback: category breakdown from events
+          var events = getLoadedEvents();
+          if (!events.length) {
+            container.innerHTML = '<div style="color:var(--text-muted); font-size:0.7rem; text-align:center; padding:20px;"><i class="fas fa-cog fa-spin" style="margin-right:6px;"></i>Awaiting loss data from Dashboard module...</div>';
+            return;
+          }
           var cats = {};
           events.forEach(function (ev) { var c = ev.category_id || ev.category || 'UNKNOWN'; cats[c] = (cats[c] || 0) + 1; });
-          var html = '';
+          var html = '<div style="font-family:var(--font-mono); font-size:0.55rem; color:var(--text-muted); padding:4px 8px; margin-bottom:6px; text-transform:uppercase;">Event Distribution by Category</div>';
           Object.keys(cats).sort(function (a, b) { return cats[b] - cats[a]; }).forEach(function (cat) {
             var pct = ((cats[cat] / events.length) * 100).toFixed(1);
             html += '<div style="padding:7px 9px; margin-bottom:5px; background:var(--bg-card); border:1px solid var(--border-main); border-radius:4px;">';
@@ -3517,8 +3552,41 @@
             el = document.getElementById('drawerTotalEvents'); if (el) el.textContent = ev.length;
             el = document.getElementById('drawerAvgTie'); if (el) el.textContent = avg.toFixed(1);
             el = document.getElementById('drawerHighImpact'); if (el) el.textContent = ties.filter(function (t) { return t >= 3.5; }).length;
-            var cats = {}; ev.forEach(function (e) { var c = e.category_id || e.category || 'OTHER'; cats[c] = true; });
+            var cats = {}; ev.forEach(function (e) { var c = e.category_id || e.category || 'OTHER'; cats[c] = (cats[c] || 0) + 1; });
             el = document.getElementById('drawerCategories'); if (el) el.textContent = Object.keys(cats).length;
+
+            // LAST 24H
+            var now24 = new Date(); var count24h = 0;
+            ev.forEach(function (e) {
+              var d = new Date(e.event_date || e.date || 0);
+              if ((now24 - d) <= 86400000) count24h++;
+            });
+            el = document.getElementById('drawerLast24h'); if (el) el.textContent = count24h;
+
+            // TOP REGION
+            var regions = {};
+            ev.forEach(function (e) {
+              var r = e.region || e.oblast || e.state || '';
+              if (r && r !== 'UNKNOWN' && r !== 'null') regions[r] = (regions[r] || 0) + 1;
+            });
+            var topRegion = '--'; var topCount = 0;
+            for (var rk in regions) { if (regions[rk] > topCount) { topCount = regions[rk]; topRegion = rk; } }
+            el = document.getElementById('drawerTopRegion');
+            if (el) el.textContent = topRegion.length > 12 ? topRegion.substring(0, 12) + '..' : topRegion;
+
+            // MOMENTUM (from Dashboard gauge if available)
+            el = document.getElementById('drawerMomentum');
+            if (el) {
+              var momStatus = document.getElementById('momentumStatus');
+              if (momStatus && momStatus.innerText) { el.textContent = momStatus.innerText; el.style.color = momStatus.style.color || '#f59e0b'; }
+              else { el.textContent = 'ACTIVE'; }
+            }
+
+            // DOMINANT category
+            var maxCat = ''; var maxCatCount = 0;
+            for (var ck in cats) { if (cats[ck] > maxCatCount) { maxCatCount = cats[ck]; maxCat = ck; } }
+            el = document.getElementById('drawerDominantType');
+            if (el) el.textContent = maxCat.length > 10 ? maxCat.substring(0, 10) + '..' : maxCat;
           }
         }, 2000);
 
@@ -3558,6 +3626,22 @@
               <div class="drawer-big-label">T.I.E. >= 3.5</div>
             </div>
           </div>
+          <div class="drawer-widget" onclick="navSwitchTab('tempo', document.querySelector('[data-panel=tempo]'))"
+            style="cursor:pointer;">
+            <div class="drawer-widget-header"><i class="fas fa-bolt"></i> LAST 24H</div>
+            <div class="drawer-widget-body" style="flex-direction:column;">
+              <div class="drawer-big-num" id="drawerLast24h" style="color:#22c55e;">--</div>
+              <div class="drawer-big-label">new events</div>
+            </div>
+          </div>
+          <div class="drawer-widget" onclick="navSwitchTab('intel', document.querySelector('[data-panel=intel]'))"
+            style="cursor:pointer;">
+            <div class="drawer-widget-header"><i class="fas fa-map-marker-alt"></i> TOP REGION</div>
+            <div class="drawer-widget-body" style="flex-direction:column;">
+              <div class="drawer-big-num" id="drawerTopRegion" style="color:var(--cyan-500); font-size:0.7rem;">--</div>
+              <div class="drawer-big-label">most active</div>
+            </div>
+          </div>
           <div class="drawer-widget"
             onclick="navSwitchTab('analytics', document.querySelector('[data-panel=analytics]'))"
             style="cursor:pointer;">
@@ -3565,6 +3649,23 @@
             <div class="drawer-widget-body" style="flex-direction:column;">
               <div class="drawer-big-num" id="drawerCategories" style="color:var(--cyan-500);">--</div>
               <div class="drawer-big-label">event types</div>
+            </div>
+          </div>
+          <div class="drawer-widget" onclick="navSwitchTab('losses', document.querySelector('[data-panel=losses]'))"
+            style="cursor:pointer;">
+            <div class="drawer-widget-header"><i class="fas fa-shield-alt"></i> MOMENTUM</div>
+            <div class="drawer-widget-body" style="flex-direction:column;">
+              <div class="drawer-big-num" id="drawerMomentum" style="color:#f59e0b; font-size:0.7rem;">--</div>
+              <div class="drawer-big-label">battle tempo</div>
+            </div>
+          </div>
+          <div class="drawer-widget"
+            onclick="navSwitchTab('analytics', document.querySelector('[data-panel=analytics]'))"
+            style="cursor:pointer;">
+            <div class="drawer-widget-header"><i class="fas fa-tags"></i> DOMINANT</div>
+            <div class="drawer-widget-body" style="flex-direction:column;">
+              <div class="drawer-big-num" id="drawerDominantType" style="color:#8b5cf6; font-size:0.65rem;">--</div>
+              <div class="drawer-big-label">top category</div>
             </div>
           </div>
         </div>

@@ -1817,15 +1817,41 @@
                   </div>
                 `;
 
-                L.popup({
-                  maxWidth: 420,
-                  minWidth: 320,
-                  className: 'intel-brief-popup',
-                  closeButton: true
-                })
-                  .setLatLng(e.latlng)
-                  .setContent(popupContent)
-                  .openOn(map);
+                // Open in sidebar's active panel (per reference image) instead of map popup
+                var sidebarPanel = document.querySelector('.sidebar-nav-panel[style*="display: flex"], .sidebar-nav-panel[style*="display:flex"]');
+                // Hide any existing nav panels
+                document.querySelectorAll('.sidebar-nav-panel').forEach(function (el) { el.style.display = 'none'; });
+                // Hide the dashboard-container and sidebar-tabs
+                var dc = document.querySelector('.dashboard-container');
+                if (dc) dc.style.display = 'none';
+                document.querySelectorAll('.sidebar-tabs').forEach(function (t) { t.style.display = 'none'; });
+                document.querySelectorAll('.s-tab-content').forEach(function (c) { c.classList.remove('active'); });
+
+                // Create or reuse a cluster dossier panel
+                var clusterPanel = document.getElementById('sidebar-panel-cluster');
+                if (!clusterPanel) {
+                  clusterPanel = document.createElement('div');
+                  clusterPanel.id = 'sidebar-panel-cluster';
+                  clusterPanel.className = 'sidebar-nav-panel';
+                  var activePanelBucket = document.querySelector('.active-panel') || document.querySelector('.sidebar-content-wrapper');
+                  if (activePanelBucket) activePanelBucket.appendChild(clusterPanel);
+                }
+                clusterPanel.style.display = 'flex';
+                clusterPanel.style.flexDirection = 'column';
+                clusterPanel.style.height = '100%';
+                clusterPanel.innerHTML = popupContent;
+
+                // Ensure sidebar is visible
+                var appShell = document.getElementById('appShell');
+                if (appShell && appShell.classList.contains('sidebar-collapsed')) {
+                  appShell.classList.remove('sidebar-collapsed');
+                  setTimeout(function () { if (window.map && typeof window.map.invalidateSize === 'function') window.map.invalidateSize(); }, 400);
+                }
+
+                // Also zoom the map to the cluster centroid
+                if (e.latlng && window.map) {
+                  window.map.flyTo(e.latlng, 10, { animate: true, duration: 1.2 });
+                }
               };
 
               polygon.on('click', openPopup);
