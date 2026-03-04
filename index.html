@@ -51,13 +51,18 @@
       --amber-500: #f59e0b;
       --amber-400: #fbbf24;
       --cyan-500: #06b6d4;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --bg-body: #000000;
-      --bg-panel: #0f172a;
+      --coral: #e94560;
+      --text-main: #e2e8f0;
+      --text-muted: #a0aec0;
+      --bg-body: #1a1a2e;
+      --bg-panel: #16213e;
+      --bg-rail: #0f3460;
+      --bg-surface: #16213e;
+      --bg-card: #1a1a2e;
+      --border-main: #233554;
       --font-sans: 'Inter', -apple-system, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
-      --rail-width: 65px;
+      --rail-width: 56px;
       --sidebar-width: 320px;
       --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -82,55 +87,66 @@
       overflow: hidden;
     }
 
-    /* --- NAVIGATION RAIL (Left, 65px) --- */
+    /* --- NAVIGATION RAIL --- */
     .nav-rail {
       width: var(--rail-width);
       min-width: var(--rail-width);
       height: 100%;
-      background: #050a12;
-      border-right: 1px solid var(--slate-700);
+      background: #0a0f1f;
+      border-right: 1px solid var(--border-main);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding-top: 10px;
+      padding-top: 8px;
       z-index: 60;
       flex-shrink: 0;
     }
 
     .nav-rail-logo {
-      width: 38px;
-      height: 38px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(6, 182, 212, 0.08));
-      border: 1px solid var(--slate-700);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(6, 182, 212, 0.1));
+      border: 1px solid var(--border-main);
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--amber-500);
-      font-size: 1rem;
-      margin-bottom: 16px;
-    }
-
-    .nav-divider {
-      width: 28px;
-      height: 1px;
-      background: var(--slate-700);
+      font-size: 0.85rem;
       margin-bottom: 10px;
     }
 
-    .nav-item {
-      width: 42px;
-      height: 42px;
-      border-radius: 8px;
+    .nav-divider {
+      width: 24px;
+      height: 1px;
+      background: var(--border-main);
       margin-bottom: 6px;
+    }
+
+    .nav-item {
+      width: 46px;
+      padding: 6px 0 3px;
+      border-radius: 6px;
+      margin-bottom: 2px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       color: var(--slate-500);
-      font-size: 1.1rem;
+      font-size: 0.85rem;
       cursor: pointer;
       position: relative;
       transition: all 0.2s var(--ease-out);
+      gap: 1px;
+    }
+
+    .nav-item-label {
+      font-size: 0.42rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      font-family: var(--font-mono);
+      line-height: 1;
+      margin-top: 1px;
     }
 
     .nav-item:hover {
@@ -140,19 +156,18 @@
 
     .nav-item.active {
       color: var(--amber-500);
-      background: rgba(245, 158, 11, 0.08);
+      background: rgba(245, 158, 11, 0.1);
     }
 
     .nav-item.active::before {
       content: '';
       position: absolute;
-      left: -12px;
-      top: 8px;
-      height: 26px;
+      left: -1px;
+      top: 6px;
+      height: 22px;
       width: 3px;
       background: var(--amber-500);
       border-radius: 0 3px 3px 0;
-      box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
     }
 
     .nav-spacer {
@@ -160,17 +175,17 @@
     }
 
     .nav-bottom {
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
-    /* --- SIDEBAR SHELL (Holds Active Panel + Dossier) --- */
+    /* --- SIDEBAR SHELL --- */
     .sidebar-shell {
       width: var(--sidebar-width);
       min-width: var(--sidebar-width);
       height: 100%;
       position: relative;
-      background: var(--slate-800);
-      border-right: 1px solid var(--slate-700);
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border-main);
       overflow: hidden;
       z-index: 50;
       flex-shrink: 0;
@@ -508,14 +523,14 @@
     }
 
     /* --- OVERRIDES FOR EXISTING CLASSES --- */
-    /* Force body background to pitch black (override style.css :root) */
+    /* Force colors to match V2 deep navy palette (override style.css :root) */
     :root {
-      --bg-body: #000000 !important;
-      --bg-surface: #0a0f1e !important;
+      --bg-body: #1a1a2e !important;
+      --bg-surface: #16213e !important;
     }
 
     body {
-      background: #000000 !important;
+      background: #1a1a2e !important;
     }
 
     .acled-header {
@@ -614,12 +629,40 @@
 
     /* Force active-panel and sidebar-shell backgrounds to V2 dark */
     .sidebar-shell {
-      background: #080d18 !important;
+      background: var(--bg-panel) !important;
     }
 
     .sidebar-tabs {
-      background: rgba(0, 0, 0, 0.6) !important;
-      border-bottom: 1px solid var(--slate-700) !important;
+      background: rgba(10, 15, 31, 0.7) !important;
+      border-bottom: 1px solid var(--border-main) !important;
+    }
+
+    /* --- SIDEBAR NAV PANELS --- */
+    .sidebar-nav-panel {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-panel);
+      z-index: 5;
+    }
+
+    .analytics-card {
+      position: relative;
+    }
+
+    .analytics-card:hover {
+      border-color: var(--amber-500) !important;
+    }
+
+    .analytics-card canvas {
+      width: 100% !important;
+      min-height: 100px;
     }
 
     /* --- MAP TOP BAR --- */
@@ -1900,13 +1943,28 @@
     <nav class="nav-rail">
       <div class="nav-rail-logo"><i class="fas fa-crosshairs"></i></div>
       <div class="nav-divider"></div>
-      <div class="nav-item active" title="Maps / Layers" onclick="navSwitchTab('layers', this)"><i
-          class="fas fa-layer-group"></i></div>
-      <div class="nav-item" title="ORBAT Tracker" onclick="navSwitchTab('orbat', this)"><i
-          class="fas fa-shield-alt"></i></div>
+      <div class="nav-item active" data-panel="layers" title="Maps / Layers" onclick="navSwitchTab('layers', this)">
+        <i class="fas fa-layer-group"></i><span class="nav-item-label">Maps</span>
+      </div>
+      <div class="nav-item" data-panel="orbat" title="ORBAT Tracker" onclick="navSwitchTab('orbat', this)">
+        <i class="fas fa-shield-alt"></i><span class="nav-item-label">ORBAT</span>
+      </div>
+      <div class="nav-item" data-panel="intel" title="Intel Feed" onclick="navSwitchTab('intel', this)">
+        <i class="fas fa-rss"></i><span class="nav-item-label">Intel</span>
+      </div>
+      <div class="nav-item" data-panel="tempo" title="Operational Tempo" onclick="navSwitchTab('tempo', this)">
+        <i class="fas fa-chart-line"></i><span class="nav-item-label">Tempo</span>
+      </div>
+      <div class="nav-item" data-panel="losses" title="Equipment Losses" onclick="navSwitchTab('losses', this)">
+        <i class="fas fa-skull-crossbones"></i><span class="nav-item-label">Losses</span>
+      </div>
+      <div class="nav-item" data-panel="analytics" title="Analytics" onclick="navSwitchTab('analytics', this)">
+        <i class="fas fa-chart-pie"></i><span class="nav-item-label">Stats</span>
+      </div>
       <div class="nav-spacer"></div>
-      <div class="nav-item nav-bottom collapse-btn" title="Collapse Sidebar" onclick="toggleSidebarCollapse()"><i
-          class="fas fa-angles-left" id="collapseIcon"></i></div>
+      <div class="nav-item nav-bottom collapse-btn" title="Collapse Sidebar" onclick="toggleSidebarCollapse()">
+        <i class="fas fa-angles-left" id="collapseIcon"></i>
+      </div>
     </nav>
 
     <!-- 2. SIDEBAR SHELL -->
@@ -2064,6 +2122,157 @@
             </div>
           </aside>
         </div> <!-- end dashboard-container -->
+
+        <!-- INTEL FEED PANEL -->
+        <div id="sidebar-panel-intel" class="sidebar-nav-panel" style="display:none;">
+          <div style="padding:10px 14px; border-bottom:1px solid var(--border-main);">
+            <div
+              style="font-family:var(--font-mono); font-size:0.7rem; color:var(--amber-500); text-transform:uppercase; letter-spacing:1px; font-weight:700;">
+              <i class="fas fa-rss" style="margin-right:6px;"></i> INTEL FEED
+            </div>
+            <div style="font-size:0.6rem; color:var(--text-muted); margin-top:2px;">Real-time intelligence stream</div>
+          </div>
+          <div id="intelFeedList" style="flex:1; overflow-y:auto; padding:8px;">
+            <div style="color:var(--text-muted); font-size:0.75rem; text-align:center; padding:20px;">Loading events...
+            </div>
+          </div>
+        </div>
+
+        <!-- OPERATIONAL TEMPO PANEL -->
+        <div id="sidebar-panel-tempo" class="sidebar-nav-panel" style="display:none;">
+          <div style="padding:10px 14px; border-bottom:1px solid var(--border-main);">
+            <div
+              style="font-family:var(--font-mono); font-size:0.7rem; color:var(--amber-500); text-transform:uppercase; letter-spacing:1px; font-weight:700;">
+              <i class="fas fa-chart-line" style="margin-right:6px;"></i> OPERATIONAL TEMPO
+            </div>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <div
+              style="background:var(--bg-card); border:1px solid var(--border-main); border-radius:6px; padding:12px; margin-bottom:10px;">
+              <div
+                style="font-family:var(--font-mono); font-size:0.6rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:8px;">
+                Events / Day (Last 14d)</div>
+              <canvas id="tempoLineChart" height="160"></canvas>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div
+                style="background:var(--bg-card); border:1px solid var(--border-main); border-radius:6px; padding:10px; text-align:center;">
+                <div
+                  style="font-family:var(--font-mono); font-size:0.55rem; color:var(--text-muted); text-transform:uppercase;">
+                  AVG / DAY</div>
+                <div id="tempoAvg"
+                  style="font-family:var(--font-mono); font-size:1.4rem; font-weight:700; color:var(--amber-500);">--
+                </div>
+              </div>
+              <div
+                style="background:var(--bg-card); border:1px solid var(--border-main); border-radius:6px; padding:10px; text-align:center;">
+                <div
+                  style="font-family:var(--font-mono); font-size:0.55rem; color:var(--text-muted); text-transform:uppercase;">
+                  PEAK DAY</div>
+                <div id="tempoPeak"
+                  style="font-family:var(--font-mono); font-size:1.4rem; font-weight:700; color:var(--coral, #e94560);">
+                  --</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EQUIPMENT LOSSES PANEL -->
+        <div id="sidebar-panel-losses" class="sidebar-nav-panel" style="display:none;">
+          <div style="padding:10px 14px; border-bottom:1px solid var(--border-main);">
+            <div
+              style="font-family:var(--font-mono); font-size:0.7rem; color:var(--amber-500); text-transform:uppercase; letter-spacing:1px; font-weight:700;">
+              <i class="fas fa-skull-crossbones" style="margin-right:6px;"></i> EQUIPMENT LOSSES
+            </div>
+          </div>
+          <div id="lossesContent" style="flex:1; overflow-y:auto; padding:10px;">
+            <div style="color:var(--text-muted); font-size:0.75rem; text-align:center; padding:20px;">
+              <i class="fas fa-cog fa-spin" style="margin-right:6px;"></i> Computing attrition data...
+            </div>
+          </div>
+        </div>
+
+        <!-- ANALYTICS PANEL -->
+        <div id="sidebar-panel-analytics" class="sidebar-nav-panel" style="display:none;">
+          <div style="padding:10px 14px; border-bottom:1px solid var(--border-main);">
+            <div
+              style="font-family:var(--font-mono); font-size:0.7rem; color:var(--amber-500); text-transform:uppercase; letter-spacing:1px; font-weight:700;">
+              <i class="fas fa-chart-pie" style="margin-right:6px;"></i> ANALYTICS DASHBOARD
+            </div>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:10px;">
+            <!-- Category Donut -->
+            <div class="analytics-card" onclick="expandAnalyticsWidget('category')"
+              style="cursor:pointer; background:var(--bg-card); border:1px solid var(--border-main); border-radius:6px; padding:10px; transition:border-color 0.2s;">
+              <div
+                style="font-family:var(--font-mono); font-size:0.6rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; display:flex; align-items:center; gap:5px;">
+                <i class="fas fa-chart-pie" style="color:var(--amber-500); font-size:0.65rem;"></i> EVENT CATEGORIES
+                <i class="fas fa-expand-alt" style="margin-left:auto; font-size:0.5rem; color:var(--slate-600);"></i>
+              </div>
+              <canvas id="categoryDonutChart" height="140"></canvas>
+            </div>
+            <!-- TIE Score Distribution -->
+            <div class="analytics-card" onclick="expandAnalyticsWidget('tie')"
+              style="cursor:pointer; background:var(--bg-card); border:1px solid var(--border-main); border-radius:6px; padding:10px; transition:border-color 0.2s;">
+              <div
+                style="font-family:var(--font-mono); font-size:0.6rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; display:flex; align-items:center; gap:5px;">
+                <i class="fas fa-crosshairs" style="color:var(--amber-500); font-size:0.65rem;"></i> T.I.E. SCORE
+                DISTRIBUTION
+                <i class="fas fa-expand-alt" style="margin-left:auto; font-size:0.5rem; color:var(--slate-600);"></i>
+              </div>
+              <canvas id="tieHistogramChart" height="120"></canvas>
+            </div>
+            <!-- Source Breakdown -->
+            <div class="analytics-card" onclick="expandAnalyticsWidget('source')"
+              style="cursor:pointer; background:var(--bg-card); border:1px solid var(--border-main); border-radius:6px; padding:10px; transition:border-color 0.2s;">
+              <div
+                style="font-family:var(--font-mono); font-size:0.6rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; display:flex; align-items:center; gap:5px;">
+                <i class="fas fa-satellite" style="color:var(--cyan-500); font-size:0.65rem;"></i> SOURCE BREAKDOWN
+                <i class="fas fa-expand-alt" style="margin-left:auto; font-size:0.5rem; color:var(--slate-600);"></i>
+              </div>
+              <canvas id="sourceBarChart" height="100"></canvas>
+            </div>
+            <!-- Event Stats -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div
+                style="background:var(--bg-card); border:1px solid var(--border-main); border-radius:6px; padding:10px; text-align:center;">
+                <div
+                  style="font-family:var(--font-mono); font-size:0.55rem; color:var(--text-muted); text-transform:uppercase;">
+                  TOTAL EVENTS</div>
+                <div id="analyticsTotalEvents"
+                  style="font-family:var(--font-mono); font-size:1.3rem; font-weight:700; color:var(--text-main);">--
+                </div>
+              </div>
+              <div
+                style="background:var(--bg-card); border:1px solid var(--border-main); border-radius:6px; padding:10px; text-align:center;">
+                <div
+                  style="font-family:var(--font-mono); font-size:0.55rem; color:var(--text-muted); text-transform:uppercase;">
+                  AVG T.I.E.</div>
+                <div id="analyticsAvgTie"
+                  style="font-family:var(--font-mono); font-size:1.3rem; font-weight:700; color:var(--amber-500);">--
+                </div>
+              </div>
+              <div
+                style="background:var(--bg-card); border:1px solid var(--border-main); border-radius:6px; padding:10px; text-align:center;">
+                <div
+                  style="font-family:var(--font-mono); font-size:0.55rem; color:var(--text-muted); text-transform:uppercase;">
+                  HIGH IMPACT</div>
+                <div id="analyticsHighImpact"
+                  style="font-family:var(--font-mono); font-size:1.3rem; font-weight:700; color:var(--coral, #e94560);">
+                  --</div>
+              </div>
+              <div
+                style="background:var(--bg-card); border:1px solid var(--border-main); border-radius:6px; padding:10px; text-align:center;">
+                <div
+                  style="font-family:var(--font-mono); font-size:0.55rem; color:var(--text-muted); text-transform:uppercase;">
+                  CLUSTERS</div>
+                <div id="analyticsClusters"
+                  style="font-family:var(--font-mono); font-size:1.3rem; font-weight:700; color:var(--cyan-500);">--
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
       </div> <!-- end active-panel -->
 
@@ -3063,56 +3272,78 @@
         window.toggleTacticalPersistence = window.toggleTacticalPersistence || function () { };
 
         // ==========================================
-        // V2 NAV + DOSSIER + DRAWER + CLOCK LOGIC
+        // V2 NAV + PANEL SYSTEM + ANALYTICS ENGINE
         // ==========================================
 
-        // --- NAV RAIL TAB SWITCHING ---
-        function navSwitchTab(tabName, element) {
-          document.querySelectorAll('.nav-rail .nav-item').forEach(el => {
+        var _activePanel = 'layers';
+        var _analyticsCharts = {};
+
+        // --- NAV RAIL: PANEL SWITCHING ---
+        function navSwitchTab(panelId, element) {
+          document.querySelectorAll('.nav-rail .nav-item').forEach(function (el) {
             if (!el.classList.contains('collapse-btn')) el.classList.remove('active');
           });
-          element.classList.add('active');
-          // Delegate to existing switchSidebarTab
-          if (typeof switchSidebarTab === 'function') switchSidebarTab(tabName);
+          if (element) element.classList.add('active');
           closeDossierPanel();
+
+          var existingTabs = ['layers', 'orbat'];
+          var newPanels = ['intel', 'tempo', 'losses', 'analytics'];
+
+          newPanels.forEach(function (p) {
+            var el = document.getElementById('sidebar-panel-' + p);
+            if (el) el.style.display = 'none';
+          });
+
+          if (existingTabs.indexOf(panelId) !== -1) {
+            var dc = document.querySelector('.dashboard-container');
+            if (dc) dc.style.display = '';
+            // Show the sidebar tabs
+            document.querySelectorAll('.sidebar-tabs').forEach(function (t) { t.style.display = ''; });
+            if (typeof switchSidebarTab === 'function') switchSidebarTab(panelId);
+          } else {
+            var dc = document.querySelector('.dashboard-container');
+            if (dc) dc.style.display = 'none';
+            // Hide the sidebar tabs
+            document.querySelectorAll('.sidebar-tabs').forEach(function (t) { t.style.display = 'none'; });
+            var panel = document.getElementById('sidebar-panel-' + panelId);
+            if (panel) { panel.style.display = 'flex'; panel.style.flexDirection = 'column'; panel.style.height = '100%'; }
+            if (panelId === 'intel') populateIntelFeed();
+            if (panelId === 'tempo') setTimeout(populateTempoPanel, 150);
+            if (panelId === 'losses') populateLossesPanel();
+            if (panelId === 'analytics') setTimeout(populateAnalytics, 150);
+          }
+
+          var appShell = document.getElementById('appShell');
+          if (appShell && appShell.classList.contains('sidebar-collapsed')) {
+            appShell.classList.remove('sidebar-collapsed');
+            setTimeout(function () { if (window.map && typeof window.map.invalidateSize === 'function') window.map.invalidateSize(); }, 400);
+          }
+          _activePanel = panelId;
         }
 
-        // --- DOSSIER PANEL ---
         function openDossierPanel() {
-          const shell = document.getElementById('sidebarShell');
+          var shell = document.getElementById('sidebarShell');
           if (shell) shell.classList.add('dossier-open');
         }
         function closeDossierPanel() {
-          const shell = document.getElementById('sidebarShell');
+          var shell = document.getElementById('sidebarShell');
           if (shell) shell.classList.remove('dossier-open');
         }
 
-        // --- SIDEBAR COLLAPSE ---
         function toggleSidebarCollapse() {
-          const appShell = document.getElementById('appShell');
+          var appShell = document.getElementById('appShell');
           appShell.classList.toggle('sidebar-collapsed');
-          // After transition, invalidate map size so Leaflet redraws
-          setTimeout(function () {
-            if (window.map && typeof window.map.invalidateSize === 'function') {
-              window.map.invalidateSize();
-            }
-          }, 400);
+          setTimeout(function () { if (window.map && typeof window.map.invalidateSize === 'function') window.map.invalidateSize(); }, 400);
         }
 
-        // --- ANALYTICS DRAWER ---
         function toggleAnalyticsDrawer() {
-          const drawer = document.getElementById('analyticsDrawer');
-          const label = document.getElementById('drawerLabel');
+          var drawer = document.getElementById('analyticsDrawer');
+          var label = document.getElementById('drawerLabel');
           if (!drawer) return;
           drawer.classList.toggle('expanded');
-          if (label) {
-            label.textContent = drawer.classList.contains('expanded')
-              ? 'Analytics Overview: Collapse'
-              : 'Analytics Overview: Expand';
-          }
+          if (label) label.textContent = drawer.classList.contains('expanded') ? 'Analytics Overview: Collapse' : 'Analytics Overview: Expand';
         }
 
-        // --- LIVE UTC CLOCK ---
         function updateLiveClock() {
           var now = new Date();
           var h = String(now.getUTCHours()).padStart(2, '0');
@@ -3123,60 +3354,217 @@
         }
         setInterval(updateLiveClock, 1000);
         updateLiveClock();
+
+        // --- DATA SOURCE ---
+        function getLoadedEvents() {
+          // map.js stores processed events in window.globalEvents, raw in window.allEventsData
+          if (window.globalEvents && window.globalEvents.length) return window.globalEvents;
+          if (window.allEventsData && window.allEventsData.length) {
+            return window.allEventsData.map(function (f) { return f.properties || f; });
+          }
+          if (window.allEvents && window.allEvents.length) return window.allEvents;
+          return [];
+        }
+
+        // --- INTEL FEED ---
+        function populateIntelFeed() {
+          var events = getLoadedEvents();
+          var container = document.getElementById('intelFeedList');
+          if (!container || !events.length) return;
+          var sorted = events.slice().sort(function (a, b) { return new Date(b.event_date || b.date || 0) - new Date(a.event_date || a.date || 0); });
+          var html = '';
+          sorted.slice(0, 100).forEach(function (ev, i) {
+            var title = ev.event_title || ev.title || ev.description || 'Event';
+            var date = (ev.event_date || ev.date || '').substring(0, 10);
+            var tie = parseFloat(ev.tie_score || ev.TIE || 0);
+            var tieColor = tie >= 4 ? '#e94560' : tie >= 2 ? '#f59e0b' : '#06b6d4';
+            html += '<div onclick="flyToEvent(' + i + ')" style="padding:7px 9px; margin-bottom:3px; background:var(--bg-card); border:1px solid var(--border-main); border-left:3px solid ' + tieColor + '; border-radius:4px; cursor:pointer; transition:border-color 0.2s;" onmouseover="this.style.borderColor=\'#f59e0b\'" onmouseout="this.style.borderColor=\'var(--border-main)\'">';
+            html += '<div style="display:flex; justify-content:space-between; align-items:flex-start;">';
+            html += '<div style="font-size:0.7rem; color:var(--text-main); font-weight:600; line-height:1.3; max-width:75%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + title + '</div>';
+            if (tie) html += '<span style="font-family:var(--font-mono); font-size:0.55rem; font-weight:700; color:' + tieColor + ';">' + tie.toFixed(1) + '</span>';
+            html += '</div>';
+            html += '<div style="font-family:var(--font-mono); font-size:0.52rem; color:var(--text-muted); margin-top:2px;">' + date + '</div>';
+            html += '</div>';
+          });
+          container.innerHTML = html;
+        }
+
+        function flyToEvent(index) {
+          var events = getLoadedEvents();
+          if (!events[index]) return;
+          var ev = events[index];
+          if (ev.latitude && ev.longitude && window.map) window.map.flyTo([ev.latitude, ev.longitude], 12, { duration: 1.5 });
+        }
+
+        // --- TEMPO PANEL ---
+        function populateTempoPanel() {
+          var events = getLoadedEvents();
+          if (!events.length) return;
+          var dayCounts = {};
+          var now = new Date();
+          for (var d = 13; d >= 0; d--) { var day = new Date(now); day.setDate(day.getDate() - d); dayCounts[day.toISOString().substring(0, 10)] = 0; }
+          events.forEach(function (ev) { var dt = (ev.event_date || ev.date || '').substring(0, 10); if (dt in dayCounts) dayCounts[dt]++; });
+          var labels = Object.keys(dayCounts), data = labels.map(function (k) { return dayCounts[k]; });
+          var avg = data.reduce(function (a, b) { return a + b; }, 0) / data.length;
+          var peak = Math.max.apply(null, data);
+          var el1 = document.getElementById('tempoAvg'); if (el1) el1.textContent = avg.toFixed(1);
+          var el2 = document.getElementById('tempoPeak'); if (el2) el2.textContent = peak;
+          var ctx = document.getElementById('tempoLineChart');
+          if (!ctx) return;
+          if (_analyticsCharts.tempo) _analyticsCharts.tempo.destroy();
+          _analyticsCharts.tempo = new Chart(ctx, { type: 'bar', data: { labels: labels.map(function (l) { return l.substring(5); }), datasets: [{ data: data, backgroundColor: data.map(function (v) { return v >= peak * 0.8 ? '#e94560' : v >= avg ? '#f59e0b' : '#233554'; }), borderRadius: 3, borderSkipped: false }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b', font: { size: 8, family: 'JetBrains Mono' } }, grid: { display: false } }, y: { ticks: { color: '#64748b', font: { size: 8 } }, grid: { color: '#233554' } } } } });
+        }
+
+        // --- LOSSES PANEL ---
+        function populateLossesPanel() {
+          var events = getLoadedEvents(), container = document.getElementById('lossesContent');
+          if (!container || !events.length) return;
+          var cats = {};
+          events.forEach(function (ev) { var c = ev.category_id || ev.category || 'UNKNOWN'; cats[c] = (cats[c] || 0) + 1; });
+          var html = '';
+          Object.keys(cats).sort(function (a, b) { return cats[b] - cats[a]; }).forEach(function (cat) {
+            var pct = ((cats[cat] / events.length) * 100).toFixed(1);
+            html += '<div style="padding:7px 9px; margin-bottom:5px; background:var(--bg-card); border:1px solid var(--border-main); border-radius:4px;">';
+            html += '<div style="display:flex; justify-content:space-between; margin-bottom:3px;">';
+            html += '<span style="font-family:var(--font-mono); font-size:0.62rem; color:var(--text-main); font-weight:600; text-transform:uppercase;">' + cat + '</span>';
+            html += '<span style="font-family:var(--font-mono); font-size:0.65rem; font-weight:700; color:var(--amber-500);">' + cats[cat] + '</span></div>';
+            html += '<div style="height:3px; background:var(--border-main); border-radius:2px; overflow:hidden;"><div style="height:100%; width:' + pct + '%; background:linear-gradient(90deg,#f59e0b,#e94560); border-radius:2px;"></div></div></div>';
+          });
+          container.innerHTML = html;
+        }
+
+        // --- ANALYTICS PANEL ---
+        function populateAnalytics() {
+          var events = getLoadedEvents();
+          if (!events.length) return;
+          var ties = events.map(function (e) { return parseFloat(e.tie_score || e.TIE || 0); }).filter(function (v) { return !isNaN(v); });
+          var avgTie = ties.length ? ties.reduce(function (a, b) { return a + b; }, 0) / ties.length : 0;
+          var high = ties.filter(function (t) { return t >= 3.5; }).length;
+          var clusters = {}; events.forEach(function (e) { if (e.cluster_id) clusters[e.cluster_id] = true; });
+
+          var el;
+          el = document.getElementById('analyticsTotalEvents'); if (el) el.textContent = events.length;
+          el = document.getElementById('analyticsAvgTie'); if (el) el.textContent = avgTie.toFixed(2);
+          el = document.getElementById('analyticsHighImpact'); if (el) el.textContent = high;
+          el = document.getElementById('analyticsClusters'); if (el) el.textContent = Object.keys(clusters).length;
+
+          // Category Donut
+          var catCounts = {};
+          events.forEach(function (e) { var c = e.category_id || e.category || 'OTHER'; catCounts[c] = (catCounts[c] || 0) + 1; });
+          var ctx1 = document.getElementById('categoryDonutChart');
+          if (ctx1) {
+            if (_analyticsCharts.category) _analyticsCharts.category.destroy();
+            _analyticsCharts.category = new Chart(ctx1, { type: 'doughnut', data: { labels: Object.keys(catCounts), datasets: [{ data: Object.values(catCounts), backgroundColor: ['#f59e0b', '#06b6d4', '#e94560', '#22c55e', '#8b5cf6', '#f97316', '#ec4899', '#64748b'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 8, family: 'JetBrains Mono' }, padding: 5, boxWidth: 8 } } }, onClick: function (evt, items) { if (items.length) console.log('Filter category:', Object.keys(catCounts)[items[0].index]); } } });
+          }
+
+          // TIE Histogram
+          var tieBuckets = [0, 0, 0, 0, 0]; ties.forEach(function (t) { tieBuckets[Math.min(Math.floor(t), 4)]++; });
+          var ctx2 = document.getElementById('tieHistogramChart');
+          if (ctx2) {
+            if (_analyticsCharts.tie) _analyticsCharts.tie.destroy();
+            _analyticsCharts.tie = new Chart(ctx2, { type: 'bar', data: { labels: ['0-1', '1-2', '2-3', '3-4', '4-5'], datasets: [{ data: tieBuckets, backgroundColor: ['#233554', '#06b6d4', '#f59e0b', '#f97316', '#e94560'], borderRadius: 3, borderSkipped: false }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b', font: { size: 8, family: 'JetBrains Mono' } }, grid: { display: false } }, y: { ticks: { color: '#64748b', font: { size: 8 } }, grid: { color: '#233554' } } } } });
+          }
+
+          // Source Breakdown
+          var srcCounts = {}; events.forEach(function (e) { var s = e.source_type || e.source || 'OSINT'; srcCounts[s] = (srcCounts[s] || 0) + 1; });
+          var ctx3 = document.getElementById('sourceBarChart');
+          if (ctx3) {
+            if (_analyticsCharts.source) _analyticsCharts.source.destroy();
+            _analyticsCharts.source = new Chart(ctx3, { type: 'bar', data: { labels: Object.keys(srcCounts), datasets: [{ data: Object.values(srcCounts), backgroundColor: '#06b6d4', borderRadius: 3, borderSkipped: false }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b', font: { size: 8 } }, grid: { color: '#233554' } }, y: { ticks: { color: '#94a3b8', font: { size: 8, family: 'JetBrains Mono' } }, grid: { display: false } } } } });
+          }
+        }
+
+        function expandAnalyticsWidget(widgetType) {
+          var existing = document.getElementById('analyticsExpandModal');
+          if (existing) existing.remove();
+          var modal = document.createElement('div');
+          modal.id = 'analyticsExpandModal';
+          modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,15,31,0.92);backdrop-filter:blur(8px);z-index:5000;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+          modal.onclick = function () { modal.remove(); };
+          var box = document.createElement('div');
+          box.style.cssText = 'background:#16213e;border:1px solid #233554;border-radius:10px;padding:24px;width:80%;max-width:700px;';
+          box.onclick = function (e) { e.stopPropagation(); };
+          var title = widgetType === 'category' ? 'EVENT CATEGORIES' : widgetType === 'tie' ? 'T.I.E. SCORE DISTRIBUTION' : 'SOURCE BREAKDOWN';
+          box.innerHTML = '<div style="font-family:JetBrains Mono,monospace;font-size:0.8rem;color:#f59e0b;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;display:flex;justify-content:space-between;"><span><i class="fas fa-chart-pie" style="margin-right:8px;"></i>' + title + '</span><span onclick="document.getElementById(\'analyticsExpandModal\').remove()" style="cursor:pointer;color:#64748b;font-size:1rem;"><i class="fas fa-times"></i></span></div><canvas id="expandedChart" height="350"></canvas>';
+          modal.appendChild(box);
+          document.body.appendChild(modal);
+          setTimeout(function () {
+            var ctx = document.getElementById('expandedChart');
+            if (!ctx) return;
+            var events = getLoadedEvents();
+            if (widgetType === 'category') {
+              var cc = {}; events.forEach(function (e) { var c = e.category_id || e.category || 'OTHER'; cc[c] = (cc[c] || 0) + 1; });
+              new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(cc), datasets: [{ data: Object.values(cc), backgroundColor: ['#f59e0b', '#06b6d4', '#e94560', '#22c55e', '#8b5cf6', '#f97316', '#ec4899', '#64748b'], borderWidth: 0 }] }, options: { responsive: true, cutout: '55%', plugins: { legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 11 }, padding: 10, boxWidth: 12 } } } } });
+            } else if (widgetType === 'tie') {
+              var ties2 = events.map(function (e) { return parseFloat(e.tie_score || e.TIE || 0); }).filter(function (v) { return !isNaN(v); }); var b = [0, 0, 0, 0, 0]; ties2.forEach(function (t) { b[Math.min(Math.floor(t), 4)]++; });
+              new Chart(ctx, { type: 'bar', data: { labels: ['0-1', '1-2', '2-3', '3-4', '4-5'], datasets: [{ data: b, backgroundColor: ['#233554', '#06b6d4', '#f59e0b', '#f97316', '#e94560'], borderRadius: 5, borderSkipped: false }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', font: { size: 12, family: 'JetBrains Mono' } }, grid: { display: false } }, y: { ticks: { color: '#64748b' }, grid: { color: '#233554' } } } } });
+            } else {
+              var sc = {}; events.forEach(function (e) { var s = e.source_type || e.source || 'OSINT'; sc[s] = (sc[s] || 0) + 1; });
+              new Chart(ctx, { type: 'bar', data: { labels: Object.keys(sc), datasets: [{ data: Object.values(sc), backgroundColor: '#06b6d4', borderRadius: 5, borderSkipped: false }] }, options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b' }, grid: { color: '#233554' } }, y: { ticks: { color: '#94a3b8', font: { size: 11, family: 'JetBrains Mono' } }, grid: { display: false } } } } });
+            }
+          }, 100);
+        }
+
+        // Auto-populate drawer when events load
+        var _drawerPop = false;
+        setInterval(function () {
+          if (!_drawerPop && getLoadedEvents().length > 0) {
+            _drawerPop = true;
+            var ev = getLoadedEvents();
+            var ties = ev.map(function (e) { return parseFloat(e.tie_score || e.TIE || 0); }).filter(function (v) { return !isNaN(v); });
+            var avg = ties.length ? ties.reduce(function (a, b) { return a + b; }, 0) / ties.length : 0;
+            var el;
+            el = document.getElementById('drawerTotalEvents'); if (el) el.textContent = ev.length;
+            el = document.getElementById('drawerAvgTie'); if (el) el.textContent = avg.toFixed(1);
+            el = document.getElementById('drawerHighImpact'); if (el) el.textContent = ties.filter(function (t) { return t >= 3.5; }).length;
+            var cats = {}; ev.forEach(function (e) { var c = e.category_id || e.category || 'OTHER'; cats[c] = true; });
+            el = document.getElementById('drawerCategories'); if (el) el.textContent = Object.keys(cats).length;
+          }
+        }, 2000);
+
       </script>
 
-      <!-- ANALYTICS DRAWER (inside map area) -->
+      <!-- ANALYTICS DRAWER -->
       <div class="analytics-drawer" id="analyticsDrawer">
         <div class="drawer-handle" onclick="toggleAnalyticsDrawer()">
           <i class="fas fa-chevron-up"></i>
           <span id="drawerLabel">Analytics Overview: Expand</span>
         </div>
         <div class="drawer-body">
-          <div class="drawer-widget">
-            <div class="drawer-widget-header"><i class="fas fa-chart-bar"></i> TIMELINE</div>
-            <div class="drawer-widget-body">
-              <div class="drawer-mini-chart">
-                <div class="mini-bar" style="height:30%;"></div>
-                <div class="mini-bar" style="height:55%;"></div>
-                <div class="mini-bar cyan" style="height:45%;"></div>
-                <div class="mini-bar" style="height:80%;"></div>
-                <div class="mini-bar cyan" style="height:60%;"></div>
-                <div class="mini-bar" style="height:40%;"></div>
-                <div class="mini-bar red" style="height:90%;"></div>
-                <div class="mini-bar" style="height:35%;"></div>
-                <div class="mini-bar cyan" style="height:50%;"></div>
-                <div class="mini-bar" style="height:70%;"></div>
-              </div>
-            </div>
-          </div>
-          <div class="drawer-widget">
-            <div class="drawer-widget-header"><i class="fas fa-chart-pie"></i> DISTRIBUTION</div>
-            <div class="drawer-widget-body">
-              <div class="drawer-donut">
-                <div class="drawer-donut-hole">42%</div>
-              </div>
-            </div>
-          </div>
-          <div class="drawer-widget">
-            <div class="drawer-widget-header"><i class="fas fa-chart-line"></i> TEMPO</div>
+          <div class="drawer-widget"
+            onclick="navSwitchTab('analytics', document.querySelector('[data-panel=analytics]'))"
+            style="cursor:pointer;">
+            <div class="drawer-widget-header"><i class="fas fa-database"></i> EVENTS</div>
             <div class="drawer-widget-body" style="flex-direction:column;">
-              <div class="drawer-big-num">147</div>
-              <div class="drawer-big-label">avg events / day</div>
+              <div class="drawer-big-num" id="drawerTotalEvents">--</div>
+              <div class="drawer-big-label">total loaded</div>
             </div>
           </div>
-          <div class="drawer-widget">
-            <div class="drawer-widget-header"><i class="fas fa-bullseye"></i> IMPACT RADAR</div>
-            <div class="drawer-widget-body">
-              <div class="drawer-mini-chart">
-                <div class="mini-bar red" style="height:90%;"></div>
-                <div class="mini-bar" style="height:65%;"></div>
-                <div class="mini-bar cyan" style="height:45%;"></div>
-                <div class="mini-bar" style="height:75%;"></div>
-                <div class="mini-bar red" style="height:55%;"></div>
-                <div class="mini-bar cyan" style="height:85%;"></div>
-                <div class="mini-bar" style="height:40%;"></div>
-                <div class="mini-bar red" style="height:60%;"></div>
-              </div>
+          <div class="drawer-widget"
+            onclick="navSwitchTab('analytics', document.querySelector('[data-panel=analytics]'))"
+            style="cursor:pointer;">
+            <div class="drawer-widget-header"><i class="fas fa-crosshairs"></i> AVG T.I.E.</div>
+            <div class="drawer-widget-body" style="flex-direction:column;">
+              <div class="drawer-big-num" id="drawerAvgTie" style="color:var(--amber-500);">--</div>
+              <div class="drawer-big-label">impact score</div>
+            </div>
+          </div>
+          <div class="drawer-widget"
+            onclick="navSwitchTab('analytics', document.querySelector('[data-panel=analytics]'))"
+            style="cursor:pointer;">
+            <div class="drawer-widget-header"><i class="fas fa-exclamation-triangle"></i> HIGH IMPACT</div>
+            <div class="drawer-widget-body" style="flex-direction:column;">
+              <div class="drawer-big-num" id="drawerHighImpact" style="color:var(--coral, #e94560);">--</div>
+              <div class="drawer-big-label">T.I.E. >= 3.5</div>
+            </div>
+          </div>
+          <div class="drawer-widget"
+            onclick="navSwitchTab('analytics', document.querySelector('[data-panel=analytics]'))"
+            style="cursor:pointer;">
+            <div class="drawer-widget-header"><i class="fas fa-chart-pie"></i> CATEGORIES</div>
+            <div class="drawer-widget-body" style="flex-direction:column;">
+              <div class="drawer-big-num" id="drawerCategories" style="color:var(--cyan-500);">--</div>
+              <div class="drawer-big-label">event types</div>
             </div>
           </div>
         </div>

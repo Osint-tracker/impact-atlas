@@ -30,6 +30,8 @@ osint_records.db
 war_tracker_v2/data/
 war_tracker_v2/data/chroma_store/
 *.bin
+x.md
+ualosses_complete_dump.csv
 
 # --- PYTHON & LIBRERIE ---
 __pycache__/
