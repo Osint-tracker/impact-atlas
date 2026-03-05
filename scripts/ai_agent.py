@@ -3479,6 +3479,88 @@ def main():
             soldier_result = {"status": "FAILED_EXTRACTION"}
 
         # =================================================================
+        # 👁️ THE VISIONARY — IMINT Verification (Conditional Activation)
+        # =================================================================
+        # ACTIVATION GATE: Fires ONLY if event has media_urls data.
+        # Pipeline: Soldier → MediaProcessor → [VISIONARY] → TIE
+        # =================================================================
+        visionary_out = None
+        media_urls_raw = row['media_urls'] if row['media_urls'] else None
+        
+        if media_urls_raw:
+            # Parse media_urls (stored as JSON string in DB)
+            try:
+                if isinstance(media_urls_raw, str):
+                    media_urls_list = json.loads(media_urls_raw) if media_urls_raw.strip() else []
+                elif isinstance(media_urls_raw, list):
+                    media_urls_list = media_urls_raw
+                else:
+                    media_urls_list = []
+            except (json.JSONDecodeError, ValueError):
+                media_urls_list = []
+            
+            if media_urls_list and len(media_urls_list) > 0:
+                print(f"      👁️ VISIONARY GATE OPEN: {len(media_urls_list)} media file(s) detected.")
+                
+                # --- MEDIA PROCESSING: Extract Base64 keyframes ---
+                all_frame_dicts = []
+                if MediaProcessor is not None:
+                    try:
+                        media_proc = MediaProcessor()
+                        for m_url in media_urls_list:
+                            frames = media_proc.extract_keyframes(str(m_url))
+                            all_frame_dicts.extend(frames)
+                            if len(all_frame_dicts) >= 4:  # Cap total frames for VLM
+                                all_frame_dicts = all_frame_dicts[:4]
+                                break
+                        
+                        if all_frame_dicts:
+                            print(f"      📸 MediaProcessor: {len(all_frame_dicts)} keyframes extracted.")
+                        else:
+                            print("      ⚠️ MediaProcessor: No keyframes extracted (dead links or unsupported format).")
+                    except Exception as mp_err:
+                        print(f"      ⚠️ MediaProcessor error: {mp_err}")
+                else:
+                    print("      ⚠️ MediaProcessor unavailable (opencv-python-headless not installed). Visionary bypassed.")
+                
+                # --- INVOKE THE VISIONARY (only if we have frames) ---
+                if all_frame_dicts:
+                    try:
+                        visionary_out = agent._step_visionary(soldier_result, all_frame_dicts)
+                    except Exception as vis_err:
+                        print(f"      ⚠️ Visionary error: {vis_err}")
+                
+                if visionary_out:
+                    # A. Override visual_evidence flag for TIE calculation
+                    soldier_result['visual_evidence'] = True
+                    
+                    # B. ABSOLUTE REPLACEMENT of Effect Vector from IMINT
+                    imint_damage = visionary_out.get('kinetic_effect', {}).get('damage_level')
+                    imint_confidence = visionary_out.get('visual_confirmation', {}).get('confidence_score', 0)
+                    
+                    if imint_damage and imint_damage in VISIONARY_DAMAGE_TO_EFFECT and imint_confidence >= 0.5:
+                        imint_effect = VISIONARY_DAMAGE_TO_EFFECT[imint_damage]
+                        current_effect = int(soldier_result.get('titan_assessment', {}).get('effect_score', 1) or 1)
+                        
+                        if 'titan_assessment' not in soldier_result:
+                            soldier_result['titan_assessment'] = {}
+                        soldier_result['titan_assessment']['effect_score'] = imint_effect
+                        soldier_result['titan_assessment']['effect_source'] = 'VISIONARY_IMINT'
+                        
+                        direction = '⬆️' if imint_effect > current_effect else '⬇️' if imint_effect < current_effect else '↔️'
+                        print(f"      👁️ IMINT Ground Truth: Effect Vector E {direction} {current_effect} → {imint_effect} ({imint_damage})")
+                    
+                    # C. Store Visionary output for downstream
+                    soldier_result['visionary_report'] = visionary_out
+                    
+                    # D. Log verification status
+                    v_status = visionary_out.get('visual_confirmation', {}).get('verification_status', 'UNKNOWN')
+                    if v_status == 'CONTRADICTED':
+                        print("      ⚠️ VISIONARY ALERT: Text claims CONTRADICTED by visual evidence!")
+                    elif v_status == 'CONFIRMED':
+                        print("      ✅ VISIONARY: Visual evidence CONFIRMS text claims.")
+
+        # =================================================================
         # 🟢 LAYER 1: T.I.E. CALCULATOR (SAFETY VERSION)
         # =================================================================
         # 1. Estrazione sicura (Se soldier_result è il fallback, userà i default)
@@ -3593,7 +3675,8 @@ def main():
                 "tie_score": tie_result['value'],
                 "tie_status": tie_result['status'],
                 "titan_metrics": titan_data,
-                "Aggregated Sources": actual_urls_list  # [FIX] Esportazione esplicita per generate_output.py
+                "Aggregated Sources": actual_urls_list,  # [FIX] Esportazione esplicita per generate_output.py
+                "visionary_report": visionary_out  # 👁️ IMINT verification (None if no media)
             }
 
             print("   ✅ Intelligence Extracted & Verified:")
@@ -3705,7 +3788,7 @@ def main():
                         calc_result.get('reliability', 0),
                         calc_result.get('bias_score', 0),
                         final_report.get('ai_summary', ''),
-                        1 if soldier_result.get('visual_evidence') else 0,
+                        1 if (soldier_result.get('visual_evidence') or visionary_out) else 0,
                         journo_result.get('title_en', ''),
                         journo_result.get('description_en', ''),
                         ' | '.join(actual_urls_list) if actual_urls_list else '',

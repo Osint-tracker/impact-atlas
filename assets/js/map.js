@@ -620,6 +620,34 @@
   // 8. DATA LOADING (Critical - Runs After Map Init)
   // ============================================
 
+  function loadSectorsData() {
+    console.log("📥 Starting sectors download...");
+    fetch('assets/data/operational_sectors.geojson')
+      .then(response => response.json())
+      .then(data => {
+        window.operationalSectorsData = data;
+        const sectorSelect = document.getElementById('sectorFilter');
+        if (sectorSelect && data.features) {
+          // Sort sectors by name
+          const sortedFeatures = data.features.sort((a, b) => a.properties.name.localeCompare(b.properties.name));
+          sortedFeatures.forEach(f => {
+            const opt = document.createElement('option');
+            opt.value = f.properties.name;
+            opt.innerText = f.properties.name;
+            sectorSelect.appendChild(opt);
+          });
+        }
+
+        // Add invisible layer for flyToBounds (we don't render it directly, just keep it for geo finding)
+        window.tacticalSectorsLayer = L.geoJSON(data, {
+          style: function (feature) {
+            return { color: '#f59e0b', weight: 2, fillOpacity: 0.1, dashArray: '5, 5', opacity: 0.8 };
+          }
+        });
+      })
+      .catch(err => console.error("❌ Failed to load sectors:", err));
+  }
+
   function loadEventsData() {
     console.log("📥 Starting event download...");
 
@@ -716,8 +744,11 @@
           const categorySelect = document.getElementById('chartTypeFilter');
           const selectedCategory = categorySelect ? categorySelect.value : '';
 
+          const sectorSelect = document.getElementById('sectorFilter');
+          const selectedSector = sectorSelect ? sectorSelect.value : '';
 
-          console.log(`🔍 Filtering: Range[${startDate}-${endDate}] Actor[${selectedActor}] Cat[${selectedCategory}] Search[${searchTerm}]`);
+
+          console.log(`🔍 Filtering: Range[${startDate}-${endDate}] Actor[${selectedActor}] Cat[${selectedCategory}] Sector[${selectedSector}] Search[${searchTerm}]`);
 
           // B. Filtering Cycle
           const filtered = window.globalEvents.filter(e => {
@@ -730,6 +761,8 @@
             // 3. Category
             if (selectedCategory && e.category !== selectedCategory) return false;
 
+            // 4. Sector
+            if (selectedSector && e.operational_sector !== selectedSector) return false;
 
             // 5. Smart Text Search
             if (searchTerm) {
@@ -820,7 +853,7 @@
         window.applyMapFilters = window._applyMapFiltersImpl;
 
         // --- LIVE ACTIVATION (FUNDAMENTAL) ---
-        const inputsToCheck = ['textSearch', 'actorFilter', 'chartTypeFilter', 'startDate', 'endDate'];
+        const inputsToCheck = ['textSearch', 'actorFilter', 'chartTypeFilter', 'sectorFilter', 'startDate', 'endDate'];
         inputsToCheck.forEach(id => {
           const el = document.getElementById(id);
           if (el) {
@@ -828,6 +861,32 @@
             el.onchange = window.applyMapFilters;
           }
         });
+
+        // Add specific event listener for sector flyToBounds
+        const sectorDropdown = document.getElementById('sectorFilter');
+        if (sectorDropdown) {
+          sectorDropdown.addEventListener('change', function (e) {
+            const val = e.target.value;
+            if (val && window.tacticalSectorsLayer && window.map) {
+              window.tacticalSectorsLayer.eachLayer(function (layer) {
+                if (layer.feature.properties.name === val) {
+                  window.map.flyToBounds(layer.getBounds(), { padding: [50, 50], duration: 1.5 });
+
+                  // Temporarily highlight the sector
+                  const oldStyle = Object.assign({}, layer.options);
+                  layer.setStyle({ fillOpacity: 0.2, weight: 3, color: '#f97316' });
+                  layer.addTo(window.map);
+                  setTimeout(() => {
+                    if (window.map.hasLayer(layer)) window.map.removeLayer(layer);
+                    layer.setStyle(oldStyle);
+                  }, 5000);
+                }
+              });
+            } else if (!val && window.map) {
+              window.map.setView([48.5, 32.0], 6); // Reset view to default Zoom
+            }
+          });
+        }
 
         // UI Updates
         window.currentFilteredEvents = [...window.globalEvents];
@@ -3148,6 +3207,7 @@
   function startApp() {
     console.log("🚀 Starting Impact Atlas...");
     initMap();
+    loadSectorsData();
     loadEventsData();
 
     // Initialize Physical Weather

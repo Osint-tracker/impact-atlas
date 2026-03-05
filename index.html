@@ -2425,6 +2425,12 @@
 
         <!-- TACTICAL TIME COMMAND BAR -->
         <div class="tactical-time-bar" id="tacticalTimeBar">
+          <select id="sectorFilter" class="ttb-btn"
+            style="background: rgba(15,23,42,0.9); color: #f59e0b; border: 1px solid #475569; border-radius: 3px; font-family: 'Rajdhani', sans-serif; font-size: 0.8rem; font-weight: 700; padding: 4px 8px; margin-right: 4px; outline: none; text-transform: uppercase;">
+            <option value="">ALL SECTORS</option>
+            <!-- Options populated dynamically by map.js -->
+          </select>
+          <div class="ttb-divider"></div>
           <button class="ttb-btn active" onclick="setTimeWindow(24)" data-hours="24">24H</button>
           <button class="ttb-btn" onclick="setTimeWindow(48)" data-hours="48">48H</button>
           <button class="ttb-btn" onclick="setTimeWindow(72)" data-hours="72">72H</button>
