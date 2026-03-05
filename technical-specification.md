@@ -130,10 +130,11 @@ tier_1:
   components:
     - Owl Map Harvester (KMZ -> GeoJSON)
     - Owl Unit Harvester (TypeScript -> JSON)
-    - Google Sheets scrapers
-    - Telegram scrapers
+    - Telegram & Web API scrapers
+    - NASA FIRMS Thermal Scraper
+    - GDELT Event Ingestion
+    - Parabellum & WarSpotting DB Connectors
     - Super Squad AI Pipeline
-    - Smart Fusion Engine
     - SQLite database
   
 tier_2:
@@ -148,10 +149,11 @@ tier_3:
   name: VISUALIZATION_AND_DELIVERY
   purpose: Cartographic and analytical presentation
   components:
-    - Impact Atlas Web UI
-    - Leaflet.js Map (Canvas Mode)
-    - War Monitor Sidebar
-    - Analytics Dashboard
+    - V2 C4ISR Navigation Interface
+    - Leaflet.js Map with Semantic Clustering
+    - Interactive Analytics Drawer
+    - Tactical Graveyard & Operational Tempo Panels
+    - NATO-Grade Intelligence Briefing Generator
 ```
 
 ### TECHNOLOGY_STACK
@@ -1029,23 +1031,62 @@ constraint: HARD_CONSTRAINT
 
 ## FRONTEND_FEATURES
 
-### FEATURE_1: DUAL_VIEW_SYSTEM
+### FEATURE_1: C4ISR_DASHBOARD_ARCHITECTURE (V2)
 
 **PHILOSOPHY:**  
 ```yaml
-value: Asymmetric visualization logic
+value: Modular, intelligence-grade interface prioritizing data density over whitespace
 ```
 
-**WAR_MONITOR_SIDEBAR:**
+**NAVIGATION_RAIL:**
 ```yaml
-objective: Completeness
-content: All events (military, political, civilian, humanitarian)
-ordering: Reverse chronological (most recent → oldest)
-interaction:
-  value:
-    on_click:
-      action_1: Map centers view (flyTo) on corresponding marker
-      action_2: If layer hidden, activate temporarily OR notify user
+objective: Global Context Switching
+components:
+  - Live Map Toggle
+  - ORBAT Factions (UA/RU) Toggle
+  - Intel Feed (Real-time Timeline) Toggle
+  - Operational Tempo Toggle
+  - Equipment Losses (Tactical Graveyard) Toggle
+behavior: Toggles slide-out sidebar panels, collapsing others
+```
+
+**INTERACTIVE_ANALYTICS_DRAWER:**
+```yaml
+objective: Macro-level intelligence insights
+widgets:
+  - Events by Category (Donut)
+  - Tempo Sparkline (7-Day Histogram)
+  - T.I.E Distribution
+  - Source Breakdown (Dropdown filtered: All, Telegram, Web/GDELT)
+  - Metric Cards (Avg T.I.E, Avg Reliability, Unique Sources, High Impact Events)
+behavior:
+  - Click-to-expand modular modals
+  - 50% max-width responsive sizing
+```
+
+**SEMANTIC_CLUSTERING_DOSSIER:**
+```yaml
+objective: Deep Strike visualization
+position: Center/right overlay modal
+components:
+  - Top Entities / Sources Summary
+  - Tactical Kill-Chain Status Tracker
+  - Event T.I.E Score Widget
+design:
+  - Dense micro-typography
+  - C4ISR Dark Green border accents
+```
+
+**TACTICAL_MAP:**
+```yaml
+objective: Clarity
+default_visibility: Strictly military events only (Kinetic/Manoeuvre)
+layers:
+  - OWL Frontline / Fortifications
+  - NASA FIRMS (Thermal Hotspots bounding box filtered)
+  - Drone V.F.R Index (Open-Meteo Cloud > 70% or Vis < 3km)
+  - Parabellum ORBAT positions
+```
 constraint: HARD_CONSTRAINT
 ```
 
