@@ -20,14 +20,17 @@ class OrbatTracker {
 
     setFaction(faction) {
         this.currentFaction = faction;
-        // Update tab styling
-        document.querySelectorAll('.s-tab-btn').forEach(btn => {
-            if (btn.innerText.includes(faction)) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
+        // Update tab styling only within ORBAT container
+        const orbatTabs = document.querySelectorAll('#sidebar-tab-orbat .s-tab-btn');
+        if (orbatTabs.length > 0) {
+            orbatTabs.forEach(btn => {
+                if (btn.innerText.includes(faction)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
         this.render();
     }
 

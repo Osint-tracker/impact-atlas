@@ -268,6 +268,7 @@ body {
 .chart-col {
     display: flex;
     flex-direction: column;
+    max-height: 300px;
 }
 
 .chart-header {
@@ -277,6 +278,11 @@ body {
     color: var(--text-muted);
     margin-bottom: 10px;
     font-weight: 600;
+}
+
+.chart-col canvas {
+    max-height: 250px;
+    width: 100% !important;
 }
 
 /* Row 2: Metrics Row */

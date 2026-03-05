@@ -1180,7 +1180,19 @@
             // Create layer group for thermal hotspots
             firmsLayer = L.layerGroup();
 
-            data.features.forEach(f => {
+            // Filter to Ukrainian + Russian conflict territory only
+            const isInUaRuTerritory = (lat, lon) => {
+              // Ukraine bounding box (tight)
+              if (lat >= 44.3 && lat <= 52.4 && lon >= 22.1 && lon <= 40.2) return true;
+              // Western Russia conflict zone (Kursk, Belgorod, Bryansk, Rostov)
+              if (lat >= 50.0 && lat <= 56.0 && lon >= 30.0 && lon <= 45.0) return true;
+              return false;
+            };
+
+            data.features.filter(f => {
+              const c = f.geometry.coordinates;
+              return isInUaRuTerritory(c[1], c[0]);
+            }).forEach(f => {
               const coords = f.geometry.coordinates;
               const props = f.properties;
               const brightness = props.brightness || 300;
