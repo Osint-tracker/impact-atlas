@@ -629,11 +629,16 @@
         const sectorSelect = document.getElementById('sectorFilter');
         if (sectorSelect && data.features) {
           // Sort sectors by name
-          const sortedFeatures = data.features.sort((a, b) => a.properties.name.localeCompare(b.properties.name));
+          const sortedFeatures = data.features.sort((a, b) => {
+            const nameA = a.properties.operational_sector || a.properties.name || '';
+            const nameB = b.properties.operational_sector || b.properties.name || '';
+            return nameA.localeCompare(nameB);
+          });
           sortedFeatures.forEach(f => {
+            const sectorName = f.properties.operational_sector || f.properties.name;
             const opt = document.createElement('option');
-            opt.value = f.properties.name;
-            opt.innerText = f.properties.name;
+            opt.value = sectorName;
+            opt.innerText = sectorName;
             sectorSelect.appendChild(opt);
           });
         }
@@ -869,7 +874,8 @@
             const val = e.target.value;
             if (val && window.tacticalSectorsLayer && window.map) {
               window.tacticalSectorsLayer.eachLayer(function (layer) {
-                if (layer.feature.properties.name === val) {
+                const layerName = layer.feature.properties.operational_sector || layer.feature.properties.name;
+                if (layerName === val) {
                   window.map.flyToBounds(layer.getBounds(), { padding: [50, 50], duration: 1.5 });
 
                   // Temporarily highlight the sector

@@ -35,7 +35,8 @@ class GeolocatorAgent:
                     data = json.load(f)
                     for feature in data.get('features', []):
                         # Ensure names are strictly in English (e.g. "Pokrovsk Axis")
-                        name = feature.get('properties', {}).get('name', 'Unknown Sector')
+                        props = feature.get('properties', {})
+                        name = props.get('operational_sector', props.get('name', 'Unknown Sector'))
                         geom = shape(feature['geometry'])
                         self.sectors.append({'name': name, 'polygon': geom})
                 logger.info(f"Loaded {len(self.sectors)} operational sectors from geojson.")

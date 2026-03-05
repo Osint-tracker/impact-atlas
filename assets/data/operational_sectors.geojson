@@ -1,0 +1,345 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "operational_sector": "Sumy Axis",
+                "type": "cross_border"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            34.0,
+                            50.5
+                        ],
+                        [
+                            35.8,
+                            50.5
+                        ],
+                        [
+                            35.8,
+                            51.5
+                        ],
+                        [
+                            34.0,
+                            51.5
+                        ],
+                        [
+                            34.0,
+                            50.5
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "operational_sector": "Kharkiv Axis",
+                "type": "kinetic"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            35.8,
+                            50.0
+                        ],
+                        [
+                            37.3,
+                            50.0
+                        ],
+                        [
+                            37.3,
+                            50.5
+                        ],
+                        [
+                            35.8,
+                            50.5
+                        ],
+                        [
+                            35.8,
+                            50.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "operational_sector": "Kupyansk-Lyman Axis",
+                "type": "kinetic"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            37.3,
+                            48.9
+                        ],
+                        [
+                            38.5,
+                            48.9
+                        ],
+                        [
+                            38.5,
+                            50.0
+                        ],
+                        [
+                            37.3,
+                            50.0
+                        ],
+                        [
+                            37.3,
+                            48.9
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "operational_sector": "Siversk Axis",
+                "type": "kinetic"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            37.8,
+                            48.7
+                        ],
+                        [
+                            38.5,
+                            48.7
+                        ],
+                        [
+                            38.5,
+                            48.9
+                        ],
+                        [
+                            37.8,
+                            48.9
+                        ],
+                        [
+                            37.8,
+                            48.7
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "operational_sector": "Chasiv Yar Axis",
+                "type": "attrition"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            37.8,
+                            48.4
+                        ],
+                        [
+                            38.5,
+                            48.4
+                        ],
+                        [
+                            38.5,
+                            48.7
+                        ],
+                        [
+                            37.8,
+                            48.7
+                        ],
+                        [
+                            37.8,
+                            48.4
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "operational_sector": "Toretsk Axis",
+                "type": "attrition"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            37.8,
+                            48.2
+                        ],
+                        [
+                            38.5,
+                            48.2
+                        ],
+                        [
+                            38.5,
+                            48.4
+                        ],
+                        [
+                            37.8,
+                            48.4
+                        ],
+                        [
+                            37.8,
+                            48.2
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "operational_sector": "Pokrovsk Axis",
+                "type": "manoeuvre"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            36.9,
+                            48.0
+                        ],
+                        [
+                            37.8,
+                            48.0
+                        ],
+                        [
+                            37.8,
+                            48.4
+                        ],
+                        [
+                            36.9,
+                            48.4
+                        ],
+                        [
+                            36.9,
+                            48.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "operational_sector": "Kurakhove-Vuhledar Axis",
+                "type": "manoeuvre"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            36.8,
+                            47.6
+                        ],
+                        [
+                            37.8,
+                            47.6
+                        ],
+                        [
+                            37.8,
+                            48.0
+                        ],
+                        [
+                            36.8,
+                            48.0
+                        ],
+                        [
+                            36.8,
+                            47.6
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "operational_sector": "Zaporizhzhia Axis",
+                "type": "static"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            34.8,
+                            47.0
+                        ],
+                        [
+                            36.8,
+                            47.0
+                        ],
+                        [
+                            36.8,
+                            47.6
+                        ],
+                        [
+                            34.8,
+                            47.6
+                        ],
+                        [
+                            34.8,
+                            47.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "operational_sector": "Kherson Axis",
+                "type": "static"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            31.5,
+                            46.3
+                        ],
+                        [
+                            34.8,
+                            46.3
+                        ],
+                        [
+                            34.8,
+                            47.2
+                        ],
+                        [
+                            31.5,
+                            47.2
+                        ],
+                        [
+                            31.5,
+                            46.3
+                        ]
+                    ]
+                ]
+            }
+        }
+    ]
+}
