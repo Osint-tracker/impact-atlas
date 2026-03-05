@@ -3291,24 +3291,24 @@
           var existingTabs = ['layers', 'orbat'];
           var newPanels = ['intel', 'tempo', 'losses', 'analytics'];
 
+          // Hide all custom panels including cluster
           newPanels.forEach(function (p) {
             var el = document.getElementById('sidebar-panel-' + p);
             if (el) el.style.display = 'none';
           });
+          var clusterP = document.getElementById('sidebar-panel-cluster');
+          if (clusterP) clusterP.style.display = 'none';
 
           if (existingTabs.indexOf(panelId) !== -1) {
             var dc = document.querySelector('.dashboard-container');
             if (dc) dc.style.display = '';
-            // HIDE the sidebar tabs bar — nav rail replaces it
             document.querySelectorAll('.sidebar-tabs').forEach(function (t) { t.style.display = 'none'; });
-            // Directly toggle the correct s-tab-content
             document.querySelectorAll('.s-tab-content').forEach(function (c) { c.classList.remove('active'); });
             var target = document.getElementById('sidebar-tab-' + panelId);
             if (target) target.classList.add('active');
           } else {
             var dc = document.querySelector('.dashboard-container');
             if (dc) dc.style.display = 'none';
-            // Hide the sidebar tabs
             document.querySelectorAll('.sidebar-tabs').forEach(function (t) { t.style.display = 'none'; });
             var panel = document.getElementById('sidebar-panel-' + panelId);
             if (panel) { panel.style.display = 'flex'; panel.style.flexDirection = 'column'; panel.style.height = '100%'; }
@@ -3371,27 +3371,54 @@
           return [];
         }
 
-        // --- INTEL FEED ---
+        // --- INTEL FEED (REDESIGNED) ---
         function populateIntelFeed() {
           var events = getLoadedEvents();
           var container = document.getElementById('intelFeedList');
           if (!container || !events.length) return;
-          var sorted = events.slice().sort(function (a, b) { return new Date(b.event_date || b.date || 0) - new Date(a.event_date || a.date || 0); });
+          var sorted = events.slice().sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
           var html = '';
-          sorted.slice(0, 100).forEach(function (ev, i) {
-            var title = ev.event_title || ev.title || ev.description || 'Event';
-            var date = (ev.event_date || ev.date || '').substring(0, 10);
-            var tie = parseFloat(ev.tie_score || ev.TIE || 0);
+          sorted.slice(0, 120).forEach(function (ev, i) {
+            var title = ev.title || ev.event_title || ev.description || 'Event';
+            var date = (ev.date || '').substring(0, 10);
+            var tie = parseFloat(ev.tie_total || 0) / 10;
             var tieColor = tie >= 4 ? '#e94560' : tie >= 2 ? '#f59e0b' : '#06b6d4';
-            html += '<div onclick="flyToEvent(' + i + ')" style="padding:7px 9px; margin-bottom:3px; background:var(--bg-card); border:1px solid var(--border-main); border-left:3px solid ' + tieColor + '; border-radius:4px; cursor:pointer; transition:border-color 0.2s;" onmouseover="this.style.borderColor=\'#f59e0b\'" onmouseout="this.style.borderColor=\'var(--border-main)\'">';
-            html += '<div style="display:flex; justify-content:space-between; align-items:flex-start;">';
-            html += '<div style="font-size:0.7rem; color:var(--text-main); font-weight:600; line-height:1.3; max-width:75%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + title + '</div>';
-            if (tie) html += '<span style="font-family:var(--font-mono); font-size:0.55rem; font-weight:700; color:' + tieColor + ';">' + tie.toFixed(1) + '</span>';
-            html += '</div>';
-            html += '<div style="font-family:var(--font-mono); font-size:0.52rem; color:var(--text-muted); margin-top:2px;">' + date + '</div>';
-            html += '</div>';
+            var cat = (ev.category || ev.classification || 'UNKNOWN').toUpperCase();
+            var catColors = { 'KINETIC': '#e94560', 'MANEUVER': '#f59e0b', 'CIVILIAN': '#06b6d4', 'POLITICAL': '#8b5cf6', 'OTHER': '#64748b' };
+            var catColor = catColors[cat] || '#64748b';
+            // Parse source
+            var srcName = '';
+            try { var sl = JSON.parse(ev.sources_list || '[]'); if (sl.length) srcName = sl[0].name || ''; } catch (e) { }
+            var srcType = srcName.includes('t.me') || srcName.match(/^[A-Za-z0-9_]+$/) ? 'TG' : 'GDELT';
+            if (srcName.includes('.')) srcType = 'WEB';
+
+            html += '<div onclick="openEventDossierFromFeed(' + i + ')" style="padding:6px 8px; margin-bottom:2px; background:rgba(22,33,62,0.8); border:1px solid #233554; border-left:3px solid ' + tieColor + '; border-radius:4px; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor=\'#f59e0b\';this.style.background=\'rgba(30,41,59,0.9)\'" onmouseout="this.style.borderColor=\'#233554\';this.style.background=\'rgba(22,33,62,0.8)\'">';
+            // Row 1: Title + TIE badge
+            html += '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px;">';
+            html += '<div style="font-size:0.68rem; color:#e2e8f0; font-weight:600; line-height:1.3; flex:1; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">' + title + '</div>';
+            html += '<div style="min-width:32px; text-align:center; background:' + tieColor + '15; border:1px solid ' + tieColor + '; border-radius:4px; padding:2px 4px;">';
+            html += '<div style="font-family:JetBrains Mono,monospace; font-size:0.6rem; font-weight:800; color:' + tieColor + ';">' + tie.toFixed(1) + '</div>';
+            html += '</div></div>';
+            // Row 2: Meta line
+            html += '<div style="display:flex; align-items:center; gap:6px; margin-top:3px; flex-wrap:wrap;">';
+            html += '<span style="font-family:JetBrains Mono,monospace; font-size:0.52rem; color:#64748b; text-transform:uppercase;">' + date + '</span>';
+            html += '<span style="background:' + catColor + '20; color:' + catColor + '; font-family:JetBrains Mono,monospace; font-size:0.48rem; font-weight:700; padding:1px 5px; border-radius:3px; text-transform:uppercase;">' + cat + '</span>';
+            if (srcName) html += '<span style="font-family:JetBrains Mono,monospace; font-size:0.48rem; color:#94a3b8; text-transform:uppercase;"><i class="fas fa-rss" style="font-size:0.4rem; margin-right:2px;"></i>' + (srcName.length > 14 ? srcName.substring(0, 14) + '..' : srcName) + '</span>';
+            html += '</div></div>';
           });
           container.innerHTML = html;
+        }
+
+        // Open event dossier from intel feed
+        function openEventDossierFromFeed(index) {
+          var events = getLoadedEvents();
+          var sorted = events.slice().sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
+          if (!sorted[index]) return;
+          var ev = sorted[index];
+          // Fly to location
+          if (ev.lat && ev.lon && window.map) window.map.flyTo([ev.lat, ev.lon], 12, { duration: 1.2 });
+          // Open dossier
+          if (window.openIntelDossier) { window.openIntelDossier(ev); }
         }
 
         function flyToEvent(index) {
@@ -3401,19 +3428,34 @@
           if (ev.latitude && ev.longitude && window.map) window.map.flyTo([ev.latitude, ev.longitude], 12, { duration: 1.5 });
         }
 
-        // --- TEMPO PANEL ---
+        // --- TEMPO PANEL (uses timestamp for reliable bucketing) ---
         function populateTempoPanel() {
           var events = getLoadedEvents();
           if (!events.length) return;
           var dayCounts = {};
           var now = new Date();
-          for (var d = 13; d >= 0; d--) { var day = new Date(now); day.setDate(day.getDate() - d); dayCounts[day.toISOString().substring(0, 10)] = 0; }
-          events.forEach(function (ev) { var dt = (ev.event_date || ev.date || '').substring(0, 10); if (dt in dayCounts) dayCounts[dt]++; });
+          var dayMs = 86400000;
+          // Create 14-day window
+          for (var d = 13; d >= 0; d--) {
+            var day = new Date(now.getTime() - d * dayMs);
+            dayCounts[day.toISOString().substring(0, 10)] = 0;
+          }
+          // Bucket events by timestamp
+          events.forEach(function (ev) {
+            var ts = parseInt(ev.timestamp || 0);
+            if (ts > 0) {
+              var dt = new Date(ts).toISOString().substring(0, 10);
+              if (dt in dayCounts) dayCounts[dt]++;
+            }
+          });
           var labels = Object.keys(dayCounts), data = labels.map(function (k) { return dayCounts[k]; });
           var avg = data.reduce(function (a, b) { return a + b; }, 0) / data.length;
           var peak = Math.max.apply(null, data);
+          var total14 = data.reduce(function (a, b) { return a + b; }, 0);
           var el1 = document.getElementById('tempoAvg'); if (el1) el1.textContent = avg.toFixed(1);
           var el2 = document.getElementById('tempoPeak'); if (el2) el2.textContent = peak;
+          // Add extra stats if elements exist
+          var el3 = document.getElementById('tempoTotal14'); if (el3) el3.textContent = total14;
           var ctx = document.getElementById('tempoLineChart');
           if (!ctx) return;
           if (_analyticsCharts.tempo) _analyticsCharts.tempo.destroy();
@@ -3468,11 +3510,13 @@
           container.innerHTML = html;
         }
 
-        // --- ANALYTICS PANEL ---
+        // --- ANALYTICS PANEL (FIXED: uses tie_total, sources_list) ---
         function populateAnalytics() {
           var events = getLoadedEvents();
           if (!events.length) return;
-          var ties = events.map(function (e) { return parseFloat(e.tie_score || e.TIE || 0); }).filter(function (v) { return !isNaN(v); });
+
+          // Correctly read TIE from tie_total (0-100 scale, divide by 10 for 0-10)
+          var ties = events.map(function (e) { return parseFloat(e.tie_total || 0) / 10; }).filter(function (v) { return !isNaN(v) && v > 0; });
           var avgTie = ties.length ? ties.reduce(function (a, b) { return a + b; }, 0) / ties.length : 0;
           var high = ties.filter(function (t) { return t >= 3.5; }).length;
           var clusters = {}; events.forEach(function (e) { if (e.cluster_id) clusters[e.cluster_id] = true; });
@@ -3485,27 +3529,46 @@
 
           // Category Donut
           var catCounts = {};
-          events.forEach(function (e) { var c = e.category_id || e.category || 'OTHER'; catCounts[c] = (catCounts[c] || 0) + 1; });
+          events.forEach(function (e) { var c = e.category || 'OTHER'; catCounts[c] = (catCounts[c] || 0) + 1; });
           var ctx1 = document.getElementById('categoryDonutChart');
           if (ctx1) {
             if (_analyticsCharts.category) _analyticsCharts.category.destroy();
-            _analyticsCharts.category = new Chart(ctx1, { type: 'doughnut', data: { labels: Object.keys(catCounts), datasets: [{ data: Object.values(catCounts), backgroundColor: ['#f59e0b', '#06b6d4', '#e94560', '#22c55e', '#8b5cf6', '#f97316', '#ec4899', '#64748b'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 8, family: 'JetBrains Mono' }, padding: 5, boxWidth: 8 } } }, onClick: function (evt, items) { if (items.length) console.log('Filter category:', Object.keys(catCounts)[items[0].index]); } } });
+            _analyticsCharts.category = new Chart(ctx1, { type: 'doughnut', data: { labels: Object.keys(catCounts), datasets: [{ data: Object.values(catCounts), backgroundColor: ['#f59e0b', '#06b6d4', '#e94560', '#22c55e', '#8b5cf6', '#f97316', '#ec4899', '#64748b'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 8, family: 'JetBrains Mono' }, padding: 5, boxWidth: 8 } } } } });
           }
 
-          // TIE Histogram
-          var tieBuckets = [0, 0, 0, 0, 0]; ties.forEach(function (t) { tieBuckets[Math.min(Math.floor(t), 4)]++; });
+          // TIE Histogram (0-10 scale, buckets of 2)
+          var tieBuckets = [0, 0, 0, 0, 0];
+          ties.forEach(function (t) { tieBuckets[Math.min(Math.floor(t / 2), 4)]++; });
           var ctx2 = document.getElementById('tieHistogramChart');
           if (ctx2) {
             if (_analyticsCharts.tie) _analyticsCharts.tie.destroy();
-            _analyticsCharts.tie = new Chart(ctx2, { type: 'bar', data: { labels: ['0-1', '1-2', '2-3', '3-4', '4-5'], datasets: [{ data: tieBuckets, backgroundColor: ['#233554', '#06b6d4', '#f59e0b', '#f97316', '#e94560'], borderRadius: 3, borderSkipped: false }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b', font: { size: 8, family: 'JetBrains Mono' } }, grid: { display: false } }, y: { ticks: { color: '#64748b', font: { size: 8 } }, grid: { color: '#233554' } } } } });
+            _analyticsCharts.tie = new Chart(ctx2, { type: 'bar', data: { labels: ['0-2', '2-4', '4-6', '6-8', '8-10'], datasets: [{ data: tieBuckets, backgroundColor: ['#233554', '#06b6d4', '#f59e0b', '#f97316', '#e94560'], borderRadius: 3, borderSkipped: false }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b', font: { size: 8, family: 'JetBrains Mono' } }, grid: { display: false } }, y: { ticks: { color: '#64748b', font: { size: 8 } }, grid: { color: '#233554' } } } } });
           }
 
-          // Source Breakdown
-          var srcCounts = {}; events.forEach(function (e) { var s = e.source_type || e.source || 'OSINT'; srcCounts[s] = (srcCounts[s] || 0) + 1; });
+          // Source Breakdown — parse sources_list JSON for individual source names
+          var srcCounts = {};
+          events.forEach(function (e) {
+            try {
+              var sl = JSON.parse(e.sources_list || '[]');
+              if (Array.isArray(sl)) {
+                sl.forEach(function (s) {
+                  if (s && s.name) { srcCounts[s.name] = (srcCounts[s.name] || 0) + 1; }
+                });
+              }
+            } catch (ex) { }
+          });
+          // Sort by count and take top 15
+          var srcSorted = Object.entries(srcCounts).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 15);
           var ctx3 = document.getElementById('sourceBarChart');
           if (ctx3) {
             if (_analyticsCharts.source) _analyticsCharts.source.destroy();
-            _analyticsCharts.source = new Chart(ctx3, { type: 'bar', data: { labels: Object.keys(srcCounts), datasets: [{ data: Object.values(srcCounts), backgroundColor: '#06b6d4', borderRadius: 3, borderSkipped: false }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b', font: { size: 8 } }, grid: { color: '#233554' } }, y: { ticks: { color: '#94a3b8', font: { size: 8, family: 'JetBrains Mono' } }, grid: { display: false } } } } });
+            var srcLabels = srcSorted.map(function (s) { return s[0].length > 18 ? s[0].substring(0, 18) + '..' : s[0]; });
+            var srcData = srcSorted.map(function (s) { return s[1]; });
+            // Color by type: Telegram channels in cyan, web in amber
+            var srcColors = srcSorted.map(function (s) {
+              return s[0].includes('.') ? '#f59e0b' : '#06b6d4';
+            });
+            _analyticsCharts.source = new Chart(ctx3, { type: 'bar', data: { labels: srcLabels, datasets: [{ data: srcData, backgroundColor: srcColors, borderRadius: 3, borderSkipped: false }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b', font: { size: 8 } }, grid: { color: '#233554' } }, y: { ticks: { color: '#94a3b8', font: { size: 7, family: 'JetBrains Mono' } }, grid: { display: false } } } } });
           }
         }
 
@@ -3528,53 +3591,59 @@
             if (!ctx) return;
             var events = getLoadedEvents();
             if (widgetType === 'category') {
-              var cc = {}; events.forEach(function (e) { var c = e.category_id || e.category || 'OTHER'; cc[c] = (cc[c] || 0) + 1; });
+              var cc = {}; events.forEach(function (e) { var c = e.category || 'OTHER'; cc[c] = (cc[c] || 0) + 1; });
               new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(cc), datasets: [{ data: Object.values(cc), backgroundColor: ['#f59e0b', '#06b6d4', '#e94560', '#22c55e', '#8b5cf6', '#f97316', '#ec4899', '#64748b'], borderWidth: 0 }] }, options: { responsive: true, cutout: '55%', plugins: { legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 11 }, padding: 10, boxWidth: 12 } } } } });
             } else if (widgetType === 'tie') {
-              var ties2 = events.map(function (e) { return parseFloat(e.tie_score || e.TIE || 0); }).filter(function (v) { return !isNaN(v); }); var b = [0, 0, 0, 0, 0]; ties2.forEach(function (t) { b[Math.min(Math.floor(t), 4)]++; });
-              new Chart(ctx, { type: 'bar', data: { labels: ['0-1', '1-2', '2-3', '3-4', '4-5'], datasets: [{ data: b, backgroundColor: ['#233554', '#06b6d4', '#f59e0b', '#f97316', '#e94560'], borderRadius: 5, borderSkipped: false }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', font: { size: 12, family: 'JetBrains Mono' } }, grid: { display: false } }, y: { ticks: { color: '#64748b' }, grid: { color: '#233554' } } } } });
+              var ties2 = events.map(function (e) { return parseFloat(e.tie_total || 0) / 10; }).filter(function (v) { return !isNaN(v) && v > 0; }); var b = [0, 0, 0, 0, 0]; ties2.forEach(function (t) { b[Math.min(Math.floor(t / 2), 4)]++; });
+              new Chart(ctx, { type: 'bar', data: { labels: ['0-2', '2-4', '4-6', '6-8', '8-10'], datasets: [{ data: b, backgroundColor: ['#233554', '#06b6d4', '#f59e0b', '#f97316', '#e94560'], borderRadius: 5, borderSkipped: false }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', font: { size: 12, family: 'JetBrains Mono' } }, grid: { display: false } }, y: { ticks: { color: '#64748b' }, grid: { color: '#233554' } } } } });
             } else {
-              var sc = {}; events.forEach(function (e) { var s = e.source_type || e.source || 'OSINT'; sc[s] = (sc[s] || 0) + 1; });
-              new Chart(ctx, { type: 'bar', data: { labels: Object.keys(sc), datasets: [{ data: Object.values(sc), backgroundColor: '#06b6d4', borderRadius: 5, borderSkipped: false }] }, options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b' }, grid: { color: '#233554' } }, y: { ticks: { color: '#94a3b8', font: { size: 11, family: 'JetBrains Mono' } }, grid: { display: false } } } } });
+              var sc = {}; events.forEach(function (e) { try { var sl = JSON.parse(e.sources_list || '[]'); if (Array.isArray(sl)) sl.forEach(function (s) { if (s && s.name) sc[s.name] = (sc[s.name] || 0) + 1; }); } catch (ex) { } });
+              var sorted = Object.entries(sc).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 20);
+              var sLabels = sorted.map(function (s) { return s[0].length > 20 ? s[0].substring(0, 20) + '..' : s[0]; }); var sData = sorted.map(function (s) { return s[1]; }); var sColors = sorted.map(function (s) { return s[0].includes('.') ? '#f59e0b' : '#06b6d4'; });
+              new Chart(ctx, { type: 'bar', data: { labels: sLabels, datasets: [{ data: sData, backgroundColor: sColors, borderRadius: 5, borderSkipped: false }] }, options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b' }, grid: { color: '#233554' } }, y: { ticks: { color: '#94a3b8', font: { size: 10, family: 'JetBrains Mono' } }, grid: { display: false } } } } });
             }
           }, 100);
         }
 
-        // Auto-populate drawer when events load
+        // Auto-populate drawer when events load (FIXED: uses tie_total, timestamps, sources_list)
         var _drawerPop = false;
         setInterval(function () {
           if (!_drawerPop && getLoadedEvents().length > 0) {
             _drawerPop = true;
             var ev = getLoadedEvents();
-            var ties = ev.map(function (e) { return parseFloat(e.tie_score || e.TIE || 0); }).filter(function (v) { return !isNaN(v); });
+            // TIE: tie_total is 0-100, divide by 10 for 0-10 scale
+            var ties = ev.map(function (e) { return parseFloat(e.tie_total || 0) / 10; }).filter(function (v) { return !isNaN(v) && v > 0; });
             var avg = ties.length ? ties.reduce(function (a, b) { return a + b; }, 0) / ties.length : 0;
             var el;
             el = document.getElementById('drawerTotalEvents'); if (el) el.textContent = ev.length;
             el = document.getElementById('drawerAvgTie'); if (el) el.textContent = avg.toFixed(1);
             el = document.getElementById('drawerHighImpact'); if (el) el.textContent = ties.filter(function (t) { return t >= 3.5; }).length;
-            var cats = {}; ev.forEach(function (e) { var c = e.category_id || e.category || 'OTHER'; cats[c] = (cats[c] || 0) + 1; });
+            var cats = {}; ev.forEach(function (e) { var c = e.category || 'OTHER'; cats[c] = (cats[c] || 0) + 1; });
             el = document.getElementById('drawerCategories'); if (el) el.textContent = Object.keys(cats).length;
 
-            // LAST 24H
-            var now24 = new Date(); var count24h = 0;
+            // LAST 24H — use timestamp field (ms since epoch) for accurate 24h window
+            var now24 = Date.now(); var count24h = 0;
             ev.forEach(function (e) {
-              var d = new Date(e.event_date || e.date || 0);
-              if ((now24 - d) <= 86400000) count24h++;
+              var ts = parseInt(e.timestamp || 0);
+              if (ts > 0 && (now24 - ts) <= 86400000) count24h++;
             });
             el = document.getElementById('drawerLast24h'); if (el) el.textContent = count24h;
 
-            // TOP REGION
-            var regions = {};
+            // TOP REGION — extract from title heuristic (Ukrainian oblasts)
+            var oblastNames = ['Donetsk', 'Luhansk', 'Kherson', 'Zaporizhzhia', 'Kharkiv', 'Mykolaiv', 'Dnipropetrovsk', 'Odesa', 'Sumy', 'Chernihiv', 'Kyiv', 'Crimea', 'Kursk', 'Belgorod', 'Bryansk', 'Rostov'];
+            var regionCounts = {};
             ev.forEach(function (e) {
-              var r = e.region || e.oblast || e.state || '';
-              if (r && r !== 'UNKNOWN' && r !== 'null') regions[r] = (regions[r] || 0) + 1;
+              var txt = (e.title || '') + ' ' + (e.description || '');
+              oblastNames.forEach(function (ob) {
+                if (txt.toLowerCase().includes(ob.toLowerCase())) regionCounts[ob] = (regionCounts[ob] || 0) + 1;
+              });
             });
             var topRegion = '--'; var topCount = 0;
-            for (var rk in regions) { if (regions[rk] > topCount) { topCount = regions[rk]; topRegion = rk; } }
+            for (var rk in regionCounts) { if (regionCounts[rk] > topCount) { topCount = regionCounts[rk]; topRegion = rk; } }
             el = document.getElementById('drawerTopRegion');
-            if (el) el.textContent = topRegion.length > 12 ? topRegion.substring(0, 12) + '..' : topRegion;
+            if (el) el.textContent = topRegion;
 
-            // MOMENTUM (from Dashboard gauge if available)
+            // MOMENTUM
             el = document.getElementById('drawerMomentum');
             if (el) {
               var momStatus = document.getElementById('momentumStatus');

@@ -1669,151 +1669,117 @@
                   meta.intensity >= 5 ? '#f97316' :
                     meta.intensity >= 3 ? '#eab308' : '#64748b';
 
-                // Build events preview (show up to 5 event IDs)
+                // Build tactical kill chain from correlated events
                 const eventIds = narrative.event_ids || [];
-                const eventsPreview = eventIds.slice(0, 5).map(id => {
-                  const shortId = id.split('_').slice(-1)[0];
-                  return `<div style="font-size: 0.7rem; color: #94a3b8; font-family: 'JetBrains Mono', monospace; padding: 2px 0;">• ${shortId}</div>`;
-                }).join('');
-                const moreEvents = eventIds.length > 5 ? `<div style="font-size: 0.65rem; color: #64748b; font-style: italic;">+${eventIds.length - 5} more events</div>` : '';
+                let killChainHtml = '';
+                if (eventIds.length > 0 && window.globalEvents) {
+                  // Find matching events for the kill chain
+                  const matchedEvents = [];
+                  eventIds.forEach(eid => {
+                    const found = window.globalEvents.find(e => e.event_id === eid || e.id === eid);
+                    if (found) matchedEvents.push(found);
+                  });
+                  // Show up to 6 events as kill chain nodes
+                  matchedEvents.slice(0, 6).forEach((ev, idx) => {
+                    const evTitle = (ev.title || ev.event_title || '').substring(0, 60);
+                    const evDate = (ev.date || '').substring(0, 10);
+                    const evTie = (parseFloat(ev.tie_total || 0) / 10).toFixed(1);
+                    const evCat = (ev.category || ev.classification || 'UNK').toUpperCase();
+                    const isActive = parseFloat(ev.tie_total || 0) >= 50;
+                    const nodeColor = isActive ? '#f59e0b' : '#94a3b8';
+                    const nodeIcon = isActive ? 'fas fa-crosshairs' : 'fas fa-square';
+                    const glowStyle = isActive ? 'text-shadow: 0 0 8px #f59e0b, 0 0 16px #f59e0b44;' : '';
+                    killChainHtml += `
+                      <div style="display:flex; gap:8px; position:relative;">
+                        <div style="display:flex; flex-direction:column; align-items:center; width:16px;">
+                          <i class="${nodeIcon}" style="color:${nodeColor}; font-size:0.6rem; ${glowStyle} z-index:1;"></i>
+                          ${idx < Math.min(matchedEvents.length, 6) - 1 ? '<div style="flex:1; border-left:2px dashed #475569; min-height:30px;"></div>' : ''}
+                        </div>
+                        <div style="flex:1; padding:3px 0 8px 0;">
+                          <div style="display:flex; align-items:center; gap:4px; margin-bottom:2px;">
+                            <span style="font-family:JetBrains Mono,monospace; font-size:0.52rem; color:#64748b; text-transform:uppercase;">${evDate}</span>
+                            <span style="font-family:JetBrains Mono,monospace; font-size:0.5rem; color:${nodeColor}; font-weight:700;">T.I.E. ${evTie}</span>
+                          </div>
+                          <div style="font-size:0.62rem; color:#e2e8f0; font-weight:600; line-height:1.3;">${evTitle}</div>
+                          <span style="font-family:JetBrains Mono,monospace; font-size:0.48rem; color:#94a3b8; text-transform:uppercase;">${evCat}</span>
+                        </div>
+                      </div>`;
+                  });
+                }
+
+                const durationDays = meta.date_range ? Math.ceil((new Date(meta.date_range[1]) - new Date(meta.date_range[0])) / (1000 * 60 * 60 * 24)) : 0;
 
                 const popupContent = `
-                  <div class="intel-brief-card" style="
-                    min-width: 320px;
-                    max-width: 400px;
-                    font-family: 'Inter', sans-serif;
-                    background: #0f172a;
-                    border-radius: 8px;
-                    overflow: hidden;
-                    border: 1px solid #334155;
-                    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-                  ">
-                    <!-- Header -->
-                    <div style="
-                      background: linear-gradient(135deg, ${meta.tactic_color}55, ${meta.tactic_color}22);
-                      padding: 16px;
-                      border-bottom: 1px solid #334155;
-                    ">
-                      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
-                        <div style="flex: 1;">
-                          <div style="
-                            font-size: 0.6rem;
-                            text-transform: uppercase;
-                            letter-spacing: 0.15em;
-                            color: #94a3b8;
-                            font-weight: 600;
-                            margin-bottom: 6px;
-                          ">STRATEGIC ASSESSMENT</div>
-                          <div style="
-                            font-size: 1.05rem;
-                            font-weight: 700;
-                            color: #f8fafc;
-                            line-height: 1.3;
-                          ">${meta.title}</div>
+                  <div style="font-family:'Inter',sans-serif; background:#0f172a; border:1px solid #334155; border-radius:6px; overflow:hidden; overflow-y:auto; max-height:100%;">
+                    <!-- CLOSE BUTTON -->
+                    <div style="position:sticky; top:0; z-index:10; display:flex; justify-content:flex-end; padding:4px 6px; background:#0f172a;">
+                      <button onclick="navSwitchTab('layers', document.querySelector('[data-panel=layers]'))" style="background:rgba(100,116,139,0.2); border:1px solid #475569; border-radius:4px; color:#94a3b8; cursor:pointer; padding:3px 8px; font-family:JetBrains Mono,monospace; font-size:0.6rem; text-transform:uppercase;">
+                        <i class="fas fa-times" style="margin-right:3px;"></i>CLOSE
+                      </button>
+                    </div>
+                    <!-- HERO HEADER (dark forest green) -->
+                    <div style="background:#0f291e; padding:10px 12px; border-bottom:1px solid #1a3a28;">
+                      <div style="font-family:JetBrains Mono,monospace; font-size:0.5rem; color:#64748b; text-transform:uppercase; letter-spacing:0.15em; margin-bottom:4px;">CLUSTER DOSSIER</div>
+                      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                        <div style="flex:1;">
+                          <div style="font-size:0.9rem; font-weight:700; color:#f8fafc; line-height:1.3; margin-bottom:4px;">${meta.title}</div>
+                          <div style="font-family:JetBrains Mono,monospace; font-size:0.52rem; color:#94a3b8; text-transform:uppercase;">
+                            ${narrative.cluster_id} | ${meta.event_count} EVENTS
+                          </div>
                         </div>
-                        <div style="
-                          background: ${intensityColor}15;
-                          border: 1px solid ${intensityColor};
-                          border-radius: 6px;
-                          padding: 8px 12px;
-                          text-align: center;
-                          min-width: 55px;
-                        ">
-                          <div style="font-size: 1.3rem; font-weight: 800; color: ${intensityColor}; font-family: 'JetBrains Mono', monospace;">${meta.intensity.toFixed(1)}</div>
-                          <div style="font-size: 0.5rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">T.I.E. Score</div>
+                        <!-- TIE SCORE WIDGET -->
+                        <div style="border:2px solid #f59e0b; border-radius:6px; padding:6px 10px; text-align:center; min-width:48px; background:rgba(245,158,11,0.08);">
+                          <div style="font-family:JetBrains Mono,monospace; font-size:1.1rem; font-weight:800; color:#f59e0b;">${meta.intensity.toFixed(1)}</div>
+                          <div style="font-family:JetBrains Mono,monospace; font-size:0.4rem; color:#94a3b8; text-transform:uppercase; letter-spacing:0.05em;">T.I.E.</div>
                         </div>
                       </div>
                     </div>
-                    
-                    <!-- Body -->
-                    <div style="padding: 16px;">
-                      <!-- Classification Badges -->
-                      <div style="margin-bottom: 14px; display: flex; flex-wrap: wrap; gap: 6px;">
-                        <span style="
-                          background: ${meta.tactic_color}20;
-                          color: ${meta.tactic_color};
-                          padding: 4px 10px;
-                          border-radius: 4px;
-                          font-size: 0.65rem;
-                          font-weight: 700;
-                          text-transform: uppercase;
-                          letter-spacing: 0.05em;
-                        ">${meta.primary_tactic}</span>
-                        <span style="
-                          background: ${intensityColor}15;
-                          color: ${intensityColor};
-                          padding: 4px 10px;
-                          border-radius: 4px;
-                          font-size: 0.65rem;
-                          font-weight: 700;
-                          text-transform: uppercase;
-                        ">${intensityClass}</span>
-                        ${meta.strategic_context && meta.strategic_context !== 'UNKNOWN' ? `
-                        <span style="
-                          background: #1e293b;
-                          color: #94a3b8;
-                          padding: 4px 10px;
-                          border-radius: 4px;
-                          font-size: 0.65rem;
-                          font-weight: 600;
-                        ">${meta.strategic_context.replace(/_/g, ' ')}</span>
-                        ` : ''}
-                      </div>
-                      
-                      <!-- Summary -->
-                      <div style="
-                        color: #cbd5e1;
-                        font-size: 0.85rem;
-                        line-height: 1.55;
-                        margin-bottom: 16px;
-                      ">${meta.summary}</div>
-                      
-                      <!-- Metrics Grid -->
-                      <div style="
-                        display: grid;
-                        grid-template-columns: 1fr 1fr 1fr;
-                        gap: 8px;
-                        margin-bottom: 14px;
-                      ">
-                        <div style="background: #1e293b; padding: 10px; border-radius: 6px; text-align: center;">
-                          <div style="color: #64748b; font-size: 0.55rem; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Events</div>
-                          <div style="color: #f8fafc; font-size: 1.1rem; font-weight: 700; font-family: 'JetBrains Mono', monospace;">${meta.event_count}</div>
-                        </div>
-                        <div style="background: #1e293b; padding: 10px; border-radius: 6px; text-align: center;">
-                          <div style="color: #64748b; font-size: 0.55rem; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Duration</div>
-                          <div style="color: #f8fafc; font-size: 0.8rem; font-weight: 600;">${meta.date_range ? Math.ceil((new Date(meta.date_range[1]) - new Date(meta.date_range[0])) / (1000 * 60 * 60 * 24)) + 'd' : 'N/A'}</div>
-                        </div>
-                        <div style="background: #1e293b; padding: 10px; border-radius: 6px; text-align: center;">
-                          <div style="color: #64748b; font-size: 0.55rem; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Cluster</div>
-                          <div style="color: #f8fafc; font-size: 0.7rem; font-weight: 600; font-family: 'JetBrains Mono', monospace;">${narrative.cluster_id.split('_').pop()}</div>
-                        </div>
-                      </div>
 
-                      <!-- Date Range -->
-                      <div style="
-                        background: #1e293b;
-                        padding: 10px 12px;
-                        border-radius: 6px;
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        margin-bottom: 14px;
-                      ">
-                        <div style="color: #64748b; font-size: 0.65rem; text-transform: uppercase; font-weight: 700;">Time Window</div>
-                        <div style="color: #f8fafc; font-size: 0.8rem; font-weight: 600; font-family: 'JetBrains Mono', monospace;">
-                          ${meta.date_range ? meta.date_range[0] + ' to ' + meta.date_range[1] : 'N/A'}
-                        </div>
-                      </div>
-
-                      <!-- Related Events (Collapsible) -->
-                      ${eventIds.length > 0 ? `
-                      <div style="border-top: 1px solid #334155; padding-top: 12px;">
-                        <div style="color: #64748b; font-size: 0.6rem; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Correlated Event IDs</div>
-                        ${eventsPreview}
-                        ${moreEvents}
-                      </div>
-                      ` : ''}
+                    <!-- BADGES -->
+                    <div style="padding:6px 12px; display:flex; flex-wrap:wrap; gap:4px; border-bottom:1px solid #1e293b;">
+                      <span style="background:${meta.tactic_color}20; color:${meta.tactic_color}; padding:2px 8px; border-radius:3px; font-family:JetBrains Mono,monospace; font-size:0.52rem; font-weight:700; text-transform:uppercase;">${meta.primary_tactic}</span>
+                      <span style="background:${intensityColor}15; color:${intensityColor}; padding:2px 8px; border-radius:3px; font-family:JetBrains Mono,monospace; font-size:0.52rem; font-weight:700; text-transform:uppercase;">${intensityClass}</span>
+                      ${meta.strategic_context && meta.strategic_context !== 'UNKNOWN' ? `<span style="background:#1e293b; color:#94a3b8; padding:2px 8px; border-radius:3px; font-family:JetBrains Mono,monospace; font-size:0.52rem; font-weight:600;">${meta.strategic_context.replace(/_/g, ' ')}</span>` : ''}
                     </div>
+
+                    <!-- 3-COLUMN STATS -->
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; padding:6px 12px; border-bottom:1px solid #1e293b;">
+                      <div style="background:#1e293b; padding:6px; border-radius:4px; text-align:center;">
+                        <div style="font-family:JetBrains Mono,monospace; font-size:0.48rem; color:#64748b; text-transform:uppercase; font-weight:700; margin-bottom:2px;">EVENTS</div>
+                        <div style="font-family:JetBrains Mono,monospace; font-size:0.85rem; font-weight:700; color:#f8fafc;">${meta.event_count}</div>
+                      </div>
+                      <div style="background:#1e293b; padding:6px; border-radius:4px; text-align:center;">
+                        <div style="font-family:JetBrains Mono,monospace; font-size:0.48rem; color:#64748b; text-transform:uppercase; font-weight:700; margin-bottom:2px;">DURATION</div>
+                        <div style="font-family:JetBrains Mono,monospace; font-size:0.85rem; font-weight:700; color:#f8fafc;">${durationDays}d</div>
+                      </div>
+                      <div style="background:#1e293b; padding:6px; border-radius:4px; text-align:center;">
+                        <div style="font-family:JetBrains Mono,monospace; font-size:0.48rem; color:#64748b; text-transform:uppercase; font-weight:700; margin-bottom:2px;">CLUSTER</div>
+                        <div style="font-family:JetBrains Mono,monospace; font-size:0.65rem; font-weight:600; color:#f8fafc;">${narrative.cluster_id.split('_').pop()}</div>
+                      </div>
+                    </div>
+
+                    <!-- STRATEGIC ASSESSMENT -->
+                    <div style="padding:8px 12px; border-bottom:1px solid #1e293b;">
+                      <div style="font-family:JetBrains Mono,monospace; font-size:0.48rem; color:#64748b; text-transform:uppercase; font-weight:700; letter-spacing:0.1em; margin-bottom:4px;">STRATEGIC ASSESSMENT</div>
+                      <div style="color:#cbd5e1; font-size:0.7rem; line-height:1.5;">${meta.summary}</div>
+                    </div>
+
+                    <!-- TIME WINDOW -->
+                    <div style="padding:6px 12px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #1e293b;">
+                      <span style="font-family:JetBrains Mono,monospace; font-size:0.48rem; color:#64748b; text-transform:uppercase; font-weight:700;">TIME WINDOW</span>
+                      <span style="font-family:JetBrains Mono,monospace; font-size:0.6rem; color:#f8fafc; font-weight:600;">
+                        ${meta.date_range ? meta.date_range[0] + ' -- ' + meta.date_range[1] : 'N/A'}
+                      </span>
+                    </div>
+
+                    <!-- TACTICAL KILL CHAIN -->
+                    ${killChainHtml ? `
+                    <div style="padding:8px 12px;">
+                      <div style="font-family:JetBrains Mono,monospace; font-size:0.48rem; color:#64748b; text-transform:uppercase; font-weight:700; letter-spacing:0.1em; margin-bottom:6px;">
+                        <i class="fas fa-link" style="margin-right:4px;"></i>TACTICAL KILL CHAIN (${eventIds.length} CORRELATED)
+                      </div>
+                      ${killChainHtml}
+                    </div>` : ''}
                   </div>
                 `;
 
