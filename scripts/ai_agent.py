@@ -894,7 +894,7 @@ class SuperSquadAgent:
                 return {"is_relevant": True, "reason": "Client Error - Fallback"}
 
             response = self.router_client.chat.completions.create(
-                model="qwen/qwen2.5-vl-32b-instruct",
+                model="qwen/qwen3.5-flash-02-23",
                 messages=[
                     {"role": "system", "content": "Output valid JSON only."},
                     {"role": "user", "content": prompt}
@@ -1328,7 +1328,7 @@ RAW TEXT:
         """
 
         # =====================================================================
-        # GEOGRAPHIC SANITY LOOP (Sanfilippo Method)
+        # GEOGRAPHIC SANITY LOOP 
         # =====================================================================
         attempt = 0
         last_probe_result = None
@@ -1353,7 +1353,7 @@ RAW TEXT:
                 
                 # LLM Call
                 response = self.openrouter_client.chat.completions.create(
-                    model="qwen/qwen-2.5-72b-instruct",
+                    model="qwen/qwen3.5-flash-02-23",
                     messages=[
                         {"role": "system", "content": SOLDIER_SYSTEM_PROMPT},
                         {"role": "user", "content": current_user_content}

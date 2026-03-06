@@ -259,7 +259,7 @@ agent_1:
   name: The Bouncer
   role: Security and spam filter
   purpose: Hybrid Regex + AI filter. Discards crypto spam, non-military news, malformed inputs.
-  model: Qwen 2.5 32B (via OpenRouter)
+  model: Qwen 3.5 flash (via OpenRouter)
   temperature: 0.0
   output_format: Boolean + Short Reason
   constraint: HARD_CONSTRAINT
@@ -277,7 +277,7 @@ agent_3:
   name: The Soldier
   role: Hard data extraction
   purpose: Extract geographic coordinates (Lat/Lon), ISO timestamp, military units, weaponry.
-  model: Qwen 2.5 72B
+  model: Qwen 3.5 flash (via OpenRouter)
   temperature: 0.0
   output_format: Strict JSON
   failure_mode: ABORT_IF_NO_VALID_DATE

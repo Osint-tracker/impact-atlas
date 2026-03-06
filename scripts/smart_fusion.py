@@ -48,7 +48,7 @@ def ask_the_judge(evt_a, evt_b):
     """
     try:
         res = client_judge.chat.completions.create(
-            model="meta-llama/llama-3.3-70b-instruct",  # O deepseek-v3
+            model="meta-llama/llama-3.3-70b-instruct",  
             messages=[{"role": "user", "content": prompt}],
             temperature=0.0, response_format={"type": "json_object"}
         )
