@@ -647,7 +647,8 @@ def main():
             urls_list,
             sources_list,
             -- JSON blob for coordinates fallback
-            ai_report_json
+            ai_report_json,
+            operational_sector
         FROM unique_events 
         WHERE ai_analysis_status = 'COMPLETED'
     """)
@@ -922,7 +923,10 @@ def main():
                     
                     # Marker Style
                     "marker_radius": radius,
-                    "marker_color": color
+                    "marker_color": color,
+                    
+                    # New Tactical Sector Geofencing
+                    "operational_sector": row.get('operational_sector', 'UNKNOWN_SECTOR')
                 }
             }
             geojson_features.append(feature)
