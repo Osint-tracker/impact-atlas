@@ -29,6 +29,11 @@ from ai_inference_node import TitanIntelligenceNode  # Trident: Fine-tuned class
 from layer1_sensor import TitanSensor  # Trident: Physics-based scorer
 import sys
 
+try:
+    from scripts2.geolocator_agent import geolocator as sector_geolocator
+except Exception:
+    sector_geolocator = None
+
 # Windows Unicode Fix
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -3260,6 +3265,7 @@ def main():
         return
 
     conn = sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA journal_mode=WAL;")
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -3271,13 +3277,19 @@ def main():
         base_url="https://openrouter.ai/api/v1",
         api_key=os.getenv("OPENROUTER_API_KEY"),
     )
-    # [MODIFICA 1] Controllo/Creazione colonna per salvare il report AI
-    try:
-        cursor.execute("ALTER TABLE events ADD COLUMN ai_report_json TEXT")
-        conn.commit()
-        print("✅ Colonna 'ai_report_json' aggiunta al DB.")
-    except sqlite3.OperationalError:
-        pass  # La colonna esiste già, tutto ok.
+    # [MODIFICA 1] Migrazione schema minima (WAL + colonne V4.2)
+    migrations = [
+        "ALTER TABLE events ADD COLUMN ai_report_json TEXT",
+        "ALTER TABLE unique_events ADD COLUMN operational_sector TEXT",
+        "ALTER TABLE unique_events ADD COLUMN image_phash TEXT",
+        "ALTER TABLE unique_events ADD COLUMN source_reputation_score REAL"
+    ]
+    for ddl in migrations:
+        try:
+            cursor.execute(ddl)
+            conn.commit()
+        except sqlite3.OperationalError:
+            pass
 
     agent = SuperSquadAgent()
 
@@ -3758,6 +3770,22 @@ def main():
                 # Serializziamo anche le metriche Titan separatamente
                 titan_metrics_json = json.dumps(titan_data, ensure_ascii=False) if titan_data else None
 
+                # Settore operativo deterministico (Point-in-Polygon)
+                operational_sector = 'UNKNOWN_SECTOR'
+                try:
+                    geo_data = (final_report.get('tactics') or {}).get('geo_location', {})
+                    explicit = (geo_data.get('explicit') or {}) if isinstance(geo_data, dict) else {}
+                    inferred = (geo_data.get('inferred') or {}) if isinstance(geo_data, dict) else {}
+                    lat_v = explicit.get('lat') if explicit else None
+                    lon_v = explicit.get('lon') if explicit else None
+                    if (lat_v is None or lon_v is None) and inferred:
+                        lat_v = inferred.get('lat', lat_v)
+                        lon_v = inferred.get('lon', lon_v)
+                    if sector_geolocator and lat_v is not None and lon_v is not None:
+                        operational_sector = sector_geolocator.assign_sector(float(lon_v), float(lat_v))
+                except Exception:
+                    operational_sector = 'UNKNOWN_SECTOR'
+
                 # Scriviamo nel DB - Salviamo TUTTI i campi in colonne dedicate
                 cursor.execute("""
                     UPDATE unique_events
@@ -3775,7 +3803,8 @@ def main():
                         has_video = ?,
                         title = ?,
                         description = ?,
-                        urls_list = ?
+                        urls_list = ?,
+                        operational_sector = ?
                     WHERE event_id = ?
                     """, (
                         json.dumps(final_report, ensure_ascii=False),
@@ -3792,6 +3821,7 @@ def main():
                         journo_result.get('title_en', ''),
                         journo_result.get('description_en', ''),
                         ' | '.join(actual_urls_list) if actual_urls_list else '',
+                        operational_sector,
                         cluster_id
                     ))
 

@@ -5,6 +5,16 @@ import os
 import json
 import time
 from typing import List, Dict
+from io import BytesIO
+
+import requests
+
+try:
+    from PIL import Image
+    import imagehash
+    PHASH_AVAILABLE = True
+except Exception:
+    PHASH_AVAILABLE = False
 
 # --- CONFIGURAZIONE AVANZATA ---
 MAX_ARTICLES_PER_EVENT = 12       # Target ideale per Qwen 72B
@@ -47,7 +57,33 @@ class EventBuilder:
                 full_text_dossier TEXT,
                 ai_analysis_status TEXT DEFAULT 'PENDING',
                 ai_json_output TEXT,
-                severity_score INTEGER
+                severity_score INTEGER,
+                media_urls TEXT,
+                operational_sector TEXT,
+                image_phash TEXT,
+                source_reputation_score REAL
+            )
+        """)
+
+        # Backward-compatible migrations for existing DBs
+        for ddl in [
+            "ALTER TABLE unique_events ADD COLUMN media_urls TEXT",
+            "ALTER TABLE unique_events ADD COLUMN operational_sector TEXT",
+            "ALTER TABLE unique_events ADD COLUMN image_phash TEXT",
+            "ALTER TABLE unique_events ADD COLUMN source_reputation_score REAL"
+        ]:
+            try:
+                self.cursor.execute(ddl)
+            except sqlite3.OperationalError:
+                pass
+
+        # Source reputation engine bootstrap
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS sources_reputation (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                domain TEXT UNIQUE,
+                score INTEGER DEFAULT 50,
+                last_verified TEXT
             )
         """)
         self.conn.commit()
@@ -272,6 +308,31 @@ class EventBuilder:
 
         return dossier
 
+    def compute_cluster_phash(self, media_urls: List[str]) -> str | None:
+        """Compute perceptual hash from the first valid image URL in memory."""
+        if not PHASH_AVAILABLE or not media_urls:
+            return None
+
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        }
+
+        for url in media_urls:
+            if not isinstance(url, str) or not url.startswith('http'):
+                continue
+            try:
+                resp = requests.get(url, timeout=12, headers=headers)
+                if resp.status_code != 200:
+                    continue
+                ctype = (resp.headers.get('Content-Type') or '').lower()
+                if 'image' not in ctype and not url.lower().endswith(('.jpg', '.jpeg', '.png', '.webp', '.bmp')):
+                    continue
+                img = Image.open(BytesIO(resp.content)).convert('RGB')
+                return str(imagehash.phash(img))
+            except Exception:
+                continue
+        return None
+
     def run(self):
         start_time = time.time()
         clusters = self.fetch_clusters()
@@ -317,7 +378,9 @@ class EventBuilder:
                             all_media.extend(mu_list)
                     except:
                         pass
-            media_urls_json = json.dumps(list(set(all_media)))
+            unique_media = list(set(all_media))
+            media_urls_json = json.dumps(unique_media)
+            image_phash = self.compute_cluster_phash(unique_media)
 
             # Date (gestione sicura anche se formati misti, prendiamo min/max stringa per ora)
             dates = top_articles['date_published'].sort_values()
@@ -332,8 +395,9 @@ class EventBuilder:
                 self.cursor.execute("""
                     INSERT INTO unique_events (
                         event_id, first_seen_date, last_seen_date, article_count,
-                        sources_list, urls_list, full_text_dossier, ai_analysis_status, media_urls
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, 'PENDING', ?)
+                        sources_list, urls_list, full_text_dossier, ai_analysis_status,
+                        media_urls, image_phash
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, 'PENDING', ?, ?)
                     ON CONFLICT(event_id) DO UPDATE SET
                         article_count = excluded.article_count,
                         full_text_dossier = excluded.full_text_dossier,
@@ -341,8 +405,12 @@ class EventBuilder:
                         sources_list = excluded.sources_list,
                         urls_list = excluded.urls_list,
                         media_urls = excluded.media_urls,
+                        image_phash = COALESCE(excluded.image_phash, unique_events.image_phash),
                         ai_analysis_status = 'PENDING' 
-                """, (c_id, first_date, last_date, article_count, sources_json, urls_json, dossier_text, media_urls_json))
+                """, (
+                    c_id, first_date, last_date, article_count,
+                    sources_json, urls_json, dossier_text, media_urls_json, image_phash
+                ))
 
                 processed_count += 1
 

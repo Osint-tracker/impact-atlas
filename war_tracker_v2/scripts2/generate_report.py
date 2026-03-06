@@ -1,4 +1,4 @@
-"""
+﻿"""
 Impact Atlas - Military Intelligence SITREP Generator (v7.0)
 ------------------------------------------------------------
 NATO-grade intelligence briefing with actionable analysis.
@@ -187,6 +187,7 @@ class IntelEngine:
                 'aggressor': aggressor,
                 'units':    units,
                 'evt_cat':  evt_cat or 'UNKNOWN',
+                'classification': (ea.get('classification') or evt_cat or 'UNKNOWN').upper(),
                 'strat_val': strat.get('strategic_value_assessment', ''),
                 'signal':   strat.get('implicit_signal', ''),
                 'bias':     scores.get('dominant_bias', ''),
@@ -338,7 +339,7 @@ class Doc(FPDF):
         self.set_text_color(*C.MUTED)
         self.cell(0, 4, f"Page {self.page_no()}/{{nb}}  |  ACADEMIC USE ONLY. IMPACT ATLAS.", align='C')
 
-    # ── Helpers ──────────────────────────────────────────────────
+    # â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def section_title(self, text, color=C.BG):
         self.set_font(C.F_H, 'B', 12)
@@ -367,7 +368,7 @@ class Doc(FPDF):
         self.set_text_color(*C.TEXT2)
         self.cell(w, 5, label, align='C')
 
-    # ── PAGE 1: SITUATION OVERVIEW ───────────────────────────────
+    # â”€â”€ PAGE 1: SITUATION OVERVIEW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def page_overview(self, data, charts):
         self.add_page()
@@ -511,7 +512,7 @@ class Doc(FPDF):
             self.set_text_color(60, 60, 60)
             self.cell(30, 6, tgt_label, align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
-    # ── PAGE 2: FLASH TRAFFIC ────────────────────────────────────
+    # â”€â”€ PAGE 2: FLASH TRAFFIC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def page_flash(self, data):
         self.add_page()
@@ -566,7 +567,7 @@ class Doc(FPDF):
 
             self.ln(4)
 
-    # ── PAGE 3: SIGNIFICANT EVENTS LOG ───────────────────────────
+    # â”€â”€ PAGE 3: SIGNIFICANT EVENTS LOG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def page_log(self, data):
         self.add_page()
@@ -681,3 +682,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

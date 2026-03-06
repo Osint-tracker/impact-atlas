@@ -2071,6 +2071,12 @@
                   </label>
 
                   <label class="tech-toggle-row">
+                    <span class="tech-toggle-label">Show Low-Rep Sources</span>
+                    <input type="checkbox" onchange="toggleLowReputationVisibility(this.checked)">
+                    <div class="tech-switch"></div>
+                  </label>
+
+                  <label class="tech-toggle-row">
                     <span class="tech-toggle-label">Fortifications</span>
                     <input type="checkbox" checked onchange="toggleTechLayer('fortifications', this)">
                     <div class="tech-switch"></div>
@@ -2089,6 +2095,12 @@
                       Strategic Context (AI)
                     </span>
                     <input type="checkbox" onchange="toggleTechLayer('narratives', this)">
+                    <div class="tech-switch"></div>
+                  </label>
+
+                  <label class="tech-toggle-row">
+                    <span class="tech-toggle-label">GLOCs (Logistics)</span>
+                    <input type="checkbox" onchange="toggleTechLayer('glocs', this)">
                     <div class="tech-switch"></div>
                   </label>
 
@@ -3722,6 +3734,12 @@
             for (var ck in cats) { if (cats[ck] > maxCatCount) { maxCatCount = cats[ck]; maxCat = ck; } }
             el = document.getElementById('drawerDominantType');
             if (el) el.textContent = maxCat.length > 10 ? maxCat.substring(0, 10) + '..' : maxCat;
+
+            // ASYMMETRY INDEX (max observed in current loaded set)
+            var asymVals = ev.map(function (e) { return parseFloat(e.asymmetry_index || 0); }).filter(function (v) { return !isNaN(v) && v > 0; });
+            var asym = asymVals.length ? Math.max.apply(null, asymVals) : 0;
+            el = document.getElementById('drawerAsymmetry');
+            if (el) el.textContent = asym > 0 ? asym.toFixed(2) : '--';
           }
         }, 2000);
 
@@ -3801,6 +3819,15 @@
             <div class="drawer-widget-body" style="flex-direction:column;">
               <div class="drawer-big-num" id="drawerDominantType" style="color:#8b5cf6; font-size:0.65rem;">--</div>
               <div class="drawer-big-label">top category</div>
+            </div>
+          </div>
+          <div class="drawer-widget"
+            onclick="navSwitchTab('analytics', document.querySelector('[data-panel=analytics]'))"
+            style="cursor:pointer;">
+            <div class="drawer-widget-header"><i class="fas fa-balance-scale"></i> ASYMMETRY</div>
+            <div class="drawer-widget-body" style="flex-direction:column;">
+              <div class="drawer-big-num" id="drawerAsymmetry" style="color:#22c55e;">--</div>
+              <div class="drawer-big-label">kinetic efficiency</div>
             </div>
           </div>
         </div>

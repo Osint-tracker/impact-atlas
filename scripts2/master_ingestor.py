@@ -40,6 +40,14 @@ from urllib.parse import urljoin
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from io import BytesIO
+
+try:
+    from PIL import Image
+    import imagehash
+    PHASH_INGEST_AVAILABLE = True
+except Exception:
+    PHASH_INGEST_AVAILABLE = False
 from ingestion.connectors import WarSpottingClient, ParabellumGeoExtractor
 from scripts2.geolocator_agent import geolocator
 
@@ -237,6 +245,7 @@ class DatabaseManager:
                 intensity_score REAL,
                 raw_data        TEXT,
                 operational_sector TEXT,
+                image_phash      TEXT,
                 FOREIGN KEY (unit_id) REFERENCES units_registry(unit_id)
                     ON DELETE SET NULL
             );
@@ -250,7 +259,46 @@ class DatabaseManager:
             cursor.execute("ALTER TABLE kinetic_events ADD COLUMN operational_sector TEXT;")
         except sqlite3.OperationalError:
             pass
+        try:
+            cursor.execute("ALTER TABLE kinetic_events ADD COLUMN image_phash TEXT;")
+        except sqlite3.OperationalError:
+            pass
         self.conn.commit()
+
+    def _extract_image_phash(self, raw_data: str | None) -> str | None:
+        if not PHASH_INGEST_AVAILABLE or not raw_data:
+            return None
+        try:
+            payload = json.loads(raw_data) if isinstance(raw_data, str) else raw_data
+            if not isinstance(payload, dict):
+                return None
+            candidate_urls = []
+            for key in ('image_url', 'photo_url', 'media_url', 'source_url'):
+                url = payload.get(key)
+                if isinstance(url, str):
+                    candidate_urls.append(url)
+            media_urls = payload.get('media_urls')
+            if isinstance(media_urls, list):
+                candidate_urls.extend([u for u in media_urls if isinstance(u, str)])
+
+            headers = {"User-Agent": USER_AGENT}
+            for url in candidate_urls:
+                if not url or not url.startswith('http'):
+                    continue
+                try:
+                    resp = requests.get(url, timeout=12, headers=headers)
+                    if resp.status_code != 200:
+                        continue
+                    ctype = (resp.headers.get('Content-Type') or '').lower()
+                    if 'image' not in ctype and not url.lower().endswith(('.jpg', '.jpeg', '.png', '.webp', '.bmp')):
+                        continue
+                    img = Image.open(BytesIO(resp.content)).convert('RGB')
+                    return str(imagehash.phash(img))
+                except Exception:
+                    continue
+        except Exception:
+            return None
+        return None
 
     def upsert_unit(self, unit_id: str, official_name: str = None,
                     aliases: str = None, faction: str = None,
@@ -272,9 +320,10 @@ class DatabaseManager:
                      lat: float = None, lon: float = None,
                      intensity_score: float = None, raw_data: str = None):
         sector = geolocator.assign_sector(lon, lat)
+        image_phash = self._extract_image_phash(raw_data)
         self.conn.execute("""
-            INSERT INTO kinetic_events (event_id, unit_id, source, date, lat, lon, intensity_score, raw_data, operational_sector)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO kinetic_events (event_id, unit_id, source, date, lat, lon, intensity_score, raw_data, operational_sector, image_phash)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(event_id) DO UPDATE SET
                 unit_id = COALESCE(excluded.unit_id, kinetic_events.unit_id),
                 source = COALESCE(excluded.source, kinetic_events.source),
@@ -283,8 +332,9 @@ class DatabaseManager:
                 lon = COALESCE(excluded.lon, kinetic_events.lon),
                 intensity_score = COALESCE(excluded.intensity_score, kinetic_events.intensity_score),
                 raw_data = COALESCE(excluded.raw_data, kinetic_events.raw_data),
-                operational_sector = COALESCE(excluded.operational_sector, kinetic_events.operational_sector)
-        """, (event_id, unit_id, source, date, lat, lon, intensity_score, raw_data, sector))
+                operational_sector = COALESCE(excluded.operational_sector, kinetic_events.operational_sector),
+                image_phash = COALESCE(excluded.image_phash, kinetic_events.image_phash)
+        """, (event_id, unit_id, source, date, lat, lon, intensity_score, raw_data, sector, image_phash))
         self.conn.commit()
 
     def close(self):

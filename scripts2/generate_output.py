@@ -25,8 +25,45 @@ UNITS_JSON_PATH = os.path.join(BASE_DIR, '../assets/data/units.json')
 ORBAT_JSON_PATH = os.path.join(BASE_DIR, '../assets/data/orbat_units.json')
 STRATEGIC_TRENDS_PATH = os.path.join(BASE_DIR, '../assets/data/strategic_trends.json')
 EXTERNAL_LOSSES_PATH = os.path.join(BASE_DIR, '../assets/data/external_losses.json')
+SECTOR_ANOMALIES_PATH = os.path.join(BASE_DIR, '../assets/data/sector_anomalies.json')
+ASYMMETRY_INDEX_PATH = os.path.join(BASE_DIR, '../assets/data/asymmetry_index.json')
+GLOCS_PATH = os.path.join(BASE_DIR, '../assets/data/glocs.geojson')
 
 import datetime as _dt
+
+
+try:
+    from v42_analytics import (
+        ensure_sources_reputation_schema,
+        apply_reputation_decay,
+        domains_from_structured_sources,
+        update_event_reputation,
+        extract_classification,
+        extract_faction,
+        parse_event_datetime,
+        INSTITUTIONAL_DOMAINS,
+        compute_sector_volume_anomalies,
+        apply_anomaly_flags,
+        compute_asymmetry_index,
+        build_glocs_geojson,
+        write_json,
+    )
+except ImportError:
+    from scripts2.v42_analytics import (
+        ensure_sources_reputation_schema,
+        apply_reputation_decay,
+        domains_from_structured_sources,
+        update_event_reputation,
+        extract_classification,
+        extract_faction,
+        parse_event_datetime,
+        INSTITUTIONAL_DOMAINS,
+        compute_sector_volume_anomalies,
+        apply_anomaly_flags,
+        compute_asymmetry_index,
+        build_glocs_geojson,
+        write_json,
+    )
 
 def _date_to_epoch_ms(date_str):
     """Convert a date string to Unix epoch milliseconds.
@@ -619,8 +656,11 @@ def main():
         return
     
     conn = sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA journal_mode=WAL;")
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
+    ensure_sources_reputation_schema(conn)
+    apply_reputation_decay(conn)
     
     # Load ORBAT Data
     orbat_data = load_orbat_data()
@@ -648,7 +688,10 @@ def main():
             sources_list,
             -- JSON blob for coordinates fallback
             ai_report_json,
-            operational_sector
+            operational_sector,
+            image_phash,
+            source_reputation_score,
+            ai_analysis_status
         FROM unique_events 
         WHERE ai_analysis_status = 'COMPLETED'
     """)
@@ -789,7 +832,7 @@ def main():
                         if not after_channel or after_channel == '/':
                             if channel in event_deeplinks:
                                 s['url'] = event_deeplinks[channel]
-            
+
             # Coordinates (extracted from JSON blob - no DB column exists)
             lat = None
             lon = None
@@ -842,6 +885,7 @@ def main():
             
             # --- IMINT Evidence Feed: Extract Visionary per-frame analysis ---
             visual_analysis = []
+            v_status = ''
             if ai_data:
                 tactics_data = ai_data.get('tactics', {})
                 visionary_report = tactics_data.get('visionary_report', {}) if isinstance(tactics_data, dict) else {}
@@ -858,6 +902,24 @@ def main():
                             "verification_status": v_status
                         })
             
+            # V4.2 Source Reputation Engine
+            event_dt = parse_event_datetime(date)
+            source_domains = domains_from_structured_sources(structured_sources)
+            classification = extract_classification(ai_data)
+            faction = extract_faction(ai_data, f"{title} {description}")
+            discrepancy_flag = str(v_status).upper() == 'CONTRADICTED'
+            institutional_flag = any(d in INSTITUTIONAL_DOMAINS for d in source_domains)
+            hash_duplicate_flag = str(row.get('ai_analysis_status') or '').upper() == 'NULL'
+            source_reputation_score = update_event_reputation(
+                conn,
+                event_id=event_id,
+                domains=source_domains,
+                event_dt=event_dt,
+                discrepancy=discrepancy_flag,
+                hash_duplicate=hash_duplicate_flag,
+                institutional=institutional_flag
+            )
+
             # Skip if no coordinates, EXCEPT if we have high-value IMINT evidence
             if not lat or not lon or float(lat) == 0 or float(lon) == 0:
                 if visual_analysis:
@@ -905,8 +967,9 @@ def main():
                     "bias_score": bias_score,
 
                     # Tactical Data (Extracted for Dashboard)
-                    "classification": ai_data.get('classification', ai_data.get('event_analysis', {}).get('classification', 'UNKNOWN')),
+                    "classification": classification,
                     "target_type": ai_data.get('target_type', ai_data.get('titan_assessment', {}).get('target_type_category', 'UNKNOWN')),
+                    "faction": faction,
                     "intensity_score": k_score, # Mapping Kinetic Score to Intensity
                     
                     # AI Content
@@ -915,6 +978,9 @@ def main():
                     
                     # Sources (JSON serialized for JS)
                     "sources_list": json.dumps(structured_sources),
+                    "source_reputation_score": source_reputation_score,
+                    "hide_by_default": source_reputation_score < 30,
+                    "image_phash": row.get("image_phash") or "",
                     
                     "units": json.dumps(enriched_units),
                     
@@ -936,7 +1002,7 @@ def main():
                 update_unit_stats(unit_stats_acc, u, {
                     "date": date,
                     "tie_score": tie_score,
-                    "classification": ai_data.get('classification', 'UNKNOWN')
+                    "classification": classification
                 })
             
             # Build CSV Row
@@ -961,7 +1027,25 @@ def main():
             continue
     
     conn.close()
-    
+
+    # V4.2 Analytics Post-Processing
+    anomalies = compute_sector_volume_anomalies(geojson_features, lookback_days=14)
+    geojson_features = apply_anomaly_flags(geojson_features, anomalies)
+
+    asymmetry = compute_asymmetry_index(geojson_features)
+    for feat in geojson_features:
+        p = feat.get('properties', {})
+        sec = p.get('operational_sector') or 'UNKNOWN_SECTOR'
+        fac = p.get('faction') or 'UNK'
+        p['asymmetry_index'] = (
+            asymmetry.get('sectors', {})
+            .get(sec, {})
+            .get(fac, {})
+            .get('asymmetry_index', 0)
+        )
+
+    glocs_geojson = build_glocs_geojson(geojson_features)
+
     # Save GeoJSON
     os.makedirs(os.path.dirname(GEOJSON_PATH), exist_ok=True)
     with open(GEOJSON_PATH, 'w', encoding='utf-8') as f:
@@ -970,6 +1054,13 @@ def main():
             "features": geojson_features
         }, f, indent=2, ensure_ascii=False)
     
+    write_json(SECTOR_ANOMALIES_PATH, {
+        "generated_at": _dt.datetime.utcnow().isoformat(timespec='seconds'),
+        "anomalies": list(anomalies.values())
+    })
+    write_json(ASYMMETRY_INDEX_PATH, asymmetry)
+    write_json(GLOCS_PATH, glocs_geojson)
+
     # Save CSV
     with open(CSV_PATH, 'w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=csv_headers)

@@ -1,10 +1,10 @@
-// ============================================
+﻿// ============================================
 // MAP.JS - RESTRUCTURED WITH PROPER INITIALIZATION
 // ============================================
 
 (function () {
   'use strict';
-  console.log("🚀 MAP.JS UPDATED VERSION LOADED 🚀");
+  console.log("ðŸš€ MAP.JS UPDATED VERSION LOADED ðŸš€");
 
   // ============================================
   // 1. GLOBAL STATE (Declared First)
@@ -19,10 +19,13 @@
   let unitsLayer = null;
   let narrativesLayer = null; // Strategic Context layer
   let owlLayer = null; // Project Owl Layer
+  let glocsLayer = null; // GLOCs optional layer
 
   window.allEventsData = [];
   window.globalEvents = [];
   window.currentFilteredEvents = [];
+  window.hideLowReputation = true;
+  window.sectorAnomalySet = new Set();
 
   let mapDates = []; // Historical dates index
 
@@ -227,11 +230,11 @@
 
           let impactHtml = '';
           if (tMax <= -2) {
-            impactHtml = `<span style="background:#082f49; color:#38bdf8; border:1px solid #0284c7; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-snowflake"></i> Frozen (${tMax}°C)</span>`;
+            impactHtml = `<span style="background:#082f49; color:#38bdf8; border:1px solid #0284c7; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-snowflake"></i> Frozen (${tMax}Â°C)</span>`;
           } else if (tMax > 0 && precip > 5) {
             impactHtml = `<span style="background:#422006; color:#fb923c; border:1px solid #ea580c; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-cloud-showers-heavy"></i> Mud/Rain (${precip}mm)</span>`;
           } else {
-            impactHtml = `<span style="background:#1e293b; color:#94a3b8; border:1px solid #334155; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-cloud"></i> Fair (${tMax}°C)</span>`;
+            impactHtml = `<span style="background:#1e293b; color:#94a3b8; border:1px solid #334155; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-cloud"></i> Fair (${tMax}Â°C)</span>`;
           }
 
           badge.innerHTML = impactHtml;
@@ -252,9 +255,14 @@
     eventsLayer.clearLayers();
     if (heatLayer) map.removeLayer(heatLayer);
 
+    let renderable = eventsToDraw || [];
+    if (isHeatmapMode && window.sectorAnomalySet && window.sectorAnomalySet.size > 0) {
+      renderable = renderable.filter(e => window.sectorAnomalySet.has(e.operational_sector) || e.is_anomaly_sector === true);
+    }
+
     if (isHeatmapMode) {
       if (typeof L.heatLayer === 'undefined') return;
-      const heatPoints = eventsToDraw.map(e => [e.lat, e.lon, (e.intensity || 0.5) * 2]);
+      const heatPoints = renderable.map(e => [e.lat, e.lon, (e.intensity || 0.5) * 2]);
       heatLayer = L.heatLayer(heatPoints, {
         radius: 25,
         blur: 15,
@@ -262,16 +270,16 @@
         gradient: { 0.4: 'blue', 0.6: '#00ff00', 0.8: 'yellow', 1.0: 'red' }
       }).addTo(map);
     } else {
-      const markers = eventsToDraw.map(e => createMarker(e));
+      const markers = renderable.map(e => createMarker(e));
       eventsLayer.addLayers(markers);
       map.addLayer(eventsLayer);
     }
 
     if (document.getElementById('eventCount')) {
-      document.getElementById('eventCount').innerText = eventsToDraw.length;
+      document.getElementById('eventCount').innerText = renderable.length;
     }
 
-    console.log(`✅ Rendered ${eventsToDraw.length} events on map`);
+    console.log(`Rendered ${renderable.length} events on map`);
   }
 
   // ============================================
@@ -313,7 +321,7 @@
           }
         }).addTo(map);
 
-        console.log(`🗺️ Historical map loaded: ${dateString}`);
+        console.log(`ðŸ—ºï¸ Historical map loaded: ${dateString}`);
       })
       .catch(err => console.error("Error loading historical map:", err));
   }
@@ -331,7 +339,7 @@
     window.currentFilteredEvents = filtered;
     renderInternal(filtered);
 
-    console.log(`📅 Filtered to ${filtered.length} events up to ${dateString}`);
+    console.log(`ðŸ“… Filtered to ${filtered.length} events up to ${dateString}`);
   }
 
   // Pre-load ORBAT metadata for richness
@@ -339,9 +347,9 @@
     .then(r => r.json())
     .then(data => {
       window.orbatData = data;
-      console.log(`✅ ORBAT Metadata Loaded: ${data.length} units`);
+      console.log(`âœ… ORBAT Metadata Loaded: ${data.length} units`);
     })
-    .catch(e => console.warn("⚠️ ORBAT Metadata missing"));
+    .catch(e => console.warn("âš ï¸ ORBAT Metadata missing"));
 
   // ===========================================
   // OWL INTEGRATION: DATA FETCHER (No Auto-Render)
@@ -353,7 +361,7 @@
   };
 
   function fetchOwlData() {
-    console.log("🦉 Fetching Project Owl Data...");
+    console.log("ðŸ¦‰ Fetching Project Owl Data...");
 
     return fetch('assets/data/owl_layer.geojson')
       .then(res => res.json())
@@ -441,10 +449,10 @@
           }
         });
 
-        console.log(`🦉 Owl Data Ready: ${units.size} Units, ${fortifications.length} Forts`);
+        console.log(`ðŸ¦‰ Owl Data Ready: ${units.size} Units, ${fortifications.length} Forts`);
         return window.owlData;
       })
-      .catch(err => console.error("❌ Failed to fetch Owl Data:", err));
+      .catch(err => console.error("âŒ Failed to fetch Owl Data:", err));
   }
 
   // Alias for backward compatibility if needed, or simply replaced
@@ -489,9 +497,9 @@
             }
           }
         }).addTo(map);
-        console.log("✅ Frontline loaded:", url);
+        console.log("âœ… Frontline loaded:", url);
       })
-      .catch(err => console.error("❌ Error loading frontline:", err));
+      .catch(err => console.error("âŒ Error loading frontline:", err));
   }
 
   // ============================================
@@ -522,7 +530,7 @@
       .then(res => res.json())
       .then(dates => {
         mapDates = dates;
-        console.log("📅 Historical dates loaded:", mapDates.length);
+        console.log("ðŸ“… Historical dates loaded:", mapDates.length);
 
         const dateSlider = document.getElementById('date-slider');
         const dateLabel = document.getElementById('date-label');
@@ -571,7 +579,7 @@
     // FIX: Check both internal state string and DOM element
     const container = L.DomUtil.get('map');
     if (map || (container && container._leaflet_id)) {
-      console.log("⚠️ Map container already initialized. Skipping init.");
+      console.log("âš ï¸ Map container already initialized. Skipping init.");
       return;
     }
 
@@ -585,7 +593,7 @@
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
-      attribution: '© IMPACT ATLAS'
+      attribution: 'Â© IMPACT ATLAS'
     }).addTo(map);
 
     eventsLayer = L.markerClusterGroup({
@@ -606,14 +614,14 @@
 
     // DEBUG: Log all clicks
     map.on('click', function (e) {
-      console.log(`🖱️ MAP CLICK AT: ${e.latlng.lat}, ${e.latlng.lng}`);
+      console.log(`ðŸ–±ï¸ MAP CLICK AT: ${e.latlng.lat}, ${e.latlng.lng}`);
       // alert(`DEBUG: Map clicked at ${e.latlng}`);
     });
 
     // Load PROJECT OWL as default
     loadOwlLayer();
 
-    console.log("✅ Map initialized");
+    console.log("âœ… Map initialized");
   }
 
   // ============================================
@@ -621,7 +629,7 @@
   // ============================================
 
   function loadSectorsData() {
-    console.log("📥 Starting sectors download...");
+    console.log("ðŸ“¥ Starting sectors download...");
     fetch('assets/data/operational_sectors.geojson')
       .then(response => response.json())
       .then(data => {
@@ -641,6 +649,15 @@
             opt.innerText = sectorName;
             sectorSelect.appendChild(opt);
           });
+          ['Deep_Strike_RU', 'Rear_Area_UA'].forEach(sectorName => {
+            const exists = Array.from(sectorSelect.options).some(o => o.value === sectorName);
+            if (!exists) {
+              const opt = document.createElement('option');
+              opt.value = sectorName;
+              opt.innerText = sectorName;
+              sectorSelect.appendChild(opt);
+            }
+          });
         }
 
         // Add invisible layer for flyToBounds (we don't render it directly, just keep it for geo finding)
@@ -650,21 +667,33 @@
           }
         });
       })
-      .catch(err => console.error("❌ Failed to load sectors:", err));
+      .catch(err => console.error("âŒ Failed to load sectors:", err));
+  }
+
+  function loadSectorAnomaliesData() {
+    fetch('assets/data/sector_anomalies.json')
+      .then(r => r.json())
+      .then(data => {
+        const anomalies = Array.isArray(data.anomalies) ? data.anomalies : [];
+        window.sectorAnomalySet = new Set(anomalies.map(a => a.sector));
+      })
+      .catch(() => {
+        window.sectorAnomalySet = new Set();
+      });
   }
 
   function loadEventsData() {
-    console.log("📥 Starting event download...");
+    console.log("ðŸ“¥ Starting event download...");
 
     fetch('assets/data/events.geojson')
       .then(response => response.json())
       .then(data => {
         // 1. Raw Data
         window.allEventsData = data.features || data;
-        console.log(`💾 Data downloaded: ${window.allEventsData.length} raw events`);
+        console.log(`ðŸ’¾ Data downloaded: ${window.allEventsData.length} raw events`);
 
         if (window.allEventsData.length === 0) {
-          console.warn("⚠️ No events found in GeoJSON");
+          console.warn("âš ï¸ No events found in GeoJSON");
           return;
         }
 
@@ -717,7 +746,9 @@
             // Enriched Fields
             actor: actor,
             threat_level: threat,
-            category: cat
+            category: cat,
+            source_reputation_score: parseFloat(props.source_reputation_score || 50),
+            hide_by_default: !!props.hide_by_default
           };
         })
           // MODIFICATION: Frontend "Junk" Filter
@@ -729,7 +760,7 @@
           })
           .sort((a, b) => b.timestamp - a.timestamp); // Descending order
 
-        console.log(`✅ Events processed: ${window.globalEvents.length}`);
+        console.log(`âœ… Events processed: ${window.globalEvents.length}`);
 
         // 3. FILTER DEFINITION (CIVILIAN + ACTORS + SMART SEARCH + HIGH IMPACT)
         // 3. FILTER DEFINITION (Comprehensive Rewrite)
@@ -753,7 +784,7 @@
           const selectedSector = sectorSelect ? sectorSelect.value : '';
 
 
-          console.log(`🔍 Filtering: Range[${startDate}-${endDate}] Actor[${selectedActor}] Cat[${selectedCategory}] Sector[${selectedSector}] Search[${searchTerm}]`);
+          console.log(`ðŸ” Filtering: Range[${startDate}-${endDate}] Actor[${selectedActor}] Cat[${selectedCategory}] Sector[${selectedSector}] Search[${searchTerm}]`);
 
           // B. Filtering Cycle
           const filtered = window.globalEvents.filter(e => {
@@ -768,6 +799,12 @@
 
             // 4. Sector
             if (selectedSector && e.operational_sector !== selectedSector) return false;
+
+            // 4.5 Source reputation filter (default ON)
+            if (window.hideLowReputation !== false) {
+              const rep = parseFloat(e.source_reputation_score || 50);
+              if (rep < 30) return false;
+            }
 
             // 5. Smart Text Search
             if (searchTerm) {
@@ -909,7 +946,7 @@
           if (window.Dashboard) window.Dashboard.init();
         } catch (e) { console.log("Charts/Dashboard error:", e); }
 
-        console.log(`✅ Events processed: ${window.globalEvents.length} ready for map`);
+        console.log(`âœ… Events processed: ${window.globalEvents.length} ready for map`);
 
         // Slider Init
         if (typeof setupTimeSlider === 'function') setupTimeSlider(window.globalEvents);
@@ -926,7 +963,7 @@
 
       }) // <--- THIS CLOSES THE .THEN (The critical point of previous errors)
       .catch(err => {
-        console.error("❌ CRITICAL: Failed to load events:", err);
+        console.error("âŒ CRITICAL: Failed to load events:", err);
       });
   }
 
@@ -969,6 +1006,12 @@
     // Re-apply filters
     if (window.applyMapFilters) window.applyMapFilters();
     console.log(`\u23F0 Time Window set to: ${hours === 0 ? 'ALL' : hours + 'H'}${isPreset ? '' : ' (custom)'}`);
+  };
+
+  window.toggleLowReputationVisibility = function (showLowReputation) {
+    // Checkbox means "show low-reputation markers"
+    window.hideLowReputation = !showLowReputation;
+    if (window.applyMapFilters) window.applyMapFilters();
   };
 
   window.toggleTacticalPersistence = function () {
@@ -1172,7 +1215,7 @@
       }
     }
 
-    console.log(`🔄 Switching map source: ${sourceName}`);
+    console.log(`ðŸ”„ Switching map source: ${sourceName}`);
 
     let dataUrl = '';
     let colorStyle = '#ff3838';
@@ -1222,6 +1265,24 @@
       } else {
         if (window.satelliteLayer) map.removeLayer(window.satelliteLayer);
       }
+    } else if (layerName === 'glocs') {
+      if (isChecked) {
+        fetch('assets/data/glocs.geojson')
+          .then(r => r.json())
+          .then(data => {
+            if (glocsLayer) map.removeLayer(glocsLayer);
+            glocsLayer = L.geoJSON(data, {
+              style: { color: '#22c55e', weight: 3, opacity: 0.85, dashArray: '8,6' },
+              onEachFeature: function (feature, layer) {
+                const p = feature.properties || {};
+                layer.bindPopup(`<b>GLOC Bridge</b><br>Events: ${p.event_count || 0}<br>Sectors: ${(p.sectors || []).join(', ')}`);
+              }
+            }).addTo(map);
+          })
+          .catch(err => console.warn('GLOC layer load failed', err));
+      } else {
+        if (glocsLayer) map.removeLayer(glocsLayer);
+      }
     } else if (layerName === 'events') {
       // Toggle MarkerCluster (Using closure variable 'eventsLayer')
       if (isChecked) {
@@ -1238,7 +1299,7 @@
           .then(response => response.json())
           .then(data => {
             if (!data.features || data.features.length === 0) {
-              console.warn("⚠️ No FIRMS data available");
+              console.warn("âš ï¸ No FIRMS data available");
               return;
             }
 
@@ -1427,7 +1488,7 @@
                     <!-- Coordinates Footer -->
                     <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #334155; text-align: center;">
                       <span style="color: #64748b; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace;">
-                        ${coords[1].toFixed(5)}°N, ${coords[0].toFixed(5)}°E
+                        ${coords[1].toFixed(5)}Â°N, ${coords[0].toFixed(5)}Â°E
                       </span>
                     </div>
                   </div>
@@ -1442,7 +1503,7 @@
             });
 
             firmsLayer.addTo(map);
-            console.log(`✅ FIRMS layer loaded: ${data.features.length} hotspots`);
+            console.log(`âœ… FIRMS layer loaded: ${data.features.length} hotspots`);
 
             // Show metadata info
             if (data.metadata) {
@@ -1451,7 +1512,7 @@
             }
           })
           .catch(err => {
-            console.error("❌ Failed to load FIRMS data:", err);
+            console.error("âŒ Failed to load FIRMS data:", err);
           });
       } else {
         if (firmsLayer) {
@@ -1463,7 +1524,7 @@
       // PARABELLUM FORTIFICATIONS (Repaired Data)
       if (isChecked) {
         if (!window.fortificationsLayer) {
-          console.log("🛡️ Loading Fortifications (Dragon's Teeth)...");
+          console.log("ðŸ›¡ï¸ Loading Fortifications (Dragon's Teeth)...");
           fetch('assets/data/fortifications_parabellum.geojson')
             .then(r => r.json())
             .then(data => {
@@ -1476,7 +1537,7 @@
                   l.bindPopup("<b>Fortification Line</b><br>Dragon's Teeth / Trench System");
                 }
               }).addTo(map);
-              console.log(`✅ Fortifications loaded: ${data.features.length}`);
+              console.log(`âœ… Fortifications loaded: ${data.features.length}`);
             })
             .catch(e => console.error("Fortification load failed:", e));
         } else {
@@ -1492,9 +1553,9 @@
     } else if (layerName === 'units') {
       // ORBAT Units Layer - PARABELLUM PRIMARY + OWL ENRICHMENT
       if (isChecked) {
-        console.log("🚀 STARTING UNITS FETCH (PARABELLUM PRIMARY)...");
+        console.log("ðŸš€ STARTING UNITS FETCH (PARABELLUM PRIMARY)...");
 
-        // 1. Fetch Parabellum Data (Primary — accurate WFS positions)
+        // 1. Fetch Parabellum Data (Primary â€” accurate WFS positions)
         fetch(`assets/data/orbat_units.json?v=${new Date().getTime()}`)
           .then(res => res.json())
           .then(async userUnits => {
@@ -1515,7 +1576,7 @@
               mergedUnits.set(key, u);
             });
 
-            // B. Enrich from Owl (METADATA ONLY — no coordinate injection)
+            // B. Enrich from Owl (METADATA ONLY â€” no coordinate injection)
             // Owl coords are garrison/base locations, NOT frontline positions.
             // Parabellum provides the authoritative geo-positions.
             if (owl && owl.units) {
@@ -1529,13 +1590,13 @@
                   existing.owl_garrison_lon = feature.geometry.coordinates[0];
                   enrichCount++;
                 }
-                // DO NOT add new units from Owl — their coordinates are unreliable
+                // DO NOT add new units from Owl â€” their coordinates are unreliable
               });
-              console.log(`🦉 Owl enriched ${enrichCount} units with metadata.`);
+              console.log(`ðŸ¦‰ Owl enriched ${enrichCount} units with metadata.`);
             }
 
             const finalData = Array.from(mergedUnits.values());
-            console.log(`✅ Final Units: ${finalData.length} (Parabellum: ${userUnits.length})`);
+            console.log(`âœ… Final Units: ${finalData.length} (Parabellum: ${userUnits.length})`);
 
             // 4. RENDER (Cluster)
             unitsLayer = L.markerClusterGroup({
@@ -1623,7 +1684,7 @@
             unitsLayer.addTo(map);
           })
           .catch(err => {
-            console.error("❌ Failed to load Units:", err);
+            console.error("âŒ Failed to load Units:", err);
             alert("Error loading units.");
           });
       } else {
@@ -1710,7 +1771,7 @@
                 ${meta.intensity >= 7 ? `<div class="pulse-emitter" style="background: ${meta.tactic_color};"></div>` : ''}
                 ${meta.intensity >= 4 ? `<div class="narrative-marker-ring" style="border-color: ${meta.tactic_color}; box-shadow: 0 0 10px ${meta.tactic_color}44;"></div>` : ''}
                 <div class="narrative-marker-hex" style="border: 1px solid ${meta.tactic_color}; color: ${meta.tactic_color}; box-shadow: 0 0 10px ${meta.tactic_color}66;">
-                  <div class="hex-icon" style="font-size: 10px;">➜</div>
+                  <div class="hex-icon" style="font-size: 10px;">âžœ</div>
                   <div class="hex-score">${meta.intensity.toFixed(1)}</div>
                 </div>
               `;
@@ -1945,7 +2006,7 @@
   window.initWeatherRadar = function () {
     if (window.radarLayer) return; // Already running
 
-    console.log("🌦️ Starting Weather Radar Loop (Fetching Metadata)...");
+    console.log("ðŸŒ¦ï¸ Starting Weather Radar Loop (Fetching Metadata)...");
 
     // FETCH VALID TIMESTAMPS FROM RAINVIEWER API
     fetch('https://api.rainviewer.com/public/weather-maps.json')
@@ -1954,12 +2015,12 @@
         // We use 'past' frames for the loop
         // data.radar.past is array of { time: UNIX_TIMESTAMP, path: ... }
         if (!data.radar || !data.radar.past) {
-          console.error("❌ RainViewer Metadata invalid:", data);
+          console.error("âŒ RainViewer Metadata invalid:", data);
           return;
         }
 
         const pastFrames = data.radar.past;
-        console.log(`✅ Loaded ${pastFrames.length} radar frames from ${data.host}`);
+        console.log(`âœ… Loaded ${pastFrames.length} radar frames from ${data.host}`);
 
         radarFrames = pastFrames.map(frame => {
           return L.tileLayer(`${data.host}${frame.path}/256/{z}/{x}/{y}/2/1_1.png`, {
@@ -1980,7 +2041,7 @@
           currentFrameIndex = (currentFrameIndex + 1) % radarFrames.length;
         }, 500); // 0.5s per frame
       })
-      .catch(e => console.error("❌ Weather Radar Metadata Fetch Failed:", e));
+      .catch(e => console.error("âŒ Weather Radar Metadata Fetch Failed:", e));
   };
 
   window.stopWeatherRadar = function () {
@@ -1991,7 +2052,7 @@
     }
     window.radarLayer = null;
     currentFrameIndex = 0;
-    console.log("🛑 Weather Radar Stopped");
+    console.log("ðŸ›‘ Weather Radar Stopped");
   };
 
   // C. Drone Visibility Index (V.F.R.)
@@ -1999,7 +2060,7 @@
 
   window.showVFR = function () {
     if (window.vfrLayer) return;
-    console.log("🚁 Fetching Drone V.F.R. Data...");
+    console.log("ðŸš Fetching Drone V.F.R. Data...");
 
     // 5 Key frontline sectors
     const sectors = [
@@ -2038,7 +2099,7 @@
             const labelIcon = L.divIcon({
               className: 'vfr-label',
               html: `<div style="background: rgba(15, 23, 42, 0.8); border: 1px solid #ef4444; color: #ef4444; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; font-weight: bold; white-space: nowrap; text-align: center;">
-                                ⚠️ V.F.R. DEGRADED<br>
+                                âš ï¸ V.F.R. DEGRADED<br>
                                 <span style="color:#94a3b8; font-size:0.6rem;">Clouds: ${clouds}% | Vis: ${(vis / 1000).toFixed(1)}km</span>
                              </div>`,
               iconSize: [120, 40],
@@ -2063,7 +2124,7 @@
     // Center of Frontline (approx Donbas)
     const lat = 48.0, lon = 37.8;
 
-    console.log("🌡️ Fetching Tactical Weather Forecast...");
+    console.log("ðŸŒ¡ï¸ Fetching Tactical Weather Forecast...");
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=soil_moisture_0_1cm,soil_temperature_0cm&forecast_days=3`)
       .then(r => r.json())
       .then(data => {
@@ -2190,7 +2251,7 @@
     }
 
     if (!eventData) {
-      console.error(`❌ Event not found for Dossier. Searched ID: ${eventIdOrObj}`);
+      console.error(`âŒ Event not found for Dossier. Searched ID: ${eventIdOrObj}`);
       return; // Interrupts execution if no data found
     }
 
@@ -2214,7 +2275,7 @@
     // Ensure clean state
     window.closeAllModals();
 
-    console.log("📦 openUnitModal CALLED with:", unit?.display_name || unit?.unit_name || 'unknown');
+    console.log("ðŸ“¦ openUnitModal CALLED with:", unit?.display_name || unit?.unit_name || 'unknown');
 
     // Helper must be function-scoped
     const safeText = (txt) => txt || 'N/A';
@@ -2223,19 +2284,19 @@
     try {
       const modal = document.getElementById('unitModal');
       if (!modal) {
-        console.error("❌ CRITICAL: 'unitModal' element NOT FOUND in DOM!");
+        console.error("âŒ CRITICAL: 'unitModal' element NOT FOUND in DOM!");
         alert("DEBUG: unitModal element not found in DOM!");
         return;
       }
 
-      console.log("✅ Modal element found. Current display:", modal.style.display);
-      console.log("📐 Modal computed style:", window.getComputedStyle(modal).display);
+      console.log("âœ… Modal element found. Current display:", modal.style.display);
+      console.log("ðŸ“ Modal computed style:", window.getComputedStyle(modal).display);
 
       // NUCLEAR STYLE RESET
       modal.setAttribute('style', 'display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 9999 !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(15, 23, 42, 0.9) !important; justify-content: center !important; align-items: center !important;');
 
-      console.log("🔧 AFTER setAttribute - display:", modal.style.display);
-      console.log("📐 AFTER computed style:", window.getComputedStyle(modal).display);
+      console.log("ðŸ”§ AFTER setAttribute - display:", modal.style.display);
+      console.log("ðŸ“ AFTER computed style:", window.getComputedStyle(modal).display);
 
       // Header
       const elTitle = document.getElementById('udTitle');
@@ -2299,10 +2360,10 @@
       const elDist = document.getElementById('udDistrict');
       if (elDist) elDist.innerText = stripHtml(unit.district);
 
-      console.log("✅ Unit Modal Content Population Complete.");
+      console.log("âœ… Unit Modal Content Population Complete.");
 
     } catch (e) {
-      console.error("❌ Error generating Unit Modal content:", e);
+      console.error("âŒ Error generating Unit Modal content:", e);
     }
 
     // Calculations: Find related events
@@ -2334,7 +2395,7 @@
     document.getElementById('udAvgTie').innerText = unit.avg_tie || '--';
     document.getElementById('udTactic').innerText = unit.primary_tactic || '--';
 
-    // Last Location (Coordinates) — user coords only, NOT Owl garrison coords
+    // Last Location (Coordinates) â€” user coords only, NOT Owl garrison coords
     const lat = unit.last_seen_lat || unit.lat;
     const lon = unit.last_seen_lon || unit.lon;
     const elLoc = document.getElementById('udLastLocation');
@@ -2351,7 +2412,7 @@
       ? (relatedEvents.length / 30).toFixed(1) + "/day"
       : "Low";
 
-    // --- OWL METADATA → METRICS ---
+    // --- OWL METADATA â†’ METRICS ---
     const eqRow = document.getElementById('udEquipmentRow');
     const muRow = document.getElementById('udMilUnitRow');
     const baseRow = document.getElementById('udBaseRow');
@@ -2378,7 +2439,7 @@
       // Equipment: look for known patterns
       const equipMatch = plain.match(/(?:equipped|armed|using|operates?)\s+(?:with\s+)?(.+?)(?:\.|,|\n|Military|$)/i);
       const basedMatch = plain.match(/based (?:at|in)\s+(.+?)(?:\.|,|\n|Military|$)/i);
-      const milUnitMatch = plain.match(/Military Unit (?:Number|№)?\s*(?:в\/ч)?[:\s]*([\w\d-]+)/i);
+      const milUnitMatch = plain.match(/Military Unit (?:Number|â„–)?\s*(?:Ð²\/Ñ‡)?[:\s]*([\w\d-]+)/i);
 
       if (equipMatch && equipMatch[1].trim().length > 2) {
         eqRow.style.display = 'flex';
@@ -2424,7 +2485,7 @@
     const casualtiesList = document.getElementById('udCasualtiesList');
     const casualtyBadge = document.getElementById('udCasualtyBadge');
 
-    console.log('🩸 CASUALTY DEBUG:', {
+    console.log('ðŸ©¸ CASUALTY DEBUG:', {
       panelFound: !!casualtiesPanel,
       listFound: !!casualtiesList,
       hasCasualties: !!(unit.verified_casualties),
@@ -2506,7 +2567,7 @@
   let tieRadarInstance = null; // Global instance for the modal chart
 
   window.openIntelDossier = function (eventData) {
-    console.log("📂 Opening Dossier for:", eventData.title);
+    console.log("ðŸ“‚ Opening Dossier for:", eventData.title);
 
     document.getElementById('videoModal').style.display = 'flex'; // Use Flex for centering
 
@@ -2543,7 +2604,7 @@
           const isRU = u.faction === 'RU' || u.faction === 'RU_PROXY' || u.faction === 'RU_PMC';
           const bgColor = isUA ? 'rgba(59, 130, 246, 0.2)' : (isRU ? 'rgba(239, 68, 68, 0.2)' : 'rgba(100, 116, 139, 0.2)');
           const borderColor = isUA ? '#3b82f6' : (isRU ? '#ef4444' : '#64748b');
-          const flag = isUA ? '🇺🇦' : (isRU ? '🇷🇺' : '🏳️');
+          const flag = isUA ? 'ðŸ‡ºðŸ‡¦' : (isRU ? 'ðŸ‡·ðŸ‡º' : 'ðŸ³ï¸');
 
           return `
             <div style="
@@ -3211,9 +3272,10 @@
 
   // Wait for DOM before initializing
   function startApp() {
-    console.log("🚀 Starting Impact Atlas...");
+    console.log("ðŸš€ Starting Impact Atlas...");
     initMap();
     loadSectorsData();
+    loadSectorAnomaliesData();
     loadEventsData();
 
     // Initialize Physical Weather
@@ -3225,3 +3287,4 @@
     startApp();
   }
 })();
+

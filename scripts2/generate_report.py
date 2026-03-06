@@ -1,4 +1,4 @@
-"""
+﻿"""
 Impact Atlas - Military Intelligence SITREP Generator (v7.0)
 ------------------------------------------------------------
 NATO-grade intelligence briefing with actionable analysis.
@@ -200,6 +200,7 @@ class IntelEngine:
                 'aggressor': aggressor,
                 'units':    units,
                 'evt_cat':  evt_cat or 'UNKNOWN',
+                'classification': (ea.get('classification') or evt_cat or 'UNKNOWN').upper(),
                 'strat_val': strat.get('strategic_value_assessment', ''),
                 'signal':   strat.get('implicit_signal', ''),
                 'bias':     scores.get('dominant_bias', ''),
@@ -289,6 +290,80 @@ class IntelEngine:
                 if avg_curr > 70 and avg_prev > 70:
                     top_critical_alerts.append(f"Critical Sector Alert: {s} sustaining T.I.E. > 70 over 48h.")
                     
+        # --- V4.2 Predictive layer ---
+        def _parse_evt_dt(value):
+            if not value:
+                return None
+            s = str(value).strip()
+            for fmt in ('%Y-%m-%d %H:%M', '%Y-%m-%d'):
+                try:
+                    return datetime.datetime.strptime(s[:len(fmt)], fmt)
+                except Exception:
+                    continue
+            return None
+
+        top_event = max(events, key=lambda x: x['tie']) if events else None
+        bluf = {
+            'main_fact': (
+                f"{top_event['title']} | Sector: {top_event['sector']} | TIE: {top_event['tie']:.1f}"
+                if top_event else
+                'No validated events in selected timeframe.'
+            ),
+            'tactical_implication': (
+                f"Highest-impact activity concentrated in {top_event['sector']}, suggesting operational pressure on that axis."
+                if top_event else
+                'Insufficient validated signal for tactical implication.'
+            ),
+            'action_advised': (
+                f"Monitor {top_event['sector']} for escalation indicators (force concentration, SHAPING to MANOEUVRE transition) in next 24h."
+                if top_event else
+                'Maintain baseline monitoring and wait for new corroborated events.'
+            )
+        }
+
+        shaping_by_sector = Counter()
+        for e in events:
+            edt = _parse_evt_dt(e.get('date'))
+            if not edt:
+                continue
+            if (latest_dt - edt).total_seconds() > (72 * 3600):
+                continue
+            if str(e.get('classification', '')).upper() == 'SHAPING_OFFENSIVE':
+                shaping_by_sector[e['sector']] += 1
+
+        predictive_alerts = []
+        for sector, cnt in shaping_by_sector.items():
+            if cnt > 3:
+                predictive_alerts.append(
+                    f"Allarme: Elevata probabilita di operazione MANOEUVRE imminente nel Settore {sector}"
+                )
+
+        curr_cutoff = latest_dt - datetime.timedelta(hours=24)
+        prev_cutoff = latest_dt - datetime.timedelta(days=8)
+
+        curr = [e for e in events if (d := _parse_evt_dt(e.get('date'))) and d > curr_cutoff]
+        prev = [e for e in events if (d := _parse_evt_dt(e.get('date'))) and prev_cutoff <= d <= curr_cutoff]
+
+        def _avg(items, key):
+            return (sum(float(i.get(key) or 0) for i in items) / len(items)) if items else 0.0
+
+        avg_curr_tie = _avg(curr, 'tie')
+        avg_prev_tie = _avg(prev, 'tie')
+        tie_delta = avg_curr_tie - avg_prev_tie
+
+        vec_curr = {'K': _avg(curr, 'k'), 'T': _avg(curr, 't'), 'E': _avg(curr, 'e')}
+        vec_prev = {'K': _avg(prev, 'k'), 'T': _avg(prev, 't'), 'E': _avg(prev, 'e')}
+        vec_delta = {k: vec_curr[k] - vec_prev[k] for k in ('K', 'T', 'E')}
+
+        top_driver = max(vec_delta, key=lambda k: vec_delta[k]) if vec_delta else 'T'
+        down_driver = min(vec_delta, key=lambda k: vec_delta[k]) if vec_delta else 'K'
+
+        trend = 'aumento' if tie_delta >= 0 else 'calo'
+        tie_delta_msg = (
+            f"TIE in {trend} ({tie_delta:+.1f}), guidato da Vettore {top_driver}, "
+            f"Vettore {down_driver} in calo"
+        )
+
         res = {
             'events':   events,
             'critical': crit[:5],
@@ -296,7 +371,10 @@ class IntelEngine:
             'stats': stats_dict,
             'sector_shifts': sector_shifts,
             'sector_taxonomy': sector_taxonomy,
-            'alerts': list(set(top_critical_alerts[:5]))
+            'alerts': list(set(top_critical_alerts[:5])),
+            'bluf': bluf,
+            'predictive_alerts': predictive_alerts,
+            'tie_delta_msg': tie_delta_msg
         }
         return res
 
@@ -409,7 +487,7 @@ class Doc(FPDF):
         self.set_text_color(*C.MUTED)
         self.cell(0, 4, f"Page {self.page_no()}/{{nb}}  |  ACADEMIC USE ONLY. IMPACT ATLAS.", align='C')
 
-    # ── Helpers ──────────────────────────────────────────────────
+    # â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def section_title(self, text, color=C.BG):
         self.set_font(C.F_H, 'B', 12)
@@ -438,7 +516,7 @@ class Doc(FPDF):
         self.set_text_color(*C.TEXT2)
         self.cell(w, 5, label, align='C')
 
-    # ── PAGE 1: SITUATION OVERVIEW ───────────────────────────────
+    # â”€â”€ PAGE 1: SITUATION OVERVIEW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def page_overview(self, data, charts):
         self.add_page()
@@ -494,35 +572,28 @@ class Doc(FPDF):
         self.set_font(C.F_H, '', 9)
         self.set_text_color(40, 40, 40)
 
-        # Build dynamic summary from actual data
+        # V4.2 BLUF + Predictive Summary
         lines = []
-        lines.append(f"This SITREP covers {s['total']} intelligence events detected in the reporting period.")
+        bluf = data.get('bluf', {
+            'main_fact': 'N/A',
+            'tactical_implication': 'N/A',
+            'action_advised': 'N/A'
+        })
+        lines.append("BLUF JSON:")
+        lines.append(json.dumps(bluf, ensure_ascii=False, indent=2))
 
-        if s['crit_count']:
-            lines.append(f"{s['crit_count']} events assessed as CRITICAL (TIE >= 70), requiring immediate attention.")
+        if data.get('tie_delta_msg'):
+            lines.append("\nDELTA T.I.E.:")
+            lines.append(data['tie_delta_msg'])
 
-        if s['deep_count']:
-            lines.append(f"{s['deep_count']} deep strike operations detected against targets inside Russian territory.")
+        if data.get('predictive_alerts'):
+            lines.append("\nI.W. ALERTS:")
+            for alert in data['predictive_alerts']:
+                lines.append(f"- {alert}")
 
-        # Top sectors
-        top_sectors = s['sectors'].most_common(3)
-        if top_sectors:
-            sec_str = ', '.join([f"{k} ({v})" for k, v in top_sectors])
-            lines.append(f"Primary activity by sector: {sec_str}.")
-            
-        # AI Logic: Dynamic Alerts
-        if data['alerts']:
-            lines.append("\n=== TOP CRITICAL ALERTS ===")
-            for alert in data['alerts']:
-                lines.append(f"• {alert}")
-                
-        # AI Logic: Shift of Intensity
-        if data['sector_shifts']:
-            lines.append("\n=== SHIFT OF INTENSITY (Δ 24h) ===")
-            for sec, shift in data['sector_shifts'].items():
-                lines.append(f"• Critical Shift in {sec}: {shift}")
-
-        self.multi_cell(0, 4.5, '\n'.join(lines))
+        self.set_font(C.F_M, '', 7)
+        self.multi_cell(0, 4.2, '\n'.join(lines))
+        self.set_font(C.F_H, '', 9)
 
         # ----- SECTOR BREAKDOWN TABLE -----
         self.ln(4)
@@ -579,7 +650,7 @@ class Doc(FPDF):
             self.set_text_color(60, 60, 60)
             self.cell(30, 6, tgt_label, align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
-    # ── PAGE 2: FLASH TRAFFIC ────────────────────────────────────
+    # â”€â”€ PAGE 2: FLASH TRAFFIC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def page_flash(self, data):
         self.add_page()
@@ -634,7 +705,7 @@ class Doc(FPDF):
 
             self.ln(4)
 
-    # ── PAGE 3: SIGNIFICANT EVENTS LOG ───────────────────────────
+    # â”€â”€ PAGE 3: SIGNIFICANT EVENTS LOG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def page_log(self, data):
         self.add_page()
@@ -749,3 +820,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
