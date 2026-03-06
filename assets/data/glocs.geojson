@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            37.8622574,
+            47.997797
+          ],
+          [
+            37.8622574,
+            47.997797
+          ]
+        ]
+      },
+      "properties": {
+        "id": "gloc_1",
+        "event_count": 2,
+        "start_ts": 1767474640000,
+        "end_ts": 1767474640000,
+        "sectors": [
+          "UNKNOWN_SECTOR"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            33.4079326,
+            46.5421715
+          ],
+          [
+            33.4079326,
+            46.5421715
+          ]
+        ]
+      },
+      "properties": {
+        "id": "gloc_8",
+        "event_count": 2,
+        "start_ts": 1772100205000,
+        "end_ts": 1772108925000,
+        "sectors": [
+          "Kherson Axis"
+        ]
+      }
+    }
+  ]
+}

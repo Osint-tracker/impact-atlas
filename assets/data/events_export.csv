@@ -962,19 +962,38 @@ e36c27e2-eabd-4593-b25e-9da0662a8e5c,2026-03-01 21:42:57,Unknown Forces Strike D
 e8faaac9-d667-41a2-a8b7-86f933fe7e1e,2026-03-01 15:05:57,Ukrainian Forces Advance in Oleksandrivka Sector,48.6252414,38.5372813,0.0,8.0,4.0,1.0,50,0.8,0,1
 eda9a5af-e716-4b91-a46d-7f9ad9198089,2026-03-01 15:29:27,Ukrainian Forces Strike Transformer at Cherkaska S,48.5675612,39.2963953,100.0,7.0,8.0,7.0,90,2.0,1,1
 fbed60c2-7caa-4c48-ad75-e656302cda98,2026-03-02 13:22:56,Russian Drone Strike on Passenger Train in Kryvyi ,47.9102734,33.3917703,4.0,3.0,2.0,4.0,70,1.2,0,1
+0ae5b174-bc11-4b4a-81bc-3d64e8df5b2b,2026-03-04 22:30:28,Ukrainian Forces Conduct Drone Strike on Russian G,50.2928843,36.9370028,39.0,3.0,5.0,7.0,90,1.2,1,1
 1b73f4ba-52b8-44ec-a5b0-f94156c5c7fc,2026-03-05 13:00:00+00:00,Russian Drones Strike Kharkiv,49.9923181,36.2310146,4.0,3.0,2.0,4.0,40,0.0,0,1
 263e0a08-ecf8-48cc-8ea7-7dcea9b76202,2026-03-05 08:52:55,Russian Artillery Strikes Reported near Belozerka,46.5421715,33.4079326,9.0,4.0,3.0,4.0,50,0.0,0,1
+349b5a20-be17-47eb-815d-ed932e4d3be4,2026-03-04 23:45:00+00:00,Ukrainian Forces Attack Saratov Region,51.5298504,46.0257223,20.0,4.0,5.0,3.0,40,-2.0,0,1
 3ece477f-8ee4-4b2a-935b-3afc532298eb,2026-03-05 08:30:08,Russian Drone Attack in Central Kherson,46.5421715,33.4079326,7.0,3.0,2.0,6.0,50,0.8,0,1
 53b33f5d-350c-49ea-b6fd-2f34bd014a50,2026-03-05 11:49:08,Russian Drone Activity Reported in Central Kherson,46.5421715,33.4079326,5.0,3.0,2.0,4.0,70,2.8,1,1
+5c8d3506-5dfd-4f8c-bee0-0e4f909c78b0,2026-03-04 22:34:08,Ukrainian Drones Conduct Operations in Occupied Cr,45.2835044,34.2008188,84.0,3.0,6.0,9.0,90,2.0,1,1
 6765e59a-f25c-4ec6-90bc-487a506584a2,2026-03-05 09:28:18,Ukrainian Forces Destroy Russian T-72 Tank and Arm,50.9119775,34.8027723,41.0,5.0,5.0,7.0,70,1.2,0,1
+8223f56d-2b92-429e-a4a1-3e82af3028b0,2026-03-04 17:56:41,Russian Officials Accuse Ukraine of Pipeline Sabot,49.976,32.872,0.0,1.0,1.0,1.0,90,0.0,1,1
 8fc01789-5ec6-499c-a26f-003418b4c167,2026-03-05 09:33:36,Ukrainian Forces Strike Ammunition Depot near Nyzh,48.1137043,38.1665891,38.0,6.0,4.0,7.0,70,2.4,0,1
+93e47093-b184-4bc5-9d15-9796a8e639e7,2026-03-05 08:10:33,"Russian Forces Reported Losses on March 5, 2026",50.238,32.8,2.0,1.0,4.0,1.0,90,4.0,1,1
+a4de372d-9f07-402a-bbe5-ca05e116ced4,2026-03-05 08:09:57,Russian Drones Attack Residential Buildings in Khe,46.5421715,33.4079326,5.0,3.0,2.0,4.0,70,-2.0,1,1
 acabf39e-da1f-4fe2-9398-09ce230ac777,2026-03-05 09:24:56,Adversary Forces Conduct Drone Attack in Kherson,46.5421715,33.4079326,7.0,3.0,2.0,6.0,50,2.8,0,1
+b59fde8c-7405-4bdd-99df-0b5b84016488,2026-03-05 00:00:00+00:00,Russian Methane Carrier Sunk off the Coast of Liby,50.4704301,30.4737561,0.0,1.0,1.0,1.0,40,0.0,0,1
+bc5cce0d-df12-4cc1-8b70-7c2e4ddc5bb8,2026-03-04 22:18:55,Unknown Forces Conduct Strikes in Belozirka Area,46.5421715,33.4079326,7.0,4.0,3.0,3.0,50,0.0,0,1
 bc8d40fe-b162-4c71-bd92-381ae4db2ca7,2026-03-05 12:29:35,Ukrainian Drone Operations Target Russian Forces i,47.9212914,37.7809825,53.0,8.0,5.0,8.0,70,1.2,0,1
 bdef7b0a-2be3-4abe-8089-89254186021d,2026-03-05 08:48:18,Russian UAV Strike Detected in Azerbaijan,55.7604551,37.6052992,0.0,3.0,1.0,1.0,50,0.0,0,1
 c07ed525-1261-4296-b5bc-066eb69c6adc,2026-03-05 08:55:03,Ukrainian Forces Strike Ammunition Storage near Ny,48.1137043,38.1665891,30.0,6.0,4.0,7.0,50,1.5,0,1
 ced114b0-edec-4ea9-b7cc-c0daefe49790,2026-03-05 11:59:13,Ukrainian Navy Engages Russian Forces over Black S,43.5,34.0,38.0,4.0,5.0,7.0,50,0.0,0,1
 d3327269-681c-4ef1-bb4f-3859e886e96a,2026-03-05 09:48:45,Ukrainian Forces Conduct Strikes on Russian Forces,51.0595519,26.7194473,100.0,8.0,8.0,7.0,50,2.0,0,1
+d3e91c15-791b-49eb-939f-7abdd0af735a,2026-03-05 00:00:00+00:00,U.S. Requests Assistance from Ukraine Regarding Ir,50.4500336,30.5241361,0.0,1.0,1.0,1.0,40,0.0,0,1
 d518c52c-5534-462d-9208-958ff1f77860,2026-03-05 12:11:39,Ukrainian Navy Destroys Russian Ka-27 Helicopter o,43.5,34.0,38.0,4.0,5.0,7.0,70,1.2,0,1
+eeca51bb-f70f-413e-ada6-97c81d081fcf,2026-03-04 19:51:26,Ukrainian Forces Conduct Operations in Donetsk and,47.9212914,37.7809825,78.0,5.0,6.0,9.0,70,3.2,1,1
+efad65ee-a78a-4db6-801a-fd07a2dac047,2026-03-04 23:45:00+00:00,Unknown Forces Conduct Attack in Saratov and Engel,51.530018,46.034683,4.0,8.0,1.0,7.0,40,0.0,0,1
+fe1c3766-541e-46ee-ad3c-68d0b17d78c2,2026-03-04 21:03:18,Ukrainian Forces Retreat Reported in Zaporizhzhia ,47.8507859,35.1182867,0.0,1.0,1.0,1.0,50,-2.0,0,1
 0518cfb6-d825-4a1d-ae69-e61cb5ad143d,2026-03-05 18:10:08,Russian Aerospace Forces Personnel Casualties Conf,47.2222596,39.7198736,45.0,5.0,5.0,7.0,70,-2.0,1,1
 390f7569-e031-45be-a57a-23e8b604ee50,2026-03-05 16:50:42,Ukrainian Forces Conduct Drone Strike on Russian H,43.5,34.0,62.0,7.0,5.0,7.0,70,3.2,1,1
+3a2ab22d-d380-4ce4-9894-7354b097a7ad,2026-03-05 13:27:20,Russian Software Detected in Ukrainian Telecommuni,50.4500336,30.5241361,22.0,1.0,8.0,3.0,70,0.0,1,1
 3b7e7cd2-d9de-4da1-aaca-025552a1a3ae,2026-03-05 18:19:01,Ukrainian Forces Conduct Operation in Kupiansk,49.7132963,37.6141992,45.0,5.0,5.0,7.0,70,2.8,1,1
+5a373e2b-c092-4514-a0cb-f850f97dac0c,2026-03-05 14:02:18,Ukrainian President Proposes Missile Exchange with,50.112,31.584,0.0,1.0,1.0,1.0,70,0.0,1,1
+75ccba4c-45d7-4b1d-86ad-457d3cfb7726,2026-03-05 16:24:34,Russian Artillery Strikes Central Kherson,46.5421715,33.4079326,7.0,4.0,3.0,3.0,50,0.0,0,1
+8392332e-6485-4071-982f-7dfb5417f1f0,2026-03-05 15:40:46,Russian Forces Conduct Artillery Strikes near Belo,46.5421715,33.4079326,13.0,6.0,3.0,5.0,50,2.0,0,1
+886abbb8-70b2-4e87-adc8-042353dd2e72,2026-03-05 16:09:51,Russian Forces Engage Ukrainian Units in Donetsk R,48.0157047,37.8102754,0.0,6.0,6.0,1.0,50,0.0,0,1
+dded4e7d-2808-4cf6-a94e-3499647261bc,2026-03-05 16:15:17,Ukrainian Forces Neutralize Air Defense Systems in,48.0157047,37.8102754,58.0,6.0,6.0,7.0,50,0.8,0,1
+e127de08-e1f4-484c-b894-c195a90167a1,2026-03-05 13:40:43,Fire Incident Reported in Central District of Kher,46.5421715,33.4079326,5.0,3.0,2.0,4.0,70,-1.2,1,1

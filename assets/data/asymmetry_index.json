@@ -1,0 +1,173 @@
+{
+  "sectors": {
+    "UNKNOWN_SECTOR": {
+      "UA": {
+        "asymmetry_index": 4.4764,
+        "events": 332,
+        "numerator": 7310.0,
+        "denominator": 1633.0
+      },
+      "RU": {
+        "asymmetry_index": 4.289,
+        "events": 392,
+        "numerator": 7866.0,
+        "denominator": 1834.0
+      },
+      "UNK": {
+        "asymmetry_index": 3.2066,
+        "events": 71,
+        "numerator": 776.0,
+        "denominator": 242.0
+      }
+    },
+    "Kherson Axis": {
+      "UA": {
+        "asymmetry_index": 5.6061,
+        "events": 10,
+        "numerator": 185.0,
+        "denominator": 33.0
+      },
+      "RU": {
+        "asymmetry_index": 6.1487,
+        "events": 87,
+        "numerator": 1654.0,
+        "denominator": 269.0
+      },
+      "UNK": {
+        "asymmetry_index": 3.8485,
+        "events": 16,
+        "numerator": 127.0,
+        "denominator": 33.0
+      }
+    },
+    "Kupyansk-Lyman Axis": {
+      "UA": {
+        "asymmetry_index": 4.6667,
+        "events": 18,
+        "numerator": 364.0,
+        "denominator": 78.0
+      },
+      "RU": {
+        "asymmetry_index": 2.5789,
+        "events": 12,
+        "numerator": 98.0,
+        "denominator": 38.0
+      }
+    },
+    "Pokrovsk Axis": {
+      "UA": {
+        "asymmetry_index": 6.8095,
+        "events": 10,
+        "numerator": 286.0,
+        "denominator": 42.0
+      },
+      "UNK": {
+        "asymmetry_index": 8.0,
+        "events": 1,
+        "numerator": 64.0,
+        "denominator": 8.0
+      },
+      "RU": {
+        "asymmetry_index": 0.25,
+        "events": 1,
+        "numerator": 1.0,
+        "denominator": 4.0
+      }
+    },
+    "Kurakhove-Vuhledar Axis": {
+      "UA": {
+        "asymmetry_index": 5.5676,
+        "events": 13,
+        "numerator": 412.0,
+        "denominator": 74.0
+      },
+      "RU": {
+        "asymmetry_index": 5.125,
+        "events": 2,
+        "numerator": 41.0,
+        "denominator": 8.0
+      },
+      "UNK": {
+        "asymmetry_index": 4.0909,
+        "events": 5,
+        "numerator": 90.0,
+        "denominator": 22.0
+      }
+    },
+    "Chasiv Yar Axis": {
+      "UA": {
+        "asymmetry_index": 4.6,
+        "events": 2,
+        "numerator": 46.0,
+        "denominator": 10.0
+      },
+      "RU": {
+        "asymmetry_index": 0.5,
+        "events": 1,
+        "numerator": 1.0,
+        "denominator": 2.0
+      }
+    },
+    "Sumy Axis": {
+      "RU": {
+        "asymmetry_index": 4.6842,
+        "events": 6,
+        "numerator": 89.0,
+        "denominator": 19.0
+      },
+      "UA": {
+        "asymmetry_index": 8.4,
+        "events": 2,
+        "numerator": 84.0,
+        "denominator": 10.0
+      }
+    },
+    "Kharkiv Axis": {
+      "RU": {
+        "asymmetry_index": 4.0625,
+        "events": 7,
+        "numerator": 130.0,
+        "denominator": 32.0
+      },
+      "UA": {
+        "asymmetry_index": 9.0,
+        "events": 2,
+        "numerator": 36.0,
+        "denominator": 4.0
+      }
+    },
+    "Toretsk Axis": {
+      "UNK": {
+        "asymmetry_index": 2.0,
+        "events": 1,
+        "numerator": 2.0,
+        "denominator": 1.0
+      },
+      "UA": {
+        "asymmetry_index": 9.6,
+        "events": 1,
+        "numerator": 48.0,
+        "denominator": 5.0
+      }
+    },
+    "Zaporizhzhia Axis": {
+      "RU": {
+        "asymmetry_index": 15.0,
+        "events": 1,
+        "numerator": 45.0,
+        "denominator": 3.0
+      },
+      "UA": {
+        "asymmetry_index": 6.0385,
+        "events": 5,
+        "numerator": 157.0,
+        "denominator": 26.0
+      }
+    }
+  },
+  "global": {
+    "RU": 4.493,
+    "UA": 4.6621,
+    "UNK": 3.4608
+  }
+}
