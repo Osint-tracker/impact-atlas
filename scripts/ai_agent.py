@@ -1311,7 +1311,7 @@ RAW TEXT:
         """
         Role: Strict Extraction from Cluster with Fallback Repair.
         
-        UPGRADED with "Sanfilippo Method" Geographic Sanity Loop:
+        UPGRADED with Geographic Sanity Loop:
         - Validates extracted coordinates against theatre of operations
         - Retries up to 3 times if coordinates are hallucinated
         - Falls back to null coordinates after exhausting retries

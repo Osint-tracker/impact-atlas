@@ -1,4 +1,4 @@
-﻿import os
+import os
 import json
 import logging
 
@@ -37,7 +37,7 @@ class GeolocatorAgent:
     def _load_data(self):
         try:
             if os.path.exists(SECTORS_PATH):
-                with open(SECTORS_PATH, 'r', encoding='utf-8') as f:
+                with open(SECTORS_PATH, 'r', encoding='utf-8-sig') as f:
                     data = json.load(f)
                     for feature in data.get('features', []):
                         if not feature.get('geometry'):

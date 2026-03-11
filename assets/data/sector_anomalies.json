@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-03-06T19:08:18",
+  "generated_at": "2026-03-11T20:13:01",
   "anomalies": [
     {
-      "sector": "Sumy Axis",
-      "date": "2026-03-05",
-      "current_volume": 1,
-      "mean_14d": 0.07,
-      "std_14d": 0.26,
-      "threshold": 0.59
+      "sector": "UNKNOWN_SECTOR",
+      "date": "2026-03-11",
+      "current_volume": 8,
+      "mean_14d": 0.21,
+      "std_14d": 0.56,
+      "threshold": 1.33
     }
   ]
 }

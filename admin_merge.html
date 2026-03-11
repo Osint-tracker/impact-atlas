@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMPACT ATLAS — Admin Merge Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --accent: #f59e0b;
+            --accent-dim: #92400e;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --green: #10b981;
+            --red: #ef4444;
+            --blue: #3b82f6;
+            --border: #475569;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 2px solid var(--accent);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .header h1 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+        .header .badge {
+            background: var(--accent-dim);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* LAYOUT */
+        .main {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            height: calc(100vh - 60px);
+        }
+
+        /* LEFT PANEL — EVENT BROWSER */
+        .browser-panel {
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .filters input, .filters select {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+        }
+        .filters input::placeholder { color: var(--text-secondary); }
+        .filters input:focus, .filters select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .filters input[type="text"] { flex: 1; min-width: 200px; }
+
+        /* EVENT TABLE */
+        .event-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .event-table thead th {
+            background: var(--bg-tertiary);
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .event-table tbody tr {
+            border-bottom: 1px solid var(--bg-tertiary);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .event-table tbody tr:hover { background: rgba(245, 158, 11, 0.08); }
+        .event-table tbody tr.selected { background: rgba(245, 158, 11, 0.15); border-left: 3px solid var(--accent); }
+        .event-table td { padding: 10px 12px; vertical-align: top; }
+        .event-table td.title-col { max-width: 300px; }
+        .event-table .title-text {
+            font-weight: 500;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .event-table .date-col { white-space: nowrap; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+        .event-table .tie-col { font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+        .sector-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+        }
+        .tie-high { color: var(--red); }
+        .tie-med { color: var(--accent); }
+        .tie-low { color: var(--green); }
+
+        /* CHECKBOX */
+        .cb-cell { width: 30px; text-align: center; }
+        .cb-cell input[type="checkbox"] {
+            width: 16px; height: 16px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        /* PAGINATION */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .pagination button {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.15s;
+        }
+        .pagination button:hover { border-color: var(--accent); }
+        .pagination button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* RIGHT PANEL — MERGE STAGING */
+        .merge-panel {
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .merge-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .merge-header h2 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+        }
+        .merge-count {
+            background: var(--accent);
+            color: var(--bg-primary);
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 12px;
+        }
+
+        .staged-list { flex: 1; padding: 12px; overflow-y: auto; }
+        .staged-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .staged-card .remove-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            color: var(--red);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px 6px;
+        }
+        .staged-card .card-title {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 6px;
+            padding-right: 20px;
+        }
+        .staged-card .card-meta {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 4px;
+        }
+        .staged-card .card-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .staged-card:first-child {
+            border-color: var(--green);
+            border-width: 2px;
+        }
+        .staged-card:first-child::before {
+            content: '★ MASTER';
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--green);
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        /* MERGE ACTIONS */
+        .merge-actions {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+        .merge-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--accent-dim), var(--accent));
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        .merge-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(245,158,11,0.3); }
+        .merge-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+        .clear-btn {
+            width: 100%;
+            padding: 8px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-top: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* STATUS BAR */
+        .status-bar {
+            background: var(--bg-tertiary);
+            padding: 8px 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            border-top: 1px solid var(--border);
+        }
+        .status-bar .success { color: var(--green); }
+        .status-bar .error { color: var(--red); }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--green);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        .toast.error { background: var(--red); }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(20px); } }
+        @keyframes toastOut { to { opacity: 0; transform: translateX(-50%) translateY(-10px); } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚙ IMPACT ATLAS</h1>
+        <span class="badge">ADMIN MERGE TOOL</span>
+        <span style="flex:1"></span>
+        <span id="statusIndicator" style="font-size:12px; color:var(--green);">● Connected</span>
+    </div>
+
+    <div class="main">
+        <!-- LEFT: Event Browser -->
+        <div class="browser-panel">
+            <div class="filters">
+                <input type="text" id="searchInput" placeholder="🔍 Search events (title, description, text)..." />
+                <select id="sectorFilter">
+                    <option value="">All Sectors</option>
+                </select>
+                <select id="statusFilter">
+                    <option value="COMPLETED">Completed</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="MERGED">Merged</option>
+                    <option value="">All Statuses</option>
+                </select>
+            </div>
+
+            <table class="event-table">
+                <thead>
+                    <tr>
+                        <th class="cb-cell"></th>
+                        <th>Title</th>
+                        <th>Date</th>
+                        <th>TIE</th>
+                        <th>Sector</th>
+                    </tr>
+                </thead>
+                <tbody id="eventTableBody"></tbody>
+            </table>
+
+            <div class="pagination">
+                <button id="prevBtn" onclick="changePage(-1)">← Previous</button>
+                <span id="pageInfo">Page 1 / 1</span>
+                <button id="nextBtn" onclick="changePage(1)">Next →</button>
+            </div>
+        </div>
+
+        <!-- RIGHT: Merge Staging -->
+        <div class="merge-panel">
+            <div class="merge-header">
+                <h2>Merge Queue</h2>
+                <div class="merge-count" id="mergeCount">0</div>
+            </div>
+            <div class="staged-list" id="stagedList">
+                <p style="color:var(--text-secondary); font-size:13px; text-align:center; padding:40px 20px;">
+                    Select events from the table to add them to the merge queue.<br><br>
+                    The <strong style="color:var(--green)">oldest event</strong> becomes the master.
+                </p>
+            </div>
+            <div class="merge-actions">
+                <button class="merge-btn" id="mergeBtn" onclick="executeMerge()" disabled>
+                    🔗 EXECUTE MERGE
+                </button>
+                <button class="clear-btn" onclick="clearStaged()">Clear Queue</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-bar" id="statusBar">Ready. Select events to merge.</div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let currentPage = 1;
+        let totalPages = 1;
+        let stagedEvents = []; // Array of {event_id, title, date, description, tie_score}
+
+        // Debounce utility
+        function debounce(fn, delay) {
+            let timer;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn(...args), delay);
+            };
+        }
+
+        // Load sector options
+        async function loadSectors() {
+            try {
+                const res = await fetch(`${API_BASE}/api/sectors`);
+                const data = await res.json();
+                const sel = document.getElementById('sectorFilter');
+                data.sectors.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.name;
+                    opt.textContent = `${s.name} (${s.count})`;
+                    sel.appendChild(opt);
+                });
+            } catch(e) {
+                console.error('Failed to load sectors:', e);
+            }
+        }
+
+        // Load events
+        async function loadEvents(page = 1) {
+            const search = document.getElementById('searchInput').value;
+            const sector = document.getElementById('sectorFilter').value;
+            const status = document.getElementById('statusFilter').value;
+
+            const params = new URLSearchParams({
+                page: page,
+                per_page: 50,
+                search: search,
+                sector: sector,
+                status: status
+            });
+
+            try {
+                const res = await fetch(`${API_BASE}/api/events?${params}`);
+                const data = await res.json();
+                currentPage = data.page;
+                totalPages = data.pages;
+                renderTable(data.events);
+                document.getElementById('pageInfo').textContent = `Page ${data.page} / ${data.pages} (${data.total} events)`;
+                document.getElementById('prevBtn').disabled = data.page <= 1;
+                document.getElementById('nextBtn').disabled = data.page >= data.pages;
+                setStatus(`Loaded ${data.events.length} events (page ${data.page}/${data.pages})`);
+            } catch(e) {
+                setStatus(`Error: ${e.message}`, true);
+            }
+        }
+
+        function renderTable(events) {
+            const tbody = document.getElementById('eventTableBody');
+            tbody.innerHTML = '';
+            events.forEach(ev => {
+                const tr = document.createElement('tr');
+                const isStaged = stagedEvents.some(s => s.event_id === ev.event_id);
+                if (isStaged) tr.classList.add('selected');
+
+                const tieClass = ev.tie_score >= 70 ? 'tie-high' : ev.tie_score >= 40 ? 'tie-med' : 'tie-low';
+
+                tr.innerHTML = `
+                    <td class="cb-cell">
+                        <input type="checkbox" ${isStaged ? 'checked' : ''} 
+                            onchange="toggleStaged('${ev.event_id}', this.checked)"
+                            data-eid="${ev.event_id}" />
+                    </td>
+                    <td class="title-col"><div class="title-text">${escapeHtml(ev.title)}</div></td>
+                    <td class="date-col">${ev.date ? ev.date.substring(0, 10) : '—'}</td>
+                    <td class="tie-col ${tieClass}">${(ev.tie_score || 0).toFixed(1)}</td>
+                    <td><span class="sector-badge">${ev.sector}</span></td>
+                `;
+                tr.addEventListener('dblclick', () => showEventDetail(ev.event_id));
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function toggleStaged(eventId, checked) {
+            if (checked) {
+                // Fetch full details
+                try {
+                    const res = await fetch(`${API_BASE}/api/event/${eventId}`);
+                    const ev = await res.json();
+                    stagedEvents.push(ev);
+                    // Sort by date (oldest first = master)
+                    stagedEvents.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+                } catch(e) {
+                    showToast('Failed to load event', true);
+                    return;
+                }
+            } else {
+                stagedEvents = stagedEvents.filter(s => s.event_id !== eventId);
+            }
+            renderStaged();
+            updateMergeButton();
+            // Refresh table to update checkmarks
+            document.querySelectorAll('.event-table tbody tr').forEach(tr => {
+                const cb = tr.querySelector('input[type="checkbox"]');
+                if (cb) {
+                    const eid = cb.getAttribute('data-eid');
+                    const isS = stagedEvents.some(s => s.event_id === eid);
+                    cb.checked = isS;
+                    tr.classList.toggle('selected', isS);
+                }
+            });
+        }
+
+        function renderStaged() {
+            const list = document.getElementById('stagedList');
+            document.getElementById('mergeCount').textContent = stagedEvents.length;
+
+            if (stagedEvents.length === 0) {
+                list.innerHTML = `<p style="color:var(--text-secondary); font-size:13px; text-align:center; padding:40px 20px;">
+                    Select events from the table to add them to the merge queue.<br><br>
+                    The <strong style="color:var(--green)">oldest event</strong> becomes the master.
+                </p>`;
+                return;
+            }
+
+            list.innerHTML = stagedEvents.map(ev => `
+                <div class="staged-card">
+                    <button class="remove-btn" onclick="toggleStaged('${ev.event_id}', false)">✕</button>
+                    <div class="card-title">${escapeHtml(ev.title || '(No title)')}</div>
+                    <div class="card-meta">
+                        📅 ${(ev.date || '—').substring(0, 10)} &nbsp;|&nbsp;
+                        TIE: ${(ev.tie_score || 0).toFixed(1)} &nbsp;|&nbsp;
+                        📍 ${ev.sector || '—'}
+                    </div>
+                    ${ev.lat && ev.lon ? `<div class="card-meta">🌐 ${ev.lat.toFixed(4)}, ${ev.lon.toFixed(4)}</div>` : ''}
+                    <div class="card-desc">${escapeHtml(ev.description || ev.ai_summary || '')}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateMergeButton() {
+            const btn = document.getElementById('mergeBtn');
+            btn.disabled = stagedEvents.length < 2;
+            btn.textContent = stagedEvents.length >= 2
+                ? `🔗 MERGE ${stagedEvents.length} EVENTS`
+                : '🔗 EXECUTE MERGE';
+        }
+
+        async function executeMerge() {
+            if (stagedEvents.length < 2) return;
+
+            const master = stagedEvents[0];
+            const count = stagedEvents.length;
+
+            if (!confirm(`Merge ${count} events?\n\nMASTER (oldest): "${master.title}"\n\nThis will:\n• Set ${count - 1} victim(s) to MERGED status\n• Concatenate all text into the master\n• Reset master to PENDING for re-analysis`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/merge`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ event_ids: stagedEvents.map(s => s.event_id) })
+                });
+                const result = await res.json();
+
+                if (result.status === 'ok') {
+                    showToast(`✅ Merged ${result.merged_count} events into "${result.master_title}"`);
+                    setStatus(`Merge complete: master=${result.master_id}, victims=${result.merged_ids.join(', ')}`);
+                    clearStaged();
+                    loadEvents(currentPage);
+                } else {
+                    showToast(`Error: ${result.error}`, true);
+                }
+            } catch(e) {
+                showToast(`Merge failed: ${e.message}`, true);
+            }
+        }
+
+        function clearStaged() {
+            stagedEvents = [];
+            renderStaged();
+            updateMergeButton();
+            // Uncheck all
+            document.querySelectorAll('.event-table tbody input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+                cb.closest('tr').classList.remove('selected');
+            });
+        }
+
+        async function showEventDetail(eventId) {
+            try {
+                const res = await fetch(`${API_BASE}/api/event/${eventId}`);
+                const ev = await res.json();
+                alert(
+                    `EVENT DETAIL\n` +
+                    `━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                    `ID: ${ev.event_id}\n` +
+                    `Title: ${ev.title}\n` +
+                    `Date: ${ev.date}\n` +
+                    `Sector: ${ev.sector}\n` +
+                    `TIE: ${ev.tie_score} (K:${ev.k_score} T:${ev.t_score} E:${ev.e_score})\n` +
+                    `Status: ${ev.status}\n` +
+                    `Classification: ${ev.classification}\n` +
+                    `━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                    `${ev.description}\n\n` +
+                    `AI Summary: ${ev.ai_summary}\n\n` +
+                    `Full Text (first 1000 chars):\n${(ev.full_text || '').substring(0, 1000)}`
+                );
+            } catch(e) {
+                showToast('Failed to load event details', true);
+            }
+        }
+
+        function changePage(delta) {
+            const newPage = currentPage + delta;
+            if (newPage >= 1 && newPage <= totalPages) {
+                loadEvents(newPage);
+            }
+        }
+
+        function setStatus(msg, isError = false) {
+            const bar = document.getElementById('statusBar');
+            bar.innerHTML = `<span class="${isError ? 'error' : ''}">${msg}</span>`;
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'error' : ''}`;
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function escapeHtml(s) {
+            if (!s) return '';
+            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSectors();
+            loadEvents(1);
+
+            // Debounced search
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', debounce(() => loadEvents(1), 400));
+
+            // Filter changes
+            document.getElementById('sectorFilter').addEventListener('change', () => loadEvents(1));
+            document.getElementById('statusFilter').addEventListener('change', () => loadEvents(1));
+        });
+    </script>
+</body>
+</html>
