@@ -51,3 +51,7 @@ Thumbs.db
 
 # --- WHITELIST ---
 !war_tracker_v2/data/gazetteer_places.txt
+
+# --- ADMIN TOOLS ---
+scripts/admin_api.py
+admin_merge.html
