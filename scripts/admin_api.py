@@ -148,9 +148,9 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                 conditions.append("operational_sector = ?")
                 bind_params.append(sector)
             if search:
-                conditions.append("(title LIKE ? OR description LIKE ? OR full_text_dossier LIKE ?)")
+                conditions.append("(title LIKE ? OR description LIKE ?)")
                 like = f"%{search}%"
-                bind_params.extend([like, like, like])
+                bind_params.extend([like, like])
 
             where_clause = " AND ".join(conditions) if conditions else "1=1"
 
@@ -272,7 +272,8 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             cursor = conn.cursor()
             placeholders = ','.join(['?'] * len(event_ids))
             cursor.execute(f"""
-                SELECT event_id, last_seen_date, full_text_dossier, title
+                SELECT event_id, last_seen_date, full_text_dossier, title,
+                       urls_list, sources_list
                 FROM unique_events WHERE event_id IN ({placeholders})
             """, event_ids)
             events = cursor.fetchall()
@@ -286,22 +287,42 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             master = sorted_events[0]
             victims = sorted_events[1:]
 
+            # ── Merge full_text_dossier ──
             merged_text = master["full_text_dossier"] or ""
             for v in victims:
                 merged_text += f" ||| [MERGED]: {v['full_text_dossier'] or ''}"
 
+            # ── Merge urls_list and sources_list ──
+            all_urls = set()
+            all_sources = set()
+            for ev in sorted_events:
+                for url in (ev["urls_list"] or "").split(","):
+                    url = url.strip()
+                    if url:
+                        all_urls.add(url)
+                for src in (ev["sources_list"] or "").split(","):
+                    src = src.strip()
+                    if src:
+                        all_sources.add(src)
+
+            merged_urls = ", ".join(sorted(all_urls))
+            merged_sources = ", ".join(sorted(all_sources))
+
+            # ── Mark victims as MERGED ──
             for v in victims:
                 cursor.execute(
                     "UPDATE unique_events SET ai_analysis_status='MERGED' WHERE event_id=?",
                     (v["event_id"],)
                 )
 
+            # ── Update master: preserve AI intelligence, just enrich data ──
             cursor.execute("""
                 UPDATE unique_events
-                SET full_text_dossier=?, ai_analysis_status='PENDING',
-                    ai_report_json=NULL, embedding_vector=NULL
+                SET full_text_dossier=?,
+                    urls_list=?,
+                    sources_list=?
                 WHERE event_id=?
-            """, (merged_text, master["event_id"]))
+            """, (merged_text, merged_urls, merged_sources, master["event_id"]))
 
             conn.commit()
             conn.close()
@@ -350,22 +371,45 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
 
             sim_threshold = float(params.get('threshold', ['0.85'])[0])
             max_hours = float(params.get('hours', ['72'])[0])
-            limit = int(params.get('limit', ['1000'])[0])
+            limit = int(params.get('limit', ['2000'])[0])
+            sector = params.get('sector', [''])[0].strip()
+            search = params.get('search', [''])[0].strip()
+            status = params.get('status', [''])[0].strip()
+
+            # ── Build context-aware filter ──
+            conditions = [
+                "embedding_vector IS NOT NULL",
+                "ai_analysis_status IN ('COMPLETED', 'PENDING')",
+                "title IS NOT NULL",
+                "TRIM(title) != ''",
+                "title != '(No title)'",
+            ]
+            bind_params = []
+
+            if sector:
+                conditions.append("operational_sector = ?")
+                bind_params.append(sector)
+            if search:
+                conditions.append("(title LIKE ? OR description LIKE ?)")
+                like = f"%{search}%"
+                bind_params.extend([like, like])
+            if status:
+                conditions.append("ai_analysis_status = ?")
+                bind_params.append(status)
+
+            where_clause = " AND ".join(conditions)
+            bind_params.append(limit)
 
             conn = get_db()
             cursor = conn.cursor()
-            cursor.execute("""
+            cursor.execute(f"""
                 SELECT event_id, title, last_seen_date, tie_score,
                        operational_sector, embedding_vector, ai_summary, description
                 FROM unique_events
-                WHERE embedding_vector IS NOT NULL
-                  AND ai_analysis_status IN ('COMPLETED', 'PENDING')
-                  AND title IS NOT NULL
-                  AND TRIM(title) != ''
-                  AND title != '(No title)'
+                WHERE {where_clause}
                 ORDER BY last_seen_date DESC
                 LIMIT ?
-            """, (limit,))
+            """, bind_params)
             rows = cursor.fetchall()
             conn.close()
 

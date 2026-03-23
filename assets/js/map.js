@@ -19,13 +19,13 @@
   let unitsLayer = null;
   let narrativesLayer = null; // Strategic Context layer
   let owlLayer = null; // Project Owl Layer
-  let glocsLayer = null; // GLOCs optional layer
 
   window.allEventsData = [];
   window.globalEvents = [];
   window.currentFilteredEvents = [];
   window.hideLowReputation = true;
   window.sectorAnomalySet = new Set();
+  window.tacticalSectorsIndex = new Map();
 
   let mapDates = []; // Historical dates index
 
@@ -72,6 +72,89 @@
     'default': 'fa-crosshairs'
   };
 
+  const CONFLICT_TERRITORY_WHITELIST = [
+    {
+      name: 'UA_LAND',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[
+          [22.10, 51.60],
+          [24.00, 52.30],
+          [30.30, 52.30],
+          [34.80, 52.10],
+          [39.10, 50.40],
+          [40.30, 49.50],
+          [40.10, 47.90],
+          [38.40, 46.10],
+          [36.30, 45.80],
+          [32.60, 45.20],
+          [30.00, 45.20],
+          [27.90, 45.35],
+          [25.10, 47.00],
+          [23.00, 48.60],
+          [22.10, 51.60]
+        ]]
+      }
+    },
+    {
+      name: 'UA_EEZ',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[
+          [29.50, 44.10],
+          [31.50, 44.00],
+          [34.80, 44.10],
+          [36.90, 44.80],
+          [38.10, 46.30],
+          [37.80, 47.50],
+          [35.80, 47.90],
+          [32.50, 47.60],
+          [30.20, 46.50],
+          [29.50, 45.20],
+          [29.50, 44.10]
+        ]]
+      }
+    },
+    {
+      name: 'RU_LAND',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[
+          [27.00, 54.00],
+          [29.50, 59.00],
+          [40.50, 60.00],
+          [52.00, 58.00],
+          [52.00, 44.00],
+          [37.60, 44.00],
+          [36.10, 46.20],
+          [40.30, 47.90],
+          [40.60, 50.60],
+          [39.20, 51.40],
+          [36.70, 52.30],
+          [33.00, 52.80],
+          [30.00, 53.10],
+          [27.00, 54.00]
+        ]]
+      }
+    },
+    {
+      name: 'RU_EEZ',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[
+          [35.60, 43.70],
+          [39.70, 43.70],
+          [39.80, 45.50],
+          [38.70, 46.90],
+          [37.00, 47.10],
+          [36.00, 46.40],
+          [35.60, 44.80],
+          [35.60, 43.70]
+        ]]
+      }
+    }
+  ];
+
   // ============================================
   // 3. HELPER FUNCTIONS (Define Before Use)
   // ============================================
@@ -91,6 +174,113 @@
       if (t.includes(key)) return icon;
     }
     return typeIcons.default;
+  }
+
+  function isFinitePoint(point) {
+    return Array.isArray(point)
+      && point.length >= 2
+      && Number.isFinite(point[0])
+      && Number.isFinite(point[1]);
+  }
+
+  function isPointOnSegment(point, start, end) {
+    const [x, y] = point;
+    const [x1, y1] = start;
+    const [x2, y2] = end;
+    const cross = (x - x1) * (y2 - y1) - (y - y1) * (x2 - x1);
+    if (Math.abs(cross) > 1e-10) return false;
+
+    const dot = (x - x1) * (x2 - x1) + (y - y1) * (y2 - y1);
+    if (dot < 0) return false;
+
+    const segmentLengthSquared = (x2 - x1) ** 2 + (y2 - y1) ** 2;
+    return dot <= segmentLengthSquared;
+  }
+
+  function pointInRing(point, ring) {
+    if (!Array.isArray(ring) || ring.length < 3) return false;
+
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const current = ring[i];
+      const previous = ring[j];
+      if (!isFinitePoint(current) || !isFinitePoint(previous)) continue;
+
+      if (isPointOnSegment(point, current, previous)) {
+        return true;
+      }
+
+      const intersects = ((current[1] > point[1]) !== (previous[1] > point[1]))
+        && (point[0] < ((previous[0] - current[0]) * (point[1] - current[1])) / (previous[1] - current[1]) + current[0]);
+      if (intersects) inside = !inside;
+    }
+
+    return inside;
+  }
+
+  function pointInPolygonCoordinates(point, polygonCoords) {
+    if (!Array.isArray(polygonCoords) || polygonCoords.length === 0) return false;
+    if (!pointInRing(point, polygonCoords[0])) return false;
+
+    for (let i = 1; i < polygonCoords.length; i++) {
+      if (pointInRing(point, polygonCoords[i])) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function pointInGeometry(point, geometry) {
+    if (!isFinitePoint(point) || !geometry || !geometry.type || !geometry.coordinates) return false;
+
+    if (geometry.type === 'Polygon') {
+      return pointInPolygonCoordinates(point, geometry.coordinates);
+    }
+
+    if (geometry.type === 'MultiPolygon') {
+      return geometry.coordinates.some(polygonCoords => pointInPolygonCoordinates(point, polygonCoords));
+    }
+
+    return false;
+  }
+
+  function isInConflictTerritory(lat, lon) {
+    const point = [Number(lon), Number(lat)];
+    return CONFLICT_TERRITORY_WHITELIST.some(area => pointInGeometry(point, area.geometry));
+  }
+
+  function getSectorEntries(sectorName) {
+    if (!sectorName || !(window.tacticalSectorsIndex instanceof Map)) return [];
+    return window.tacticalSectorsIndex.get(sectorName) || [];
+  }
+
+  function buildSectorBounds(entries) {
+    return entries.reduce((combinedBounds, entry) => {
+      if (!entry || !entry.bounds) return combinedBounds;
+      if (!combinedBounds) {
+        return entry.bounds.clone ? entry.bounds.clone() : L.latLngBounds(entry.bounds);
+      }
+      combinedBounds.extend(entry.bounds);
+      return combinedBounds;
+    }, null);
+  }
+
+  function isEventInsideSector(event, sectorName) {
+    if (!sectorName) return true;
+
+    const lat = Number(event && event.lat);
+    const lon = Number(event && event.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false;
+
+    const sectorEntries = getSectorEntries(sectorName);
+    if (sectorEntries.length === 0) {
+      return event.operational_sector === sectorName;
+    }
+
+    const point = [lon, lat];
+    const latLng = L.latLng(lat, lon);
+    return sectorEntries.some(entry => entry.bounds.contains(latLng) && pointInGeometry(point, entry.geometry));
   }
 
   function createMarker(e) {
@@ -666,6 +856,19 @@
             return { color: '#f59e0b', weight: 2, fillOpacity: 0.1, dashArray: '5, 5', opacity: 0.8 };
           }
         });
+        window.tacticalSectorsIndex = new Map();
+        window.tacticalSectorsLayer.eachLayer(function (layer) {
+          const sectorName = layer.feature.properties.operational_sector || layer.feature.properties.name;
+          if (!sectorName) return;
+
+          const entries = window.tacticalSectorsIndex.get(sectorName) || [];
+          entries.push({
+            layer: layer,
+            geometry: layer.feature.geometry,
+            bounds: layer.getBounds()
+          });
+          window.tacticalSectorsIndex.set(sectorName, entries);
+        });
       })
       .catch(err => console.error("âŒ Failed to load sectors:", err));
   }
@@ -783,7 +986,6 @@
           const sectorSelect = document.getElementById('sectorFilter');
           const selectedSector = sectorSelect ? sectorSelect.value : '';
 
-
           console.log(`ðŸ” Filtering: Range[${startDate}-${endDate}] Actor[${selectedActor}] Cat[${selectedCategory}] Sector[${selectedSector}] Search[${searchTerm}]`);
 
           // B. Filtering Cycle
@@ -798,12 +1000,12 @@
             if (selectedCategory && e.category !== selectedCategory) return false;
 
             // 4. Sector
-            if (selectedSector && e.operational_sector !== selectedSector) return false;
+            if (selectedSector && !isEventInsideSector(e, selectedSector)) return false;
 
             // 4.5 Source reputation filter (default ON)
             if (window.hideLowReputation !== false) {
               const rep = parseFloat(e.source_reputation_score || 50);
-              if (rep < 30) return false;
+              if (rep < 50) return false;
             }
 
             // 5. Smart Text Search
@@ -910,20 +1112,22 @@
           sectorDropdown.addEventListener('change', function (e) {
             const val = e.target.value;
             if (val && window.tacticalSectorsLayer && window.map) {
-              window.tacticalSectorsLayer.eachLayer(function (layer) {
-                const layerName = layer.feature.properties.operational_sector || layer.feature.properties.name;
-                if (layerName === val) {
-                  window.map.flyToBounds(layer.getBounds(), { padding: [50, 50], duration: 1.5 });
+              const sectorEntries = getSectorEntries(val);
+              const sectorBounds = buildSectorBounds(sectorEntries);
 
-                  // Temporarily highlight the sector
-                  const oldStyle = Object.assign({}, layer.options);
-                  layer.setStyle({ fillOpacity: 0.2, weight: 3, color: '#f97316' });
-                  layer.addTo(window.map);
-                  setTimeout(() => {
-                    if (window.map.hasLayer(layer)) window.map.removeLayer(layer);
-                    layer.setStyle(oldStyle);
-                  }, 5000);
-                }
+              if (sectorBounds) {
+                window.map.flyToBounds(sectorBounds, { padding: [50, 50], duration: 1.5 });
+              }
+
+              sectorEntries.forEach(function (entry) {
+                const layer = entry.layer;
+                const oldStyle = Object.assign({}, layer.options);
+                layer.setStyle({ fillOpacity: 0.2, weight: 3, color: '#f97316' });
+                layer.addTo(window.map);
+                setTimeout(() => {
+                  if (window.map.hasLayer(layer)) window.map.removeLayer(layer);
+                  layer.setStyle(oldStyle);
+                }, 5000);
               });
             } else if (!val && window.map) {
               window.map.setView([48.5, 32.0], 6); // Reset view to default Zoom
@@ -1265,24 +1469,6 @@
       } else {
         if (window.satelliteLayer) map.removeLayer(window.satelliteLayer);
       }
-    } else if (layerName === 'glocs') {
-      if (isChecked) {
-        fetch('assets/data/glocs.geojson')
-          .then(r => r.json())
-          .then(data => {
-            if (glocsLayer) map.removeLayer(glocsLayer);
-            glocsLayer = L.geoJSON(data, {
-              style: { color: '#22c55e', weight: 3, opacity: 0.85, dashArray: '8,6' },
-              onEachFeature: function (feature, layer) {
-                const p = feature.properties || {};
-                layer.bindPopup(`<b>GLOC Bridge</b><br>Events: ${p.event_count || 0}<br>Sectors: ${(p.sectors || []).join(', ')}`);
-              }
-            }).addTo(map);
-          })
-          .catch(err => console.warn('GLOC layer load failed', err));
-      } else {
-        if (glocsLayer) map.removeLayer(glocsLayer);
-      }
     } else if (layerName === 'events') {
       // Toggle MarkerCluster (Using closure variable 'eventsLayer')
       if (isChecked) {
@@ -1306,19 +1492,17 @@
             // Create layer group for thermal hotspots
             firmsLayer = L.layerGroup();
 
-            // Filter to Ukrainian + Russian conflict territory only
+            // Whitelist only Ukrainian/Russian land + adjacent maritime zones.
             const isInUaRuTerritory = (lat, lon) => {
-              // Ukraine bounding box (tight)
-              if (lat >= 44.3 && lat <= 52.4 && lon >= 22.1 && lon <= 40.2) return true;
-              // Western Russia conflict zone (Kursk, Belgorod, Bryansk, Rostov)
-              if (lat >= 50.0 && lat <= 56.0 && lon >= 30.0 && lon <= 45.0) return true;
-              return false;
+              return isInConflictTerritory(lat, lon);
             };
 
+            let visibleHotspots = 0;
             data.features.filter(f => {
               const c = f.geometry.coordinates;
               return isInUaRuTerritory(c[1], c[0]);
             }).forEach(f => {
+              visibleHotspots += 1;
               const coords = f.geometry.coordinates;
               const props = f.properties;
               const brightness = props.brightness || 300;
@@ -1503,7 +1687,7 @@
             });
 
             firmsLayer.addTo(map);
-            console.log(`âœ… FIRMS layer loaded: ${data.features.length} hotspots`);
+            console.log(`âœ… FIRMS layer loaded: ${visibleHotspots}/${data.features.length} hotspots`);
 
             // Show metadata info
             if (data.metadata) {
@@ -1768,11 +1952,13 @@
 
               // Create Tactical Hex Marker at Centroid
               const markerHtml = `
-                ${meta.intensity >= 7 ? `<div class="pulse-emitter" style="background: ${meta.tactic_color};"></div>` : ''}
-                ${meta.intensity >= 4 ? `<div class="narrative-marker-ring" style="border-color: ${meta.tactic_color}; box-shadow: 0 0 10px ${meta.tactic_color}44;"></div>` : ''}
-                <div class="narrative-marker-hex" style="border: 1px solid ${meta.tactic_color}; color: ${meta.tactic_color}; box-shadow: 0 0 10px ${meta.tactic_color}66;">
-                  <div class="hex-icon" style="font-size: 10px;">âžœ</div>
-                  <div class="hex-score">${meta.intensity.toFixed(1)}</div>
+                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; position:relative;">
+                  ${meta.intensity >= 7 ? `<div class="pulse-emitter" style="background: ${meta.tactic_color};"></div>` : ''}
+                  ${meta.intensity >= 4 ? `<div class="narrative-marker-ring" style="border-color: ${meta.tactic_color}; box-shadow: 0 0 10px ${meta.tactic_color}44;"></div>` : ''}
+                  <div class="narrative-marker-hex" style="border: 1px solid ${meta.tactic_color}; color: ${meta.tactic_color}; box-shadow: 0 0 10px ${meta.tactic_color}66;">
+                    <div class="hex-icon" style="font-size: 10px;">âžœ</div>
+                    <div class="hex-score">${meta.intensity.toFixed(1)}</div>
+                  </div>
                 </div>
               `;
 

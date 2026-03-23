@@ -792,7 +792,15 @@
             document.getElementById('aiScanBtn').textContent = '⏳ Scanning...';
 
             try {
-                const res = await fetch(`${API_BASE}/api/suggestions`);
+                // Pass current filters for context-aware scanning
+                const sector = document.getElementById('sectorFilter').value;
+                const search = document.getElementById('searchInput').value;
+                const status = document.getElementById('statusFilter').value;
+                const params = new URLSearchParams();
+                if (sector) params.set('sector', sector);
+                if (search) params.set('search', search);
+                if (status) params.set('status', status);
+                const res = await fetch(`${API_BASE}/api/suggestions?${params}`);
                 const data = await res.json();
                 suggestionsData = data.suggestions || [];
                 document.getElementById('suggestionsCount').textContent = suggestionsData.length;
