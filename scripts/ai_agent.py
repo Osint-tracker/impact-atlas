@@ -354,10 +354,12 @@ class SuperSquadAgent:
             raise ValueError("ERROR: API Keys missing")
 
         # 2. Initialize Clients
-        self.openai_client = OpenAI(api_key=self.openai_api_key)
+        self.openai_client = OpenAI(api_key=self.openai_api_key, timeout=120.0, max_retries=3)
         self.openrouter_client = OpenAI(
             base_url="https://openrouter.ai/api/v1",
             api_key=self.openrouter_api_key,
+            timeout=120.0,
+            max_retries=3,
         )
         self.brain_client = OpenAI(
             base_url="https://openrouter.ai/api/v1",
@@ -365,7 +367,9 @@ class SuperSquadAgent:
             default_headers={
                 "HTTP-Referer": "https://github.com/Osint-tracker/impact-atlas",
                 "X-Title": "OSINT Tracker"
-            }
+            },
+            timeout=180.0,
+            max_retries=3,
         )
         self.router_client = OpenAI(
             base_url="https://openrouter.ai/api/v1",
@@ -373,7 +377,9 @@ class SuperSquadAgent:
             default_headers={
                 "HTTP-Referer": "https://github.com/Osint-tracker/impact-atlas",
                 "X-Title": "OSINT Tracker"
-            }
+            },
+            timeout=120.0,
+            max_retries=3,
         )
 
         # 3. Load Knowledge Bases
@@ -2099,6 +2105,13 @@ OR
     # =========================================================================
     # 📰 STEP 4: THE JOURNALIST (GPT-4o-mini via OpenAI)
     # =========================================================================
+    def _get_error_journalist_response(self):
+        """Fallback response when the Journalist step fails."""
+        return {
+            "title_en": "Event Processing Error",
+            "description_en": "Data could not be summarized neutrally."
+        }
+
     def _step_4_the_journalist(self, text, brain_data, soldier_data):
         """
         Role: Description & Title.
@@ -2171,11 +2184,6 @@ OR
         except Exception as e:
             print(f"   ❌ Journalist Critical Error: {e}")
             return self._get_error_journalist_response()
-
-        return {
-            "title_en": "Event Processing Error",
-            "description_en": "Data could not be summarized neutrally."
-        }
 
 # =========================================================================
 # 🏰 STEP 5: THE STRATEGIST (DeepSeek-V3 via OpenRouter)
@@ -3047,7 +3055,7 @@ def process_row(self, row):
     # 3. Costruzione output usando i dizionari corretti (journo_out, soldier_out, calc_out)
     return {
         # Usa journo_out, fallback al titolo originale
-        "Title": journo_out.get("title", title),
+        "Title": journo_out.get("title_en", title),
         "Type": ai_type,
         "Date": row.get("Date"),
         "Location": toponym_raw or row.get("Location"),
@@ -3061,7 +3069,7 @@ def process_row(self, row):
         "Source": event_ctx.get("best_link") or row.get("Source"),
         "Archived": "No",
         "Verification": final_verif,
-        "Description": journo_out.get("description", ""),
+        "Description": journo_out.get("description_en", ""),
         "Notes": f"Strategy: {event_ctx['verification_method']} | Bias: {calc_out['bias_score']}",
         "Video": "Yes" if soldier_out.get("visual_evidence") else "No",
         "Intensity": str(calc_out.get("intensity", 0.0)),

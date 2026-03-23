@@ -379,6 +379,11 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                     vec = json.loads(r["embedding_vector"])
                     if not vec or len(vec) < 10:
                         continue
+                    
+                    raw_title = r["title"]
+                    if not raw_title or str(raw_title).strip() == "" or "(No title)" in str(raw_title) or str(raw_title).lower() in ("none", "null", "[no title]"):
+                        continue
+
                     events.append({
                         "event_id": r["event_id"],
                         "title": r["title"] or "(No title)",

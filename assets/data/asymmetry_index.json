@@ -34,10 +34,10 @@
         "denominator": 280.0
       },
       "UNK": {
-        "asymmetry_index": 4.075,
-        "events": 19,
-        "numerator": 163.0,
-        "denominator": 40.0
+        "asymmetry_index": 3.9737,
+        "events": 18,
+        "numerator": 151.0,
+        "denominator": 38.0
       }
     },
     "Kupyansk-Lyman Axis": {
@@ -166,28 +166,28 @@
     },
     "UNKNOWN_SECTOR": {
       "UNK": {
-        "asymmetry_index": 1.0,
-        "events": 1,
-        "numerator": 1.0,
-        "denominator": 1.0
+        "asymmetry_index": 4.7273,
+        "events": 3,
+        "numerator": 52.0,
+        "denominator": 11.0
       },
       "RU": {
-        "asymmetry_index": 7.3333,
-        "events": 5,
-        "numerator": 88.0,
-        "denominator": 12.0
+        "asymmetry_index": 6.5484,
+        "events": 10,
+        "numerator": 203.0,
+        "denominator": 31.0
       },
       "UA": {
-        "asymmetry_index": 5.8182,
-        "events": 5,
-        "numerator": 128.0,
-        "denominator": 22.0
+        "asymmetry_index": 4.9719,
+        "events": 30,
+        "numerator": 885.0,
+        "denominator": 178.0
       }
     }
   },
   "global": {
-    "RU": 4.5131,
-    "UA": 4.6772,
-    "UNK": 3.4773
+    "RU": 4.5261,
+    "UA": 4.6902,
+    "UNK": 3.5127
   }
 }
