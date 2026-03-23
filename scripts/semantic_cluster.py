@@ -444,7 +444,7 @@ Rules:
             print(f"\n[NARRATIVE {idx+1}/{len(clusters)}] Processing {len(cluster_events)} events...")
             
             # Calculate centroid
-            centroid = [
+            centroid_latlon = [
                 round(np.mean([e['lat'] for e in cluster_events]), 4),
                 round(np.mean([e['lon'] for e in cluster_events]), 4)
             ]
@@ -464,7 +464,9 @@ Rules:
             
             narrative = {
                 "cluster_id": self._generate_cluster_id(cluster_events),
-                "centroid": centroid,
+                "centroid": centroid_latlon,
+                "centroid_latlon": centroid_latlon,
+                "centroid_geojson": [centroid_latlon[1], centroid_latlon[0]],
                 "geometry": geometry,
                 "meta": {
                     "title": narrative_meta["title"],

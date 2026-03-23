@@ -1418,6 +1418,10 @@
       align-items: center;
       justify-content: center;
       position: relative;
+      width: 50px;
+      height: 50px;
+      overflow: visible;
+      transform-origin: center center;
     }
 
     /* The Central Hexagon */
@@ -1461,6 +1465,7 @@
     /* The Tactical Ring */
     .narrative-marker-ring {
       position: absolute;
+      inset: 0;
       width: 50px;
       height: 50px;
       border: 1px dashed;
@@ -1475,6 +1480,7 @@
     /* High Intensity Pulse */
     .pulse-emitter {
       position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       border-radius: 50%;

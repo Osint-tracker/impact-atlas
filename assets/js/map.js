@@ -283,6 +283,51 @@
     return sectorEntries.some(entry => entry.bounds.contains(latLng) && pointInGeometry(point, entry.geometry));
   }
 
+  function getNarrativePolygonLatLngs(geometry) {
+    if (!geometry || !geometry.type || !geometry.coordinates) return null;
+
+    if (geometry.type === 'Polygon') {
+      return geometry.coordinates[0].map(c => [Number(c[1]), Number(c[0])]);
+    }
+
+    if (geometry.type === 'MultiPolygon' && geometry.coordinates.length > 0) {
+      return geometry.coordinates[0][0].map(c => [Number(c[1]), Number(c[0])]);
+    }
+
+    return null;
+  }
+
+  function normalizeNarrativeCentroid(centroid, geometry) {
+    if (!Array.isArray(centroid) || centroid.length < 2) return null;
+
+    const a = [Number(centroid[0]), Number(centroid[1])]; // [lat, lon]
+    const b = [Number(centroid[1]), Number(centroid[0])]; // [lon, lat] -> [lat, lon]
+    const polygonLatLngs = getNarrativePolygonLatLngs(geometry);
+
+    const isValidLatLng = candidate => Number.isFinite(candidate[0])
+      && Number.isFinite(candidate[1])
+      && Math.abs(candidate[0]) <= 90
+      && Math.abs(candidate[1]) <= 180;
+
+    if (!polygonLatLngs || polygonLatLngs.length < 3) {
+      return isValidLatLng(a) ? a : (isValidLatLng(b) ? b : null);
+    }
+
+    const bounds = L.latLngBounds(polygonLatLngs);
+    const paddedBounds = bounds.pad(2);
+    const aInside = isValidLatLng(a) && paddedBounds.contains(L.latLng(a[0], a[1]));
+    const bInside = isValidLatLng(b) && paddedBounds.contains(L.latLng(b[0], b[1]));
+
+    if (aInside && !bInside) return a;
+    if (bInside && !aInside) return b;
+    if (aInside) return a;
+    if (isValidLatLng(a)) return a;
+    if (isValidLatLng(b)) return b;
+
+    const center = bounds.getCenter();
+    return [center.lat, center.lng];
+  }
+
   function createMarker(e) {
     const color = getColor(e.intensity);
     const iconClass = getIconClass(e.type);
@@ -1885,6 +1930,11 @@
       if (isChecked) {
         console.log("Loading Strategic Context layer...");
 
+        if (narrativesLayer) {
+          map.removeLayer(narrativesLayer);
+          narrativesLayer = null;
+        }
+
         fetch(`assets/data/narratives.json?v=${new Date().getTime()}`)
           .then(response => {
             if (!response.ok) {
@@ -1908,16 +1958,16 @@
             data.narratives.forEach(narrative => {
               const meta = narrative.meta;
               const geometry = narrative.geometry;
-              const centroid = narrative.centroid;
+              const centroid = narrative.centroid_latlon || narrative.centroid || narrative.centroid_geojson;
 
               if (!geometry || !geometry.coordinates || !centroid) return;
 
-              // Fix: GeoJSON uses [LNG, LAT], Leaflet needs [LAT, LNG]
-              // We need to swap them for correct positioning.
-              const trueCentroid = [centroid[1], centroid[0]];
+              const markerCenter = normalizeNarrativeCentroid(centroid, geometry);
+              if (!markerCenter) return;
 
               // Convert GeoJSON coordinates to Leaflet format [lat, lng]
-              let coords = geometry.coordinates[0].map(c => [c[1], c[0]]);
+              let coords = getNarrativePolygonLatLngs(geometry);
+              if (!coords || coords.length < 3) return;
 
               // Calculate bounding box to check if polygon is too small
               const lats = coords.map(c => c[0]);
@@ -1927,8 +1977,8 @@
 
               // If polygon is too small, create a circle-like polygon around centroid
               if (latSpan < MIN_RADIUS_DEG && lngSpan < MIN_RADIUS_DEG) {
-                const centerLat = trueCentroid[0];
-                const centerLng = trueCentroid[1];
+                const centerLat = markerCenter[0];
+                const centerLng = markerCenter[1];
                 const numPoints = 32;
                 coords = [];
                 for (let i = 0; i < numPoints; i++) {
@@ -1956,7 +2006,7 @@
                   ${meta.intensity >= 7 ? `<div class="pulse-emitter" style="background: ${meta.tactic_color};"></div>` : ''}
                   ${meta.intensity >= 4 ? `<div class="narrative-marker-ring" style="border-color: ${meta.tactic_color}; box-shadow: 0 0 10px ${meta.tactic_color}44;"></div>` : ''}
                   <div class="narrative-marker-hex" style="border: 1px solid ${meta.tactic_color}; color: ${meta.tactic_color}; box-shadow: 0 0 10px ${meta.tactic_color}66;">
-                    <div class="hex-icon" style="font-size: 10px;">âžœ</div>
+                    <div class="hex-icon" style="font-size: 10px;">&#10148;</div>
                     <div class="hex-score">${meta.intensity.toFixed(1)}</div>
                   </div>
                 </div>
@@ -1969,9 +2019,10 @@
                 iconAnchor: [25, 25]
               });
 
-              const marker = L.marker(centroid, {
+              const marker = L.marker(markerCenter, {
                 icon: markerIcon,
-                zIndexOffset: 1000 // Always on top
+                zIndexOffset: 1000, // Always on top
+                noWrap: true
               });
 
               // Hover effects
