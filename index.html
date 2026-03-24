@@ -578,6 +578,7 @@
       height: 100% !important;
       min-height: 0 !important;
       position: relative !important;
+      --axis-hud-offset: 92px;
       border-radius: 0 !important;
       border: none !important;
       box-shadow: none !important;
@@ -1517,49 +1518,103 @@
     /* ========================================== */
     /* TACTICAL TIME COMMAND BAR                  */
     /* ========================================== */
-    .tactical-time-bar {
+    .tactical-hud-container {
       position: absolute;
-      top: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
+      top: 15px;
+      left: 15px;
+      z-index: 1005;
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      flex-wrap: wrap;
+      max-width: min(980px, calc(100% - 30px));
+      pointer-events: none;
+    }
+
+    .tactical-hud-container>* {
+      pointer-events: auto;
+    }
+
+    .tactical-time-bar {
+      position: relative;
+      top: auto;
+      left: auto;
+      transform: none;
+      z-index: auto;
       display: flex;
       align-items: center;
-      gap: 4px;
-      background: rgba(15, 23, 42, 0.92);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(148, 163, 184, 0.15);
-      border-radius: 6px;
-      padding: 5px 6px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      flex-wrap: wrap;
+      gap: 6px;
+      flex: 1 1 540px;
+      min-height: 46px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.86));
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 10px;
+      padding: 6px 8px;
+      box-shadow: 0 14px 40px rgba(2, 6, 23, 0.48), inset 0 1px 0 rgba(148, 163, 184, 0.06);
+    }
+
+    .tactical-time-bar::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.12), transparent 28%, transparent 72%, rgba(245, 158, 11, 0.08));
+      pointer-events: none;
+    }
+
+    .tactical-time-bar>* {
+      position: relative;
+      z-index: 1;
     }
 
     .ttb-btn {
-      background: transparent;
-      border: 1px solid transparent;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0.84));
+      border: 1px solid rgba(71, 85, 105, 0.78);
       color: #94a3b8;
       font-family: 'Rajdhani', sans-serif;
       font-size: 0.8rem;
       font-weight: 700;
       letter-spacing: 1px;
+      min-height: 32px;
       padding: 5px 12px;
       cursor: pointer;
-      border-radius: 3px;
-      transition: all 0.2s;
+      border-radius: 5px;
+      transition: all 0.2s ease;
       text-transform: uppercase;
+      box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.06);
     }
 
     .ttb-btn:hover {
       color: #f8fafc;
-      background: rgba(245, 158, 11, 0.1);
-      border-color: rgba(245, 158, 11, 0.3);
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.16), rgba(245, 158, 11, 0.08));
+      border-color: rgba(245, 158, 11, 0.36);
     }
 
     .ttb-btn.active {
       color: #0f172a;
-      background: #f59e0b;
+      background: linear-gradient(180deg, #fbbf24, #f59e0b);
       border-color: #f59e0b;
       box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+    }
+
+    .ttb-select {
+      appearance: none;
+      min-width: 164px;
+      padding-right: 28px;
+      color: #fbbf24;
+      outline: none;
+    }
+
+    .ttb-select:focus {
+      border-color: rgba(245, 158, 11, 0.45);
+      box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.18);
+    }
+
+    .ttb-select option {
+      background: #0f172a;
+      color: #f8fafc;
     }
 
     .ttb-divider {
@@ -1813,56 +1868,70 @@
     /* QUICK SEARCH (MAP OVERLAY)                 */
     /* ========================================== */
     .map-quick-search {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      z-index: 1000;
-      width: 260px;
+      position: relative;
+      top: auto;
+      left: auto;
+      z-index: auto;
+      flex: 0 1 320px;
+      min-width: min(320px, 100%);
+      max-width: 360px;
     }
 
     .map-quick-search input {
       width: 100%;
-      background: rgba(15, 23, 42, 0.92);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(148, 163, 184, 0.15);
-      border-radius: 6px;
-      padding: 8px 12px 8px 34px;
+      min-height: 46px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.86));
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 10px;
+      padding: 11px 14px 11px 40px;
       color: #f8fafc;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
       outline: none;
-      transition: border-color 0.2s;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 14px 40px rgba(2, 6, 23, 0.48), inset 0 1px 0 rgba(148, 163, 184, 0.06);
     }
 
     .map-quick-search input:focus {
       border-color: rgba(245, 158, 11, 0.5);
+      box-shadow: 0 18px 44px rgba(2, 6, 23, 0.56), 0 0 0 1px rgba(245, 158, 11, 0.16);
+      transform: translateY(-1px);
     }
 
     .map-quick-search input::placeholder {
       color: #64748b;
+      letter-spacing: 0.12em;
     }
 
     .map-quick-search .qs-icon {
       position: absolute;
       top: 50%;
-      left: 10px;
+      left: 14px;
       transform: translateY(-50%);
-      color: #64748b;
-      font-size: 0.85rem;
+      color: #94a3b8;
+      font-size: 0.86rem;
       pointer-events: none;
       z-index: 1;
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .map-quick-search:focus-within .qs-icon {
+      color: #f59e0b;
+      transform: translateY(-50%) scale(1.04);
     }
 
     .qs-results {
       display: none;
-      margin-top: 4px;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid #334155;
-      border-radius: 6px;
+      margin-top: 8px;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(9, 13, 24, 0.94));
+      border: 1px solid rgba(71, 85, 105, 0.85);
+      border-radius: 10px;
       max-height: 220px;
       overflow-y: auto;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 20px 40px rgba(2, 6, 23, 0.48);
     }
 
     .qs-results.visible {
@@ -1872,13 +1941,14 @@
     .qs-item {
       padding: 8px 12px;
       color: #cbd5e1;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
+      font-family: 'JetBrains Mono', monospace;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 8px;
       border-bottom: 1px solid rgba(51, 65, 85, 0.4);
-      transition: background 0.15s;
+      transition: background 0.15s ease, border-color 0.15s ease;
     }
 
     .qs-item:last-child {
@@ -1887,18 +1957,352 @@
 
     .qs-item:hover {
       background: rgba(245, 158, 11, 0.1);
+      border-color: rgba(245, 158, 11, 0.18);
       color: #f8fafc;
     }
 
     .qs-item .qs-type {
       font-size: 0.65rem;
-      color: #64748b;
-      background: #1e293b;
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.24);
       padding: 1px 5px;
       border-radius: 3px;
       font-weight: 600;
       letter-spacing: 0.5px;
       text-transform: uppercase;
+    }
+
+    #axis-stats-panel {
+      position: absolute;
+      top: calc(15px + var(--axis-hud-offset));
+      left: 15px;
+      z-index: 1004;
+      width: min(420px, calc(100% - 30px));
+      opacity: 0;
+      transform: translate3d(0, -10px, 0);
+      pointer-events: none;
+      transition: opacity 0.32s ease, transform 0.32s ease;
+    }
+
+    #axis-stats-panel.is-visible {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+      pointer-events: auto;
+    }
+
+    .axis-panel-frame {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 16px;
+      max-height: min(72vh, 780px);
+      overflow-y: auto;
+      background: linear-gradient(160deg, rgba(9, 13, 24, 0.97), rgba(15, 23, 42, 0.93));
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: 14px;
+      box-shadow: 0 22px 48px rgba(2, 6, 23, 0.52);
+      backdrop-filter: blur(18px);
+    }
+
+    .axis-panel-frame::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        linear-gradient(90deg, rgba(245, 158, 11, 0.14), transparent 26%, transparent 74%, rgba(245, 158, 11, 0.08)),
+        linear-gradient(180deg, rgba(148, 163, 184, 0.06), transparent 24%);
+      pointer-events: none;
+    }
+
+    .axis-panel-frame>* {
+      position: relative;
+      z-index: 1;
+    }
+
+    .axis-panel-header {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .axis-panel-kicker {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: #f59e0b;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .axis-panel-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .axis-panel-title-row h3 {
+      margin: 0;
+      color: #f8fafc;
+      font-size: 1.02rem;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .axis-panel-badge,
+    .axis-warning-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(71, 85, 105, 0.9);
+      background: rgba(30, 41, 59, 0.62);
+      color: #94a3b8;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .axis-panel-badge[data-state="live"],
+    .axis-warning-badge[data-state="low"] {
+      color: #22c55e;
+      border-color: rgba(34, 197, 94, 0.45);
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .axis-panel-badge[data-state="empty"],
+    .axis-warning-badge[data-state="mid"] {
+      color: #f59e0b;
+      border-color: rgba(245, 158, 11, 0.42);
+      background: rgba(245, 158, 11, 0.12);
+    }
+
+    .axis-warning-badge[data-state="high"],
+    .axis-warning-badge[data-state="critical"] {
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.42);
+      background: rgba(239, 68, 68, 0.14);
+    }
+
+    .axis-panel-summary {
+      margin: 0;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      line-height: 1.6;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .axis-kpi-grid,
+    .axis-detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .axis-kpi-card,
+    .axis-detail-card,
+    .axis-module {
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(51, 65, 85, 0.86);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.05);
+    }
+
+    .axis-kpi-card--wide,
+    .axis-module {
+      grid-column: 1 / -1;
+    }
+
+    .axis-card-heading,
+    .axis-module-header,
+    .axis-progress-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .axis-card-label,
+    .axis-module-title {
+      display: block;
+      color: #94a3b8;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.64rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .axis-card-value {
+      display: block;
+      margin-top: 8px;
+      color: #f8fafc;
+      font-size: 1.64rem;
+      font-weight: 700;
+      line-height: 1;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .axis-card-note,
+    .axis-module-meta,
+    .axis-detail-note {
+      margin-top: 6px;
+      color: #64748b;
+      font-size: 0.72rem;
+      line-height: 1.5;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .axis-tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .axis-tag {
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(245, 158, 11, 0.26);
+      background: rgba(245, 158, 11, 0.1);
+      color: #fbbf24;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.64rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .axis-fog-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .axis-gauge {
+      --gauge-angle: 0deg;
+      --gauge-color: #f59e0b;
+      width: 88px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at center, rgba(9, 13, 24, 0.96) 54%, transparent 55%),
+        conic-gradient(from -90deg, var(--gauge-color) var(--gauge-angle), rgba(51, 65, 85, 0.35) var(--gauge-angle), rgba(51, 65, 85, 0.18) 360deg);
+      transition: background 0.4s ease;
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.08);
+    }
+
+    .axis-gauge-core {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      color: #cbd5e1;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .axis-gauge-core strong {
+      font-size: 1rem;
+      color: #f8fafc;
+      line-height: 1;
+    }
+
+    .axis-gauge-core span {
+      font-size: 0.56rem;
+      color: #64748b;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .axis-progress-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .axis-progress-track,
+    .axis-stacked-track {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(30, 41, 59, 0.86);
+      border: 1px solid rgba(51, 65, 85, 0.72);
+    }
+
+    .axis-progress-fill,
+    .axis-stacked-segment {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      transition: width 0.42s ease;
+    }
+
+    .axis-progress-fill--manoeuvre {
+      background: linear-gradient(90deg, rgba(34, 197, 94, 0.64), #22c55e);
+    }
+
+    .axis-progress-fill--shaping {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.64), #f59e0b);
+    }
+
+    .axis-progress-fill--attrition {
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.64), #ef4444);
+    }
+
+    .axis-stacked-segment--logistics {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.72), #f59e0b);
+    }
+
+    .axis-stacked-segment--pressure {
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.64), #60a5fa);
+    }
+
+    .axis-stacked-track {
+      display: flex;
+      margin-top: 12px;
+    }
+
+    .axis-detail-card .axis-card-value {
+      font-size: 1.38rem;
+    }
+
+    .axis-detail-card .axis-progress-track {
+      margin-top: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .tactical-hud-container {
+        max-width: calc(100% - 30px);
+      }
+
+      .map-quick-search,
+      .tactical-time-bar {
+        flex-basis: 100%;
+        max-width: none;
+        min-width: 0;
+      }
+
+      #axis-stats-panel {
+        width: calc(100% - 30px);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .axis-kpi-grid,
+      .axis-detail-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     /* ========================================== */
@@ -2426,20 +2830,20 @@
           </div>
         </div>
 
-        <!-- QUICK SEARCH (flyTo) -->
-        <div class="map-quick-search" id="quickSearchContainer">
-          <i class="fa-solid fa-magnifying-glass qs-icon"></i>
-          <input type="text" id="quickSearchInput" placeholder="Search unit or city..." autocomplete="off">
-          <div class="qs-results" id="quickSearchResults"></div>
-        </div>
+        <div class="tactical-hud-container" id="tacticalHudContainer">
+          <!-- QUICK SEARCH (flyTo) -->
+          <div class="map-quick-search" id="quickSearchContainer">
+            <i class="fa-solid fa-magnifying-glass qs-icon"></i>
+            <input type="text" id="quickSearchInput" placeholder="Search unit, node, or city..." autocomplete="off">
+            <div class="qs-results" id="quickSearchResults"></div>
+          </div>
 
-        <!-- TACTICAL TIME COMMAND BAR -->
-        <div class="tactical-time-bar" id="tacticalTimeBar">
-          <select id="sectorFilter" class="ttb-btn"
-            style="background: rgba(15,23,42,0.9); color: #f59e0b; border: 1px solid #475569; border-radius: 3px; font-family: 'Rajdhani', sans-serif; font-size: 0.8rem; font-weight: 700; padding: 4px 8px; margin-right: 4px; outline: none; text-transform: uppercase;">
-            <option value="">ALL SECTORS</option>
-            <!-- Options populated dynamically by map.js -->
-          </select>
+          <!-- TACTICAL TIME COMMAND BAR -->
+          <div class="tactical-time-bar" id="tacticalTimeBar">
+            <select id="sectorFilter" class="ttb-btn ttb-select">
+              <option value="">ALL SECTORS</option>
+              <!-- Options populated dynamically by map.js -->
+            </select>
           <div class="ttb-divider"></div>
           <button class="ttb-btn active" onclick="setTimeWindow(24)" data-hours="24">24H</button>
           <button class="ttb-btn" onclick="setTimeWindow(48)" data-hours="48">48H</button>
@@ -2481,7 +2885,124 @@
             title="Show only events with major confirmed effect (E ≥ 7)">
             <i class="fa-solid fa-skull" style="font-size:0.6rem;"></i> ATTRITION
           </button>
+          </div>
         </div>
+
+        <aside id="axis-stats-panel" aria-live="polite" aria-hidden="true">
+          <div class="axis-panel-frame">
+            <div class="axis-panel-header">
+              <span class="axis-panel-kicker">Axis Analytics</span>
+              <div class="axis-panel-title-row">
+                <h3 id="axisStatsTitle">Awaiting axis selection</h3>
+                <span class="axis-panel-badge" id="axisStatsBadge" data-state="empty">Standby</span>
+              </div>
+              <p class="axis-panel-summary" id="axisStatsSummary">Select a sector to unlock sector-level analytics.</p>
+            </div>
+
+            <div class="axis-kpi-grid">
+              <article class="axis-kpi-card">
+                <span class="axis-card-label">Operational Volume</span>
+                <strong class="axis-card-value" id="axisTotalEvents">0</strong>
+                <span class="axis-card-note" id="axisVolumeNote">No active sector profile.</span>
+              </article>
+
+              <article class="axis-kpi-card">
+                <span class="axis-card-label">Kinetic Intensity</span>
+                <strong class="axis-card-value" id="axisTieAverage">0.0</strong>
+                <span class="axis-card-note">T.I.E. Avg Score</span>
+              </article>
+
+              <article class="axis-kpi-card axis-kpi-card--wide">
+                <div class="axis-card-heading">
+                  <span class="axis-card-label">Fog of War Index</span>
+                  <span class="axis-warning-badge" id="axisFogBadge" data-state="mid">Unknown</span>
+                </div>
+                <div class="axis-fog-row">
+                  <div class="axis-gauge" id="axisFogGauge">
+                    <div class="axis-gauge-core">
+                      <strong id="axisFogValue">0%</strong>
+                      <span>Fog</span>
+                    </div>
+                  </div>
+                  <div class="axis-card-note" id="axisFogNote">Fusion layer inactive.</div>
+                </div>
+              </article>
+
+              <article class="axis-kpi-card axis-kpi-card--wide">
+                <div class="axis-card-heading">
+                  <span class="axis-card-label">Heavy Equipment Loss Estimate</span>
+                  <strong class="axis-card-value" id="axisEquipmentEstimate">0</strong>
+                </div>
+                <div class="axis-tag-list" id="axisEquipmentTags"></div>
+              </article>
+            </div>
+
+            <section class="axis-module">
+              <div class="axis-module-header">
+                <span class="axis-module-title">Tactical Identity</span>
+                <span class="axis-module-meta" id="axisDoctrineMeta">Awaiting doctrinal split.</span>
+              </div>
+              <div class="axis-progress-list">
+                <div class="axis-progress-row">
+                  <div class="axis-progress-label">
+                    <span class="axis-card-label">Manoeuvre</span>
+                    <span class="axis-module-meta" id="axisDoctrineManoeuvreValue">0%</span>
+                  </div>
+                  <div class="axis-progress-track">
+                    <div class="axis-progress-fill axis-progress-fill--manoeuvre" id="axisDoctrineManoeuvreFill"></div>
+                  </div>
+                </div>
+                <div class="axis-progress-row">
+                  <div class="axis-progress-label">
+                    <span class="axis-card-label">Shaping</span>
+                    <span class="axis-module-meta" id="axisDoctrineShapingValue">0%</span>
+                  </div>
+                  <div class="axis-progress-track">
+                    <div class="axis-progress-fill axis-progress-fill--shaping" id="axisDoctrineShapingFill"></div>
+                  </div>
+                </div>
+                <div class="axis-progress-row">
+                  <div class="axis-progress-label">
+                    <span class="axis-card-label">Attrition</span>
+                    <span class="axis-module-meta" id="axisDoctrineAttritionValue">0%</span>
+                  </div>
+                  <div class="axis-progress-track">
+                    <div class="axis-progress-fill axis-progress-fill--attrition" id="axisDoctrineAttritionFill"></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="axis-module">
+              <div class="axis-module-header">
+                <span class="axis-module-title">Logistical Suppression Signal</span>
+                <span class="axis-module-meta" id="axisLogisticsRatio">0.00x</span>
+              </div>
+              <div class="axis-card-note" id="axisLogisticsNote">No shaping pressure isolated.</div>
+              <div class="axis-stacked-track">
+                <div class="axis-stacked-segment axis-stacked-segment--logistics" id="axisLogisticsHitFill"></div>
+                <div class="axis-stacked-segment axis-stacked-segment--pressure" id="axisLogisticsPressureFill"></div>
+              </div>
+            </section>
+
+            <div class="axis-detail-grid">
+              <article class="axis-detail-card">
+                <span class="axis-card-label">Frontline Friction</span>
+                <strong class="axis-card-value" id="axisFrictionValue">0.0</strong>
+                <div class="axis-detail-note" id="axisFrictionNote">Awaiting manoeuvre trace.</div>
+              </article>
+
+              <article class="axis-detail-card">
+                <span class="axis-card-label">Thermal-Kinetic Coefficient</span>
+                <strong class="axis-card-value" id="axisThermalValue">0%</strong>
+                <div class="axis-progress-track">
+                  <div class="axis-progress-fill axis-progress-fill--shaping" id="axisThermalFill"></div>
+                </div>
+                <div class="axis-detail-note" id="axisThermalNote">Physical verification offline.</div>
+              </article>
+            </div>
+          </div>
+        </aside>
 
         <div id="map"></div>
 

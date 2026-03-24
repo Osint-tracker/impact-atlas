@@ -26,12 +26,16 @@
   window.hideLowReputation = true;
   window.sectorAnomalySet = new Set();
   window.tacticalSectorsIndex = new Map();
+  window.axisThermalFeatures = [];
+  window.axisThermalMetadata = null;
+  window.currentAxisSector = '';
 
   let mapDates = []; // Historical dates index
 
   // Tactical Time Command State
   let tacticalTimeWindowHours = 0; // 0 = ALL (no filter)
   let tacticalPersistence = false;  // Default: OFF
+  let axisThermalPromise = null;
 
   // Central helper to define what is civilian
   function isCivilianEvent(e) {
@@ -326,6 +330,417 @@
 
     const center = bounds.getCenter();
     return [center.lat, center.lng];
+  }
+
+  function toFiniteNumber(value, fallback = 0) {
+    const parsed = parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function haversineKm(lat1, lon1, lat2, lon2) {
+    const r = 6371;
+    const toRadians = value => value * (Math.PI / 180);
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+    const a = Math.sin(dLat / 2) ** 2
+      + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLon / 2) ** 2;
+    return 2 * r * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  const AXIS_DOCTRINE_PATTERNS = {
+    manoeuvre: /(MANOEUVRE|MANOUVRE|MANEUVER|ADVANCE|CAPTUR|SEIZ|STORM|ASSAULT|BREACH|RAID|RECAPTUR|FOOTHOLD|CROSSING|ENCIRCLE|OVERWHELM|LIBERAT|WITHDREW|ROUT)/,
+    shaping: /(SHAPING|LOGISTICS|SUPPLY|DEPOT|WAREHOUSE|AMMUNITION|AMMO|FUEL|RAIL|TRAIN|BRIDGE|REFINERY|ENERGY|SUBSTATION|POWER|AIR_DEFENSE|RADAR|COMMAND|COMMUNICATION|INDUSTR|PORT|AIRFIELD|REAR AREA|INTERDICTION)/
+  };
+
+  const AXIS_MOVEMENT_PATTERN = /(ADVANCE|CAPTUR|SEIZ|STORM|ASSAULT|BREACH|FOOTHOLD|CROSSING|RECAPTUR|WITHDREW|LIBERAT|ROUT|COLLAPSE|CONTROL OF THE POSITION|CONTROL OF POSITION)/;
+  const AXIS_LOGISTICS_PATTERN = /(LOGISTICS|SUPPLY|DEPOT|WAREHOUSE|AMMUNITION|AMMO|FUEL|RAIL|TRAIN|CONVOY|BRIDGE|REFINERY|PORT|TERMINAL|SUBSTATION|POWER|ENERGY|PIPELINE|TANKER|WAREHOUSE)/;
+  const AXIS_EQUIPMENT_SIGNALS = [
+    { label: 'Armor', regex: /\b(TANK|T-\d+|LEOPARD|ABRAMS|BRADLEY|BMP|BTR|IFV|APC|ARMOU?RED VEHICLE|ARMOU?R)\b/, weight: 2.5 },
+    { label: 'Artillery', regex: /\b(ARTILLERY|HOWITZER|MLRS|GRAD|MORTAR|SELF-PROPELLED|LAUNCHER)\b/, weight: 2.1 },
+    { label: 'Air Defense', regex: /\b(AIR DEFENSE|AIR_DEFENSE|S-300|S-400|BUK|PATRIOT|SAM|RADAR)\b/, weight: 2.4 },
+    { label: 'Aviation', regex: /\b(SU-\d+|MIG-\d+|AIRCRAFT|HELICOPTER|KA-\d+|MI-\d+|DRONE)\b/, weight: 2.2 },
+    { label: 'Naval', regex: /\b(SHIP|VESSEL|BOAT|FRIGATE|CORVETTE|TANKER|SUBMARINE|NAVAL)\b/, weight: 2.0 }
+  ];
+
+  function buildAxisEventText(event) {
+    return [
+      event.classification,
+      event.category,
+      event.target_type,
+      event.title,
+      event.description,
+      event.ai_reasoning
+    ].filter(Boolean).join(' ').toUpperCase();
+  }
+
+  function inferDoctrineBucket(event, eventText) {
+    const text = eventText || buildAxisEventText(event);
+    if (AXIS_DOCTRINE_PATTERNS.manoeuvre.test(text)) return 'manoeuvre';
+    if (AXIS_DOCTRINE_PATTERNS.shaping.test(text)) return 'shaping';
+    return 'attrition';
+  }
+
+  function isLogisticsEvent(event, eventText) {
+    const text = eventText || buildAxisEventText(event);
+    return AXIS_LOGISTICS_PATTERN.test(text);
+  }
+
+  function estimateFrontlineShiftKm(event, doctrine, tieScore, eventText) {
+    if (doctrine !== 'manoeuvre') return 0;
+
+    const text = eventText || buildAxisEventText(event);
+    const distanceMatches = AXIS_MOVEMENT_PATTERN.test(text)
+      ? Array.from(text.matchAll(/(\d+(?:\.\d+)?)\s*(?:KM|KILOMETERS?|KILOMETRES?)/g))
+        .map(match => parseFloat(match[1]))
+        .filter(value => Number.isFinite(value) && value <= 80)
+      : [];
+
+    if (distanceMatches.length > 0) {
+      return clamp(distanceMatches[0], 0.4, 30);
+    }
+
+    let baseShift = 0.55 + (tieScore * 0.08);
+    if (/(BREACH|BREAKTHROUGH|COLLAPSE|ROUT|ENCIRCLE|LIBERAT|RECAPTUR)/.test(text)) {
+      baseShift += 1.6;
+    } else if (/(CAPTUR|SEIZ|ADVANCE|STORM|ASSAULT|FOOTHOLD|CROSSING|CONTROL OF THE POSITION|CONTROL OF POSITION)/.test(text)) {
+      baseShift += 1.15;
+    } else if (/(RAID|PROBE|OPERATIONS|ENGAGEMENT)/.test(text)) {
+      baseShift += 0.45;
+    }
+
+    return clamp(baseShift, 0.4, 6.5);
+  }
+
+  function analyzeEquipmentSignals(eventText, tieScore) {
+    return AXIS_EQUIPMENT_SIGNALS.reduce((acc, signal) => {
+      if (signal.regex.test(eventText)) {
+        acc.score += signal.weight + (tieScore * 0.18);
+        acc.tags[signal.label] = (acc.tags[signal.label] || 0) + 1;
+      }
+      return acc;
+    }, { score: 0, tags: {} });
+  }
+
+  function getAxisFogState(fogIndex) {
+    if (fogIndex >= 72) return 'critical';
+    if (fogIndex >= 48) return 'high';
+    if (fogIndex >= 28) return 'mid';
+    return 'low';
+  }
+
+  function describeAxisVolume(totalEvents) {
+    if (totalEvents >= 100) return 'Dense operational burden';
+    if (totalEvents >= 40) return 'Sustained contact picture';
+    if (totalEvents >= 15) return 'Moderate signal density';
+    if (totalEvents > 0) return 'Sparse but active feed';
+    return 'No qualifying events in scope';
+  }
+
+  function describeFrontlineFriction(friction, frontlineShiftKm) {
+    if (frontlineShiftKm < 1) return 'Brutal stalemate with minimal territorial change.';
+    if (friction >= 18) return 'Grinding frontage under heavy kinetic load.';
+    if (friction >= 9) return 'Contested movement with costly advances.';
+    return 'Mobility exceeds kinetic drag in this axis.';
+  }
+
+  function loadAxisThermalFeatures() {
+    if (Array.isArray(window.axisThermalFeatures) && window.axisThermalFeatures.length > 0) {
+      return Promise.resolve(window.axisThermalFeatures);
+    }
+
+    if (axisThermalPromise) return axisThermalPromise;
+
+    axisThermalPromise = fetch('assets/data/thermal_firms.geojson')
+      .then(response => response.json())
+      .then(data => {
+        const features = Array.isArray(data.features) ? data.features.map(feature => {
+          const coords = feature.geometry && Array.isArray(feature.geometry.coordinates)
+            ? feature.geometry.coordinates
+            : [];
+          return {
+            lat: Number(coords[1]),
+            lon: Number(coords[0]),
+            properties: feature.properties || {}
+          };
+        }).filter(feature => Number.isFinite(feature.lat)
+          && Number.isFinite(feature.lon)
+          && isInConflictTerritory(feature.lat, feature.lon)) : [];
+
+        window.axisThermalFeatures = features;
+        window.axisThermalMetadata = data.metadata || null;
+        return features;
+      })
+      .catch(error => {
+        console.warn('Axis thermal support data unavailable:', error);
+        window.axisThermalFeatures = [];
+        window.axisThermalMetadata = null;
+        axisThermalPromise = null;
+        return [];
+      });
+
+    return axisThermalPromise;
+  }
+
+  function syncAxisHudOffset() {
+    const wrapper = document.querySelector('.map-container-wrapper');
+    const hud = document.getElementById('tacticalHudContainer');
+    if (!wrapper || !hud) return;
+    wrapper.style.setProperty('--axis-hud-offset', `${hud.offsetHeight + 20}px`);
+  }
+
+  function animateAxisWidth(element, percentage) {
+    if (!element) return;
+    const safeWidth = clamp(percentage, 0, 100);
+    element.style.width = '0%';
+    window.requestAnimationFrame(() => {
+      element.style.width = `${safeWidth.toFixed(1)}%`;
+    });
+  }
+
+  function setAxisGauge(element, percentage, state) {
+    if (!element) return;
+
+    const safeValue = clamp(percentage, 0, 100);
+    const colorMap = {
+      low: '#22c55e',
+      mid: '#f59e0b',
+      high: '#f97316',
+      critical: '#ef4444'
+    };
+
+    element.style.setProperty('--gauge-angle', `${(safeValue / 100) * 360}deg`);
+    element.style.setProperty('--gauge-color', colorMap[state] || '#f59e0b');
+  }
+
+  function computeAxisMetrics(sectorName, sourceEvents) {
+    if (!sectorName) return null;
+
+    const baseEvents = Array.isArray(sourceEvents) ? sourceEvents : window.globalEvents;
+    const sectorEvents = baseEvents.filter(event => isEventInsideSector(event, sectorName));
+    const sectorThermals = (window.axisThermalFeatures || []).filter(point => isEventInsideSector(point, sectorName));
+    const aggregate = sectorEvents.reduce((acc, event) => {
+      const eventText = buildAxisEventText(event);
+      const doctrine = inferDoctrineBucket(event, eventText);
+      const tieScore = clamp(
+        event.tie_total != null ? toFiniteNumber(event.tie_total) / 10
+          : event.tie_score != null ? toFiniteNumber(event.tie_score) / 10
+            : toFiniteNumber(event.intensity_score),
+        0,
+        10
+      );
+
+      acc.totalEvents += 1;
+      acc.tieSum += tieScore;
+      acc.doctrine[doctrine] += 1;
+
+      const equipment = analyzeEquipmentSignals(eventText, tieScore);
+      acc.equipmentScore += equipment.score;
+      Object.entries(equipment.tags).forEach(([label, count]) => {
+        acc.equipmentTags[label] = (acc.equipmentTags[label] || 0) + count;
+      });
+
+      const reliabilityScore = clamp(
+        toFiniteNumber(event.reliability_score != null ? event.reliability_score : event.reliability, 50),
+        0,
+        100
+      );
+      const confidenceScore = clamp(
+        toFiniteNumber(
+          event.confidence != null ? event.confidence : event.source_reputation_score != null ? event.source_reputation_score : reliabilityScore,
+          50
+        ),
+        0,
+        100
+      );
+      const cohesionScore = (reliabilityScore + confidenceScore) / 2;
+      acc.cohesionSum += cohesionScore;
+      acc.cohesionSquared += cohesionScore * cohesionScore;
+
+      if (isLogisticsEvent(event, eventText)) acc.logisticsHits += 1;
+      if (doctrine === 'shaping') acc.shapingEvents += 1;
+
+      acc.frontlineShiftKm += estimateFrontlineShiftKm(event, doctrine, tieScore, eventText);
+
+      if (doctrine === 'attrition' || doctrine === 'shaping') {
+        const lat = Number(event.lat);
+        const lon = Number(event.lon);
+        acc.thermalEligible += 1;
+
+        if (Number.isFinite(lat) && Number.isFinite(lon) && sectorThermals.some(point => haversineKm(lat, lon, point.lat, point.lon) <= 3)) {
+          acc.thermalVerified += 1;
+        }
+      }
+
+      return acc;
+    }, {
+      totalEvents: 0,
+      tieSum: 0,
+      doctrine: { manoeuvre: 0, shaping: 0, attrition: 0 },
+      equipmentScore: 0,
+      equipmentTags: {},
+      cohesionSum: 0,
+      cohesionSquared: 0,
+      logisticsHits: 0,
+      shapingEvents: 0,
+      frontlineShiftKm: 0,
+      thermalEligible: 0,
+      thermalVerified: 0
+    });
+
+    const doctrineLabels = {
+      manoeuvre: 'Manoeuvre',
+      shaping: 'Shaping',
+      attrition: 'Attrition'
+    };
+    const dominantDoctrineKey = Object.entries(aggregate.doctrine)
+      .sort((left, right) => right[1] - left[1])[0][0];
+    const averageTie = aggregate.totalEvents ? aggregate.tieSum / aggregate.totalEvents : 0;
+    const averageCohesion = aggregate.totalEvents ? aggregate.cohesionSum / aggregate.totalEvents : 0;
+    const cohesionVariance = aggregate.totalEvents
+      ? Math.max(0, (aggregate.cohesionSquared / aggregate.totalEvents) - (averageCohesion ** 2))
+      : 0;
+    const fogIndex = clamp(((100 - averageCohesion) * 0.72) + (Math.sqrt(cohesionVariance) * 1.15), 0, 100);
+    const doctrinePercentages = {
+      manoeuvre: aggregate.totalEvents ? (aggregate.doctrine.manoeuvre / aggregate.totalEvents) * 100 : 0,
+      shaping: aggregate.totalEvents ? (aggregate.doctrine.shaping / aggregate.totalEvents) * 100 : 0,
+      attrition: aggregate.totalEvents ? (aggregate.doctrine.attrition / aggregate.totalEvents) * 100 : 0
+    };
+    const logisticsRatio = aggregate.shapingEvents ? aggregate.logisticsHits / aggregate.shapingEvents : 0;
+    const logisticsShare = aggregate.shapingEvents ? (aggregate.logisticsHits / aggregate.shapingEvents) * 100 : 0;
+    const frontlineShiftKm = Number(aggregate.frontlineShiftKm.toFixed(1));
+    const friction = aggregate.tieSum / Math.max(aggregate.frontlineShiftKm, 0.5);
+    const thermalVerification = aggregate.thermalEligible
+      ? (aggregate.thermalVerified / aggregate.thermalEligible) * 100
+      : 0;
+    const equipmentTags = Object.entries(aggregate.equipmentTags)
+      .sort((left, right) => right[1] - left[1])
+      .slice(0, 3)
+      .map(([label, count]) => `${label} x${count}`);
+
+    return {
+      sectorName,
+      totalEvents: aggregate.totalEvents,
+      averageTie,
+      doctrinePercentages,
+      dominantDoctrine: doctrineLabels[dominantDoctrineKey],
+      equipmentEstimate: Math.round(aggregate.equipmentScore),
+      equipmentTags,
+      fogIndex,
+      fogState: getAxisFogState(fogIndex),
+      logisticsHits: aggregate.logisticsHits,
+      shapingEvents: aggregate.shapingEvents,
+      logisticsRatio,
+      logisticsShare,
+      frontlineShiftKm,
+      friction,
+      thermalEligible: aggregate.thermalEligible,
+      thermalVerified: aggregate.thermalVerified,
+      thermalVerification,
+      sectorThermalCount: sectorThermals.length
+    };
+  }
+
+  function renderAxisStatsPanel(metrics) {
+    const panel = document.getElementById('axis-stats-panel');
+    if (!panel) return;
+
+    if (!metrics || !metrics.sectorName) {
+      panel.classList.remove('is-visible');
+      panel.setAttribute('aria-hidden', 'true');
+      return;
+    }
+
+    panel.classList.add('is-visible');
+    panel.setAttribute('aria-hidden', 'false');
+
+    const panelBadge = document.getElementById('axisStatsBadge');
+    const fogBadge = document.getElementById('axisFogBadge');
+    const fogLabels = {
+      low: 'Low Fog',
+      mid: 'Contested',
+      high: 'High Fog',
+      critical: 'Black Box'
+    };
+
+    document.getElementById('axisStatsTitle').textContent = metrics.sectorName;
+    if (panelBadge) {
+      panelBadge.textContent = metrics.totalEvents > 0 ? 'Live' : 'Empty';
+      panelBadge.dataset.state = metrics.totalEvents > 0 ? 'live' : 'empty';
+    }
+
+    document.getElementById('axisStatsSummary').textContent = metrics.totalEvents > 0
+      ? `${metrics.totalEvents} filtered events | Avg T.I.E. ${metrics.averageTie.toFixed(1)} | ${metrics.frontlineShiftKm.toFixed(1)} km frontage estimate`
+      : 'No qualifying events detected inside this axis under the active filter stack.';
+
+    document.getElementById('axisTotalEvents').textContent = metrics.totalEvents;
+    document.getElementById('axisVolumeNote').textContent = describeAxisVolume(metrics.totalEvents);
+    document.getElementById('axisTieAverage').textContent = metrics.averageTie.toFixed(1);
+
+    if (fogBadge) {
+      fogBadge.textContent = fogLabels[metrics.fogState] || 'Unknown';
+      fogBadge.dataset.state = metrics.fogState;
+    }
+    document.getElementById('axisFogValue').textContent = `${Math.round(metrics.fogIndex)}%`;
+    document.getElementById('axisFogNote').textContent = metrics.totalEvents > 0
+      ? `${metrics.sectorThermalCount} thermal reference points and credibility dispersion fused into the fog model.`
+      : 'No signal stack available for coherence scoring.';
+    setAxisGauge(document.getElementById('axisFogGauge'), metrics.fogIndex, metrics.fogState);
+
+    document.getElementById('axisEquipmentEstimate').textContent = metrics.equipmentEstimate;
+    const equipmentTags = document.getElementById('axisEquipmentTags');
+    if (equipmentTags) {
+      const tags = metrics.equipmentTags.length > 0 ? metrics.equipmentTags : ['No heavy-platform signatures'];
+      equipmentTags.innerHTML = tags.map(tag => `<span class="axis-tag">${tag}</span>`).join('');
+    }
+
+    document.getElementById('axisDoctrineMeta').textContent = metrics.totalEvents > 0
+      ? `${metrics.dominantDoctrine} profile dominant`
+      : 'Awaiting doctrinal split.';
+    document.getElementById('axisDoctrineManoeuvreValue').textContent = `${metrics.doctrinePercentages.manoeuvre.toFixed(0)}%`;
+    document.getElementById('axisDoctrineShapingValue').textContent = `${metrics.doctrinePercentages.shaping.toFixed(0)}%`;
+    document.getElementById('axisDoctrineAttritionValue').textContent = `${metrics.doctrinePercentages.attrition.toFixed(0)}%`;
+    animateAxisWidth(document.getElementById('axisDoctrineManoeuvreFill'), metrics.doctrinePercentages.manoeuvre);
+    animateAxisWidth(document.getElementById('axisDoctrineShapingFill'), metrics.doctrinePercentages.shaping);
+    animateAxisWidth(document.getElementById('axisDoctrineAttritionFill'), metrics.doctrinePercentages.attrition);
+
+    document.getElementById('axisLogisticsRatio').textContent = `${metrics.logisticsRatio.toFixed(2)}x`;
+    document.getElementById('axisLogisticsNote').textContent = metrics.shapingEvents > 0
+      ? `${metrics.logisticsHits} logistics-linked events inside ${metrics.shapingEvents} shaping events.`
+      : 'No shaping cluster available for a suppression ratio.';
+    animateAxisWidth(document.getElementById('axisLogisticsHitFill'), metrics.logisticsShare);
+    animateAxisWidth(document.getElementById('axisLogisticsPressureFill'), 100 - metrics.logisticsShare);
+
+    document.getElementById('axisFrictionValue').textContent = metrics.friction.toFixed(1);
+    document.getElementById('axisFrictionNote').textContent = `${describeFrontlineFriction(metrics.friction, metrics.frontlineShiftKm)} Frontline delta: ${metrics.frontlineShiftKm.toFixed(1)} km.`;
+
+    document.getElementById('axisThermalValue').textContent = `${Math.round(metrics.thermalVerification)}%`;
+    document.getElementById('axisThermalNote').textContent = metrics.thermalEligible > 0
+      ? `${metrics.thermalVerified}/${metrics.thermalEligible} shaping or attrition events fall within 3 km of FIRMS anomalies.`
+      : 'No shaping or attrition events available for thermal matching.';
+    animateAxisWidth(document.getElementById('axisThermalFill'), metrics.thermalVerification);
+  }
+
+  function updateAxisStatsPanel(sectorName, sourceEvents) {
+    syncAxisHudOffset();
+    window.currentAxisSector = sectorName || '';
+
+    if (!sectorName) {
+      renderAxisStatsPanel(null);
+      return;
+    }
+
+    renderAxisStatsPanel(computeAxisMetrics(sectorName, sourceEvents));
+
+    loadAxisThermalFeatures().then(() => {
+      const activeSector = document.getElementById('sectorFilter');
+      const currentSector = activeSector ? activeSector.value : window.currentAxisSector;
+      if (currentSector !== sectorName) return;
+      renderAxisStatsPanel(computeAxisMetrics(sectorName, Array.isArray(window.currentFilteredEvents) ? window.currentFilteredEvents : sourceEvents));
+    });
   }
 
   function createMarker(e) {
@@ -1112,6 +1527,7 @@
           }
 
           renderInternal(filtered);
+          updateAxisStatsPanel(selectedSector, filtered);
 
           if (window.Dashboard) window.Dashboard.update(filtered);
         };
@@ -1177,6 +1593,11 @@
             } else if (!val && window.map) {
               window.map.setView([48.5, 32.0], 6); // Reset view to default Zoom
             }
+
+            updateAxisStatsPanel(
+              val,
+              Array.isArray(window.currentFilteredEvents) ? window.currentFilteredEvents : window.globalEvents
+            );
           });
         }
 
@@ -1227,6 +1648,7 @@
     renderInternal(events);
   }
 
+  window.updateAxisStatsPanel = updateAxisStatsPanel;
   window.loadHistoricalMap = loadHistoricalMap;
   window.filterEventsByDate = filterEventsByDate;
 
@@ -1525,11 +1947,10 @@
 
     if (layerName === 'firms') {
       if (isChecked) {
-        // Load FIRMS data from local GeoJSON (more reliable than WMTS tiles)
-        fetch('assets/data/thermal_firms.geojson')
-          .then(response => response.json())
-          .then(data => {
-            if (!data.features || data.features.length === 0) {
+        // Use cached FIRMS support data when available.
+        loadAxisThermalFeatures()
+          .then(features => {
+            if (!features || features.length === 0) {
               console.warn("âš ï¸ No FIRMS data available");
               return;
             }
@@ -1537,19 +1958,11 @@
             // Create layer group for thermal hotspots
             firmsLayer = L.layerGroup();
 
-            // Whitelist only Ukrainian/Russian land + adjacent maritime zones.
-            const isInUaRuTerritory = (lat, lon) => {
-              return isInConflictTerritory(lat, lon);
-            };
-
             let visibleHotspots = 0;
-            data.features.filter(f => {
-              const c = f.geometry.coordinates;
-              return isInUaRuTerritory(c[1], c[0]);
-            }).forEach(f => {
+            features.forEach(feature => {
               visibleHotspots += 1;
-              const coords = f.geometry.coordinates;
-              const props = f.properties;
+              const coords = [feature.lon, feature.lat];
+              const props = feature.properties || {};
               const brightness = props.brightness || 300;
 
               // Color based on brightness (hotter = more red)
@@ -1732,12 +2145,12 @@
             });
 
             firmsLayer.addTo(map);
-            console.log(`âœ… FIRMS layer loaded: ${visibleHotspots}/${data.features.length} hotspots`);
+            console.log(`âœ… FIRMS layer loaded: ${visibleHotspots}/${features.length} hotspots`);
 
             // Show metadata info
-            if (data.metadata) {
-              console.log(`   Source: ${data.metadata.source}`);
-              console.log(`   Generated: ${data.metadata.generated}`);
+            if (window.axisThermalMetadata) {
+              console.log(`   Source: ${window.axisThermalMetadata.source}`);
+              console.log(`   Generated: ${window.axisThermalMetadata.generated}`);
             }
           })
           .catch(err => {
@@ -3510,10 +3923,13 @@
   // Wait for DOM before initializing
   function startApp() {
     console.log("ðŸš€ Starting Impact Atlas...");
+    syncAxisHudOffset();
+    window.addEventListener('resize', syncAxisHudOffset);
     initMap();
     loadSectorsData();
     loadSectorAnomaliesData();
     loadEventsData();
+    loadAxisThermalFeatures();
 
     // Initialize Physical Weather
     if (window.fetchFrontlineWeather) window.fetchFrontlineWeather();

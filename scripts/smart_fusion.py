@@ -1,4 +1,4 @@
-﻿import sqlite3
+import sqlite3
 import json
 import os
 import re
@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from openai import OpenAI
 from dotenv import load_dotenv
 import time
+from geopy.distance import geodesic
 
 # =============================================================================
 # SMART FUSION ENGINE V4.2
@@ -209,8 +210,7 @@ def main():
     ensure_reputation_table(cursor)
     conn.commit()
 
-    cutoff_date = (datetime.now() - timedelta(hours=96)).isoformat()
-    print(f"   ⏳ Smart Fusion Scope: Analyzing events newer than {cutoff_date}")
+    print("   ⏳ Smart Fusion Scope: Analyzing ALL processed events")
 
     # Full history for anti-propaganda hash check
     cursor.execute("""
@@ -230,11 +230,9 @@ def main():
         SELECT event_id, last_seen_date
         FROM unique_events
         WHERE embedding_vector IS NOT NULL
-          AND ai_analysis_status != 'MERGED'
-          AND ai_analysis_status != 'NULL'
-          AND last_seen_date >= ?
+          AND ai_analysis_status = 'COMPLETED'
         ORDER BY last_seen_date DESC
-    """, (cutoff_date,))
+    """)
     all_index = cursor.fetchall()
     total_events = len(all_index)
     print(f"✅ Indice caricato: {total_events} eventi pronti.")
@@ -257,11 +255,13 @@ def main():
 
         cursor.execute(f"""
             SELECT event_id, ai_report_json, last_seen_date, full_text_dossier,
-                   embedding_vector, image_phash, sources_list
+                   embedding_vector, image_phash, sources_list, lat, lon
             FROM unique_events WHERE event_id IN ({placeholders})
+            ORDER BY last_seen_date DESC
         """, current_ids)
-        rows = cursor.fetchall()
 
+        rows = cursor.fetchall()
+        
         events = []
         vectors = []
 
@@ -304,7 +304,9 @@ def main():
                     "id": r['event_id'],
                     "title": title,
                     "text": r['full_text_dossier'] or '',
-                    "date": event_dt
+                    "date": event_dt,
+                    "lat": r['lat'],
+                    "lon": r['lon']
                 })
                 vectors.append(vec)
             except Exception:
@@ -341,19 +343,46 @@ def main():
                 continue
 
             score = sim_matrix[i, j]
-            print(f"   🔗 Checking: {events[i]['title'][:30]} vs {events[j]['title'][:30]} (Sim: {score:.2f})")
+            print(f"  🔗 Checking: {events[i]['title'][:30]} vs {events[j]['title'][:30]} (Sim: {score:.2f})")
+
+            # --- Calcolo Distanza Geografica ---
+            lat_i, lon_i = events[i]['lat'], events[i]['lon']
+            lat_j, lon_j = events[j]['lat'], events[j]['lon']
+            
+            if lat_i is not None and lon_i is not None and lat_j is not None and lon_j is not None:
+                try:
+                    distance_km = geodesic((lat_i, lon_i), (lat_j, lon_j)).kilometers
+                except ValueError:
+                    distance_km = float('inf') # Fallback se coordinate malformate
+            else:
+                distance_km = float('inf') # Fallback se mancano coordinate in uno dei due
+                
+            print(f"      Dist: {distance_km if distance_km != float('inf') else 'N/A'}km | Time: {delta:.1f}h")
 
             is_match = False
-            if score > 0.96 and delta < 12:
+            
+            # --- THE FAST TRACK (Merge Deterministico) ---
+            # Se la similarità è alta (>=0.85), la distanza è minima (<=10km) e il tempo è ravvicinato (<=12h)
+            if score >= 0.85 and distance_km <= 10.0 and delta <= 12:
                 is_match = True
-                print("      🚀 AUTO-MERGE (Super High Confidence)")
+                print("      🚀 FAST-TRACK AUTO-MERGE (No LLM needed)")
+                
+            # --- THE JUDGE (Zona Grigia) ---
             else:
-                verdict = ask_the_judge(events[i], events[j])
-                if verdict and verdict.get('is_same_event'):
-                    is_match = True
-                    print(f"      ✅ AI CONFIRMED (Conf: {verdict.get('confidence')})")
+                # Evitiamo di chiamare il Judge se sono troppo distanti, a meno che non siano semanticamente identici (>0.93)
+                if distance_km > 150.0 and score <= 0.93:
+                    is_match = False
+                    print("      🛑 REJECTED: Too far away (>150km) and similarity not extreme.")
                 else:
-                    print("      ❌ AI REJECTED")
+                    # Zona grigia: chiediamo a Llama 3.3 70B
+                    print("      ⚖️ INCONCLUSIVE: Asking The Judge...")
+                    verdict = ask_the_judge(events[i], events[j])
+                    
+                    if verdict and verdict.get('is_same_event'):
+                        is_match = True
+                        print(f"      ✅ AI CONFIRMED (Conf: {verdict.get('confidence')})")
+                    else:
+                        print("      ❌ AI REJECTED")
 
             if is_match:
                 if events[i]['date'] < events[j]['date']:

@@ -34,10 +34,10 @@ print(f"DB_PATH: {DB_PATH}")
 print(f"DB exists: {os.path.exists(DB_PATH)}")
 
 load_dotenv(ENV_PATH)
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 # Processing parameters
-EMBEDDING_MODEL = "text-embedding-3-small"
+EMBEDDING_MODEL = "qwen/qwen3-embedding-8b"
 TEXTS_PER_API_CALL = 50      # Batch 50 texts per API request
 CONCURRENT_REQUESTS = 10     # 10 parallel requests
 DB_BATCH_SIZE = 500          # Fetch 500 from DB at a time
@@ -169,12 +169,15 @@ async def generate_embeddings_async(session, texts, semaphore):
     """Generate embeddings for a batch of texts."""
     async with semaphore:
         headers = {
-            "Authorization": f"Bearer {OPENAI_API_KEY}",
-            "Content-Type": "application/json"
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://github.com/Osint-tracker/impact-atlas",
+            "X-Title": "Impact Atlas Refiner"
         }
         
-        # Truncate texts
-        safe_texts = [str(t).replace("\n", " ")[:6000] for t in texts]
+        # Puoi alzare o rimuovere il limite dei 6000 caratteri dato che Qwen3 8B 
+        # ha una context window molto più ampia di text-embedding-3-small
+        safe_texts = [str(t).replace("\n", " ") for t in texts]
         
         payload = {
             "model": EMBEDDING_MODEL,
@@ -183,7 +186,7 @@ async def generate_embeddings_async(session, texts, semaphore):
         
         try:
             async with session.post(
-                "https://api.openai.com/v1/embeddings",
+                "https://openrouter.ai/api/v1/embeddings",
                 headers=headers,
                 json=payload,
                 timeout=aiohttp.ClientTimeout(total=60)
@@ -209,8 +212,8 @@ async def main_async(dry_run=False, skip_reset=False, limit=None):
     print("REFINER FAST - High-Speed Embedding with GDELT Fix")
     print("=" * 60)
     
-    if not OPENAI_API_KEY:
-        print("ERROR: OPENAI_API_KEY not found in .env")
+    if not OPENROUTER_API_KEY:
+        print("ERROR: OPENROUTER_API_KEY not found in .env")
         return
     
     # Connect to DB
