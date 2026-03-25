@@ -36,6 +36,8 @@
   let tacticalTimeWindowHours = 0; // 0 = ALL (no filter)
   let tacticalPersistence = false;  // Default: OFF
   let axisThermalPromise = null;
+  let axisPanelMode = 'expanded';
+  let axisPanelDismissedSector = '';
 
   // Central helper to define what is civilian
   function isCivilianEvent(e) {
@@ -82,40 +84,39 @@
       geometry: {
         type: 'Polygon',
         coordinates: [[
-          [22.10, 51.60],
-          [24.00, 52.30],
-          [30.30, 52.30],
-          [34.80, 52.10],
-          [39.10, 50.40],
-          [40.30, 49.50],
-          [40.10, 47.90],
-          [38.40, 46.10],
-          [36.30, 45.80],
-          [32.60, 45.20],
-          [30.00, 45.20],
-          [27.90, 45.35],
-          [25.10, 47.00],
-          [23.00, 48.60],
-          [22.10, 51.60]
-        ]]
-      }
-    },
-    {
-      name: 'UA_EEZ',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [[
-          [29.50, 44.10],
-          [31.50, 44.00],
-          [34.80, 44.10],
-          [36.90, 44.80],
-          [38.10, 46.30],
-          [37.80, 47.50],
-          [35.80, 47.90],
-          [32.50, 47.60],
-          [30.20, 46.50],
-          [29.50, 45.20],
-          [29.50, 44.10]
+          [22.12, 52.24],
+          [23.52, 51.56],
+          [24.25, 51.93],
+          [26.10, 51.84],
+          [28.60, 51.58],
+          [30.92, 52.08],
+          [32.62, 52.11],
+          [34.76, 51.74],
+          [36.58, 50.83],
+          [38.95, 50.09],
+          [39.80, 49.00],
+          [39.72, 47.95],
+          [38.23, 47.10],
+          [37.40, 46.02],
+          [36.62, 45.16],
+          [34.47, 45.31],
+          [33.44, 45.72],
+          [31.82, 45.27],
+          [30.94, 45.50],
+          [29.65, 45.20],
+          [29.31, 45.45],
+          [28.22, 45.47],
+          [28.71, 46.63],
+          [29.67, 46.83],
+          [29.63, 47.20],
+          [29.24, 47.98],
+          [28.67, 48.16],
+          [27.36, 48.66],
+          [26.26, 48.62],
+          [24.98, 48.61],
+          [23.19, 49.44],
+          [22.64, 50.41],
+          [22.12, 52.24]
         ]]
       }
     },
@@ -124,40 +125,34 @@
       geometry: {
         type: 'Polygon',
         coordinates: [[
-          [27.00, 54.00],
-          [29.50, 59.00],
-          [40.50, 60.00],
-          [52.00, 58.00],
-          [52.00, 44.00],
-          [37.60, 44.00],
-          [36.10, 46.20],
-          [40.30, 47.90],
-          [40.60, 50.60],
-          [39.20, 51.40],
-          [36.70, 52.30],
-          [33.00, 52.80],
-          [30.00, 53.10],
-          [27.00, 54.00]
-        ]]
-      }
-    },
-    {
-      name: 'RU_EEZ',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [[
-          [35.60, 43.70],
-          [39.70, 43.70],
-          [39.80, 45.50],
-          [38.70, 46.90],
-          [37.00, 47.10],
-          [36.00, 46.40],
-          [35.60, 44.80],
-          [35.60, 43.70]
+          [30.85, 55.95],
+          [32.95, 56.05],
+          [36.10, 55.75],
+          [39.95, 54.55],
+          [40.35, 52.35],
+          [40.73, 50.70],
+          [40.55, 48.55],
+          [40.30, 46.60],
+          [39.35, 45.20],
+          [37.05, 44.85],
+          [36.05, 45.60],
+          [36.85, 47.35],
+          [38.72, 48.55],
+          [39.28, 50.05],
+          [38.84, 51.18],
+          [37.52, 51.88],
+          [35.32, 52.82],
+          [33.10, 53.82],
+          [31.30, 54.35],
+          [30.85, 55.95]
         ]]
       }
     }
   ];
+
+  const AXIS_THERMAL_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+  const AXIS_THERMAL_MATCH_DISTANCE_KM = 3;
+  const AXIS_THERMAL_MATCH_WINDOW_MS = 36 * 60 * 60 * 1000;
 
   // ============================================
   // 3. HELPER FUNCTIONS (Define Before Use)
@@ -337,6 +332,20 @@
     return Number.isFinite(parsed) ? parsed : fallback;
   }
 
+  function normalizeAxisScore(value, fallback = 50) {
+    if (value == null || value === '') return fallback;
+
+    if (typeof value === 'string') {
+      const normalized = value.trim().toLowerCase();
+      if (!normalized) return fallback;
+      if (normalized === 'high' || normalized === 'h') return 85;
+      if (normalized === 'medium' || normalized === 'med' || normalized === 'm' || normalized === 'nominal' || normalized === 'n') return 60;
+      if (normalized === 'low' || normalized === 'l') return 30;
+    }
+
+    return clamp(toFiniteNumber(value, fallback), 0, 100);
+  }
+
   function clamp(value, min, max) {
     return Math.min(max, Math.max(min, value));
   }
@@ -389,8 +398,10 @@
     return AXIS_LOGISTICS_PATTERN.test(text);
   }
 
-  function estimateFrontlineShiftKm(event, doctrine, tieScore, eventText) {
-    if (doctrine !== 'manoeuvre') return 0;
+  function extractFrontlineShiftKm(event, doctrine, eventText) {
+    if (doctrine !== 'manoeuvre') {
+      return { shiftKm: 0, hasEvidence: false };
+    }
 
     const text = eventText || buildAxisEventText(event);
     const distanceMatches = AXIS_MOVEMENT_PATTERN.test(text)
@@ -400,19 +411,13 @@
       : [];
 
     if (distanceMatches.length > 0) {
-      return clamp(distanceMatches[0], 0.4, 30);
+      return {
+        shiftKm: clamp(distanceMatches[0], 0.4, 30),
+        hasEvidence: true
+      };
     }
 
-    let baseShift = 0.55 + (tieScore * 0.08);
-    if (/(BREACH|BREAKTHROUGH|COLLAPSE|ROUT|ENCIRCLE|LIBERAT|RECAPTUR)/.test(text)) {
-      baseShift += 1.6;
-    } else if (/(CAPTUR|SEIZ|ADVANCE|STORM|ASSAULT|FOOTHOLD|CROSSING|CONTROL OF THE POSITION|CONTROL OF POSITION)/.test(text)) {
-      baseShift += 1.15;
-    } else if (/(RAID|PROBE|OPERATIONS|ENGAGEMENT)/.test(text)) {
-      baseShift += 0.45;
-    }
-
-    return clamp(baseShift, 0.4, 6.5);
+    return { shiftKm: 0, hasEvidence: false };
   }
 
   function analyzeEquipmentSignals(eventText, tieScore) {
@@ -447,12 +452,115 @@
     return 'Mobility exceeds kinetic drag in this axis.';
   }
 
-  function loadAxisThermalFeatures() {
-    if (Array.isArray(window.axisThermalFeatures) && window.axisThermalFeatures.length > 0) {
-      return Promise.resolve(window.axisThermalFeatures);
+  function parseAxisThermalTimestamp(properties) {
+    const dateValue = properties && properties.acq_date ? String(properties.acq_date).trim() : '';
+    if (!dateValue) return NaN;
+
+    const timeValue = String(properties && properties.acq_time != null ? properties.acq_time : '')
+      .replace(/\D/g, '')
+      .padStart(4, '0')
+      .slice(-4);
+    const hours = timeValue.slice(0, 2) || '00';
+    const minutes = timeValue.slice(2, 4) || '00';
+    return Date.parse(`${dateValue}T${hours}:${minutes}:00Z`);
+  }
+
+  function getVisibleAxisThermalFeatures(referenceTime = Date.now()) {
+    const cutoff = referenceTime - AXIS_THERMAL_MAX_AGE_MS;
+    return (window.axisThermalFeatures || []).filter(feature => Number.isFinite(feature.timestampMs)
+      && feature.timestampMs >= cutoff);
+  }
+
+  function formatAxisCompactValue(value, digits = 1) {
+    return Number.isFinite(value) ? value.toFixed(digits) : 'N/A';
+  }
+
+  function updateAxisPanelUIState(hasSector) {
+    const panel = document.getElementById('axis-stats-panel');
+    const restoreButton = document.getElementById('axis-panel-restore');
+    const restoreLabel = document.getElementById('axisPanelRestoreLabel');
+    const minimizeButton = document.getElementById('axisPanelMinimize');
+    const minimizeIcon = minimizeButton ? minimizeButton.querySelector('i') : null;
+
+    if (!panel || !restoreButton) return;
+
+    const showPanel = hasSector && axisPanelMode !== 'hidden';
+    panel.classList.toggle('is-visible', showPanel);
+    panel.classList.toggle('is-collapsed', hasSector && axisPanelMode === 'collapsed');
+    panel.setAttribute('aria-hidden', showPanel ? 'false' : 'true');
+
+    const showRestore = hasSector && axisPanelMode === 'hidden';
+    restoreButton.hidden = !showRestore;
+    restoreButton.classList.toggle('is-visible', showRestore);
+
+    if (restoreLabel) {
+      restoreLabel.textContent = window.currentAxisSector
+        ? `Restore ${window.currentAxisSector}`
+        : 'Restore Axis Analytics';
     }
 
-    if (axisThermalPromise) return axisThermalPromise;
+    if (minimizeButton) {
+      const isCollapsed = axisPanelMode === 'collapsed';
+      minimizeButton.setAttribute('aria-label', isCollapsed ? 'Expand axis analytics' : 'Minimize axis analytics');
+      minimizeButton.title = isCollapsed ? 'Expand axis analytics' : 'Minimize axis analytics';
+      if (minimizeIcon) {
+        minimizeIcon.className = isCollapsed
+          ? 'fa-solid fa-up-right-and-down-left-from-center'
+          : 'fa-solid fa-window-minimize';
+      }
+    }
+  }
+
+  function initAxisStatsPanelControls() {
+    const minimizeButton = document.getElementById('axisPanelMinimize');
+    const closeButton = document.getElementById('axisPanelClose');
+    const restoreButton = document.getElementById('axis-panel-restore');
+
+    if (minimizeButton && !minimizeButton.dataset.bound) {
+      minimizeButton.dataset.bound = 'true';
+      minimizeButton.addEventListener('click', () => {
+        if (!window.currentAxisSector) return;
+        axisPanelMode = axisPanelMode === 'collapsed' ? 'expanded' : 'collapsed';
+        updateAxisPanelUIState(true);
+        syncAxisHudOffset();
+      });
+    }
+
+    if (closeButton && !closeButton.dataset.bound) {
+      closeButton.dataset.bound = 'true';
+      closeButton.addEventListener('click', () => {
+        if (!window.currentAxisSector) return;
+        axisPanelDismissedSector = window.currentAxisSector;
+        axisPanelMode = 'hidden';
+        updateAxisPanelUIState(true);
+        syncAxisHudOffset();
+      });
+    }
+
+    if (restoreButton && !restoreButton.dataset.bound) {
+      restoreButton.dataset.bound = 'true';
+      restoreButton.addEventListener('click', () => {
+        axisPanelDismissedSector = '';
+        axisPanelMode = 'expanded';
+        updateAxisPanelUIState(Boolean(window.currentAxisSector));
+        syncAxisHudOffset();
+
+        if (window.currentAxisSector) {
+          renderAxisStatsPanel(computeAxisMetrics(
+            window.currentAxisSector,
+            Array.isArray(window.currentFilteredEvents) ? window.currentFilteredEvents : window.globalEvents
+          ));
+        }
+      });
+    }
+
+    updateAxisPanelUIState(Boolean(window.currentAxisSector));
+  }
+
+  function loadAxisThermalFeatures() {
+    if (axisThermalPromise) {
+      return axisThermalPromise.then(() => getVisibleAxisThermalFeatures());
+    }
 
     axisThermalPromise = fetch('assets/data/thermal_firms.geojson')
       .then(response => response.json())
@@ -464,15 +572,17 @@
           return {
             lat: Number(coords[1]),
             lon: Number(coords[0]),
-            properties: feature.properties || {}
+            properties: feature.properties || {},
+            timestampMs: parseAxisThermalTimestamp(feature.properties || {})
           };
         }).filter(feature => Number.isFinite(feature.lat)
           && Number.isFinite(feature.lon)
+          && Number.isFinite(feature.timestampMs)
           && isInConflictTerritory(feature.lat, feature.lon)) : [];
 
         window.axisThermalFeatures = features;
         window.axisThermalMetadata = data.metadata || null;
-        return features;
+        return getVisibleAxisThermalFeatures();
       })
       .catch(error => {
         console.warn('Axis thermal support data unavailable:', error);
@@ -488,8 +598,11 @@
   function syncAxisHudOffset() {
     const wrapper = document.querySelector('.map-container-wrapper');
     const hud = document.getElementById('tacticalHudContainer');
+    const topbar = wrapper ? wrapper.querySelector('.map-topbar') : null;
     if (!wrapper || !hud) return;
-    wrapper.style.setProperty('--axis-hud-offset', `${hud.offsetHeight + 20}px`);
+    wrapper.style.setProperty('--axis-hud-left', '15px');
+    wrapper.style.setProperty('--axis-hud-top', `${(topbar ? topbar.offsetHeight : 0) + 15}px`);
+    wrapper.style.setProperty('--axis-hud-offset', `${hud.offsetHeight + 16}px`);
   }
 
   function animateAxisWidth(element, percentage) {
@@ -521,7 +634,8 @@
 
     const baseEvents = Array.isArray(sourceEvents) ? sourceEvents : window.globalEvents;
     const sectorEvents = baseEvents.filter(event => isEventInsideSector(event, sectorName));
-    const sectorThermals = (window.axisThermalFeatures || []).filter(point => isEventInsideSector(point, sectorName));
+    const sectorThermals = getVisibleAxisThermalFeatures().filter(point => isEventInsideSector(point, sectorName));
+    const recentEventCutoff = Date.now() - AXIS_THERMAL_MAX_AGE_MS;
     const aggregate = sectorEvents.reduce((acc, event) => {
       const eventText = buildAxisEventText(event);
       const doctrine = inferDoctrineBucket(event, eventText);
@@ -539,22 +653,18 @@
 
       const equipment = analyzeEquipmentSignals(eventText, tieScore);
       acc.equipmentScore += equipment.score;
+      if (equipment.score > 0) acc.equipmentEvidence += 1;
       Object.entries(equipment.tags).forEach(([label, count]) => {
         acc.equipmentTags[label] = (acc.equipmentTags[label] || 0) + count;
       });
 
-      const reliabilityScore = clamp(
-        toFiniteNumber(event.reliability_score != null ? event.reliability_score : event.reliability, 50),
-        0,
-        100
+      const reliabilityScore = normalizeAxisScore(
+        event.reliability_score != null ? event.reliability_score : event.reliability,
+        50
       );
-      const confidenceScore = clamp(
-        toFiniteNumber(
-          event.confidence != null ? event.confidence : event.source_reputation_score != null ? event.source_reputation_score : reliabilityScore,
-          50
-        ),
-        0,
-        100
+      const confidenceScore = normalizeAxisScore(
+        event.confidence != null ? event.confidence : event.source_reputation_score,
+        reliabilityScore
       );
       const cohesionScore = (reliabilityScore + confidenceScore) / 2;
       acc.cohesionSum += cohesionScore;
@@ -563,14 +673,30 @@
       if (isLogisticsEvent(event, eventText)) acc.logisticsHits += 1;
       if (doctrine === 'shaping') acc.shapingEvents += 1;
 
-      acc.frontlineShiftKm += estimateFrontlineShiftKm(event, doctrine, tieScore, eventText);
+      const movementEvidence = extractFrontlineShiftKm(event, doctrine, eventText);
+      if (movementEvidence.hasEvidence) {
+        acc.frontlineShiftKm += movementEvidence.shiftKm;
+        acc.frontlineEvidence += 1;
+      }
 
       if (doctrine === 'attrition' || doctrine === 'shaping') {
+        const eventTimestamp = Number.isFinite(Number(event.timestamp)) ? Number(event.timestamp) : NaN;
         const lat = Number(event.lat);
         const lon = Number(event.lon);
-        acc.thermalEligible += 1;
 
-        if (Number.isFinite(lat) && Number.isFinite(lon) && sectorThermals.some(point => haversineKm(lat, lon, point.lat, point.lon) <= 3)) {
+        if (Number.isFinite(lat)
+          && Number.isFinite(lon)
+          && Number.isFinite(eventTimestamp)
+          && eventTimestamp >= recentEventCutoff) {
+          acc.thermalEligible += 1;
+        }
+
+        if (Number.isFinite(lat)
+          && Number.isFinite(lon)
+          && Number.isFinite(eventTimestamp)
+          && eventTimestamp >= recentEventCutoff
+          && sectorThermals.some(point => Math.abs(eventTimestamp - point.timestampMs) <= AXIS_THERMAL_MATCH_WINDOW_MS
+            && haversineKm(lat, lon, point.lat, point.lon) <= AXIS_THERMAL_MATCH_DISTANCE_KM)) {
           acc.thermalVerified += 1;
         }
       }
@@ -581,12 +707,14 @@
       tieSum: 0,
       doctrine: { manoeuvre: 0, shaping: 0, attrition: 0 },
       equipmentScore: 0,
+      equipmentEvidence: 0,
       equipmentTags: {},
       cohesionSum: 0,
       cohesionSquared: 0,
       logisticsHits: 0,
       shapingEvents: 0,
       frontlineShiftKm: 0,
+      frontlineEvidence: 0,
       thermalEligible: 0,
       thermalVerified: 0
     });
@@ -596,26 +724,33 @@
       shaping: 'Shaping',
       attrition: 'Attrition'
     };
-    const dominantDoctrineKey = Object.entries(aggregate.doctrine)
-      .sort((left, right) => right[1] - left[1])[0][0];
+    const dominantDoctrineKey = aggregate.totalEvents
+      ? Object.entries(aggregate.doctrine).sort((left, right) => right[1] - left[1])[0][0]
+      : null;
     const averageTie = aggregate.totalEvents ? aggregate.tieSum / aggregate.totalEvents : 0;
     const averageCohesion = aggregate.totalEvents ? aggregate.cohesionSum / aggregate.totalEvents : 0;
     const cohesionVariance = aggregate.totalEvents
       ? Math.max(0, (aggregate.cohesionSquared / aggregate.totalEvents) - (averageCohesion ** 2))
       : 0;
-    const fogIndex = clamp(((100 - averageCohesion) * 0.72) + (Math.sqrt(cohesionVariance) * 1.15), 0, 100);
+    const fogIndex = aggregate.totalEvents
+      ? clamp(((100 - averageCohesion) * 0.72) + (Math.sqrt(cohesionVariance) * 1.15), 0, 100)
+      : 0;
     const doctrinePercentages = {
       manoeuvre: aggregate.totalEvents ? (aggregate.doctrine.manoeuvre / aggregate.totalEvents) * 100 : 0,
       shaping: aggregate.totalEvents ? (aggregate.doctrine.shaping / aggregate.totalEvents) * 100 : 0,
       attrition: aggregate.totalEvents ? (aggregate.doctrine.attrition / aggregate.totalEvents) * 100 : 0
     };
     const logisticsRatio = aggregate.shapingEvents ? aggregate.logisticsHits / aggregate.shapingEvents : 0;
-    const logisticsShare = aggregate.shapingEvents ? (aggregate.logisticsHits / aggregate.shapingEvents) * 100 : 0;
+    const logisticsShare = aggregate.shapingEvents
+      ? clamp((aggregate.logisticsHits / aggregate.shapingEvents) * 100, 0, 100)
+      : 0;
     const frontlineShiftKm = Number(aggregate.frontlineShiftKm.toFixed(1));
-    const friction = aggregate.tieSum / Math.max(aggregate.frontlineShiftKm, 0.5);
+    const friction = aggregate.frontlineEvidence > 0 && aggregate.frontlineShiftKm > 0
+      ? aggregate.tieSum / aggregate.frontlineShiftKm
+      : NaN;
     const thermalVerification = aggregate.thermalEligible
       ? (aggregate.thermalVerified / aggregate.thermalEligible) * 100
-      : 0;
+      : NaN;
     const equipmentTags = Object.entries(aggregate.equipmentTags)
       .sort((left, right) => right[1] - left[1])
       .slice(0, 3)
@@ -626,8 +761,9 @@
       totalEvents: aggregate.totalEvents,
       averageTie,
       doctrinePercentages,
-      dominantDoctrine: doctrineLabels[dominantDoctrineKey],
-      equipmentEstimate: Math.round(aggregate.equipmentScore),
+      dominantDoctrine: dominantDoctrineKey ? doctrineLabels[dominantDoctrineKey] : 'No dominant profile',
+      equipmentEstimate: aggregate.equipmentEvidence > 0 ? Math.round(aggregate.equipmentScore) : NaN,
+      equipmentEvidence: aggregate.equipmentEvidence,
       equipmentTags,
       fogIndex,
       fogState: getAxisFogState(fogIndex),
@@ -637,6 +773,7 @@
       logisticsShare,
       frontlineShiftKm,
       friction,
+      frontlineEvidence: aggregate.frontlineEvidence,
       thermalEligible: aggregate.thermalEligible,
       thermalVerified: aggregate.thermalVerified,
       thermalVerification,
@@ -649,13 +786,9 @@
     if (!panel) return;
 
     if (!metrics || !metrics.sectorName) {
-      panel.classList.remove('is-visible');
-      panel.setAttribute('aria-hidden', 'true');
+      updateAxisPanelUIState(false);
       return;
     }
-
-    panel.classList.add('is-visible');
-    panel.setAttribute('aria-hidden', 'false');
 
     const panelBadge = document.getElementById('axisStatsBadge');
     const fogBadge = document.getElementById('axisFogBadge');
@@ -673,24 +806,33 @@
     }
 
     document.getElementById('axisStatsSummary').textContent = metrics.totalEvents > 0
-      ? `${metrics.totalEvents} filtered events | Avg T.I.E. ${metrics.averageTie.toFixed(1)} | ${metrics.frontlineShiftKm.toFixed(1)} km frontage estimate`
+      ? `${metrics.totalEvents} filtered events | Avg T.I.E. ${metrics.averageTie.toFixed(1)} | ${metrics.sectorThermalCount} FIRMS points within the last 7 days`
       : 'No qualifying events detected inside this axis under the active filter stack.';
 
     document.getElementById('axisTotalEvents').textContent = metrics.totalEvents;
     document.getElementById('axisVolumeNote').textContent = describeAxisVolume(metrics.totalEvents);
-    document.getElementById('axisTieAverage').textContent = metrics.averageTie.toFixed(1);
+    document.getElementById('axisTieAverage').textContent = metrics.totalEvents > 0
+      ? metrics.averageTie.toFixed(1)
+      : 'N/A';
 
     if (fogBadge) {
       fogBadge.textContent = fogLabels[metrics.fogState] || 'Unknown';
       fogBadge.dataset.state = metrics.fogState;
     }
-    document.getElementById('axisFogValue').textContent = `${Math.round(metrics.fogIndex)}%`;
+    document.getElementById('axisFogValue').textContent = metrics.totalEvents > 0
+      ? `${Math.round(metrics.fogIndex)}%`
+      : 'N/A';
     document.getElementById('axisFogNote').textContent = metrics.totalEvents > 0
-      ? `${metrics.sectorThermalCount} thermal reference points and credibility dispersion fused into the fog model.`
+      ? `Built from reliability and confidence dispersion across ${metrics.totalEvents} sector events.`
       : 'No signal stack available for coherence scoring.';
     setAxisGauge(document.getElementById('axisFogGauge'), metrics.fogIndex, metrics.fogState);
 
-    document.getElementById('axisEquipmentEstimate').textContent = metrics.equipmentEstimate;
+    document.getElementById('axisEquipmentEstimate').textContent = Number.isFinite(metrics.equipmentEstimate)
+      ? metrics.equipmentEstimate
+      : 'N/A';
+    document.getElementById('axisEquipmentNote').textContent = metrics.equipmentEvidence > 0
+      ? `${metrics.equipmentEvidence} sector events contained heavy-platform loss wording.`
+      : 'No vehicle or heavy-platform loss wording detected in current sector events.';
     const equipmentTags = document.getElementById('axisEquipmentTags');
     if (equipmentTags) {
       const tags = metrics.equipmentTags.length > 0 ? metrics.equipmentTags : ['No heavy-platform signatures'];
@@ -707,30 +849,46 @@
     animateAxisWidth(document.getElementById('axisDoctrineShapingFill'), metrics.doctrinePercentages.shaping);
     animateAxisWidth(document.getElementById('axisDoctrineAttritionFill'), metrics.doctrinePercentages.attrition);
 
-    document.getElementById('axisLogisticsRatio').textContent = `${metrics.logisticsRatio.toFixed(2)}x`;
+    document.getElementById('axisLogisticsRatio').textContent = metrics.shapingEvents > 0
+      ? `${metrics.logisticsRatio.toFixed(2)}x`
+      : 'N/A';
     document.getElementById('axisLogisticsNote').textContent = metrics.shapingEvents > 0
       ? `${metrics.logisticsHits} logistics-linked events inside ${metrics.shapingEvents} shaping events.`
       : 'No shaping cluster available for a suppression ratio.';
     animateAxisWidth(document.getElementById('axisLogisticsHitFill'), metrics.logisticsShare);
     animateAxisWidth(document.getElementById('axisLogisticsPressureFill'), 100 - metrics.logisticsShare);
 
-    document.getElementById('axisFrictionValue').textContent = metrics.friction.toFixed(1);
-    document.getElementById('axisFrictionNote').textContent = `${describeFrontlineFriction(metrics.friction, metrics.frontlineShiftKm)} Frontline delta: ${metrics.frontlineShiftKm.toFixed(1)} km.`;
+    document.getElementById('axisFrictionValue').textContent = formatAxisCompactValue(metrics.friction);
+    document.getElementById('axisFrictionNote').textContent = Number.isFinite(metrics.friction)
+      ? `${describeFrontlineFriction(metrics.friction, metrics.frontlineShiftKm)} Explicit movement evidence: ${metrics.frontlineShiftKm.toFixed(1)} km across ${metrics.frontlineEvidence} manoeuvre reports.`
+      : 'Insufficient explicit territorial movement data inside the selected sector. No friction score is shown.';
 
-    document.getElementById('axisThermalValue').textContent = `${Math.round(metrics.thermalVerification)}%`;
+    document.getElementById('axisThermalValue').textContent = Number.isFinite(metrics.thermalVerification)
+      ? `${Math.round(metrics.thermalVerification)}%`
+      : 'N/A';
     document.getElementById('axisThermalNote').textContent = metrics.thermalEligible > 0
-      ? `${metrics.thermalVerified}/${metrics.thermalEligible} shaping or attrition events fall within 3 km of FIRMS anomalies.`
-      : 'No shaping or attrition events available for thermal matching.';
-    animateAxisWidth(document.getElementById('axisThermalFill'), metrics.thermalVerification);
+      ? `${metrics.thermalVerified}/${metrics.thermalEligible} recent shaping or attrition events match FIRMS hotspots within 3 km and 36 hours.`
+      : 'No recent shaping or attrition events were eligible for FIRMS cross-checking.';
+    animateAxisWidth(document.getElementById('axisThermalFill'), Number.isFinite(metrics.thermalVerification) ? metrics.thermalVerification : 0);
+    updateAxisPanelUIState(true);
   }
 
   function updateAxisStatsPanel(sectorName, sourceEvents) {
     syncAxisHudOffset();
+    initAxisStatsPanelControls();
+    const previousSector = window.currentAxisSector;
     window.currentAxisSector = sectorName || '';
 
     if (!sectorName) {
+      axisPanelMode = 'expanded';
+      axisPanelDismissedSector = '';
       renderAxisStatsPanel(null);
       return;
+    }
+
+    if (axisPanelMode === 'hidden' && axisPanelDismissedSector && axisPanelDismissedSector !== sectorName) {
+      axisPanelMode = 'expanded';
+      axisPanelDismissedSector = '';
     }
 
     renderAxisStatsPanel(computeAxisMetrics(sectorName, sourceEvents));
@@ -739,6 +897,9 @@
       const activeSector = document.getElementById('sectorFilter');
       const currentSector = activeSector ? activeSector.value : window.currentAxisSector;
       if (currentSector !== sectorName) return;
+      if (previousSector !== sectorName && axisPanelMode === 'hidden' && axisPanelDismissedSector !== sectorName) {
+        axisPanelMode = 'expanded';
+      }
       renderAxisStatsPanel(computeAxisMetrics(sectorName, Array.isArray(window.currentFilteredEvents) ? window.currentFilteredEvents : sourceEvents));
     });
   }
@@ -1373,7 +1534,10 @@
             m = moment(props.date);
           }
 
-          const ts = m.isValid() ? m.valueOf() : moment().valueOf();
+          const explicitTimestamp = Number(props.timestamp);
+          const ts = Number.isFinite(explicitTimestamp)
+            ? explicitTimestamp
+            : m.isValid() ? m.valueOf() : moment().valueOf();
 
           // --- ENRICHMENT FOR FILTERS ---
           const txt = (props.title + " " + (props.description || "")).toLowerCase();
@@ -1951,11 +2115,14 @@
         loadAxisThermalFeatures()
           .then(features => {
             if (!features || features.length === 0) {
-              console.warn("âš ï¸ No FIRMS data available");
+              console.warn("âš ï¸ No recent FIRMS data available inside Ukraine/Russia land territory");
               return;
             }
 
             // Create layer group for thermal hotspots
+            if (firmsLayer) {
+              map.removeLayer(firmsLayer);
+            }
             firmsLayer = L.layerGroup();
 
             let visibleHotspots = 0;
@@ -2145,7 +2312,7 @@
             });
 
             firmsLayer.addTo(map);
-            console.log(`âœ… FIRMS layer loaded: ${visibleHotspots}/${features.length} hotspots`);
+            console.log(`âœ… FIRMS layer loaded: ${visibleHotspots}/${features.length} recent in-theater hotspots`);
 
             // Show metadata info
             if (window.axisThermalMetadata) {
@@ -3923,6 +4090,7 @@
   // Wait for DOM before initializing
   function startApp() {
     console.log("ðŸš€ Starting Impact Atlas...");
+    initAxisStatsPanelControls();
     syncAxisHudOffset();
     window.addEventListener('resize', syncAxisHudOffset);
     initMap();

@@ -21,7 +21,8 @@ def save_raw_events(events_list):
     # Assicuriamoci che la cartella esista
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30.0)
+    conn.execute("PRAGMA journal_mode=WAL;")
     cursor = conn.cursor()
 
     # Crea tabella se non esiste (Schema raw_signals)
