@@ -5,6 +5,11 @@ from datetime import datetime, timedelta, timezone
 # Add project root to path BEFORE importing local modules
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
+import io
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
 from ingestion.fetch_telegram import run_telegram_scraper
 from ingestion.fetch_gdelt import fetch_gdelt_news
 

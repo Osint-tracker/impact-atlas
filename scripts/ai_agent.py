@@ -3290,7 +3290,9 @@ def main():
         "ALTER TABLE events ADD COLUMN ai_report_json TEXT",
         "ALTER TABLE unique_events ADD COLUMN operational_sector TEXT",
         "ALTER TABLE unique_events ADD COLUMN image_phash TEXT",
-        "ALTER TABLE unique_events ADD COLUMN source_reputation_score REAL"
+        "ALTER TABLE unique_events ADD COLUMN source_reputation_score REAL",
+        "ALTER TABLE unique_events ADD COLUMN lat REAL",
+        "ALTER TABLE unique_events ADD COLUMN lon REAL"
     ]
     for ddl in migrations:
         try:
@@ -3780,17 +3782,40 @@ def main():
 
                 # Settore operativo deterministico (Point-in-Polygon)
                 operational_sector = 'UNKNOWN_SECTOR'
+                persist_lat = None
+                persist_lon = None
                 try:
                     geo_data = (final_report.get('tactics') or {}).get('geo_location', {})
                     explicit = (geo_data.get('explicit') or {}) if isinstance(geo_data, dict) else {}
+                    verified = (geo_data.get('verified') or {}) if isinstance(geo_data, dict) else {}
                     inferred = (geo_data.get('inferred') or {}) if isinstance(geo_data, dict) else {}
-                    lat_v = explicit.get('lat') if explicit else None
-                    lon_v = explicit.get('lon') if explicit else None
-                    if (lat_v is None or lon_v is None) and inferred:
-                        lat_v = inferred.get('lat', lat_v)
-                        lon_v = inferred.get('lon', lon_v)
-                    if sector_geolocator and lat_v is not None and lon_v is not None:
-                        operational_sector = sector_geolocator.assign_sector(float(lon_v), float(lat_v))
+
+                    def _pick_pair(candidate):
+                        if not isinstance(candidate, dict):
+                            return None
+
+                        lat_raw = candidate.get('lat')
+                        lon_raw = candidate.get('lon')
+                        invalid_tokens = {None, "", "0", "0.0", "null", "none", "unknown", "n/a"}
+                        if str(lat_raw).strip().lower() in invalid_tokens or str(lon_raw).strip().lower() in invalid_tokens:
+                            return None
+                        try:
+                            lat_f = float(lat_raw)
+                            lon_f = float(lon_raw)
+                        except (TypeError, ValueError):
+                            return None
+                        if not (-90.0 <= lat_f <= 90.0 and -180.0 <= lon_f <= 180.0):
+                            return None
+                        return lat_f, lon_f
+
+                    for candidate in (explicit, verified, inferred):
+                        pair = _pick_pair(candidate)
+                        if pair:
+                            persist_lat, persist_lon = pair
+                            break
+
+                    if sector_geolocator and persist_lat is not None and persist_lon is not None:
+                        operational_sector = sector_geolocator.assign_sector(float(persist_lon), float(persist_lat))
                 except Exception:
                     operational_sector = 'UNKNOWN_SECTOR'
 
@@ -3812,10 +3837,12 @@ def main():
                         title = ?,
                         description = ?,
                         urls_list = ?,
-                        operational_sector = ?
+                        operational_sector = ?,
+                        lat = COALESCE(?, lat),
+                        lon = COALESCE(?, lon)
                     WHERE event_id = ?
                     """, (
-                        json.dumps(final_report, ensure_ascii=False),
+                        report_text,
                         tie_result['value'],
                         tie_result['status'],
                         titan_metrics_json,
@@ -3830,6 +3857,8 @@ def main():
                         journo_result.get('description_en', ''),
                         ' | '.join(actual_urls_list) if actual_urls_list else '',
                         operational_sector,
+                        persist_lat,
+                        persist_lon,
                         cluster_id
                     ))
 

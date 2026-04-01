@@ -1,18 +1,19 @@
-import sqlite3
+import argparse
 import json
 import os
-import re
+import sqlite3
+from datetime import datetime
+
 import numpy as np
-from datetime import datetime, timedelta
-from openai import OpenAI
 from dotenv import load_dotenv
-import time
 from geopy.distance import geodesic
+from openai import OpenAI
 
 # =============================================================================
-# SMART FUSION ENGINE V4.2
+# SMART FUSION ENGINE V4.3
 # - Vector similarity + Judge AI
 # - Perceptual hash anti-propaganda gate (pre-fusion)
+# - Incremental mode with fusion_checked_at
 # =============================================================================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, '../war_tracker_v2/data/raw_events.db')
@@ -38,10 +39,10 @@ def ask_the_judge(evt_a, evt_b):
     Are these the SAME physical event?
 
     A: "{evt_a['title']}" ({evt_a['date']})
-    Details A: {evt_a['text'][:400]}...
+    Details A: {evt_a['text'][:4000]}...
 
     B: "{evt_b['title']}" ({evt_b['date']})
-    Details B: {evt_b['text'][:400]}...
+    Details B: {evt_b['text'][:4000]}...
 
     RULES:
     - Same location + similar time + same action = TRUE.
@@ -52,7 +53,7 @@ def ask_the_judge(evt_a, evt_b):
     """
     try:
         res = client_judge.chat.completions.create(
-            model="meta-llama/llama-3.3-70b-instruct",
+            model="minimax/minimax-m2.5:free",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.0,
             response_format={"type": "json_object"}
@@ -107,6 +108,16 @@ def ensure_reputation_table(cursor):
             last_verified TEXT
         )
     """)
+
+
+def ensure_incremental_columns(cursor):
+    for ddl in [
+        "ALTER TABLE unique_events ADD COLUMN fusion_checked_at TEXT"
+    ]:
+        try:
+            cursor.execute(ddl)
+        except sqlite3.OperationalError:
+            pass
 
 
 def normalize_domain(value):
@@ -198,21 +209,7 @@ def find_historical_phash_match(event_id, event_dt, event_hash, historical_rows)
     return None
 
 
-def main():
-    print("🚀 AVVIO SMART FUSION: ROLLING WINDOW MODE + PHASH ANTI-PROPAGANDA")
-    print(f"   Window Size: {WINDOW_SIZE} | Overlap: {WINDOW_OVERLAP}")
-
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL;")
-    cursor = conn.cursor()
-
-    ensure_reputation_table(cursor)
-    conn.commit()
-
-    print("   ⏳ Smart Fusion Scope: Analyzing ALL processed events")
-
-    # Full history for anti-propaganda hash check
+def load_historical_rows(cursor):
     cursor.execute("""
         SELECT event_id, last_seen_date, image_phash
         FROM unique_events
@@ -225,16 +222,401 @@ def main():
             'date': parse_iso_datetime(row['last_seen_date']),
             'image_phash': row['image_phash']
         })
+    return historical_rows
 
+
+def load_completed_rows(cursor):
     cursor.execute("""
-        SELECT event_id, last_seen_date
+        SELECT event_id, ai_report_json, last_seen_date, full_text_dossier,
+               embedding_vector, image_phash, sources_list, lat, lon,
+               fusion_checked_at, ai_analysis_status
         FROM unique_events
         WHERE embedding_vector IS NOT NULL
           AND ai_analysis_status = 'COMPLETED'
         ORDER BY last_seen_date DESC
     """)
-    all_index = cursor.fetchall()
-    total_events = len(all_index)
+    return cursor.fetchall()
+
+
+def _decode_vector(vector_blob):
+    try:
+        vec = json.loads(vector_blob)
+        if not vec:
+            return None, None
+        arr = np.array(vec, dtype=float)
+        if arr.ndim != 1 or arr.size == 0:
+            return None, None
+        norm = np.linalg.norm(arr)
+        normed = arr / (norm + 1e-10)
+        return arr, normed
+    except Exception:
+        return None, None
+
+
+def _row_to_event(row):
+    event_dt = parse_iso_datetime(row['last_seen_date'])
+    if event_dt is None:
+        return None
+
+    vec_raw, vec_norm = _decode_vector(row['embedding_vector'])
+    if vec_raw is None:
+        return None
+
+    title = (row['full_text_dossier'] or '')[:50]
+    if row['ai_report_json']:
+        try:
+            j = json.loads(row['ai_report_json'])
+            title = j.get('editorial', {}).get('title_en', title)
+        except Exception:
+            pass
+
+    return {
+        "id": row['event_id'],
+        "title": title,
+        "text": row['full_text_dossier'] or '',
+        "date": event_dt,
+        "lat": row['lat'],
+        "lon": row['lon'],
+        "vector": vec_raw,
+        "vector_norm": vec_norm,
+        "fusion_checked_at": parse_iso_datetime(row['fusion_checked_at']) if row['fusion_checked_at'] else None
+    }
+
+
+def _should_run_incremental_check(event):
+    checked_at = event.get('fusion_checked_at')
+    last_seen = event.get('date')
+    if last_seen is None:
+        return False
+    if checked_at is None:
+        return True
+    return checked_at < last_seen
+
+
+def _evaluate_pair(evt_a, evt_b, score):
+    delta = abs((evt_a['date'] - evt_b['date']).total_seconds()) / 3600
+    if delta > MAX_TIME_DIFF_HOURS:
+        return False
+
+    print(f"  🔗 Checking: {evt_a['title'][:30]} vs {evt_b['title'][:30]} (Sim: {score:.2f})")
+
+    lat_i, lon_i = evt_a['lat'], evt_a['lon']
+    lat_j, lon_j = evt_b['lat'], evt_b['lon']
+
+    distance_known = False
+    if lat_i is not None and lon_i is not None and lat_j is not None and lon_j is not None:
+        try:
+            distance_km = geodesic((float(lat_i), float(lon_i)), (float(lat_j), float(lon_j))).kilometers
+            distance_known = True
+        except (ValueError, TypeError):
+            distance_km = float('inf')
+    else:
+        distance_km = float('inf')
+
+    print(f"      Dist: {distance_km if distance_km != float('inf') else 'N/A'}km | Time: {delta:.1f}h")
+
+    is_match = False
+
+    if score >= 0.85 and distance_known and distance_km <= 10.0 and delta <= 12:
+        is_match = True
+        print("      🚀 FAST-TRACK AUTO-MERGE (No LLM needed)")
+    else:
+        if not distance_known:
+            if score >= 0.95:
+                is_match = True
+                print("      🚀 AUTO-MERGE HIGH SIM NO-GEO (>=0.95, Judge skipped)")
+            else:
+                print("      ⚖️ JUDGE NO-GEO: Distance unavailable, asking The Judge...")
+                verdict = ask_the_judge(evt_a, evt_b)
+                if verdict and verdict.get('is_same_event'):
+                    is_match = True
+                    print(f"      ✅ AI CONFIRMED (Conf: {verdict.get('confidence')})")
+                else:
+                    print("      ❌ AI REJECTED")
+        else:
+            if distance_km > 150.0 and score <= 0.93:
+                is_match = False
+                print("      🛑 REJECTED TOO-FAR: (>150km) and similarity not extreme.")
+            else:
+                print("      ⚖️ INCONCLUSIVE: Asking The Judge...")
+                verdict = ask_the_judge(evt_a, evt_b)
+                if verdict and verdict.get('is_same_event'):
+                    is_match = True
+                    print(f"      ✅ AI CONFIRMED (Conf: {verdict.get('confidence')})")
+                else:
+                    print("      ❌ AI REJECTED")
+
+    return is_match
+
+
+def _pick_master_victim(evt_a, evt_b):
+    if evt_a['date'] < evt_b['date']:
+        return evt_a, evt_b
+    return evt_b, evt_a
+
+
+def _apply_merges(cursor, merges):
+    if not merges:
+        return 0
+
+    print(f"💾 Scrittura {len(merges)} fusioni nel DB...")
+    for m, v in merges:
+        new_text = f"{m['text']} ||| [MERGED]: {v['text']}"
+        cursor.execute(
+            "UPDATE unique_events SET ai_analysis_status='MERGED' WHERE event_id=?",
+            (v['id'],)
+        )
+        cursor.execute("""
+            UPDATE unique_events
+            SET full_text_dossier=?,
+                ai_analysis_status='PENDING',
+                ai_report_json=NULL,
+                embedding_vector=NULL,
+                fusion_checked_at=NULL
+            WHERE event_id=?
+        """, (new_text, m['id']))
+
+    return len(merges)
+
+
+def _mark_targets_checked(cursor, checked_event_ids, checked_at_iso):
+    if not checked_event_ids:
+        return
+
+    placeholders = ','.join(['?'] * len(checked_event_ids))
+    params = [checked_at_iso] + list(checked_event_ids)
+    cursor.execute(f"""
+        UPDATE unique_events
+        SET fusion_checked_at = ?
+        WHERE event_id IN ({placeholders})
+          AND ai_analysis_status = 'COMPLETED'
+          AND embedding_vector IS NOT NULL
+    """, params)
+
+
+def _prepare_active_events(rows, cursor, historical_rows):
+    events = []
+    vectors = []
+    already_completed = set()
+    total_tagged_null = 0
+    expected_dim = None  # inferred from first valid vector
+
+    for r in rows:
+        try:
+            event_dt = parse_iso_datetime(r['last_seen_date'])
+            phash = r['image_phash']
+
+            match = find_historical_phash_match(r['event_id'], event_dt, phash, historical_rows)
+            if match:
+                cursor.execute(
+                    """
+                    UPDATE unique_events
+                    SET ai_analysis_status='NULL',
+                        ai_summary='Propaganda suspected: recycled visual asset detected by pHash (>95%).'
+                    WHERE event_id=?
+                    """,
+                    (r['event_id'],)
+                )
+                domains = parse_source_domains(r['sources_list'])
+                apply_reputation_delta(cursor, domains, -10, datetime.utcnow())
+                total_tagged_null += 1
+                continue
+
+            raw_vec = json.loads(r['embedding_vector'])
+            if not raw_vec or not isinstance(raw_vec, list):
+                continue
+
+            # Enforce dimension consistency — discard corrupt/legacy vectors
+            if expected_dim is None:
+                expected_dim = len(raw_vec)
+            elif len(raw_vec) != expected_dim:
+                continue
+
+            title = r['full_text_dossier'][:50]
+            if r['ai_report_json']:
+                j = json.loads(r['ai_report_json'])
+                title = j.get('editorial', {}).get('title_en', title)
+
+            if event_dt is None:
+                continue
+
+            events.append({
+                "id": r['event_id'],
+                "title": title,
+                "text": r['full_text_dossier'] or '',
+                "date": event_dt,
+                "lat": r['lat'],
+                "lon": r['lon'],
+                "status": r['ai_analysis_status'],
+            })
+            vectors.append(raw_vec)
+            # Track events already processed by the FUSION engine (not just AI-analyzed).
+            # fusion_checked_at is set AFTER a successful fusion run — NULL means never fused yet.
+            if r['fusion_checked_at'] is not None:
+                already_completed.add(r['event_id'])
+        except Exception:
+            continue
+
+    return events, vectors, already_completed, total_tagged_null
+
+
+def _run_full_scan(cursor, active_events, vectors, already_completed):
+    """Full rolling-window scan. Examines ALL pairs above VECTOR_THRESHOLD.
+    already_completed is passed for compatibility but NOT used to skip pairs here.
+    """
+    total_fused = 0
+    total_events = len(active_events)
+    start_idx = 0
+
+    while start_idx < total_events:
+        end_idx = min(start_idx + WINDOW_SIZE, total_events)
+        print(f"\n\U0001f504 Processando Finestra: {start_idx} -> {end_idx} (di {total_events})...")
+
+        window_events = active_events[start_idx:end_idx]
+        window_vectors = np.array(vectors[start_idx:end_idx], dtype=float)
+
+        norm = np.linalg.norm(window_vectors, axis=1, keepdims=True)
+        normed = window_vectors / (norm + 1e-10)
+        sim_matrix = np.dot(normed, normed.T)
+
+        np.fill_diagonal(sim_matrix, 0)
+        sim_matrix = np.triu(sim_matrix)
+
+        candidate_idx = np.argwhere(sim_matrix > VECTOR_THRESHOLD)
+        if len(candidate_idx) > 0:
+            scores_for_sort = sim_matrix[candidate_idx[:, 0], candidate_idx[:, 1]]
+            sort_order = np.argsort(scores_for_sort)[::-1]
+            candidates = candidate_idx[sort_order]
+        else:
+            candidates = candidate_idx
+        print(f"\U0001f9d0 Candidati vettoriali trovati: {len(candidates)} (ordinati per similarity desc)")
+
+        merges_in_window = []
+        processed_ids = set()
+        evaluated = 0
+
+        for i, j in candidates:
+            evt_i = window_events[i]
+            evt_j = window_events[j]
+
+            if evt_i['id'] in processed_ids or evt_j['id'] in processed_ids:
+                continue
+
+            score = float(sim_matrix[i, j])
+            evaluated += 1
+
+            if _evaluate_pair(evt_i, evt_j, score):
+                master, victim = _pick_master_victim(evt_i, evt_j)
+                merges_in_window.append((master, victim))
+                processed_ids.add(master['id'])
+                processed_ids.add(victim['id'])
+
+        print(f"   Coppie valutate: {evaluated}")
+        total_fused += _apply_merges(cursor, merges_in_window)
+        start_idx += (WINDOW_SIZE - WINDOW_OVERLAP)
+
+    return total_fused
+
+
+def _run_incremental(cursor, active_events, vectors, targets, already_completed):
+    """Incremental mode: only examines target events not yet fusion-checked.
+    Cross-pairs with already-checked events are examined only if sim >= 0.85.
+    """
+    total_fused = 0
+    processed_ids = set()
+    checked_target_ids = set()
+    HIGH_SIM_THRESHOLD = 0.85
+
+    # Build normed matrix for dot-product lookups
+    mat = np.array(vectors, dtype=float)
+    norms = np.linalg.norm(mat, axis=1, keepdims=True)
+    normed = mat / (norms + 1e-10)
+
+    id_to_idx = {e['id']: i for i, e in enumerate(active_events)}
+
+    print(f"   \u23f3 Smart Fusion Scope: Incremental mode ({len(targets)} target events)")
+
+    for idx, target in enumerate(targets, start=1):
+        target_id = target['id']
+        if target_id in processed_ids:
+            continue
+
+        t_idx = id_to_idx.get(target_id)
+        if t_idx is None:
+            continue
+
+        print(f"\n\U0001f504 Incremental target {idx}/{len(targets)}: {target['title'][:60]}")
+
+        # Compute similarity of this target against all other events
+        sims = normed.dot(normed[t_idx])
+
+        candidate_pool = []
+        for other in active_events:
+            oth_id = other['id']
+            if oth_id == target_id or oth_id in processed_ids:
+                continue
+            o_idx = id_to_idx.get(oth_id)
+            if o_idx is None:
+                continue
+            score = float(sims[o_idx])
+            if score <= VECTOR_THRESHOLD:
+                continue
+            # Skip already fusion-checked counterparts unless high similarity
+            if oth_id in already_completed and score < HIGH_SIM_THRESHOLD:
+                continue
+            candidate_pool.append((score, other))
+
+        candidate_pool.sort(key=lambda x: x[0], reverse=True)
+        print(f"\U0001f9d0 Candidati trovati: {len(candidate_pool)}")
+
+        merged = False
+        for score, other in candidate_pool:
+            if _evaluate_pair(target, other, score):
+                master, victim = _pick_master_victim(target, other)
+                total_fused += _apply_merges(cursor, [(master, victim)])
+                processed_ids.add(master['id'])
+                processed_ids.add(victim['id'])
+                merged = True
+                break
+
+        if not merged:
+            checked_target_ids.add(target_id)
+
+    return total_fused, checked_target_ids
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Smart Fusion Engine")
+    parser.add_argument(
+        "--full-scan",
+        action="store_true",
+        help="Analyze all completed events with rolling-window mode (legacy behavior)."
+    )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Incremental mode only: max target events to check in this run."
+    )
+    args = parser.parse_args()
+
+    mode = "FULL-SCAN" if args.full_scan else "INCREMENTAL"
+    print(f"🚀 AVVIO SMART FUSION ({mode}) + PHASH ANTI-PROPAGANDA")
+    if args.full_scan:
+        print(f"   Window Size: {WINDOW_SIZE} | Overlap: {WINDOW_OVERLAP}")
+
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL;")
+    cursor = conn.cursor()
+
+    ensure_reputation_table(cursor)
+    ensure_incremental_columns(cursor)
+    conn.commit()
+
+    historical_rows = load_historical_rows(cursor)
+    all_rows = load_completed_rows(cursor)
+    total_events = len(all_rows)
     print(f"✅ Indice caricato: {total_events} eventi pronti.")
 
     if total_events == 0:
@@ -242,182 +624,45 @@ def main():
         conn.close()
         return
 
-    start_idx = 0
-    total_fused = 0
-    total_tagged_null = 0
+    active_events, vectors, already_completed, total_tagged_null = _prepare_active_events(all_rows, cursor, historical_rows)
+    conn.commit()
 
-    while start_idx < total_events:
-        end_idx = min(start_idx + WINDOW_SIZE, total_events)
-        print(f"\n🔄 Processando Finestra: {start_idx} -> {end_idx} (di {total_events})...")
+    if not active_events:
+        conn.close()
+        print("⚠️ Nessun evento attivo dopo filtro propaganda/validazione.")
+        return
 
-        current_ids = [row['event_id'] for row in all_index[start_idx:end_idx]]
-        placeholders = ','.join(['?'] * len(current_ids))
+    checked_ids = []
 
-        cursor.execute(f"""
-            SELECT event_id, ai_report_json, last_seen_date, full_text_dossier,
-                   embedding_vector, image_phash, sources_list, lat, lon
-            FROM unique_events WHERE event_id IN ({placeholders})
-            ORDER BY last_seen_date DESC
-        """, current_ids)
+    if args.full_scan:
+        print("   ⏳ Smart Fusion Scope: Analyzing ALL processed events")
+        total_fused = _run_full_scan(cursor, active_events, vectors, already_completed)
+        checked_ids = [e['id'] for e in active_events]
+    else:
+        targets = [e for e in active_events if _should_run_incremental_check(e)]
+        if args.limit and args.limit > 0:
+            targets = targets[:args.limit]
 
-        rows = cursor.fetchall()
-        
-        events = []
-        vectors = []
+        if not targets:
+            conn.close()
+            print("✅ Nessun target incrementale da processare. Tutto aggiornato.")
+            print(f"🛡️ Eventi taggati NULL (propaganda pHash): {total_tagged_null}")
+            return
 
-        for r in rows:
-            try:
-                event_dt = parse_iso_datetime(r['last_seen_date'])
-                phash = r['image_phash']
+        # If the target set is too large, full scan is more efficient.
+        if len(targets) >= max(1000, int(len(active_events) * 0.6)):
+            print("   ⏳ Troppi target incrementali: fallback automatico a FULL-SCAN per questa run.")
+            total_fused = _run_full_scan(cursor, active_events, vectors, already_completed)
+            checked_ids = [e['id'] for e in active_events]
+        else:
+            total_fused, checked_ids = _run_incremental(cursor, active_events, vectors, targets, already_completed)
 
-                # PRE-CHECK: if media hash is a near-duplicate of old months-old material,
-                # classify as propaganda/noise before semantic fusion.
-                match = find_historical_phash_match(r['event_id'], event_dt, phash, historical_rows)
-                if match:
-                    cursor.execute(
-                        """
-                        UPDATE unique_events
-                        SET ai_analysis_status='NULL',
-                            ai_summary='Propaganda suspected: recycled visual asset detected by pHash (>95%).'
-                        WHERE event_id=?
-                        """,
-                        (r['event_id'],)
-                    )
-                    domains = parse_source_domains(r['sources_list'])
-                    apply_reputation_delta(cursor, domains, -10, datetime.utcnow())
-                    total_tagged_null += 1
-                    continue
+    checked_iso = datetime.utcnow().isoformat(timespec='seconds')
+    _mark_targets_checked(cursor, checked_ids, checked_iso)
 
-                vec = json.loads(r['embedding_vector'])
-                if not vec:
-                    continue
-
-                title = r['full_text_dossier'][:50]
-                if r['ai_report_json']:
-                    j = json.loads(r['ai_report_json'])
-                    title = j.get('editorial', {}).get('title_en', title)
-
-                if event_dt is None:
-                    continue
-
-                events.append({
-                    "id": r['event_id'],
-                    "title": title,
-                    "text": r['full_text_dossier'] or '',
-                    "date": event_dt,
-                    "lat": r['lat'],
-                    "lon": r['lon']
-                })
-                vectors.append(vec)
-            except Exception:
-                continue
-
-        conn.commit()
-
-        if not vectors:
-            start_idx += (WINDOW_SIZE - WINDOW_OVERLAP)
-            continue
-
-        matrix = np.array(vectors)
-        norm = np.linalg.norm(matrix, axis=1, keepdims=True)
-        matrix = matrix / (norm + 1e-10)
-
-        print(f"⚡ Calcolo similarità matriciale ({len(matrix)}x{len(matrix)})...")
-        sim_matrix = np.dot(matrix, matrix.T)
-
-        np.fill_diagonal(sim_matrix, 0)
-        sim_matrix = np.triu(sim_matrix)
-
-        candidates = np.argwhere(sim_matrix > VECTOR_THRESHOLD)
-        print(f"🧐 Candidati vettoriali trovati: {len(candidates)}")
-
-        merges_in_window = []
-        processed_ids = set()
-
-        for i, j in candidates:
-            if events[i]['id'] in processed_ids or events[j]['id'] in processed_ids:
-                continue
-
-            delta = abs((events[i]['date'] - events[j]['date']).total_seconds()) / 3600
-            if delta > MAX_TIME_DIFF_HOURS:
-                continue
-
-            score = sim_matrix[i, j]
-            print(f"  🔗 Checking: {events[i]['title'][:30]} vs {events[j]['title'][:30]} (Sim: {score:.2f})")
-
-            # --- Calcolo Distanza Geografica ---
-            lat_i, lon_i = events[i]['lat'], events[i]['lon']
-            lat_j, lon_j = events[j]['lat'], events[j]['lon']
-            
-            if lat_i is not None and lon_i is not None and lat_j is not None and lon_j is not None:
-                try:
-                    distance_km = geodesic((lat_i, lon_i), (lat_j, lon_j)).kilometers
-                except ValueError:
-                    distance_km = float('inf') # Fallback se coordinate malformate
-            else:
-                distance_km = float('inf') # Fallback se mancano coordinate in uno dei due
-                
-            print(f"      Dist: {distance_km if distance_km != float('inf') else 'N/A'}km | Time: {delta:.1f}h")
-
-            is_match = False
-            
-            # --- THE FAST TRACK (Merge Deterministico) ---
-            # Se la similarità è alta (>=0.85), la distanza è minima (<=10km) e il tempo è ravvicinato (<=12h)
-            if score >= 0.85 and distance_km <= 10.0 and delta <= 12:
-                is_match = True
-                print("      🚀 FAST-TRACK AUTO-MERGE (No LLM needed)")
-                
-            # --- THE JUDGE (Zona Grigia) ---
-            else:
-                # Evitiamo di chiamare il Judge se sono troppo distanti, a meno che non siano semanticamente identici (>0.93)
-                if distance_km > 150.0 and score <= 0.93:
-                    is_match = False
-                    print("      🛑 REJECTED: Too far away (>150km) and similarity not extreme.")
-                else:
-                    # Zona grigia: chiediamo a Llama 3.3 70B
-                    print("      ⚖️ INCONCLUSIVE: Asking The Judge...")
-                    verdict = ask_the_judge(events[i], events[j])
-                    
-                    if verdict and verdict.get('is_same_event'):
-                        is_match = True
-                        print(f"      ✅ AI CONFIRMED (Conf: {verdict.get('confidence')})")
-                    else:
-                        print("      ❌ AI REJECTED")
-
-            if is_match:
-                if events[i]['date'] < events[j]['date']:
-                    master, victim = events[i], events[j]
-                else:
-                    master, victim = events[j], events[i]
-
-                merges_in_window.append((master, victim))
-                processed_ids.add(master['id'])
-                processed_ids.add(victim['id'])
-
-        if merges_in_window:
-            print(f"💾 Scrittura {len(merges_in_window)} fusioni nel DB...")
-            for m, v in merges_in_window:
-                new_text = f"{m['text']} ||| [MERGED]: {v['text']}"
-                cursor.execute(
-                    "UPDATE unique_events SET ai_analysis_status='MERGED' WHERE event_id=?",
-                    (v['id'],)
-                )
-                cursor.execute("""
-                    UPDATE unique_events
-                    SET full_text_dossier=?, ai_analysis_status='PENDING', ai_report_json=NULL, embedding_vector=NULL
-                    WHERE event_id=?
-                """, (new_text, m['id']))
-
-            conn.commit()
-            total_fused += len(merges_in_window)
-
-        start_idx += (WINDOW_SIZE - WINDOW_OVERLAP)
-        del matrix
-        del sim_matrix
-        del events
-        del vectors
-
+    conn.commit()
     conn.close()
+
     print(f"\n🏁 CLUSTERING COMPLETATO. Totale fusioni: {total_fused}")
     print(f"🛡️ Eventi taggati NULL (propaganda pHash): {total_tagged_null}")
 

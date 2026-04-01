@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-03-25T18:55:02.371244",
+  "method": "geometric_sampling",
+  "sectors": {
+    "Sumy Axis": 0.0,
+    "Kharkiv Axis": 0.071,
+    "Kupyansk-Lyman Axis": 0.199,
+    "Siversk Axis": 0.176,
+    "Chasiv Yar Axis": 0.052,
+    "Toretsk Axis": 0.0,
+    "Pokrovsk Axis": 0.614,
+    "Kurakhove-Vuhledar Axis": 0.0,
+    "Zaporizhzhia Axis": 0.008,
+    "Kherson Axis": 0.0
+  },
+  "global_average_delta": 0.16
+}

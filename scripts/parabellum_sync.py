@@ -19,6 +19,8 @@ import requests
 import json
 import os
 import sys
+sys.stdout.reconfigure(encoding='utf-8')
+import sys
 from datetime import datetime, timezone
 import argparse
 

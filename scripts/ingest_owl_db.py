@@ -5,6 +5,9 @@ import json
 import os
 import re
 
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
+
 # URL della repo
 REPO_ZIP_URL = "https://github.com/owlmaps/units/archive/refs/heads/main.zip"
 

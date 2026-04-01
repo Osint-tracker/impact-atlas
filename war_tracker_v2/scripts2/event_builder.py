@@ -4,6 +4,14 @@ import pandas as pd
 import os
 import json
 import time
+import sys
+import io
+
+# Force UTF-8 encoding for stdout/stderr to handle emojis on Windows
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
 from typing import List, Dict
 from io import BytesIO
 
@@ -19,7 +27,7 @@ except Exception:
 # --- CONFIGURAZIONE AVANZATA ---
 MAX_ARTICLES_PER_EVENT = 12       # Target ideale per Qwen 72B
 # Scarta tweet o snippet troppo brevi (spazzatura) - lowered for GDELT
-MIN_TEXT_LENGTH = 45
+MIN_TEXT_LENGTH = 0
 # Tronca articoli infiniti per non bruciare la memoria di Qwen
 MAX_CHAR_PER_ARTICLE = 6000
 # Scrive su disco ogni 500 cluster (più veloce)
@@ -61,7 +69,9 @@ class EventBuilder:
                 media_urls TEXT,
                 operational_sector TEXT,
                 image_phash TEXT,
-                source_reputation_score REAL
+                source_reputation_score REAL,
+                lat REAL,
+                lon REAL
             )
         """)
 
@@ -70,7 +80,9 @@ class EventBuilder:
             "ALTER TABLE unique_events ADD COLUMN media_urls TEXT",
             "ALTER TABLE unique_events ADD COLUMN operational_sector TEXT",
             "ALTER TABLE unique_events ADD COLUMN image_phash TEXT",
-            "ALTER TABLE unique_events ADD COLUMN source_reputation_score REAL"
+            "ALTER TABLE unique_events ADD COLUMN source_reputation_score REAL",
+            "ALTER TABLE unique_events ADD COLUMN lat REAL",
+            "ALTER TABLE unique_events ADD COLUMN lon REAL"
         ]:
             try:
                 self.cursor.execute(ddl)
@@ -149,7 +161,8 @@ class EventBuilder:
         geo_keywords = [
             'coordinate', 'geolocated', 'geolocation', 'lat', 'lon',
             'oblast', 'region', 'settlement', 'village', 'district',
-            'frontline', 'axis', 'direction', 'km away', 'south of', 'north of'
+            'frontline', 'axis', 'direction', 'km away', 'south of', 'north of',
+            'область', 'район', 'селище', 'село', 'напрямок', 'координати'
         ]
 
         # B. LIVELLO HARDWARE (Dettagli tecnici = Alta affidabilità)
@@ -157,21 +170,25 @@ class EventBuilder:
             'tank', 'apc', 'ifv', 'bmp', 'btr', 't-72', 't-90', 'leopard', 'bradley', 'abrams',
             'artillery', 'mlrs', 'himars', 'grad', 'hurricane', 'tornado', 'howitzer',
             'iskander', 'kinzhal', 'kalibr', 'storm shadow', 'atacms', 's-300', 's-400', 'patriot',
-            'uav', 'drone', 'shahed', 'geran', 'fpv', 'su-34', 'su-35', 'mig-31', 'f-16', 'bomber'
+            'uav', 'drone', 'shahed', 'geran', 'fpv', 'su-34', 'su-35', 'mig-31', 'f-16', 'bomber',
+            'танк', 'бмп', 'бтр', 'артилерія', 'артиллерия', 'рсзв', 'хаймерс', 'искандер', 'калібр',
+            'шахед', 'літак', 'самолет', 'герань'
         ]
 
         # C. LIVELLO KINETIC (Azione fisica)
         action_keywords = [
             'shelled', 'shelling', 'strike', 'struck', 'hit', 'destroyed', 'damaged',
             'intercepted', 'shot down', 'repelled', 'advance', 'captured', 'seized',
-            'explosion', 'blast', 'debris', 'crater', 'fire', 'detonation'
+            'explosion', 'blast', 'debris', 'crater', 'fire', 'detonation',
+            'обстріл', 'удар', 'знищено', 'пошкоджено', 'збито', 'вибух', 'бавовна'
         ]
 
         # D. LIVELLO UMANO/UNITÀ
         unit_keywords = [
             'brigade', 'battalion', 'regiment', 'division', 'group', 'special forces',
             'gru', 'sbu', 'gsu', 'killed', 'injured', 'wounded', 'kia', 'wia', 'casualties',
-            'personnel', 'civilians', 'dead'
+            'personnel', 'civilians', 'dead',
+            'бригада', 'батальйон', 'полк', 'загиблі', 'поранені', 'вбито'
         ]
 
         # E. NOISE (Fuffa Politica/Clickbait da penalizzare)

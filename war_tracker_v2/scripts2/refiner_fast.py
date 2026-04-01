@@ -22,6 +22,13 @@ from dotenv import load_dotenv
 from tqdm import tqdm
 import uuid
 import argparse
+import sys
+import io
+
+# Force UTF-8 encoding for stdout/stderr to handle emojis on Windows
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 # --- CONFIGURATION ---
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -41,12 +48,19 @@ EMBEDDING_MODEL = "qwen/qwen3-embedding-8b"
 TEXTS_PER_API_CALL = 50      # Batch 50 texts per API request
 CONCURRENT_REQUESTS = 10     # 10 parallel requests
 DB_BATCH_SIZE = 500          # Fetch 500 from DB at a time
-MIN_TEXT_LENGTH = 50         # Lowered to include shorter GDELT (was 150)
+MIN_TEXT_LENGTH = 0         # User requested "fetch everything" (was 50)
+LOOKBACK_DAYS = 20          # Only process records from the last N days (performance guard)
 
 # Original strict filter (from refiner.py) - for comparison
 MANDATORY_ANCHORS_STRICT = [
     "ukrain", "russia", "moscow", "kremlin", "kyiv", "kiev", "donetsk", "luhansk",
-    "kharkiv", "kherson", "zaporizhzhia", "crimea", "mariupol", "bakhmut"
+    "kharkiv", "kherson", "zaporizhzhia", "crimea", "mariupol", "bakhmut",
+    # Cyrillic equivalents (using stems to match cases)
+    "украї", "украи", "росі", "росси", "москв", "кремл", "киї", "киев",
+    "донець", "донец", "луган", "харк", "харьк", "херсон",
+    "запорі", "запоро", "крим", "крым", "маріу", "мариу", "бахмут",
+    "рф", "всу", "зсу", "сбу", "гур", "дрон", "бпла", "ракет", "артилери", 
+    "танк", "військ", "воен", "атак", "удар", "вибух", "взрыв", "нпз"
 ]
 
 # New relaxed filter - accepts any war-related keyword
@@ -55,7 +69,15 @@ MANDATORY_ANCHORS_LOOSE = [
     "kharkiv", "kherson", "zaporizhzhia", "crimea", "mariupol", "bakhmut", "drone",
     "missile", "artillery", "tank", "military", "troops", "soldiers", "war", "attack",
     "strike", "offensive", "defense", "front", "battle", "rocket", "shell", "bomb",
-    "infantry", "brigade", "regiment", "wagner", "azov", "himars", "patriot"
+    "infantry", "brigade", "regiment", "wagner", "azov", "himars", "patriot",
+    # Cyrillic equivalents (using stems to match cases)
+    "украї", "украи", "росі", "росси", "москв", "кремл", "киї", "киев",
+    "донець", "донец", "луган", "харк", "харьк", "херсон",
+    "запорі", "запоро", "крим", "крым", "маріу", "мариу", "бахмут",
+    "дрон", "бпла", "ракет", "артилери", "артиллери", "танк", "військ", "воен",
+    "солдат", "війн", "войн", "атак", "удар", "насту", "оборон",
+    "фронт", "бій", "бой", "град", "химарс", "хаймерс", "патріо", "патрио",
+    "рф", "всу", "зсу", "сбу", "гур", "вибух", "взрыв", "збит", "сбит", "нпз"
 ]
 
 
@@ -109,17 +131,16 @@ def dry_run_comparison(conn):
     
     cursor = conn.cursor()
     
-    # Get all GDELT with content > MIN_TEXT_LENGTH
+    # Get records with content >= MIN_TEXT_LENGTH
     cursor.execute("""
         SELECT event_hash, text_content, url, source_type, is_embedded
         FROM raw_signals 
-        WHERE source_type = 'GDELT' 
-        AND LENGTH(text_content) >= ?
-        LIMIT 10000
+        WHERE LENGTH(text_content) >= ?
+        LIMIT 20000
     """, (MIN_TEXT_LENGTH,))
     
     rows = cursor.fetchall()
-    print(f"Analyzing {len(rows)} GDELT records with content >= {MIN_TEXT_LENGTH} chars...")
+    print(f"Analyzing {len(rows)} records with content >= {MIN_TEXT_LENGTH} chars...")
     
     old_accept = 0
     old_reject = 0
@@ -148,7 +169,7 @@ def dry_run_comparison(conn):
     print(f"    Accept: {old_accept} ({old_accept/len(rows)*100:.1f}%)")
     print(f"    Reject: {old_reject} ({old_reject/len(rows)*100:.1f}%)")
     
-    print(f"\n  NEW Filter (Loose for GDELT):")
+    print(f"\n  NEW Filter (Loose/Cyrillic):")
     print(f"    Accept: {new_accept} ({new_accept/len(rows)*100:.1f}%)")
     print(f"    Reject: {new_reject} ({new_reject/len(rows)*100:.1f}%)")
     
@@ -160,7 +181,7 @@ def dry_run_comparison(conn):
         print("     - Your GDELT content is still too short (check scraper)")
         print("     - Logic error in filter comparison")
     else:
-        print(f"\n  ✅ New filter would rescue {delta_rescued} additional GDELT records.")
+        print(f"\n  ✅ New filter would rescue {delta_rescued} additional records.")
     
     return delta_rescued
 
@@ -207,10 +228,14 @@ async def generate_embeddings_async(session, texts, semaphore):
             return None
 
 
-async def main_async(dry_run=False, skip_reset=False, limit=None):
+async def main_async(dry_run=False, skip_reset=False, limit=None, lookback_days=None):
     print("=" * 60)
     print("REFINER FAST - High-Speed Embedding with GDELT Fix")
     print("=" * 60)
+
+    effective_lookback = lookback_days if lookback_days is not None else LOOKBACK_DAYS
+    cutoff_date = (datetime.utcnow() - __import__('datetime').timedelta(days=effective_lookback)).isoformat()
+    print(f"🗓️  Temporal filter: last {effective_lookback} days (cutoff: {cutoff_date[:10]})")
     
     if not OPENROUTER_API_KEY:
         print("ERROR: OPENROUTER_API_KEY not found in .env")
@@ -227,27 +252,30 @@ async def main_async(dry_run=False, skip_reset=False, limit=None):
         conn.close()
         return
     
-    # Step 1: Reset rejected GDELT for reprocessing
+    # Step 1: Reset rejected sources for reprocessing (temporal window only)
     if not skip_reset:
-        print("\n[1/4] Resetting rejected GDELT sources...")
+        print(f"\n[1/4] Resetting rejected records within the last {effective_lookback} days...")
         cursor.execute("""
             UPDATE raw_signals 
             SET is_embedded = 0 
-            WHERE source_type = 'GDELT' AND is_embedded = 2
-        """)
+            WHERE is_embedded = 2
+              AND date_published >= ?
+        """, (cutoff_date,))
         reset_count = cursor.rowcount
         conn.commit()
-        print(f"      Reset {reset_count} GDELT records for reprocessing.")
+        print(f"      Reset {reset_count} records for reprocessing.")
     else:
         print("\n[1/4] Skipping reset (--skip-reset flag)")
     
-    # Step 2: Count unprocessed with sufficient content
+    # Step 2: Count unprocessed with sufficient content (within temporal window)
     cursor.execute("""
         SELECT COUNT(*) FROM raw_signals 
-        WHERE is_embedded = 0 AND LENGTH(text_content) >= ?
-    """, (MIN_TEXT_LENGTH,))
+        WHERE is_embedded = 0
+          AND LENGTH(text_content) >= ?
+          AND date_published >= ?
+    """, (MIN_TEXT_LENGTH, cutoff_date))
     total_unprocessed = cursor.fetchone()[0]
-    print(f"\n[2/4] Found {total_unprocessed} unprocessed records with content >= {MIN_TEXT_LENGTH} chars.")
+    print(f"\n[2/4] Found {total_unprocessed} unprocessed records (last {effective_lookback} days, content >= {MIN_TEXT_LENGTH} chars).")
     
     if total_unprocessed == 0:
         print("Nothing to process!")
@@ -272,13 +300,15 @@ async def main_async(dry_run=False, skip_reset=False, limit=None):
         processed_so_far = 0
         
         while processed_so_far < total_unprocessed:
-            # Fetch batch from DB
+            # Fetch batch from DB (within temporal window)
             cursor.execute("""
                 SELECT event_hash, source_type, text_content, url
                 FROM raw_signals 
-                WHERE is_embedded = 0 AND LENGTH(text_content) >= ?
+                WHERE is_embedded = 0
+                  AND LENGTH(text_content) >= ?
+                  AND date_published >= ?
                 LIMIT ?
-            """, (MIN_TEXT_LENGTH, DB_BATCH_SIZE))
+            """, (MIN_TEXT_LENGTH, cutoff_date, DB_BATCH_SIZE))
             rows = cursor.fetchall()
             
             if not rows:
@@ -349,9 +379,16 @@ def main():
                         help="Skip resetting rejected GDELT records")
     parser.add_argument("--limit", type=int,
                         help="Limit number of records to process")
+    parser.add_argument("--lookback-days", type=int, default=None,
+                        help=f"Override temporal window (default: {LOOKBACK_DAYS} days)")
     args = parser.parse_args()
     
-    asyncio.run(main_async(dry_run=args.dry_run, skip_reset=args.skip_reset, limit=args.limit))
+    asyncio.run(main_async(
+        dry_run=args.dry_run,
+        skip_reset=args.skip_reset,
+        limit=args.limit,
+        lookback_days=args.lookback_days
+    ))
 
 
 if __name__ == "__main__":

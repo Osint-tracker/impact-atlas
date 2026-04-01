@@ -11,6 +11,7 @@ import datetime
 import re
 import os
 import sys
+sys.stdout.reconfigure(encoding='utf-8')
 from bs4 import BeautifulSoup
 
 # Configuration
