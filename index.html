@@ -2633,11 +2633,6 @@
                     <div class="tech-switch"></div>
                   </label>
 
-                  <label class="tech-toggle-row">
-                    <span class="tech-toggle-label">Show Low-Rep Sources</span>
-                    <input type="checkbox" onchange="toggleLowReputationVisibility(this.checked)">
-                    <div class="tech-switch"></div>
-                  </label>
 
                   <label class="tech-toggle-row">
                     <span class="tech-toggle-label">Fortifications</span>
@@ -3037,6 +3032,10 @@
           <button class="ttb-btn perf-filter-btn" data-filter="attrition" onclick="togglePerformanceFilter('attrition')"
             title="Show only events with major confirmed effect (E ≥ 7)">
             <i class="fa-solid fa-skull" style="font-size:0.6rem;"></i> ATTRITION
+          </button>
+          <button class="ttb-btn perf-filter-btn" id="lowRepFilterBtn" onclick="toggleLowReputationVisibility()"
+            title="Include low-reputation sources (analyzed, but with reduced reliability)">
+            <i class="fa-solid fa-circle-question" style="font-size:0.6rem;"></i> LOW-REP
           </button>
           </div>
         </div>
