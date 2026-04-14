@@ -2175,7 +2175,13 @@
               type: 'OWL',
               lat: feature.geometry.coordinates[1],
               lon: feature.geometry.coordinates[0],
-              _unitData: feature.properties || null
+              _unitData: Object.assign({}, feature.properties, { 
+                  owl_meta: feature.properties,
+                  display_name: feature.properties?.name,
+                  faction: feature.properties?.side,
+                  lat: feature.geometry.coordinates[1],
+                  lon: feature.geometry.coordinates[0]
+                })
             });
           }
         });
@@ -3375,10 +3381,12 @@
 
       // Header
       const elTitle = document.getElementById('udTitle');
-      if (elTitle) elTitle.innerText = unit.display_name || unit.unit_name || unit.unit_id;
+      if (elTitle) elTitle.innerText = unit.display_name || unit.unit_name || unit.name || unit.unit_id || 'Unknown Unit';
 
+      // Normalize: OWL uses 'side', units.json uses 'faction'
+      const unitFaction = unit.faction || unit.side || 'NEUTRAL';
       const elFaction = document.getElementById('udFaction');
-      if (elFaction) elFaction.innerText = unit.faction === 'UA' ? 'Ukraine' : (unit.faction === 'RU' ? 'Russia' : unit.faction);
+      if (elFaction) elFaction.innerText = unitFaction === 'UA' ? 'Ukraine' : (unitFaction === 'RU' ? 'Russia' : unitFaction);
 
       const elEchelon = document.getElementById('udEchelon');
       if (elEchelon) elEchelon.innerText = safeText(unit.echelon);
@@ -3387,8 +3395,8 @@
       if (elBadge) elBadge.innerText = safeText(unit.type);
 
       // Flag & Header Style
-      const isUA = unit.faction === 'UA';
-      const isRU = unit.faction === 'RU';
+      const isUA = (unit.faction || unit.side) === 'UA';
+      const isRU = (unit.faction || unit.side) === 'RU';
       const color = isUA ? '#3b82f6' : (isRU ? '#ef4444' : '#64748b');
 
       // Injected Flag
@@ -3445,7 +3453,7 @@
     const allEvents = Array.isArray(window.globalEvents) ? window.globalEvents : [];
 
     // Normalize unit name for search
-    const unitName = (unit.unit_name || unit.unit_id || '').toLowerCase();
+    const unitName = (unit.unit_name || unit.display_name || unit.name || unit.unit_id || '').toLowerCase();
 
     // Filter events that mention this unit
     // Note: event.units is a string or array.
