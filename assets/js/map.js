@@ -3542,11 +3542,8 @@
           const tmpDiv = document.createElement('div');
           tmpDiv.innerHTML = rawDesc;
           const plain = (tmpDiv.textContent || tmpDiv.innerText || '').trim();
-          
-          const equipMatch = plain.match(/(?:equipped|armed|using|operates?)\s+(?:with\s+)?(.+?)(?:\.|,|
-|Military|$)/i);
-          const basedMatch = plain.match(/based (?:at|in)\s+(.+?)(?:\.|,|
-|Military|$)/i);
+          const equipMatch = plain.match(/(?:equipped|armed|using|operates?)\s+(?:with\s+)?(.+?)(?:\.|,|\n|Military|$)/i);
+          const basedMatch = plain.match(/based (?:at|in)\s+(.+?)(?:\.|,|\n|Military|$)/i);
           
           if (equipMatch && equipMatch[1].trim().length > 2) {
             if (eqRow) eqRow.style.display = 'flex';
