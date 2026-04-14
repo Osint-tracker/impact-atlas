@@ -3487,46 +3487,106 @@
       ? (relatedEvents.length / 30).toFixed(1) + "/day"
       : "Low";
 
-    // --- OWL METADATA Ã¢â€ â€™ METRICS ---
+    // --- OWL METADATA -> METRICS ---
     const eqRow = document.getElementById('udEquipmentRow');
     const muRow = document.getElementById('udMilUnitRow');
     const baseRow = document.getElementById('udBaseRow');
+    const geoPanel = document.getElementById('udGeoTimelinePanel');
+    const geoList = document.getElementById('udGeoTimelineList');
+    const geoBadge = document.getElementById('udGeoBadge');
+    const elFlag = document.getElementById('udFlagContainer');
+    
     // Reset
     if (eqRow) eqRow.style.display = 'none';
     if (muRow) muRow.style.display = 'none';
     if (baseRow) baseRow.style.display = 'none';
+    if (geoPanel) geoPanel.style.display = 'none';
 
-    if (unit.owl_meta && unit.owl_meta.description) {
-      const rawDesc = unit.owl_meta.description;
-      // Strip HTML to plain text
-      const tmpDiv = document.createElement('div');
-      tmpDiv.innerHTML = rawDesc;
-      const plain = (tmpDiv.textContent || tmpDiv.innerText || '').trim();
-
-      // Parse structured fields from Owl description
-      // Format: "description: ...\nMilitary Unit Number: ...\nLast Known Location: ..."
-      const extractField = (text, label) => {
-        const re = new RegExp(label + '[:\\s]*(.+?)(?:\\n|$|Military Unit|Last Known|based at)', 'i');
-        const m = text.match(re);
-        return m ? m[1].trim().replace(/^[:\s]+/, '') : null;
-      };
-
-      // Equipment: look for known patterns
-      const equipMatch = plain.match(/(?:equipped|armed|using|operates?)\s+(?:with\s+)?(.+?)(?:\.|,|\n|Military|$)/i);
-      const basedMatch = plain.match(/based (?:at|in)\s+(.+?)(?:\.|,|\n|Military|$)/i);
-      const milUnitMatch = plain.match(/Military Unit (?:Number|Ã¢â€žâ€“)?\s*(?:ÃÂ²\/Ã‘â€¡)?[:\s]*([\w\d-]+)/i);
-
-      if (equipMatch && equipMatch[1].trim().length > 2) {
-        eqRow.style.display = 'flex';
-        document.getElementById('udEquipment').innerText = equipMatch[1].trim();
+    if (unit.owl_meta) {
+      // 1. Emblem (Media Link)
+      if (unit.owl_meta.emblem_url && elFlag) {
+        if (unit.owl_meta.emblem_url.includes('hostedimage')) {
+            elFlag.innerHTML = `<img src="${unit.owl_meta.emblem_url}" style="width:100%; height:100%; object-fit:cover; border-radius:4px;">`;
+        }
       }
-      if (milUnitMatch && milUnitMatch[1].trim().length > 1) {
-        muRow.style.display = 'flex';
-        document.getElementById('udMilUnit').innerText = milUnitMatch[1].trim();
+
+      // 2. Military Unit Number
+      if (unit.owl_meta.military_unit_number) {
+        if (muRow) muRow.style.display = 'flex';
+        document.getElementById('udMilUnit').innerText = stripHtml(unit.owl_meta.military_unit_number);
       }
-      if (basedMatch && basedMatch[1].trim().length > 2) {
-        baseRow.style.display = 'flex';
-        document.getElementById('udBase').innerText = basedMatch[1].trim();
+
+      // 3. Extracted Equipment/Base from old description
+      if (unit.owl_meta.description) {
+          const rawDesc = unit.owl_meta.description;
+          const tmpDiv = document.createElement('div');
+          tmpDiv.innerHTML = rawDesc;
+          const plain = (tmpDiv.textContent || tmpDiv.innerText || '').trim();
+          
+          const equipMatch = plain.match(/(?:equipped|armed|using|operates?)\s+(?:with\s+)?(.+?)(?:\.|,|\n|Military|$)/i);
+          const basedMatch = plain.match(/based (?:at|in)\s+(.+?)(?:\.|,|\n|Military|$)/i);
+          
+          if (equipMatch && equipMatch[1].trim().length > 2) {
+            if (eqRow) eqRow.style.display = 'flex';
+            document.getElementById('udEquipment').innerText = equipMatch[1].trim();
+          }
+          if (basedMatch && basedMatch[1].trim().length > 2) {
+            if (baseRow) baseRow.style.display = 'flex';
+            document.getElementById('udBase').innerText = basedMatch[1].trim();
+          }
+      }
+
+      // 4. Geolocation Timeline
+      let geoRaw = '';
+      if (unit.owl_meta.older_geolocations_2) geoRaw += unit.owl_meta.older_geolocations_2 + '\n';
+      if (unit.owl_meta.older_geolocations) geoRaw += unit.owl_meta.older_geolocations + '\n';
+      
+      const geoLines = geoRaw.split('\n').map(l => l.trim()).filter(l => l.length > 5);
+      
+      if (geoLines.length > 0 && geoPanel && geoList && geoBadge) {
+          geoPanel.style.display = 'block';
+          geoBadge.innerText = geoLines.length;
+          geoList.innerHTML = '';
+          
+          geoLines.forEach((line) => {
+              let url = '';
+              let txt = line;
+              const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
+              if (urlMatch) {
+                  url = urlMatch[1];
+                  txt = line.replace(urlMatch[1], '').trim();
+              }
+              
+              let dateTxt = '';
+              const dateMatch = txt.match(/(\d{1,2}\/\d{1,2}\/\d{2,4}|\b202\d{1}\b)/);
+              if (dateMatch) {
+                  dateTxt = dateMatch[1];
+                  txt = txt.replace(dateMatch[1], '').trim();
+              }
+              
+              txt = txt.replace(/^AND\s+/i, '').replace(/^-+\s*/, '').trim();
+              
+              if (!txt && !dateTxt) return;
+              
+              const item = document.createElement('div');
+              item.style.cssText = 'display:flex; align-items:center; gap:8px; padding:6px 8px; background:rgba(59,130,246,0.06); border-radius:6px; border-left:2px solid #3b82f644; margin-bottom: 2px;';
+              
+              const dateBadge = dateTxt ? `<span style="font-size:0.65rem; color:#3b82f6; background:#3b82f622; padding:1px 5px; border-radius:3px; font-weight:600; white-space:nowrap; font-family:'JetBrains Mono', monospace;">${dateTxt}</span>` : '';
+              
+              const linkIcon = url ? `<a href="${url}" target="_blank" rel="noopener" style="color:#64748b; font-size:0.7rem; margin-left:auto; white-space:nowrap;" title="View Source"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>` : '';
+              
+              item.innerHTML = `
+                <i class="fa-solid fa-location-crosshairs" style="color:#3b82f6; font-size:0.65rem; opacity:0.6;"></i>
+                <div style="display:flex; flex-direction:column; min-width:0; flex:1;">
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        ${dateBadge}
+                        ${linkIcon}
+                    </div>
+                    <span style="font-size:0.75rem; color:#cbd5e1; white-space:normal; line-height: 1.2; margin-top:2px;">${stripHtml(txt) || 'Unknown Location'}</span>
+                </div>
+              `;
+              geoList.appendChild(item);
+          });
       }
     }
 
