@@ -50,6 +50,31 @@
           "Kherson Axis"
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            37.7809825,
+            47.9212914
+          ],
+          [
+            37.7809825,
+            47.9212914
+          ]
+        ]
+      },
+      "properties": {
+        "id": "gloc_13",
+        "event_count": 2,
+        "start_ts": 1776150721000,
+        "end_ts": 1776155496000,
+        "sectors": [
+          "UNKNOWN_SECTOR"
+        ]
+      }
     }
   ]
 }
