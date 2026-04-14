@@ -3499,40 +3499,54 @@
     const eqRow = document.getElementById('udEquipmentRow');
     const muRow = document.getElementById('udMilUnitRow');
     const baseRow = document.getElementById('udBaseRow');
-    const geoPanel = document.getElementById('udGeoTimelinePanel');
-    const geoList = document.getElementById('udGeoTimelineList');
-    const geoBadge = document.getElementById('udGeoBadge');
     const elFlag = document.getElementById('udFlagContainer');
     
     // Reset
     if (eqRow) eqRow.style.display = 'none';
     if (muRow) muRow.style.display = 'none';
     if (baseRow) baseRow.style.display = 'none';
-    if (geoPanel) geoPanel.style.display = 'none';
 
-    if (unit.owl_meta) {
+    // IMPORTANT: If unit was clicked from the OWL Map Layer, `unit` itself contains the OWL properties.
+    // If it was clicked from the OSINT search/list, `unit.owl_meta` contains them.
+    const owl = unit.owl_meta || unit;
+    
+    // We prepare the events list right away so we can inject OWL Geolocations into it
+    const listEl = document.getElementById('udEventsList');
+    listEl.innerHTML = '';
+    
+    let hasOwlEvents = false;
+
+    if (owl) {
       // 1. Emblem (Media Link)
-      if (unit.owl_meta.emblem_url && elFlag) {
-        if (unit.owl_meta.emblem_url.includes('hostedimage')) {
-            elFlag.innerHTML = `<img src="${unit.owl_meta.emblem_url}" style="width:100%; height:100%; object-fit:cover; border-radius:4px;">`;
+      if (owl.emblem_url && elFlag) {
+        if (owl.emblem_url.includes('hostedimage')) {
+            elFlag.innerHTML = `<img src="${owl.emblem_url}" style="width:100%; height:100%; object-fit:cover; border-radius:4px;">`;
         }
       }
 
       // 2. Military Unit Number
-      if (unit.owl_meta.military_unit_number) {
+      if (owl.military_unit_number) {
         if (muRow) muRow.style.display = 'flex';
-        document.getElementById('udMilUnit').innerText = stripHtml(unit.owl_meta.military_unit_number);
+        document.getElementById('udMilUnit').innerText = stripHtml(owl.military_unit_number);
+      }
+      
+      // 2b. Last Known Location (Inject into Operational Profile)
+      if (owl.last_known_location) {
+          const elLastLoc = document.getElementById('udLastLocation');
+          if (elLastLoc) elLastLoc.innerHTML = stripHtml(owl.last_known_location);
       }
 
       // 3. Extracted Equipment/Base from old description
-      if (unit.owl_meta.description) {
-          const rawDesc = unit.owl_meta.description;
+      if (owl.description) {
+          const rawDesc = owl.description;
           const tmpDiv = document.createElement('div');
           tmpDiv.innerHTML = rawDesc;
           const plain = (tmpDiv.textContent || tmpDiv.innerText || '').trim();
           
-          const equipMatch = plain.match(/(?:equipped|armed|using|operates?)\s+(?:with\s+)?(.+?)(?:\.|,|\n|Military|$)/i);
-          const basedMatch = plain.match(/based (?:at|in)\s+(.+?)(?:\.|,|\n|Military|$)/i);
+          const equipMatch = plain.match(/(?:equipped|armed|using|operates?)\s+(?:with\s+)?(.+?)(?:\.|,|
+|Military|$)/i);
+          const basedMatch = plain.match(/based (?:at|in)\s+(.+?)(?:\.|,|
+|Military|$)/i);
           
           if (equipMatch && equipMatch[1].trim().length > 2) {
             if (eqRow) eqRow.style.display = 'flex';
@@ -3544,18 +3558,14 @@
           }
       }
 
-      // 4. Geolocation Timeline
+      // 4. Geolocation Timeline -> Injected into Recent Engagements!
       let geoRaw = '';
-      if (unit.owl_meta.older_geolocations_2) geoRaw += unit.owl_meta.older_geolocations_2 + '\n';
-      if (unit.owl_meta.older_geolocations) geoRaw += unit.owl_meta.older_geolocations + '\n';
+      if (owl.older_geolocations_2) geoRaw += owl.older_geolocations_2 + '\n';
+      if (owl.older_geolocations) geoRaw += owl.older_geolocations + '\n';
       
       const geoLines = geoRaw.split('\n').map(l => l.trim()).filter(l => l.length > 5);
       
-      if (geoLines.length > 0 && geoPanel && geoList && geoBadge) {
-          geoPanel.style.display = 'block';
-          geoBadge.innerText = geoLines.length;
-          geoList.innerHTML = '';
-          
+      if (geoLines.length > 0) {
           geoLines.forEach((line) => {
               let url = '';
               let txt = line;
@@ -3565,7 +3575,7 @@
                   txt = line.replace(urlMatch[1], '').trim();
               }
               
-              let dateTxt = '';
+              let dateTxt = 'Archive';
               const dateMatch = txt.match(/(\d{1,2}\/\d{1,2}\/\d{2,4}|\b202\d{1}\b)/);
               if (dateMatch) {
                   dateTxt = dateMatch[1];
@@ -3573,45 +3583,43 @@
               }
               
               txt = txt.replace(/^AND\s+/i, '').replace(/^-+\s*/, '').trim();
+              if (!txt) txt = "Geolocation Point";
               
-              if (!txt && !dateTxt) return;
+              const cleanTxt = stripHtml(txt);
               
-              const item = document.createElement('div');
-              item.style.cssText = 'display:flex; align-items:center; gap:8px; padding:6px 8px; background:rgba(59,130,246,0.06); border-radius:6px; border-left:2px solid #3b82f644; margin-bottom: 2px;';
+              const el = document.createElement('div');
+              el.className = 'ud-event-item';
+              el.style.borderLeft = '2px solid #3b82f6';
+              el.style.background = 'rgba(59, 130, 246, 0.05)';
               
-              const dateBadge = dateTxt ? `<span style="font-size:0.65rem; color:#3b82f6; background:#3b82f622; padding:1px 5px; border-radius:3px; font-weight:600; white-space:nowrap; font-family:'JetBrains Mono', monospace;">${dateTxt}</span>` : '';
+              if (url) {
+                  el.onclick = () => window.open(url, '_blank');
+                  el.title = "View Map Source";
+              }
               
-              const linkIcon = url ? `<a href="${url}" target="_blank" rel="noopener" style="color:#64748b; font-size:0.7rem; margin-left:auto; white-space:nowrap;" title="View Source"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>` : '';
-              
-              item.innerHTML = `
-                <i class="fa-solid fa-location-crosshairs" style="color:#3b82f6; font-size:0.65rem; opacity:0.6;"></i>
-                <div style="display:flex; flex-direction:column; min-width:0; flex:1;">
-                    <div style="display:flex; align-items:center; gap:6px;">
-                        ${dateBadge}
-                        ${linkIcon}
-                    </div>
-                    <span style="font-size:0.75rem; color:#cbd5e1; white-space:normal; line-height: 1.2; margin-top:2px;">${stripHtml(txt) || 'Unknown Location'}</span>
-                </div>
-              `;
-              geoList.appendChild(item);
+              el.innerHTML = `
+                 <div style="font-size:0.75rem; color:#3b82f6; margin-bottom:2px; display:flex; justify-content:space-between;">
+                    <span><i class="fa-solid fa-location-crosshairs" style="margin-right:4px;"></i>${dateTxt}</span>
+                    <span style="font-size:0.6rem; opacity:0.7;">MAP DATA</span>
+                 </div>
+                 <div style="font-size:0.85rem; font-weight:600; color:#cbd5e1; white-space:normal; overflow:hidden;">${cleanTxt}</div>
+               `;
+              listEl.appendChild(el);
+              hasOwlEvents = true;
           });
       }
     }
 
-    const listEl = document.getElementById('udEventsList');
-    listEl.innerHTML = '';
-
-    if (relatedEvents.length === 0) {
+    if (relatedEvents.length === 0 && !hasOwlEvents) {
       listEl.innerHTML = '<div class="ud-event-item" style="cursor:default; color:#64748b; border:none;">No recent activity linked.</div>';
     } else {
-      // Sort by date desc
+      // Setup OSINT events
       relatedEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
 
       relatedEvents.slice(0, 50).forEach(e => {
         const el = document.createElement('div');
         el.className = 'ud-event-item';
         el.onclick = () => {
-          // Open event dossier from unit dossier
           window.openModal(e);
         };
         el.innerHTML = `
