@@ -1,6 +1,8 @@
 import sys
 import os
 import io
+import argparse
+import subprocess
 
 # Force UTF-8 encoding for stdout/stderr to handle emojis on Windows
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
@@ -27,12 +29,22 @@ except ImportError as e:
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Backfill ingestion + optional strategic campaign admission")
+    parser.add_argument(
+        "--with-campaign-admission",
+        action="store_true",
+        help="Run scripts/run_backfill.py after Telegram+GDELT backfill",
+    )
+    parser.add_argument("--admission-limit", type=int, default=0, help="Limit for admission run")
+    parser.add_argument("--admission-dry-run", action="store_true", help="Dry-run admission")
+    args = parser.parse_args()
+
     print("[START] AVVIO BACKFILL: 23 Febbraio 2026 -> 27 Febbraio 2026")
 
     # Timezone Aware (UTC)
     start_dt = datetime(2026, 2, 23, 0, 0, 0, tzinfo=timezone.utc)
     # Impostiamo la fine a "domani" per essere sicuri di prendere tutto oggi
-    end_dt = datetime(2026, 4, 4, 0, 0, 0, tzinfo=timezone.utc)
+    end_dt = datetime(2026, 4, 17, 0, 0, 0, tzinfo=timezone.utc)
 
     # 1. Esegui Telegram
     print("\n--- AVVIO TELEGRAM ---")
@@ -47,6 +59,20 @@ def main():
     gdelt_end = end_dt.strftime("%Y%m%d%H%M%S")
 
     fetch_gdelt_news(start_date=gdelt_start, end_date=gdelt_end)
+
+    if args.with_campaign_admission:
+        print("\n--- AVVIO STRATEGIC CAMPAIGN ADMISSION ---")
+        admission_script = os.path.join(grandparent_dir, "scripts", "run_backfill.py")
+        cmd = [sys.executable, admission_script]
+        if args.admission_limit and args.admission_limit > 0:
+            cmd.extend(["--limit", str(args.admission_limit)])
+        if args.admission_dry_run:
+            cmd.append("--dry-run")
+
+        try:
+            subprocess.run(cmd, check=True)
+        except subprocess.CalledProcessError as exc:
+            print(f"[ERROR] Errore Campaign Admission: {exc}")
 
     print("\n[DONE] BACKFILL COMPLETATO.")
 

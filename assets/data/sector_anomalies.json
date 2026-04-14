@@ -1,4 +1,13 @@
 {
-  "generated_at": "2026-04-01T14:54:08",
-  "anomalies": []
+  "generated_at": "2026-04-14T16:00:17",
+  "anomalies": [
+    {
+      "sector": "UNKNOWN_SECTOR",
+      "date": "2026-04-14",
+      "current_volume": 8,
+      "mean_14d": 1.14,
+      "std_14d": 2.77,
+      "threshold": 6.69
+    }
+  ]
 }

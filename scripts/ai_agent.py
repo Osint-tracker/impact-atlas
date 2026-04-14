@@ -11,6 +11,11 @@ import logging
 from datetime import datetime, timedelta
 from openai import OpenAI
 from dotenv import load_dotenv
+from campaigns_engine import (
+    ensure_campaign_columns,
+    load_campaign_definitions,
+    match_event_campaign,
+)
 
 # Vision Instrument: Zero-disk I/O media processor for The Visionary
 try:
@@ -51,6 +56,9 @@ load_dotenv()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SOURCES_DB_PATH = os.path.join(BASE_DIR, '../assets/data/sources_db.json')
 KEYWORDS_DB_PATH = os.path.join(BASE_DIR, '../assets/data/keywords_db.json')
+CAMPAIGN_DEFINITIONS_CACHE_PATH = os.path.join(
+    BASE_DIR, '../assets/data/campaign_definitions.json'
+)
 
 # --- CONFIGURATION ---
 # Correct Fine-Tuned Model ID (Single dash in 'v4-clean')
@@ -3276,6 +3284,7 @@ def main():
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
+    ensure_campaign_columns(conn)
 
     # Inizializza Client OpenAI Standard (per GPT-4o-mini)
     client_openai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -3300,6 +3309,15 @@ def main():
             conn.commit()
         except sqlite3.OperationalError:
             pass
+
+    campaign_definitions = load_campaign_definitions(
+        sheet_url=os.getenv("SHEET_CSV_URL", ""),
+        cache_path=CAMPAIGN_DEFINITIONS_CACHE_PATH,
+        tab_name="campaign_definitions",
+    )
+    print(
+        f"🎯 Loaded {len(campaign_definitions)} campaign definitions (sheet/cache)."
+    )
 
     agent = SuperSquadAgent()
 
@@ -3717,6 +3735,53 @@ def main():
             # 4. Allinea anche questo
             final_report['ai_summary'] = tactical_insight
 
+            # ==============================================================================
+            # [NUOVO] STRATEGIC CAMPAIGN TAGGING (Agent 7 - Deterministic Rule)
+            # rule: target_type match AND >=1 keyword match
+            # ==============================================================================
+            campaign_id = None
+            campaign_match_meta_json = None
+            campaign_tagged_at = None
+            try:
+                target_type_value = (
+                    (titan_data or {}).get("target_type_category")
+                    or (soldier_result.get("titan_assessment", {}) or {}).get("target_type_category")
+                    or (brain_review.get("verified_data", {}) or {}).get("target_type")
+                    or "unknown"
+                )
+                campaign_event_text = " ".join(
+                    [
+                        str(journo_result.get("title_en", "")),
+                        str(journo_result.get("description_en", "")),
+                        str(combined_text),
+                    ]
+                )
+                campaign_match = match_event_campaign(
+                    campaigns=campaign_definitions,
+                    target_type=target_type_value,
+                    event_text=campaign_event_text,
+                )
+                if campaign_match:
+                    campaign_id = campaign_match.get("campaign_id")
+                    campaign_tagged_at = datetime.utcnow().isoformat() + "Z"
+                    campaign_match_meta_json = json.dumps(
+                        campaign_match.get("match_meta", {}),
+                        ensure_ascii=False,
+                    )
+                    final_report.setdefault("strategy", {})
+                    final_report["strategy"]["campaign"] = {
+                        "campaign_id": campaign_match.get("campaign_id"),
+                        "name": campaign_match.get("name"),
+                        "color": campaign_match.get("color"),
+                        "match_meta": campaign_match.get("match_meta", {}),
+                        "tagged_at": campaign_tagged_at,
+                    }
+                else:
+                    final_report.setdefault("strategy", {})
+                    final_report["strategy"]["campaign"] = None
+            except Exception as campaign_err:
+                print(f"   ⚠️ Campaign tagging error: {campaign_err}")
+
             # ==================================================================================
             # GEO-FIXER BLOCK (VERSIONE SICURA CON RECINTO)
             # ==================================================================================
@@ -3837,6 +3902,9 @@ def main():
                         title = ?,
                         description = ?,
                         urls_list = ?,
+                        campaign_id = ?,
+                        campaign_match_meta = ?,
+                        campaign_tagged_at = ?,
                         operational_sector = ?,
                         lat = COALESCE(?, lat),
                         lon = COALESCE(?, lon)
@@ -3856,6 +3924,9 @@ def main():
                         journo_result.get('title_en', ''),
                         journo_result.get('description_en', ''),
                         ' | '.join(actual_urls_list) if actual_urls_list else '',
+                        campaign_id,
+                        campaign_match_meta_json,
+                        campaign_tagged_at,
                         operational_sector,
                         persist_lat,
                         persist_lon,

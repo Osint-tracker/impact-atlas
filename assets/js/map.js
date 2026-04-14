@@ -19,6 +19,14 @@
   let unitsLayer = null;
   let narrativesLayer = null; // Strategic Context layer
   let owlLayer = null; // Project Owl Layer
+  let strategicCampaignsMode = false;
+  let strategicCanvasLayer = null;
+  let strategicHullLayer = null;
+  let strategicCampaignDefinitions = [];
+  let strategicCampaignReports = [];
+  let selectedStrategicCampaignId = null;
+  const strategicSparklineCharts = {};
+  const strategicCanvasRenderer = L.canvas();
 
   window.allEventsData = [];
   window.globalEvents = [];
@@ -1058,6 +1066,239 @@
       });
   };
 
+  function normalizeCampaignId(value) {
+    return String(value || '').trim().toLowerCase();
+  }
+
+  function findCampaignMeta(campaignId) {
+    const cid = normalizeCampaignId(campaignId);
+    if (!cid) return null;
+    return strategicCampaignReports.find(c => normalizeCampaignId(c.campaign_id) === cid)
+      || strategicCampaignDefinitions.find(c => normalizeCampaignId(c.campaign_id) === cid)
+      || null;
+  }
+
+  function cleanupStrategicCharts() {
+    Object.keys(strategicSparklineCharts).forEach(function (key) {
+      try {
+        if (strategicSparklineCharts[key]) strategicSparklineCharts[key].destroy();
+      } catch (err) { }
+      delete strategicSparklineCharts[key];
+    });
+  }
+
+  function setStrategicDrawerVisible(visible) {
+    const drawer = document.getElementById('strategicCampaignsDrawer');
+    if (!drawer) return;
+    drawer.classList.toggle('active', !!visible);
+  }
+
+  function updateStrategicHull(events) {
+    if (!map) return;
+
+    if (strategicHullLayer && map.hasLayer(strategicHullLayer)) {
+      map.removeLayer(strategicHullLayer);
+    }
+    strategicHullLayer = null;
+
+    if (!strategicCampaignsMode || !selectedStrategicCampaignId || !window.turf) return;
+
+    const matched = (events || []).filter(function (e) {
+      return normalizeCampaignId(e.campaign_id) === normalizeCampaignId(selectedStrategicCampaignId)
+        && Number.isFinite(e.lon) && Number.isFinite(e.lat);
+    });
+
+    if (matched.length < 3) return;
+
+    try {
+      const points = matched.map(function (e) {
+        return window.turf.point([e.lon, e.lat]);
+      });
+      const fc = window.turf.featureCollection(points);
+      const hull = window.turf.convex(fc);
+      if (!hull) return;
+
+      const meta = findCampaignMeta(selectedStrategicCampaignId) || {};
+      const hullColor = meta.color || '#f59e0b';
+      strategicHullLayer = L.geoJSON(hull, {
+        style: {
+          color: hullColor,
+          fillColor: hullColor,
+          fillOpacity: 0.1,
+          opacity: 0.8,
+          weight: 2
+        }
+      }).addTo(map);
+    } catch (err) {
+      console.warn('Strategic hull generation failed:', err);
+    }
+  }
+
+  function renderStrategicCampaignLayer(events) {
+    if (!map) return;
+
+    if (!strategicCanvasLayer) {
+      strategicCanvasLayer = L.layerGroup();
+    }
+    strategicCanvasLayer.clearLayers();
+
+    const selectedId = normalizeCampaignId(selectedStrategicCampaignId);
+    (events || []).forEach(function (e) {
+      if (!Number.isFinite(e.lat) || !Number.isFinite(e.lon)) return;
+
+      const eventCampaignId = normalizeCampaignId(e.campaign_id);
+      const isMatch = selectedId && eventCampaignId === selectedId;
+      const baseColor = e.campaign_color || e.marker_color || '#f59e0b';
+      const markerColor = isMatch ? baseColor : (selectedId ? '#64748b' : baseColor);
+      const markerOpacity = selectedId ? (isMatch ? 0.95 : 0.2) : 0.85;
+      const radius = selectedId ? (isMatch ? Math.max(5, e.marker_radius || 5) : 3.4) : Math.max(4, e.marker_radius || 4);
+
+      const marker = L.circleMarker([e.lat, e.lon], {
+        renderer: strategicCanvasRenderer,
+        radius: radius,
+        color: markerColor,
+        weight: isMatch ? 1.7 : 1,
+        opacity: markerOpacity,
+        fillColor: markerColor,
+        fillOpacity: Math.min(0.95, markerOpacity + 0.08)
+      });
+
+      marker.bindPopup(createPopupContent(e));
+      strategicCanvasLayer.addLayer(marker);
+    });
+
+    if (!map.hasLayer(strategicCanvasLayer)) {
+      map.addLayer(strategicCanvasLayer);
+    }
+
+    updateStrategicHull(events);
+  }
+
+  function renderStrategicCampaignCards() {
+    const container = document.getElementById('strategicCampaignCards');
+    if (!container) return;
+
+    const items = (strategicCampaignReports || []).map(function (item) {
+      const campaignId = normalizeCampaignId(item.campaign_id);
+      return {
+        campaign_id: campaignId,
+        name: item.name || campaignId.toUpperCase(),
+        color: item.color || '#f59e0b',
+        status: String(item.status || 'STANDBY').toUpperCase(),
+        sum_vec_e: Number(item.sum_vec_e || 0),
+        brief_text: item.brief_text || 'No strategic brief available.',
+        sparkline: (item.sparkline_daily_vec_e && Array.isArray(item.sparkline_daily_vec_e.values))
+          ? item.sparkline_daily_vec_e.values
+          : [],
+      };
+    });
+
+    if (!items.length) {
+      container.innerHTML = '<div class=\"sc-empty\">No campaign reports available.</div>';
+      cleanupStrategicCharts();
+      return;
+    }
+
+    const activeId = normalizeCampaignId(selectedStrategicCampaignId);
+    container.innerHTML = items.map(function (item, idx) {
+      const sparkId = 'scSpark_' + idx;
+      const statusClass = item.status === 'LIVE' ? 'live' : 'standby';
+      const isActive = activeId && item.campaign_id === activeId;
+      return `
+        <article class=\"sc-card ${isActive ? 'active' : ''}\" data-campaign-id=\"${item.campaign_id}\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"border-left:3px solid ${item.color};\">
+          <div class=\"sc-row\">
+            <div class=\"sc-name\">${item.name}</div>
+            <span class=\"sc-badge ${statusClass}\">${item.status}</span>
+          </div>
+          <div class=\"sc-row\">
+            <div>
+              <div class=\"sc-metric\">${item.sum_vec_e.toFixed(1)}</div>
+              <div class=\"sc-metric-label\">Cumulative E-Vector</div>
+            </div>
+          </div>
+          <div class=\"sc-sparkline-wrap\"><canvas id=\"${sparkId}\" height=\"42\"></canvas></div>
+          <div class=\"sc-brief\">${item.brief_text}</div>
+        </article>`;
+    }).join('');
+
+    cleanupStrategicCharts();
+
+    items.forEach(function (item, idx) {
+      const sparkId = 'scSpark_' + idx;
+      const canvas = document.getElementById(sparkId);
+      if (!canvas || typeof Chart === 'undefined') return;
+      const values = (item.sparkline && item.sparkline.length) ? item.sparkline : [0];
+      strategicSparklineCharts[sparkId] = new Chart(canvas.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: values.map(function (_, i) { return i + 1; }),
+          datasets: [{
+            data: values,
+            borderColor: item.color,
+            backgroundColor: item.color + '33',
+            pointRadius: 0,
+            borderWidth: 1.5,
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          scales: { x: { display: false }, y: { display: false } }
+        }
+      });
+    });
+  }
+
+  function loadStrategicCampaignData() {
+    return Promise.all([
+      fetch('assets/data/campaign_reports.json')
+        .then(function (r) { return r.ok ? r.json() : { campaigns: [] }; })
+        .catch(function () { return { campaigns: [] }; }),
+      fetch('assets/data/campaign_definitions.json')
+        .then(function (r) { return r.ok ? r.json() : { campaigns: [] }; })
+        .catch(function () { return { campaigns: [] }; })
+    ]).then(function (result) {
+      const reportsPayload = result[0] || {};
+      const defsPayload = result[1] || {};
+      strategicCampaignReports = Array.isArray(reportsPayload.campaigns) ? reportsPayload.campaigns : [];
+      strategicCampaignDefinitions = Array.isArray(defsPayload.campaigns) ? defsPayload.campaigns : [];
+      renderStrategicCampaignCards();
+    });
+  }
+
+  window.toggleStrategicCampaignSelection = function (campaignId) {
+    const normalized = normalizeCampaignId(campaignId);
+    if (!normalized) return;
+    selectedStrategicCampaignId = normalizeCampaignId(selectedStrategicCampaignId) === normalized ? null : normalized;
+    renderStrategicCampaignCards();
+    if (window.applyMapFilters) window.applyMapFilters();
+  };
+
+  window.toggleStrategicCampaignsMode = function (forceState) {
+    strategicCampaignsMode = typeof forceState === 'boolean' ? forceState : !strategicCampaignsMode;
+    if (!strategicCampaignsMode) {
+      selectedStrategicCampaignId = null;
+      if (strategicCanvasLayer && map && map.hasLayer(strategicCanvasLayer)) {
+        map.removeLayer(strategicCanvasLayer);
+      }
+      if (strategicHullLayer && map && map.hasLayer(strategicHullLayer)) {
+        map.removeLayer(strategicHullLayer);
+      }
+      cleanupStrategicCharts();
+      setStrategicDrawerVisible(false);
+      if (window.applyMapFilters) window.applyMapFilters();
+      return;
+    }
+
+    setStrategicDrawerVisible(true);
+    loadStrategicCampaignData().finally(function () {
+      if (window.applyMapFilters) window.applyMapFilters();
+    });
+  };
+
   // ============================================
   // 4. RENDERING FUNCTIONS
   // ============================================
@@ -1072,6 +1313,12 @@
     }
 
     if (isHeatmapMode) {
+      if (strategicCanvasLayer && map.hasLayer(strategicCanvasLayer)) {
+        map.removeLayer(strategicCanvasLayer);
+      }
+      if (strategicHullLayer && map.hasLayer(strategicHullLayer)) {
+        map.removeLayer(strategicHullLayer);
+      }
       if (typeof L.heatLayer === 'undefined') return;
       const heatPoints = renderable.map(e => [e.lat, e.lon, (e.intensity || 0.5) * 2]);
       heatLayer = L.heatLayer(heatPoints, {
@@ -1080,7 +1327,16 @@
         maxZoom: 10,
         gradient: { 0.4: 'blue', 0.6: '#00ff00', 0.8: 'yellow', 1.0: 'red' }
       }).addTo(map);
+    } else if (strategicCampaignsMode) {
+      if (map.hasLayer(eventsLayer)) map.removeLayer(eventsLayer);
+      renderStrategicCampaignLayer(renderable);
     } else {
+      if (strategicCanvasLayer && map.hasLayer(strategicCanvasLayer)) {
+        map.removeLayer(strategicCanvasLayer);
+      }
+      if (strategicHullLayer && map.hasLayer(strategicHullLayer)) {
+        map.removeLayer(strategicHullLayer);
+      }
       const markers = renderable.map(e => createMarker(e));
       eventsLayer.addLayers(markers);
       map.addLayer(eventsLayer);
@@ -1399,6 +1655,7 @@
       preferCanvas: true, // Performance boost
       wheelPxPerZoomLevel: 120
     }).setView([48.5, 32.0], 6);
+    window.map = map;
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
@@ -4098,6 +4355,7 @@
     loadSectorsData();
     loadSectorAnomaliesData();
     loadEventsData();
+    loadStrategicCampaignData();
     loadAxisThermalFeatures();
 
     // Initialize Physical Weather

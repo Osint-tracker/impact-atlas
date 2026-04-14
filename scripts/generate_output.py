@@ -9,6 +9,14 @@ import os
 import csv
 import sys
 from urllib.parse import urlparse
+from dotenv import load_dotenv
+
+from campaigns_engine import (
+    build_campaign_reports,
+    build_campaigns_geo,
+    ensure_campaign_columns,
+    load_campaign_definitions,
+)
 
 # Windows Unicode Fix
 sys.stdout.reconfigure(encoding='utf-8')
@@ -28,8 +36,13 @@ EXTERNAL_LOSSES_PATH = os.path.join(BASE_DIR, '../assets/data/external_losses.js
 SECTOR_ANOMALIES_PATH = os.path.join(BASE_DIR, '../assets/data/sector_anomalies.json')
 ASYMMETRY_INDEX_PATH = os.path.join(BASE_DIR, '../assets/data/asymmetry_index.json')
 GLOCS_PATH = os.path.join(BASE_DIR, '../assets/data/glocs.geojson')
+CAMPAIGN_DEFINITIONS_CACHE_PATH = os.path.join(BASE_DIR, '../assets/data/campaign_definitions.json')
+CAMPAIGN_REPORTS_PATH = os.path.join(BASE_DIR, '../assets/data/campaign_reports.json')
+CAMPAIGNS_GEO_PATH = os.path.join(BASE_DIR, '../assets/data/campaigns_geo.json')
 
 import datetime as _dt
+
+load_dotenv()
 
 
 try:
@@ -659,12 +672,22 @@ def main():
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
+    ensure_campaign_columns(conn)
     ensure_sources_reputation_schema(conn)
     apply_reputation_decay(conn)
     
     # Load ORBAT Data
     orbat_data = load_orbat_data()
     print(f"[INFO] Loaded {len(orbat_data)} ORBAT units for enrichment.")
+    sys.stdout.flush()
+
+    campaign_definitions = load_campaign_definitions(
+        sheet_url=os.getenv('SHEET_CSV_URL', ''),
+        cache_path=CAMPAIGN_DEFINITIONS_CACHE_PATH,
+        tab_name='campaign_definitions',
+    )
+    campaign_index = {c.get('campaign_id'): c for c in campaign_definitions}
+    print(f"[INFO] Loaded {len(campaign_definitions)} campaign definitions.")
     sys.stdout.flush()
     
     # Query ALL columns directly
@@ -691,7 +714,10 @@ def main():
             operational_sector,
             image_phash,
             source_reputation_score,
-            ai_analysis_status
+            ai_analysis_status,
+            campaign_id,
+            campaign_match_meta,
+            campaign_tagged_at
         FROM unique_events 
         WHERE ai_analysis_status = 'COMPLETED'
     """)
@@ -941,6 +967,19 @@ def main():
             # Enrich Units
             raw_units = ai_data.get('military_units_detected', []) if ai_data else []
             enriched_units = enrich_units(raw_units, orbat_data)
+
+            # Strategic Campaign Fields
+            campaign_id = (row.get('campaign_id') or '').strip().lower() or None
+            if not campaign_id and ai_data:
+                campaign_id = (
+                    ((ai_data.get('strategy') or {}).get('campaign') or {}).get('campaign_id')
+                    or None
+                )
+                if campaign_id:
+                    campaign_id = str(campaign_id).strip().lower()
+            campaign_info = campaign_index.get(campaign_id) if campaign_id else None
+            campaign_name = campaign_info.get('name') if campaign_info else None
+            campaign_color = campaign_info.get('color') if campaign_info else None
             
             # Build GeoJSON Feature
             feature = {
@@ -992,7 +1031,14 @@ def main():
                     "marker_color": color,
                     
                     # New Tactical Sector Geofencing
-                    "operational_sector": row.get('operational_sector', 'UNKNOWN_SECTOR')
+                    "operational_sector": row.get('operational_sector', 'UNKNOWN_SECTOR'),
+
+                    # Strategic Campaign Tagging
+                    "campaign_id": campaign_id,
+                    "campaign_name": campaign_name,
+                    "campaign_color": campaign_color,
+                    "campaign_match_meta": row.get('campaign_match_meta'),
+                    "campaign_tagged_at": row.get('campaign_tagged_at')
                 }
             }
             geojson_features.append(feature)
@@ -1061,6 +1107,19 @@ def main():
     write_json(ASYMMETRY_INDEX_PATH, asymmetry)
     write_json(GLOCS_PATH, glocs_geojson)
 
+    campaign_geo_payload = build_campaigns_geo(
+        features=geojson_features,
+        campaigns=campaign_definitions,
+        output_path=CAMPAIGNS_GEO_PATH,
+    )
+    campaign_reports_payload = build_campaign_reports(
+        features=geojson_features,
+        campaigns=campaign_definitions,
+        output_path=CAMPAIGN_REPORTS_PATH,
+        sparkline_days=30,
+        weekly_window_days=7,
+    )
+
     # Save CSV
     with open(CSV_PATH, 'w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=csv_headers)
@@ -1070,6 +1129,8 @@ def main():
     print(f"\n[DONE] Export complete!")
     print(f"   GeoJSON: {len(geojson_features)} events -> {GEOJSON_PATH}")
     print(f"   CSV: {len(csv_rows)} rows -> {CSV_PATH}")
+    print(f"   Campaigns Geo: {len(campaign_geo_payload.get('campaigns', []))} campaigns -> {CAMPAIGNS_GEO_PATH}")
+    print(f"   Campaign Reports: {len(campaign_reports_payload.get('campaigns', []))} campaigns -> {CAMPAIGN_REPORTS_PATH}")
 
     # Export Units
     export_units(unit_stats_acc, orbat_data)

@@ -1,0 +1,133 @@
+campaign_id,name,target_types,keywords,color
+infantry,Infantry,infantry,personnel;brigade;direction;pokrovsk;assault;positions;kherson;control,#94a3b8
+civilian,Civilian,civilian,kherson;non;injuries;kharkiv;fake;casualties;year-old;injured,#94a3b8
+logistics,Logistics,logistics,depot;air;tanker;donetsk;noel;oil;hit;ammunition,#ef4444
+energy,Energy,energy,power;infrastructure;substation;outages;noel;plant;without;supply,#a3e635
+strategic_industry,Strategic Industry,strategic industry|strategic_industry,oil;plant;refinery;fire;noel;hit;depot;conducted,#ef4444
+air_defense,Air Defense,air defense|air_defense,down;donetsk;noel;radar;shot;out;defence;uavs,#ef4444
+armored,Armored,armored,personnel;vehicles;pokrovsk;assault;brigade;losses;noel;general,#fb7185
+strategic_infrastructure,Strategic Infrastructure,strategic infrastructure|strategic_infrastructure,power;launched;lviv;rybar;plant;ballistic;hit;oil,#f59e0b
+strategic,Strategic,strategic,ballistic;lviv;launched;conducted;air;casualties;locations;been,#fb7185
+heavy_armor,Heavy Armor,heavy armor|heavy_armor,direction;assault;position;brigade;conducted;tanks;positions;tank,#fb7185
+residential,Residential,residential,kherson;non;fake;building;areas;fire;approximately;dnipro,#a3e635
+civilian_infrastructure,Civilian Infrastructure,civilian infrastructure|civilian_infrastructure,kherson;dnipro;residential;building;gas;fire;kharkiv;resulting,#06b6d4
+infrastructure,Infrastructure,infrastructure,kherson;air;water;noel;approximately;bridge;uav;without,#f97316
+civilian_residential,Civilian Residential,civilian residential|civilian_residential,building;injured;high-rise;kharkiv;kherson;dnipro;injuries;buildings,#f97316
+strategic_air_defense,Strategic Air Defense,strategic air defense|strategic_air_defense,radar;crimea;noel;targeted;launch;lviv;kapustin;yar,#38bdf8
+artillery,Artillery,artillery,operators;zaporizhzhia;direction;brigade;self-propelled;conducted;fpv;grad,#eab308
+air,Air,air,helicopter;down;combat;brigade;shot;successfully;engagement;aviation,#06b6d4
+armor,Armor,armor,equipment;brigade;separate;assault;tank;direction;personnel;hit,#f59e0b
+naval,Naval,naval,tanker;submarine;court;aircraft;che;marinera;petroliera;its,#eab308
+strategic_defense,Strategic Defense,strategic defense|strategic_defense,cruise;crimea;out;donetsk;ballistic;air;occupied;zaporizhzhia,#38bdf8
+leadership,Leadership,leadership,residence;putin;general;material;united;states;alekseev;gru,#eab308
+political,Political,political,security;energy;service;will;support;zelensky;coalition;guarantees,#fb7185
+command,Command,command,brigade;selimov;air;commander;motorized;rifle;vehicle;soldiers,#fb7185
+operational_hq,Operational Hq,operational hq|operational_hq,control;defense;oreschnik;details;casualties;intelligence;kupyansk;base,#94a3b8
+air_defence,Air Defence,air defence|air_defence,interception;suppression;out;shot;down;suppressed;engaged;engagement,#22c55e
+advanced_systems,Advanced Systems,advanced systems|advanced_systems,radar;crimea;station;zaporizhzhia;kasta;donetsk;defense;targeted,#f97316
+strategic_logistics,Strategic Logistics,strategic logistics|strategic_logistics,oil;port;tanker;donetsk;conducted;two;terminal;attacked,#fb7185
+communications,Communications,communications,tower;kursk;atesh;conducted;unknown;fire;sabotage;brigade,#38bdf8
+airspace,Airspace,airspace,flight;swedish;regione;unauthorized;sweden;made;national;incident,#06b6d4
+terrain,Terrain,terrain,control;north;oleksandro-shultyne;zona;che;belgorod;towards;russi,#22c55e
+vehicle,Vehicle,vehicle,fpv;soldiers;donetsk;incident;karymat;mac;unit;brigade,#a3e635
+industry,Industry,industry,dnipro;launched;chemical;plant;chapayevsk;bunge;oil;kavpolit,#38bdf8
+airfield,Airfield,airfield,explosions;crimea;explosion;saki;noel;been;sevastopol;occurred,#f97316
+airborne,Airborne,airborne,uav;shot;down;reconnaissance;fpv;forpost-r;during;engagement,#a3e635
+cultural,Cultural,cultural,world;monastery;unesco;damages;incident;heritage;unesco-listed;resulted,#eab308
+command_and_control,Command And Control,command and control|command_and_control,depot;ammunition;hit;uav;donetsk;points;enemy;posts,#06b6d4
+uav,Uav,uav,max;uavs;lostarmour;reconnaissance;dva;majors;unmanned;aerial,#ef4444
+government,Government,government,unn;news;residence;leader;kherson;tass;starlink;unit,#f59e0b
+empty_terrain,Empty Terrain,empty terrain|empty_terrain,debris;lviv;karymat;found;located;moldova;known;oreshnik,#38bdf8
+multiple,Multiple,multiple,locations;air;uavs;ballistic;launched;recorded;out;falling,#f59e0b
+tactical_logistics,Tactical Logistics,tactical logistics|tactical_logistics,deepstateua;north;personnel;korean;border;soldiers;zaporizhzhia;kor,#eab308
+drone,Drone,drone,mark;bersaglio;maritime;aerial;frankenburg;technologies;ground;anti-tank,#94a3b8
+diplomatic,Diplomatic,diplomatic,embassy;qatari;defense;cooperation;president;azerbaijan;noel;damaged,#f59e0b
+technology,Technology,technology,belarus;repeaters;zelensky;helsing;platform;president;these;three,#94a3b8
+military,Military,military,air;locations;news;zaporizhzhia;training;belgorod;overnight;enemy,#f59e0b
+vehicles,Vehicles,vehicles,kherson;central;non;fake;vehicle;fire;paratroopers;several,#fb7185
+training,Training,training,exercises;nemesis;conducted;vehicles;operators;estonia;brigade;border,#94a3b8
+settlement,Settlement,settlement,deepstatemap;live;deepstateua;settlements;voenkorkotenok;svjato-pokrovske;vasyukivka;they,#22c55e
+robotic_systems,Robotic Systems,robotic systems|robotic_systems,ground;two;vovchansk;direction;destroy;brigade;south;border,#38bdf8
+educational,Educational,educational,special;chechen;oppositionists;university;gudermes;announced;building;institution,#22c55e
+maritime,Maritime,maritime,special;tanker;aircraft;che;russian-flagged;atlantic;twz;seized,#a3e635
+healthcare,Healthcare,healthcare,kupyansk;che;russi;airstrike;kharkiv;aviazione;russo;hanno,#22c55e
+energy_civilian,Energy Civilian,energy civilian|energy_civilian,cruise;infrastructure;president;diplomatic;efforts;zelensky;defense;secretary,#ef4444
+robotics,Robotics,robotics,robotic;ground;brigade;vovchansk;axis;one;deployed;two,#22c55e
+civilian_ship,Civilian Ship,civilian ship|civilian_ship,oil;tanker;petersburg;naval;escort;explosion;occurred;fire,#06b6d4
+energy_logistics,Energy Logistics,energy logistics|energy_logistics,mariupol;makiivka;baltic;ports;occupied;depot;oil;exports,#f59e0b
+uav_drone,Uav Drone,uav drone|uav_drone,micro-missile;mark;engines;european;intercept;down;shahed;crew,#f97316
+cultural_heritage,Cultural Heritage,cultural heritage|cultural_heritage,lavra;damaged;kyiv-pechersk;unesco;caves;world;reserve;site,#f97316
+air_asset,Air Asset,air asset|air_asset,helicopter;down;shot;gostomel;video;aerospace;confirmed;rostov,#06b6d4
+armored_infantry,Armored Infantry,armored infantry|armored_infantry,search;myrnohrad;brigade;units;lyman;air;assault;surrounding,#06b6d4
+law_enforcement,Law Enforcement,law enforcement|law_enforcement,police;kherson;explosive;non;fake;assailant;vehicle;injuries,#22c55e
+strategic_missile_system,Strategic Missile System,strategic missile system|strategic_missile_system,zircon;launcher;crimea;bastion-m;hypersonic;two;another;damaged,#38bdf8
+industrial,Industrial,industrial,warhistoryalconafter;plant;leningrad;chemical;samara;targeting;two;ust-luga,#38bdf8
+armored_vehicle,Armored Vehicle,armored vehicle|armored_vehicle,tank;pokrovsk;direction;fpv;detonation;turret;donetsk;resulting,#eab308
+infrastructure_civilian,Infrastructure Civilian,infrastructure civilian|infrastructure_civilian,zelensky;died;president;warns;potential;launch;significant;unusual,#f59e0b
+air_defense_logistics_command,Air Defense Logistics Command,air defense logistics command|air_defense_logistics_command,radar;station;crimea;zaporizhzhia;ammunition;separate;hit;nebo-u,#06b6d4
+residential_energy,Residential Energy,residential energy|residential_energy,kryvyi;rih;including;homes;child;four;two;elderly,#f97316
+religious_symbolic,Religious Symbolic,religious symbolic|religious_symbolic,intelligence;provocation;foreign;service;large-scale;human;casualties;christmas,#ef4444
+industry_energy,Industry Energy,industry energy|industry_energy,armed;infrastructure;delibertate,#f97316
+critical_infrastructure,Critical Infrastructure,critical infrastructure|critical_infrastructure,launched;uavs;shahed;multiple;directions;air;noel;defenses,#f59e0b
+civilian_vehicles,Civilian Vehicles,civilian vehicles|civilian_vehicles,turkey;tanker;qendil;aground;ran;off;coast;sea,#fb7185
+robotic,Robotic,robotic,ground;vovchansk;direction;two;brigade,#94a3b8
+supply,Supply,supply,ground;donetsk;oblast;supplies;anti-tank;mine;shortly;deployment,#38bdf8
+energy_industry,Energy Industry,energy industry|energy_industry,armed;infrastructure;delibertate,#38bdf8
+military_contractor_platform,Military Contractor Platform,military contractor platform|military_contractor_platform,helsing;orders;tests;during;lacked;off;decided;additional,#06b6d4
+surveillance,Surveillance,surveillance,reconnaissance;shot;down;storm;using;general;chereshnya;air,#06b6d4
+civilian_logistics,Civilian Logistics,civilian logistics|civilian_logistics,ship;italian;authorities;cargo;brindisi;sanctions;seized;found,#a3e635
+prisoners_of_war,Prisoners Of War,prisoners of war|prisoners_of_war,skobelev;captured;nine;forced;them;soldier;kursk;security,#eab308
+civilian_shipping,Civilian Shipping,civilian shipping|civilian_shipping,explosion;msc;giada;iii;gulf;finland;occurred;engine,#22c55e
+air_defense_energy,Air Defense Energy,air defense energy|air_defense_energy,belgorod;two;positions;hit;targeted;three;mobile;radar,#a3e635
+strategic_communications,Strategic Communications,strategic communications|strategic_communications,vehicles;space;satellites;europe;two;european;security;officials,#06b6d4
+diplomatic_channel,Diplomatic Channel,diplomatic channel|diplomatic_channel,federation;dialogue;united;both;deepstateua,#ef4444
+testing,Testing,testing,test;eram;ucraina;rusty;dagger;eglin;programma;united,#38bdf8
+logistics_infantry_airborne,Logistics Infantry Airborne,logistics infantry airborne|logistics_infantry_airborne,enemy;rivne;control;novomayorske;points;uav;production;center,#f97316
+artillery_infrastructure_troops,Artillery Infrastructure Troops,artillery infrastructure troops|artillery_infrastructure_troops,donetsk;zaporizhzhia;overnight;confirmed;included;uragan;mlrs;novomaiorske,#f59e0b
+logistics_command_uav,Logistics Command Uav,logistics command uav|logistics_command_uav,multiple;repair;unit;donetsk;training;production;posts;zaporizhzhia,#f59e0b
+strategic_naval,Strategic Naval,strategic naval|strategic_naval,novorossiysk;port,#eab308
+command_post,Command Post,command post|command_post,sudzha;airborne;kursk;ammunition;depot;novooleksiivka;occupied;kherson,#22c55e
+sof,Sof,sof,group;reconnaissance;north;pokrovsk;brigade;air;assault;corps,#94a3b8
+political_event,Political Event,political event|political_event,not;army;personnel;kilometer;our;there;casualties;zelensky,#fb7185
+personnel_equipment_artillery_uav,Personnel Equipment Artillery Uav,personnel equipment artillery uav|personnel_equipment_artillery_uav,losses;general;staff;tank;vehicles;acvs;mlrs;uavs,#38bdf8
+civilian_transport,Civilian Transport,civilian transport|civilian_transport,kherson;parking;vehicle;covered;non;fake,#22c55e
+military_base,Military Base,military base|military_base,sniper;american;dutch;pilots;operating;lockheed;martin;targeting,#fb7185
+electrical_substation,Electrical Substation,electrical substation|electrical_substation,equipped;anticipated;within;hours;thermal;power;plant;three,#f59e0b
+strategic_defense_logistics_communications,Strategic Defense Logistics Communications,strategic defense logistics communications|strategic_defense_logistics_communications,uav;donetsk;control;points;zaporizhzhia;tokmak;staromlynivka;equipment,#eab308
+heavy_weapons,Heavy Weapons,heavy weapons|heavy_weapons,konstiantynivka;fpv;operator;failed;explode;two;luhansk;regiment,#fb7185
+artillery_air_defense_radar,Artillery Air Defense Radar,artillery air defense radar|artillery_air_defense_radar,nella;sbs;difesa;aerea;individuato;uragan;malachite;crimea,#06b6d4
+command_logistics,Command Logistics,command logistics|command_logistics,depots;repair;base;posts;donetsk;hit;confirmed;ammunition,#f59e0b
+morale_discipline,Morale Discipline,morale discipline|morale_discipline,one;refusing;assaults;three;days;personnel;four;ordered,#fb7185
+air_defense_logistics,Air Defense Logistics,air defense logistics|air_defense_logistics,donetsk;hit;enemy;zaporizhzhia;radar;concentration;manpower;uav,#38bdf8
+armored_infantry_artillery,Armored Infantry Artillery,armored infantry artillery|armored_infantry_artillery,losses;personnel;irretrievable;eliminated;equipment;ammunition;depots;uavs,#f59e0b
+civilian_facility_city,Civilian Facility City,civilian facility city|civilian_facility_city,kostiantynivka;residents,#eab308
+armored_artillery,Armored Artillery,armored artillery|armored_artillery,units;north;hryshyne;vehicles;trucks;cars;atvs;motorcycles,#94a3b8
+strategic_air_defense_energy,Strategic Air Defense Energy,strategic air defense energy|strategic_air_defense_energy,oil;novorossiysk;naval;assets;warships;guidance;radar;complex,#94a3b8
+naval_infrastructure,Naval Infrastructure,naval infrastructure|naval_infrastructure,group;toward;dzhankoi;crimea;uav;occupied;odesa;mykolaiv,#22c55e
+strategic_defense_logistics,Strategic Defense Logistics,strategic defense logistics|strategic_defense_logistics,donetsk;crimea;enemy;conducted;air;base;orlivka;three,#22c55e
+artillery_electronic_warfare,Artillery Electronic Warfare,artillery electronic warfare|artillery_electronic_warfare,donetsk;luhansk;regions;combat;group;nona-s;self-propelled;guns,#a3e635
+political_aid,Political Aid,political aid|political_aid,germany;provides;million;euros;funds;reconnaissance;civil;defense,#ef4444
+procurement,Procurement,procurement,selected;pentagon;supply;company;f-drones;been;chosen;competitors,#fb7185
+command_logistics_air_defense,Command Logistics Air Defense,command logistics air defense|command_logistics_air_defense,depots;fuel;oil;depot;well;berdyansk;districts;hit,#94a3b8
+radar_ew,Radar Ew,radar ew|radar_ew,station;chinese;zaporizhia;requiem;balista;unit;redrone;droni,#a3e635
+infantry_positions,Infantry Positions,infantry positions|infantry_positions,mine;laying;grishino,#22c55e
+command_infrastructure,Command Infrastructure,command infrastructure|command_infrastructure,depots;crimea;russian-occupied;zaporizhzhia;bahativka;post;motor;rifle,#a3e635
+regional,Regional,regional,kherson;potential;ballistic;launch;crimea;non;fake,#22c55e
+military_hq,Military Hq,military hq|military_hq,defense;army;location;federation;uavs,#38bdf8
+aviation,Aviation,aviation,down;helicopter;pokrovsk;alligator;army;brigade;shot;agglomeration,#a3e635
+uav_swarm,Uav Swarm,uav swarm|uav_swarm,air;defence,#22c55e
+air_defense_industry,Air Defense Industry,air defense industry|air_defense_industry,donetsk;shahed;uav;hub;nebo-u;radar;bryansk;chemical,#22c55e
+missile_system,Missile System,missile system|missile_system,launch;installation;crimea,#38bdf8
+infantry_fortifications,Infantry Fortifications,infantry fortifications|infantry_fortifications,rai-alexandrovka,#94a3b8
+uav_interception,Uav Interception,uav interception|uav_interception,utm;max;kherson;social,#06b6d4
+strategic_intel,Strategic Intel,strategic intel|strategic_intel,regions;planned;capture;donetsk;luhansk;dnipropetrovsk;zaporizhzhia;buffer,#ef4444
+civilian_vehicle,Civilian Vehicle,civilian vehicle|civilian_vehicle,belgorod,#22c55e
+uav_transport,Uav Transport,uav transport|uav_transport,unmanned;aerial;vehicles;bryansk;oblast,#06b6d4
+air_defense_civilian,Air Defense Civilian,air defense civilian|air_defense_civilian,threat;vasylivka,#ef4444
+drone_swarm,Drone Swarm,drone swarm|drone_swarm,sloviansk,#22c55e
+energy_air_defense,Energy Air Defense,energy air defense|energy_air_defense,plant;units;power;substations;luhansk;multiple;occupied;those,#fb7185
+neutral_territory,Neutral Territory,neutral territory|neutral_territory,incident;finland,#fb7185
+armored_vehicles,Armored Vehicles,armored vehicles|armored_vehicles,heavy;nemesis;brigade;tanks;using;fpv;bombers;assaults,#94a3b8
+aggregate_losses,Aggregate Losses,aggregate losses|aggregate_losses,equipment;identified;lost,#22c55e
+aircraft,Aircraft,aircraft,polish;french;fighters;baltic;sea;rafale;intercepted;reconnaissance,#f59e0b
+armored_logistics,Armored Logistics,armored logistics|armored_logistics,dva;majors;kushuhum,#a3e635

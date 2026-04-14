@@ -1,0 +1,2366 @@
+{
+  "generated_at": "2026-04-14T14:14:55.957815+00:00",
+  "campaigns": [
+    {
+      "campaign_id": "infantry",
+      "name": "Infantry",
+      "target_types": [
+        "infantry"
+      ],
+      "keywords": [
+        "personnel",
+        "brigade",
+        "direction",
+        "pokrovsk",
+        "assault",
+        "positions",
+        "kherson",
+        "control"
+      ],
+      "color": "#94a3b8"
+    },
+    {
+      "campaign_id": "civilian",
+      "name": "Civilian",
+      "target_types": [
+        "civilian"
+      ],
+      "keywords": [
+        "kherson",
+        "non",
+        "injuries",
+        "kharkiv",
+        "fake",
+        "casualties",
+        "year-old",
+        "injured"
+      ],
+      "color": "#94a3b8"
+    },
+    {
+      "campaign_id": "logistics",
+      "name": "Logistics",
+      "target_types": [
+        "logistics"
+      ],
+      "keywords": [
+        "depot",
+        "air",
+        "tanker",
+        "donetsk",
+        "noel",
+        "oil",
+        "hit",
+        "ammunition"
+      ],
+      "color": "#ef4444"
+    },
+    {
+      "campaign_id": "energy",
+      "name": "Energy",
+      "target_types": [
+        "energy"
+      ],
+      "keywords": [
+        "power",
+        "infrastructure",
+        "substation",
+        "outages",
+        "noel",
+        "plant",
+        "without",
+        "supply"
+      ],
+      "color": "#a3e635"
+    },
+    {
+      "campaign_id": "strategic_industry",
+      "name": "Strategic Industry",
+      "target_types": [
+        "strategic industry",
+        "strategic_industry"
+      ],
+      "keywords": [
+        "oil",
+        "plant",
+        "refinery",
+        "fire",
+        "noel",
+        "hit",
+        "depot",
+        "conducted"
+      ],
+      "color": "#ef4444"
+    },
+    {
+      "campaign_id": "air_defense",
+      "name": "Air Defense",
+      "target_types": [
+        "air defense",
+        "air_defense"
+      ],
+      "keywords": [
+        "down",
+        "donetsk",
+        "noel",
+        "radar",
+        "shot",
+        "out",
+        "defence",
+        "uavs"
+      ],
+      "color": "#ef4444"
+    },
+    {
+      "campaign_id": "armored",
+      "name": "Armored",
+      "target_types": [
+        "armored"
+      ],
+      "keywords": [
+        "personnel",
+        "vehicles",
+        "pokrovsk",
+        "assault",
+        "brigade",
+        "losses",
+        "noel",
+        "general"
+      ],
+      "color": "#fb7185"
+    },
+    {
+      "campaign_id": "strategic_infrastructure",
+      "name": "Strategic Infrastructure",
+      "target_types": [
+        "strategic infrastructure",
+        "strategic_infrastructure"
+      ],
+      "keywords": [
+        "power",
+        "launched",
+        "lviv",
+        "rybar",
+        "plant",
+        "ballistic",
+        "hit",
+        "oil"
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "campaign_id": "strategic",
+      "name": "Strategic",
+      "target_types": [
+        "strategic"
+      ],
+      "keywords": [
+        "ballistic",
+        "lviv",
+        "launched",
+        "conducted",
+        "air",
+        "casualties",
+        "locations",
+        "been"
+      ],
+      "color": "#fb7185"
+    },
+    {
+      "campaign_id": "heavy_armor",
+      "name": "Heavy Armor",
+      "target_types": [
+        "heavy armor",
+        "heavy_armor"
+      ],
+      "keywords": [
+        "direction",
+        "assault",
+        "position",
+        "brigade",
+        "conducted",
+        "tanks",
+        "positions",
+        "tank"
+      ],
+      "color": "#fb7185"
+    },
+    {
+      "campaign_id": "residential",
+      "name": "Residential",
+      "target_types": [
+        "residential"
+      ],
+      "keywords": [
+        "kherson",
+        "non",
+        "fake",
+        "building",
+        "areas",
+        "fire",
+        "approximately",
+        "dnipro"
+      ],
+      "color": "#a3e635"
+    },
+    {
+      "campaign_id": "civilian_infrastructure",
+      "name": "Civilian Infrastructure",
+      "target_types": [
+        "civilian infrastructure",
+        "civilian_infrastructure"
+      ],
+      "keywords": [
+        "kherson",
+        "dnipro",
+        "residential",
+        "building",
+        "gas",
+        "fire",
+        "kharkiv",
+        "resulting"
+      ],
+      "color": "#06b6d4"
+    },
+    {
+      "campaign_id": "infrastructure",
+      "name": "Infrastructure",
+      "target_types": [
+        "infrastructure"
+      ],
+      "keywords": [
+        "kherson",
+        "air",
+        "water",
+        "noel",
+        "approximately",
+        "bridge",
+        "uav",
+        "without"
+      ],
+      "color": "#f97316"
+    },
+    {
+      "campaign_id": "civilian_residential",
+      "name": "Civilian Residential",
+      "target_types": [
+        "civilian residential",
+        "civilian_residential"
+      ],
+      "keywords": [
+        "building",
+        "injured",
+        "high-rise",
+        "kharkiv",
+        "kherson",
+        "dnipro",
+        "injuries",
+        "buildings"
+      ],
+      "color": "#f97316"
+    },
+    {
+      "campaign_id": "strategic_air_defense",
+      "name": "Strategic Air Defense",
+      "target_types": [
+        "strategic air defense",
+        "strategic_air_defense"
+      ],
+      "keywords": [
+        "radar",
+        "crimea",
+        "noel",
+        "targeted",
+        "launch",
+        "lviv",
+        "kapustin",
+        "yar"
+      ],
+      "color": "#38bdf8"
+    },
+    {
+      "campaign_id": "artillery",
+      "name": "Artillery",
+      "target_types": [
+        "artillery"
+      ],
+      "keywords": [
+        "operators",
+        "zaporizhzhia",
+        "direction",
+        "brigade",
+        "self-propelled",
+        "conducted",
+        "fpv",
+        "grad"
+      ],
+      "color": "#eab308"
+    },
+    {
+      "campaign_id": "air",
+      "name": "Air",
+      "target_types": [
+        "air"
+      ],
+      "keywords": [
+        "helicopter",
+        "down",
+        "combat",
+        "brigade",
+        "shot",
+        "successfully",
+        "engagement",
+        "aviation"
+      ],
+      "color": "#06b6d4"
+    },
+    {
+      "campaign_id": "armor",
+      "name": "Armor",
+      "target_types": [
+        "armor"
+      ],
+      "keywords": [
+        "equipment",
+        "brigade",
+        "separate",
+        "assault",
+        "tank",
+        "direction",
+        "personnel",
+        "hit"
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "campaign_id": "naval",
+      "name": "Naval",
+      "target_types": [
+        "naval"
+      ],
+      "keywords": [
+        "tanker",
+        "submarine",
+        "court",
+        "aircraft",
+        "che",
+        "marinera",
+        "petroliera",
+        "its"
+      ],
+      "color": "#eab308"
+    },
+    {
+      "campaign_id": "strategic_defense",
+      "name": "Strategic Defense",
+      "target_types": [
+        "strategic defense",
+        "strategic_defense"
+      ],
+      "keywords": [
+        "cruise",
+        "crimea",
+        "out",
+        "donetsk",
+        "ballistic",
+        "air",
+        "occupied",
+        "zaporizhzhia"
+      ],
+      "color": "#38bdf8"
+    },
+    {
+      "campaign_id": "leadership",
+      "name": "Leadership",
+      "target_types": [
+        "leadership"
+      ],
+      "keywords": [
+        "residence",
+        "putin",
+        "general",
+        "material",
+        "united",
+        "states",
+        "alekseev",
+        "gru"
+      ],
+      "color": "#eab308"
+    },
+    {
+      "campaign_id": "political",
+      "name": "Political",
+      "target_types": [
+        "political"
+      ],
+      "keywords": [
+        "security",
+        "energy",
+        "service",
+        "will",
+        "support",
+        "zelensky",
+        "coalition",
+        "guarantees"
+      ],
+      "color": "#fb7185"
+    },
+    {
+      "campaign_id": "command",
+      "name": "Command",
+      "target_types": [
+        "command"
+      ],
+      "keywords": [
+        "brigade",
+        "selimov",
+        "air",
+        "commander",
+        "motorized",
+        "rifle",
+        "vehicle",
+        "soldiers"
+      ],
+      "color": "#fb7185"
+    },
+    {
+      "campaign_id": "operational_hq",
+      "name": "Operational Hq",
+      "target_types": [
+        "operational hq",
+        "operational_hq"
+      ],
+      "keywords": [
+        "control",
+        "defense",
+        "oreschnik",
+        "details",
+        "casualties",
+        "intelligence",
+        "kupyansk",
+        "base"
+      ],
+      "color": "#94a3b8"
+    },
+    {
+      "campaign_id": "air_defence",
+      "name": "Air Defence",
+      "target_types": [
+        "air defence",
+        "air_defence"
+      ],
+      "keywords": [
+        "interception",
+        "suppression",
+        "out",
+        "shot",
+        "down",
+        "suppressed",
+        "engaged",
+        "engagement"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "advanced_systems",
+      "name": "Advanced Systems",
+      "target_types": [
+        "advanced systems",
+        "advanced_systems"
+      ],
+      "keywords": [
+        "radar",
+        "crimea",
+        "station",
+        "zaporizhzhia",
+        "kasta",
+        "donetsk",
+        "defense",
+        "targeted"
+      ],
+      "color": "#f97316"
+    },
+    {
+      "campaign_id": "strategic_logistics",
+      "name": "Strategic Logistics",
+      "target_types": [
+        "strategic logistics",
+        "strategic_logistics"
+      ],
+      "keywords": [
+        "oil",
+        "port",
+        "tanker",
+        "donetsk",
+        "conducted",
+        "two",
+        "terminal",
+        "attacked"
+      ],
+      "color": "#fb7185"
+    },
+    {
+      "campaign_id": "communications",
+      "name": "Communications",
+      "target_types": [
+        "communications"
+      ],
+      "keywords": [
+        "tower",
+        "kursk",
+        "atesh",
+        "conducted",
+        "unknown",
+        "fire",
+        "sabotage",
+        "brigade"
+      ],
+      "color": "#38bdf8"
+    },
+    {
+      "campaign_id": "airspace",
+      "name": "Airspace",
+      "target_types": [
+        "airspace"
+      ],
+      "keywords": [
+        "flight",
+        "swedish",
+        "regione",
+        "unauthorized",
+        "sweden",
+        "made",
+        "national",
+        "incident"
+      ],
+      "color": "#06b6d4"
+    },
+    {
+      "campaign_id": "terrain",
+      "name": "Terrain",
+      "target_types": [
+        "terrain"
+      ],
+      "keywords": [
+        "control",
+        "north",
+        "oleksandro-shultyne",
+        "zona",
+        "che",
+        "belgorod",
+        "towards",
+        "russi"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "vehicle",
+      "name": "Vehicle",
+      "target_types": [
+        "vehicle"
+      ],
+      "keywords": [
+        "fpv",
+        "soldiers",
+        "donetsk",
+        "incident",
+        "karymat",
+        "mac",
+        "unit",
+        "brigade"
+      ],
+      "color": "#a3e635"
+    },
+    {
+      "campaign_id": "industry",
+      "name": "Industry",
+      "target_types": [
+        "industry"
+      ],
+      "keywords": [
+        "dnipro",
+        "launched",
+        "chemical",
+        "plant",
+        "chapayevsk",
+        "bunge",
+        "oil",
+        "kavpolit"
+      ],
+      "color": "#38bdf8"
+    },
+    {
+      "campaign_id": "airfield",
+      "name": "Airfield",
+      "target_types": [
+        "airfield"
+      ],
+      "keywords": [
+        "explosions",
+        "crimea",
+        "explosion",
+        "saki",
+        "noel",
+        "been",
+        "sevastopol",
+        "occurred"
+      ],
+      "color": "#f97316"
+    },
+    {
+      "campaign_id": "airborne",
+      "name": "Airborne",
+      "target_types": [
+        "airborne"
+      ],
+      "keywords": [
+        "uav",
+        "shot",
+        "down",
+        "reconnaissance",
+        "fpv",
+        "forpost-r",
+        "during",
+        "engagement"
+      ],
+      "color": "#a3e635"
+    },
+    {
+      "campaign_id": "cultural",
+      "name": "Cultural",
+      "target_types": [
+        "cultural"
+      ],
+      "keywords": [
+        "world",
+        "monastery",
+        "unesco",
+        "damages",
+        "incident",
+        "heritage",
+        "unesco-listed",
+        "resulted"
+      ],
+      "color": "#eab308"
+    },
+    {
+      "campaign_id": "command_and_control",
+      "name": "Command And Control",
+      "target_types": [
+        "command and control",
+        "command_and_control"
+      ],
+      "keywords": [
+        "depot",
+        "ammunition",
+        "hit",
+        "uav",
+        "donetsk",
+        "points",
+        "enemy",
+        "posts"
+      ],
+      "color": "#06b6d4"
+    },
+    {
+      "campaign_id": "uav",
+      "name": "Uav",
+      "target_types": [
+        "uav"
+      ],
+      "keywords": [
+        "max",
+        "uavs",
+        "lostarmour",
+        "reconnaissance",
+        "dva",
+        "majors",
+        "unmanned",
+        "aerial"
+      ],
+      "color": "#ef4444"
+    },
+    {
+      "campaign_id": "government",
+      "name": "Government",
+      "target_types": [
+        "government"
+      ],
+      "keywords": [
+        "unn",
+        "news",
+        "residence",
+        "leader",
+        "kherson",
+        "tass",
+        "starlink",
+        "unit"
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "campaign_id": "empty_terrain",
+      "name": "Empty Terrain",
+      "target_types": [
+        "empty terrain",
+        "empty_terrain"
+      ],
+      "keywords": [
+        "debris",
+        "lviv",
+        "karymat",
+        "found",
+        "located",
+        "moldova",
+        "known",
+        "oreshnik"
+      ],
+      "color": "#38bdf8"
+    },
+    {
+      "campaign_id": "multiple",
+      "name": "Multiple",
+      "target_types": [
+        "multiple"
+      ],
+      "keywords": [
+        "locations",
+        "air",
+        "uavs",
+        "ballistic",
+        "launched",
+        "recorded",
+        "out",
+        "falling"
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "campaign_id": "tactical_logistics",
+      "name": "Tactical Logistics",
+      "target_types": [
+        "tactical logistics",
+        "tactical_logistics"
+      ],
+      "keywords": [
+        "deepstateua",
+        "north",
+        "personnel",
+        "korean",
+        "border",
+        "soldiers",
+        "zaporizhzhia",
+        "kor"
+      ],
+      "color": "#eab308"
+    },
+    {
+      "campaign_id": "drone",
+      "name": "Drone",
+      "target_types": [
+        "drone"
+      ],
+      "keywords": [
+        "mark",
+        "bersaglio",
+        "maritime",
+        "aerial",
+        "frankenburg",
+        "technologies",
+        "ground",
+        "anti-tank"
+      ],
+      "color": "#94a3b8"
+    },
+    {
+      "campaign_id": "diplomatic",
+      "name": "Diplomatic",
+      "target_types": [
+        "diplomatic"
+      ],
+      "keywords": [
+        "embassy",
+        "qatari",
+        "defense",
+        "cooperation",
+        "president",
+        "azerbaijan",
+        "noel",
+        "damaged"
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "campaign_id": "technology",
+      "name": "Technology",
+      "target_types": [
+        "technology"
+      ],
+      "keywords": [
+        "belarus",
+        "repeaters",
+        "zelensky",
+        "helsing",
+        "platform",
+        "president",
+        "these",
+        "three"
+      ],
+      "color": "#94a3b8"
+    },
+    {
+      "campaign_id": "military",
+      "name": "Military",
+      "target_types": [
+        "military"
+      ],
+      "keywords": [
+        "air",
+        "locations",
+        "news",
+        "zaporizhzhia",
+        "training",
+        "belgorod",
+        "overnight",
+        "enemy"
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "campaign_id": "vehicles",
+      "name": "Vehicles",
+      "target_types": [
+        "vehicles"
+      ],
+      "keywords": [
+        "kherson",
+        "central",
+        "non",
+        "fake",
+        "vehicle",
+        "fire",
+        "paratroopers",
+        "several"
+      ],
+      "color": "#fb7185"
+    },
+    {
+      "campaign_id": "training",
+      "name": "Training",
+      "target_types": [
+        "training"
+      ],
+      "keywords": [
+        "exercises",
+        "nemesis",
+        "conducted",
+        "vehicles",
+        "operators",
+        "estonia",
+        "brigade",
+        "border"
+      ],
+      "color": "#94a3b8"
+    },
+    {
+      "campaign_id": "settlement",
+      "name": "Settlement",
+      "target_types": [
+        "settlement"
+      ],
+      "keywords": [
+        "deepstatemap",
+        "live",
+        "deepstateua",
+        "settlements",
+        "voenkorkotenok",
+        "svjato-pokrovske",
+        "vasyukivka",
+        "they"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "robotic_systems",
+      "name": "Robotic Systems",
+      "target_types": [
+        "robotic systems",
+        "robotic_systems"
+      ],
+      "keywords": [
+        "ground",
+        "two",
+        "vovchansk",
+        "direction",
+        "destroy",
+        "brigade",
+        "south",
+        "border"
+      ],
+      "color": "#38bdf8"
+    },
+    {
+      "campaign_id": "educational",
+      "name": "Educational",
+      "target_types": [
+        "educational"
+      ],
+      "keywords": [
+        "special",
+        "chechen",
+        "oppositionists",
+        "university",
+        "gudermes",
+        "announced",
+        "building",
+        "institution"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "maritime",
+      "name": "Maritime",
+      "target_types": [
+        "maritime"
+      ],
+      "keywords": [
+        "special",
+        "tanker",
+        "aircraft",
+        "che",
+        "russian-flagged",
+        "atlantic",
+        "twz",
+        "seized"
+      ],
+      "color": "#a3e635"
+    },
+    {
+      "campaign_id": "healthcare",
+      "name": "Healthcare",
+      "target_types": [
+        "healthcare"
+      ],
+      "keywords": [
+        "kupyansk",
+        "che",
+        "russi",
+        "airstrike",
+        "kharkiv",
+        "aviazione",
+        "russo",
+        "hanno"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "energy_civilian",
+      "name": "Energy Civilian",
+      "target_types": [
+        "energy civilian",
+        "energy_civilian"
+      ],
+      "keywords": [
+        "cruise",
+        "infrastructure",
+        "president",
+        "diplomatic",
+        "efforts",
+        "zelensky",
+        "defense",
+        "secretary"
+      ],
+      "color": "#ef4444"
+    },
+    {
+      "campaign_id": "robotics",
+      "name": "Robotics",
+      "target_types": [
+        "robotics"
+      ],
+      "keywords": [
+        "robotic",
+        "ground",
+        "brigade",
+        "vovchansk",
+        "axis",
+        "one",
+        "deployed",
+        "two"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "civilian_ship",
+      "name": "Civilian Ship",
+      "target_types": [
+        "civilian ship",
+        "civilian_ship"
+      ],
+      "keywords": [
+        "oil",
+        "tanker",
+        "petersburg",
+        "naval",
+        "escort",
+        "explosion",
+        "occurred",
+        "fire"
+      ],
+      "color": "#06b6d4"
+    },
+    {
+      "campaign_id": "energy_logistics",
+      "name": "Energy Logistics",
+      "target_types": [
+        "energy logistics",
+        "energy_logistics"
+      ],
+      "keywords": [
+        "mariupol",
+        "makiivka",
+        "baltic",
+        "ports",
+        "occupied",
+        "depot",
+        "oil",
+        "exports"
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "campaign_id": "uav_drone",
+      "name": "Uav Drone",
+      "target_types": [
+        "uav drone",
+        "uav_drone"
+      ],
+      "keywords": [
+        "micro-missile",
+        "mark",
+        "engines",
+        "european",
+        "intercept",
+        "down",
+        "shahed",
+        "crew"
+      ],
+      "color": "#f97316"
+    },
+    {
+      "campaign_id": "cultural_heritage",
+      "name": "Cultural Heritage",
+      "target_types": [
+        "cultural heritage",
+        "cultural_heritage"
+      ],
+      "keywords": [
+        "lavra",
+        "damaged",
+        "kyiv-pechersk",
+        "unesco",
+        "caves",
+        "world",
+        "reserve",
+        "site"
+      ],
+      "color": "#f97316"
+    },
+    {
+      "campaign_id": "air_asset",
+      "name": "Air Asset",
+      "target_types": [
+        "air asset",
+        "air_asset"
+      ],
+      "keywords": [
+        "helicopter",
+        "down",
+        "shot",
+        "gostomel",
+        "video",
+        "aerospace",
+        "confirmed",
+        "rostov"
+      ],
+      "color": "#06b6d4"
+    },
+    {
+      "campaign_id": "armored_infantry",
+      "name": "Armored Infantry",
+      "target_types": [
+        "armored infantry",
+        "armored_infantry"
+      ],
+      "keywords": [
+        "search",
+        "myrnohrad",
+        "brigade",
+        "units",
+        "lyman",
+        "air",
+        "assault",
+        "surrounding"
+      ],
+      "color": "#06b6d4"
+    },
+    {
+      "campaign_id": "law_enforcement",
+      "name": "Law Enforcement",
+      "target_types": [
+        "law enforcement",
+        "law_enforcement"
+      ],
+      "keywords": [
+        "police",
+        "kherson",
+        "explosive",
+        "non",
+        "fake",
+        "assailant",
+        "vehicle",
+        "injuries"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "strategic_missile_system",
+      "name": "Strategic Missile System",
+      "target_types": [
+        "strategic missile system",
+        "strategic_missile_system"
+      ],
+      "keywords": [
+        "zircon",
+        "launcher",
+        "crimea",
+        "bastion-m",
+        "hypersonic",
+        "two",
+        "another",
+        "damaged"
+      ],
+      "color": "#38bdf8"
+    },
+    {
+      "campaign_id": "industrial",
+      "name": "Industrial",
+      "target_types": [
+        "industrial"
+      ],
+      "keywords": [
+        "warhistoryalconafter",
+        "plant",
+        "leningrad",
+        "chemical",
+        "samara",
+        "targeting",
+        "two",
+        "ust-luga"
+      ],
+      "color": "#38bdf8"
+    },
+    {
+      "campaign_id": "armored_vehicle",
+      "name": "Armored Vehicle",
+      "target_types": [
+        "armored vehicle",
+        "armored_vehicle"
+      ],
+      "keywords": [
+        "tank",
+        "pokrovsk",
+        "direction",
+        "fpv",
+        "detonation",
+        "turret",
+        "donetsk",
+        "resulting"
+      ],
+      "color": "#eab308"
+    },
+    {
+      "campaign_id": "infrastructure_civilian",
+      "name": "Infrastructure Civilian",
+      "target_types": [
+        "infrastructure civilian",
+        "infrastructure_civilian"
+      ],
+      "keywords": [
+        "zelensky",
+        "died",
+        "president",
+        "warns",
+        "potential",
+        "launch",
+        "significant",
+        "unusual"
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "campaign_id": "air_defense_logistics_command",
+      "name": "Air Defense Logistics Command",
+      "target_types": [
+        "air defense logistics command",
+        "air_defense_logistics_command"
+      ],
+      "keywords": [
+        "radar",
+        "station",
+        "crimea",
+        "zaporizhzhia",
+        "ammunition",
+        "separate",
+        "hit",
+        "nebo-u"
+      ],
+      "color": "#06b6d4"
+    },
+    {
+      "campaign_id": "residential_energy",
+      "name": "Residential Energy",
+      "target_types": [
+        "residential energy",
+        "residential_energy"
+      ],
+      "keywords": [
+        "kryvyi",
+        "rih",
+        "including",
+        "homes",
+        "child",
+        "four",
+        "two",
+        "elderly"
+      ],
+      "color": "#f97316"
+    },
+    {
+      "campaign_id": "religious_symbolic",
+      "name": "Religious Symbolic",
+      "target_types": [
+        "religious symbolic",
+        "religious_symbolic"
+      ],
+      "keywords": [
+        "intelligence",
+        "provocation",
+        "foreign",
+        "service",
+        "large-scale",
+        "human",
+        "casualties",
+        "christmas"
+      ],
+      "color": "#ef4444"
+    },
+    {
+      "campaign_id": "industry_energy",
+      "name": "Industry Energy",
+      "target_types": [
+        "industry energy",
+        "industry_energy"
+      ],
+      "keywords": [
+        "armed",
+        "infrastructure",
+        "delibertate"
+      ],
+      "color": "#f97316"
+    },
+    {
+      "campaign_id": "critical_infrastructure",
+      "name": "Critical Infrastructure",
+      "target_types": [
+        "critical infrastructure",
+        "critical_infrastructure"
+      ],
+      "keywords": [
+        "launched",
+        "uavs",
+        "shahed",
+        "multiple",
+        "directions",
+        "air",
+        "noel",
+        "defenses"
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "campaign_id": "civilian_vehicles",
+      "name": "Civilian Vehicles",
+      "target_types": [
+        "civilian vehicles",
+        "civilian_vehicles"
+      ],
+      "keywords": [
+        "turkey",
+        "tanker",
+        "qendil",
+        "aground",
+        "ran",
+        "off",
+        "coast",
+        "sea"
+      ],
+      "color": "#fb7185"
+    },
+    {
+      "campaign_id": "robotic",
+      "name": "Robotic",
+      "target_types": [
+        "robotic"
+      ],
+      "keywords": [
+        "ground",
+        "vovchansk",
+        "direction",
+        "two",
+        "brigade"
+      ],
+      "color": "#94a3b8"
+    },
+    {
+      "campaign_id": "supply",
+      "name": "Supply",
+      "target_types": [
+        "supply"
+      ],
+      "keywords": [
+        "ground",
+        "donetsk",
+        "oblast",
+        "supplies",
+        "anti-tank",
+        "mine",
+        "shortly",
+        "deployment"
+      ],
+      "color": "#38bdf8"
+    },
+    {
+      "campaign_id": "energy_industry",
+      "name": "Energy Industry",
+      "target_types": [
+        "energy industry",
+        "energy_industry"
+      ],
+      "keywords": [
+        "armed",
+        "infrastructure",
+        "delibertate"
+      ],
+      "color": "#38bdf8"
+    },
+    {
+      "campaign_id": "military_contractor_platform",
+      "name": "Military Contractor Platform",
+      "target_types": [
+        "military contractor platform",
+        "military_contractor_platform"
+      ],
+      "keywords": [
+        "helsing",
+        "orders",
+        "tests",
+        "during",
+        "lacked",
+        "off",
+        "decided",
+        "additional"
+      ],
+      "color": "#06b6d4"
+    },
+    {
+      "campaign_id": "surveillance",
+      "name": "Surveillance",
+      "target_types": [
+        "surveillance"
+      ],
+      "keywords": [
+        "reconnaissance",
+        "shot",
+        "down",
+        "storm",
+        "using",
+        "general",
+        "chereshnya",
+        "air"
+      ],
+      "color": "#06b6d4"
+    },
+    {
+      "campaign_id": "civilian_logistics",
+      "name": "Civilian Logistics",
+      "target_types": [
+        "civilian logistics",
+        "civilian_logistics"
+      ],
+      "keywords": [
+        "ship",
+        "italian",
+        "authorities",
+        "cargo",
+        "brindisi",
+        "sanctions",
+        "seized",
+        "found"
+      ],
+      "color": "#a3e635"
+    },
+    {
+      "campaign_id": "prisoners_of_war",
+      "name": "Prisoners Of War",
+      "target_types": [
+        "prisoners of war",
+        "prisoners_of_war"
+      ],
+      "keywords": [
+        "skobelev",
+        "captured",
+        "nine",
+        "forced",
+        "them",
+        "soldier",
+        "kursk",
+        "security"
+      ],
+      "color": "#eab308"
+    },
+    {
+      "campaign_id": "civilian_shipping",
+      "name": "Civilian Shipping",
+      "target_types": [
+        "civilian shipping",
+        "civilian_shipping"
+      ],
+      "keywords": [
+        "explosion",
+        "msc",
+        "giada",
+        "iii",
+        "gulf",
+        "finland",
+        "occurred",
+        "engine"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "air_defense_energy",
+      "name": "Air Defense Energy",
+      "target_types": [
+        "air defense energy",
+        "air_defense_energy"
+      ],
+      "keywords": [
+        "belgorod",
+        "two",
+        "positions",
+        "hit",
+        "targeted",
+        "three",
+        "mobile",
+        "radar"
+      ],
+      "color": "#a3e635"
+    },
+    {
+      "campaign_id": "strategic_communications",
+      "name": "Strategic Communications",
+      "target_types": [
+        "strategic communications",
+        "strategic_communications"
+      ],
+      "keywords": [
+        "vehicles",
+        "space",
+        "satellites",
+        "europe",
+        "two",
+        "european",
+        "security",
+        "officials"
+      ],
+      "color": "#06b6d4"
+    },
+    {
+      "campaign_id": "diplomatic_channel",
+      "name": "Diplomatic Channel",
+      "target_types": [
+        "diplomatic channel",
+        "diplomatic_channel"
+      ],
+      "keywords": [
+        "federation",
+        "dialogue",
+        "united",
+        "both",
+        "deepstateua"
+      ],
+      "color": "#ef4444"
+    },
+    {
+      "campaign_id": "testing",
+      "name": "Testing",
+      "target_types": [
+        "testing"
+      ],
+      "keywords": [
+        "test",
+        "eram",
+        "ucraina",
+        "rusty",
+        "dagger",
+        "eglin",
+        "programma",
+        "united"
+      ],
+      "color": "#38bdf8"
+    },
+    {
+      "campaign_id": "logistics_infantry_airborne",
+      "name": "Logistics Infantry Airborne",
+      "target_types": [
+        "logistics infantry airborne",
+        "logistics_infantry_airborne"
+      ],
+      "keywords": [
+        "enemy",
+        "rivne",
+        "control",
+        "novomayorske",
+        "points",
+        "uav",
+        "production",
+        "center"
+      ],
+      "color": "#f97316"
+    },
+    {
+      "campaign_id": "artillery_infrastructure_troops",
+      "name": "Artillery Infrastructure Troops",
+      "target_types": [
+        "artillery infrastructure troops",
+        "artillery_infrastructure_troops"
+      ],
+      "keywords": [
+        "donetsk",
+        "zaporizhzhia",
+        "overnight",
+        "confirmed",
+        "included",
+        "uragan",
+        "mlrs",
+        "novomaiorske"
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "campaign_id": "logistics_command_uav",
+      "name": "Logistics Command Uav",
+      "target_types": [
+        "logistics command uav",
+        "logistics_command_uav"
+      ],
+      "keywords": [
+        "multiple",
+        "repair",
+        "unit",
+        "donetsk",
+        "training",
+        "production",
+        "posts",
+        "zaporizhzhia"
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "campaign_id": "strategic_naval",
+      "name": "Strategic Naval",
+      "target_types": [
+        "strategic naval",
+        "strategic_naval"
+      ],
+      "keywords": [
+        "novorossiysk",
+        "port"
+      ],
+      "color": "#eab308"
+    },
+    {
+      "campaign_id": "command_post",
+      "name": "Command Post",
+      "target_types": [
+        "command post",
+        "command_post"
+      ],
+      "keywords": [
+        "sudzha",
+        "airborne",
+        "kursk",
+        "ammunition",
+        "depot",
+        "novooleksiivka",
+        "occupied",
+        "kherson"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "sof",
+      "name": "Sof",
+      "target_types": [
+        "sof"
+      ],
+      "keywords": [
+        "group",
+        "reconnaissance",
+        "north",
+        "pokrovsk",
+        "brigade",
+        "air",
+        "assault",
+        "corps"
+      ],
+      "color": "#94a3b8"
+    },
+    {
+      "campaign_id": "political_event",
+      "name": "Political Event",
+      "target_types": [
+        "political event",
+        "political_event"
+      ],
+      "keywords": [
+        "not",
+        "army",
+        "personnel",
+        "kilometer",
+        "our",
+        "there",
+        "casualties",
+        "zelensky"
+      ],
+      "color": "#fb7185"
+    },
+    {
+      "campaign_id": "personnel_equipment_artillery_uav",
+      "name": "Personnel Equipment Artillery Uav",
+      "target_types": [
+        "personnel equipment artillery uav",
+        "personnel_equipment_artillery_uav"
+      ],
+      "keywords": [
+        "losses",
+        "general",
+        "staff",
+        "tank",
+        "vehicles",
+        "acvs",
+        "mlrs",
+        "uavs"
+      ],
+      "color": "#38bdf8"
+    },
+    {
+      "campaign_id": "civilian_transport",
+      "name": "Civilian Transport",
+      "target_types": [
+        "civilian transport",
+        "civilian_transport"
+      ],
+      "keywords": [
+        "kherson",
+        "parking",
+        "vehicle",
+        "covered",
+        "non",
+        "fake"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "military_base",
+      "name": "Military Base",
+      "target_types": [
+        "military base",
+        "military_base"
+      ],
+      "keywords": [
+        "sniper",
+        "american",
+        "dutch",
+        "pilots",
+        "operating",
+        "lockheed",
+        "martin",
+        "targeting"
+      ],
+      "color": "#fb7185"
+    },
+    {
+      "campaign_id": "electrical_substation",
+      "name": "Electrical Substation",
+      "target_types": [
+        "electrical substation",
+        "electrical_substation"
+      ],
+      "keywords": [
+        "equipped",
+        "anticipated",
+        "within",
+        "hours",
+        "thermal",
+        "power",
+        "plant",
+        "three"
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "campaign_id": "strategic_defense_logistics_communications",
+      "name": "Strategic Defense Logistics Communications",
+      "target_types": [
+        "strategic defense logistics communications",
+        "strategic_defense_logistics_communications"
+      ],
+      "keywords": [
+        "uav",
+        "donetsk",
+        "control",
+        "points",
+        "zaporizhzhia",
+        "tokmak",
+        "staromlynivka",
+        "equipment"
+      ],
+      "color": "#eab308"
+    },
+    {
+      "campaign_id": "heavy_weapons",
+      "name": "Heavy Weapons",
+      "target_types": [
+        "heavy weapons",
+        "heavy_weapons"
+      ],
+      "keywords": [
+        "konstiantynivka",
+        "fpv",
+        "operator",
+        "failed",
+        "explode",
+        "two",
+        "luhansk",
+        "regiment"
+      ],
+      "color": "#fb7185"
+    },
+    {
+      "campaign_id": "artillery_air_defense_radar",
+      "name": "Artillery Air Defense Radar",
+      "target_types": [
+        "artillery air defense radar",
+        "artillery_air_defense_radar"
+      ],
+      "keywords": [
+        "nella",
+        "sbs",
+        "difesa",
+        "aerea",
+        "individuato",
+        "uragan",
+        "malachite",
+        "crimea"
+      ],
+      "color": "#06b6d4"
+    },
+    {
+      "campaign_id": "command_logistics",
+      "name": "Command Logistics",
+      "target_types": [
+        "command logistics",
+        "command_logistics"
+      ],
+      "keywords": [
+        "depots",
+        "repair",
+        "base",
+        "posts",
+        "donetsk",
+        "hit",
+        "confirmed",
+        "ammunition"
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "campaign_id": "morale_discipline",
+      "name": "Morale Discipline",
+      "target_types": [
+        "morale discipline",
+        "morale_discipline"
+      ],
+      "keywords": [
+        "one",
+        "refusing",
+        "assaults",
+        "three",
+        "days",
+        "personnel",
+        "four",
+        "ordered"
+      ],
+      "color": "#fb7185"
+    },
+    {
+      "campaign_id": "air_defense_logistics",
+      "name": "Air Defense Logistics",
+      "target_types": [
+        "air defense logistics",
+        "air_defense_logistics"
+      ],
+      "keywords": [
+        "donetsk",
+        "hit",
+        "enemy",
+        "zaporizhzhia",
+        "radar",
+        "concentration",
+        "manpower",
+        "uav"
+      ],
+      "color": "#38bdf8"
+    },
+    {
+      "campaign_id": "armored_infantry_artillery",
+      "name": "Armored Infantry Artillery",
+      "target_types": [
+        "armored infantry artillery",
+        "armored_infantry_artillery"
+      ],
+      "keywords": [
+        "losses",
+        "personnel",
+        "irretrievable",
+        "eliminated",
+        "equipment",
+        "ammunition",
+        "depots",
+        "uavs"
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "campaign_id": "civilian_facility_city",
+      "name": "Civilian Facility City",
+      "target_types": [
+        "civilian facility city",
+        "civilian_facility_city"
+      ],
+      "keywords": [
+        "kostiantynivka",
+        "residents"
+      ],
+      "color": "#eab308"
+    },
+    {
+      "campaign_id": "armored_artillery",
+      "name": "Armored Artillery",
+      "target_types": [
+        "armored artillery",
+        "armored_artillery"
+      ],
+      "keywords": [
+        "units",
+        "north",
+        "hryshyne",
+        "vehicles",
+        "trucks",
+        "cars",
+        "atvs",
+        "motorcycles"
+      ],
+      "color": "#94a3b8"
+    },
+    {
+      "campaign_id": "strategic_air_defense_energy",
+      "name": "Strategic Air Defense Energy",
+      "target_types": [
+        "strategic air defense energy",
+        "strategic_air_defense_energy"
+      ],
+      "keywords": [
+        "oil",
+        "novorossiysk",
+        "naval",
+        "assets",
+        "warships",
+        "guidance",
+        "radar",
+        "complex"
+      ],
+      "color": "#94a3b8"
+    },
+    {
+      "campaign_id": "naval_infrastructure",
+      "name": "Naval Infrastructure",
+      "target_types": [
+        "naval infrastructure",
+        "naval_infrastructure"
+      ],
+      "keywords": [
+        "group",
+        "toward",
+        "dzhankoi",
+        "crimea",
+        "uav",
+        "occupied",
+        "odesa",
+        "mykolaiv"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "strategic_defense_logistics",
+      "name": "Strategic Defense Logistics",
+      "target_types": [
+        "strategic defense logistics",
+        "strategic_defense_logistics"
+      ],
+      "keywords": [
+        "donetsk",
+        "crimea",
+        "enemy",
+        "conducted",
+        "air",
+        "base",
+        "orlivka",
+        "three"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "artillery_electronic_warfare",
+      "name": "Artillery Electronic Warfare",
+      "target_types": [
+        "artillery electronic warfare",
+        "artillery_electronic_warfare"
+      ],
+      "keywords": [
+        "donetsk",
+        "luhansk",
+        "regions",
+        "combat",
+        "group",
+        "nona-s",
+        "self-propelled",
+        "guns"
+      ],
+      "color": "#a3e635"
+    },
+    {
+      "campaign_id": "political_aid",
+      "name": "Political Aid",
+      "target_types": [
+        "political aid",
+        "political_aid"
+      ],
+      "keywords": [
+        "germany",
+        "provides",
+        "million",
+        "euros",
+        "funds",
+        "reconnaissance",
+        "civil",
+        "defense"
+      ],
+      "color": "#ef4444"
+    },
+    {
+      "campaign_id": "procurement",
+      "name": "Procurement",
+      "target_types": [
+        "procurement"
+      ],
+      "keywords": [
+        "selected",
+        "pentagon",
+        "supply",
+        "company",
+        "f-drones",
+        "been",
+        "chosen",
+        "competitors"
+      ],
+      "color": "#fb7185"
+    },
+    {
+      "campaign_id": "command_logistics_air_defense",
+      "name": "Command Logistics Air Defense",
+      "target_types": [
+        "command logistics air defense",
+        "command_logistics_air_defense"
+      ],
+      "keywords": [
+        "depots",
+        "fuel",
+        "oil",
+        "depot",
+        "well",
+        "berdyansk",
+        "districts",
+        "hit"
+      ],
+      "color": "#94a3b8"
+    },
+    {
+      "campaign_id": "radar_ew",
+      "name": "Radar Ew",
+      "target_types": [
+        "radar ew",
+        "radar_ew"
+      ],
+      "keywords": [
+        "station",
+        "chinese",
+        "zaporizhia",
+        "requiem",
+        "balista",
+        "unit",
+        "redrone",
+        "droni"
+      ],
+      "color": "#a3e635"
+    },
+    {
+      "campaign_id": "infantry_positions",
+      "name": "Infantry Positions",
+      "target_types": [
+        "infantry positions",
+        "infantry_positions"
+      ],
+      "keywords": [
+        "mine",
+        "laying",
+        "grishino"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "command_infrastructure",
+      "name": "Command Infrastructure",
+      "target_types": [
+        "command infrastructure",
+        "command_infrastructure"
+      ],
+      "keywords": [
+        "depots",
+        "crimea",
+        "russian-occupied",
+        "zaporizhzhia",
+        "bahativka",
+        "post",
+        "motor",
+        "rifle"
+      ],
+      "color": "#a3e635"
+    },
+    {
+      "campaign_id": "regional",
+      "name": "Regional",
+      "target_types": [
+        "regional"
+      ],
+      "keywords": [
+        "kherson",
+        "potential",
+        "ballistic",
+        "launch",
+        "crimea",
+        "non",
+        "fake"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "military_hq",
+      "name": "Military Hq",
+      "target_types": [
+        "military hq",
+        "military_hq"
+      ],
+      "keywords": [
+        "defense",
+        "army",
+        "location",
+        "federation",
+        "uavs"
+      ],
+      "color": "#38bdf8"
+    },
+    {
+      "campaign_id": "aviation",
+      "name": "Aviation",
+      "target_types": [
+        "aviation"
+      ],
+      "keywords": [
+        "down",
+        "helicopter",
+        "pokrovsk",
+        "alligator",
+        "army",
+        "brigade",
+        "shot",
+        "agglomeration"
+      ],
+      "color": "#a3e635"
+    },
+    {
+      "campaign_id": "uav_swarm",
+      "name": "Uav Swarm",
+      "target_types": [
+        "uav swarm",
+        "uav_swarm"
+      ],
+      "keywords": [
+        "air",
+        "defence"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "air_defense_industry",
+      "name": "Air Defense Industry",
+      "target_types": [
+        "air defense industry",
+        "air_defense_industry"
+      ],
+      "keywords": [
+        "donetsk",
+        "shahed",
+        "uav",
+        "hub",
+        "nebo-u",
+        "radar",
+        "bryansk",
+        "chemical"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "missile_system",
+      "name": "Missile System",
+      "target_types": [
+        "missile system",
+        "missile_system"
+      ],
+      "keywords": [
+        "launch",
+        "installation",
+        "crimea"
+      ],
+      "color": "#38bdf8"
+    },
+    {
+      "campaign_id": "infantry_fortifications",
+      "name": "Infantry Fortifications",
+      "target_types": [
+        "infantry fortifications",
+        "infantry_fortifications"
+      ],
+      "keywords": [
+        "rai-alexandrovka"
+      ],
+      "color": "#94a3b8"
+    },
+    {
+      "campaign_id": "uav_interception",
+      "name": "Uav Interception",
+      "target_types": [
+        "uav interception",
+        "uav_interception"
+      ],
+      "keywords": [
+        "utm",
+        "max",
+        "kherson",
+        "social"
+      ],
+      "color": "#06b6d4"
+    },
+    {
+      "campaign_id": "strategic_intel",
+      "name": "Strategic Intel",
+      "target_types": [
+        "strategic intel",
+        "strategic_intel"
+      ],
+      "keywords": [
+        "regions",
+        "planned",
+        "capture",
+        "donetsk",
+        "luhansk",
+        "dnipropetrovsk",
+        "zaporizhzhia",
+        "buffer"
+      ],
+      "color": "#ef4444"
+    },
+    {
+      "campaign_id": "civilian_vehicle",
+      "name": "Civilian Vehicle",
+      "target_types": [
+        "civilian vehicle",
+        "civilian_vehicle"
+      ],
+      "keywords": [
+        "belgorod"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "uav_transport",
+      "name": "Uav Transport",
+      "target_types": [
+        "uav transport",
+        "uav_transport"
+      ],
+      "keywords": [
+        "unmanned",
+        "aerial",
+        "vehicles",
+        "bryansk",
+        "oblast"
+      ],
+      "color": "#06b6d4"
+    },
+    {
+      "campaign_id": "air_defense_civilian",
+      "name": "Air Defense Civilian",
+      "target_types": [
+        "air defense civilian",
+        "air_defense_civilian"
+      ],
+      "keywords": [
+        "threat",
+        "vasylivka"
+      ],
+      "color": "#ef4444"
+    },
+    {
+      "campaign_id": "drone_swarm",
+      "name": "Drone Swarm",
+      "target_types": [
+        "drone swarm",
+        "drone_swarm"
+      ],
+      "keywords": [
+        "sloviansk"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "energy_air_defense",
+      "name": "Energy Air Defense",
+      "target_types": [
+        "energy air defense",
+        "energy_air_defense"
+      ],
+      "keywords": [
+        "plant",
+        "units",
+        "power",
+        "substations",
+        "luhansk",
+        "multiple",
+        "occupied",
+        "those"
+      ],
+      "color": "#fb7185"
+    },
+    {
+      "campaign_id": "neutral_territory",
+      "name": "Neutral Territory",
+      "target_types": [
+        "neutral territory",
+        "neutral_territory"
+      ],
+      "keywords": [
+        "incident",
+        "finland"
+      ],
+      "color": "#fb7185"
+    },
+    {
+      "campaign_id": "armored_vehicles",
+      "name": "Armored Vehicles",
+      "target_types": [
+        "armored vehicles",
+        "armored_vehicles"
+      ],
+      "keywords": [
+        "heavy",
+        "nemesis",
+        "brigade",
+        "tanks",
+        "using",
+        "fpv",
+        "bombers",
+        "assaults"
+      ],
+      "color": "#94a3b8"
+    },
+    {
+      "campaign_id": "aggregate_losses",
+      "name": "Aggregate Losses",
+      "target_types": [
+        "aggregate losses",
+        "aggregate_losses"
+      ],
+      "keywords": [
+        "equipment",
+        "identified",
+        "lost"
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "campaign_id": "aircraft",
+      "name": "Aircraft",
+      "target_types": [
+        "aircraft"
+      ],
+      "keywords": [
+        "polish",
+        "french",
+        "fighters",
+        "baltic",
+        "sea",
+        "rafale",
+        "intercepted",
+        "reconnaissance"
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "campaign_id": "armored_logistics",
+      "name": "Armored Logistics",
+      "target_types": [
+        "armored logistics",
+        "armored_logistics"
+      ],
+      "keywords": [
+        "dva",
+        "majors",
+        "kushuhum"
+      ],
+      "color": "#a3e635"
+    }
+  ]
+}
