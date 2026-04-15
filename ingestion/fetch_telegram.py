@@ -49,6 +49,9 @@ CHANNELS_METADATA = {
     'karymat': {'bias': 'PRO_UA', 'reliability': 0.80, 'type': 'UA_NEWS'},
     'stanislav_osman': {'bias': 'PRO_UA', 'reliability': 0.80, 'type': 'UA_MILITARY'},
     'officer_33': {'bias': 'PRO_UA', 'reliability': 0.80, 'type': 'UA_MILITARY'},
+    'magyarbirds414': {'bias': 'PRO_UA', 'reliability': 0.90, 'type': 'UA_MILITARY'},
+    'ssternenko': {'bias': 'PRO_UA', 'reliability': 0.90, 'type': 'UA_MILITARY'},
+    'insiderUKR': {'bias': 'PRO_UA', 'reliability': 0.90, 'type': 'UA_MILITARY'},
 
     # RU Sources
     'rybar': {'bias': 'PRO_RU', 'reliability': 0.70, 'type': 'RU_MILITARY'},

@@ -57,6 +57,35 @@
         "type": "LineString",
         "coordinates": [
           [
+            28.8361514,
+            45.3511307
+          ],
+          [
+            28.8361514,
+            45.3511307
+          ],
+          [
+            28.8361514,
+            45.3511307
+          ]
+        ]
+      },
+      "properties": {
+        "id": "gloc_13",
+        "event_count": 3,
+        "start_ts": 1776144659000,
+        "end_ts": 1776154346000,
+        "sectors": [
+          "UNKNOWN_SECTOR"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
             37.7809825,
             47.9212914
           ],
@@ -67,7 +96,7 @@
         ]
       },
       "properties": {
-        "id": "gloc_13",
+        "id": "gloc_14",
         "event_count": 2,
         "start_ts": 1776150721000,
         "end_ts": 1776155496000,
