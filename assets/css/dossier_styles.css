@@ -860,11 +860,15 @@
     background: rgba(15, 23, 42, 0.6);
     padding: 12px;
     border-radius: 4px;
-    border-left: 2px solid rgba(255, 255, 255, 0.1);
+    border-left: 3px solid rgba(255, 255, 255, 0.1);
     cursor: pointer;
     transition: all 0.2s;
     position: relative;
     overflow: hidden;
+    flex-shrink: 0; /* CRITICAL: Prevent collapse */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .ud-event-item::before {
@@ -874,34 +878,84 @@
     left: 0;
     width: 0%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
     transition: width 0.3s;
 }
 
 .ud-event-item:hover {
     border-left-color: #f59e0b;
-    transform: translateX(2px);
+    transform: translateX(4px);
+    background: rgba(15, 23, 42, 0.8);
 }
 
 .ud-event-item:hover::before {
     width: 100%;
 }
 
-.ud-event-date {
-    font-size: 0.7rem;
-    color: #f59e0b;
-    font-family: 'JetBrains Mono', monospace;
-    opacity: 0.8;
+.ud-activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 6px;
 }
 
-.ud-event-title {
-    font-size: 0.85rem;
-    color: #e2e8f0;
-    font-weight: 500;
-    margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    position: relative;
-    z-index: 1;
+.ud-activity-date {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
 }
+
+.ud-activity-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.ud-activity-body {
+    font-size: 0.88rem;
+    color: #e2e8f0;
+    line-height: 1.5;
+    font-weight: 500;
+    white-space: normal;
+}
+
+.ud-activity-zone {
+    font-size: 0.75rem;
+    color: var(--primary);
+    background: rgba(245, 158, 11, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+.ud-activity-link {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 10px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.ud-activity-item:hover .ud-activity-link {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}

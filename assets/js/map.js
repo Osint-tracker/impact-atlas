@@ -2674,6 +2674,21 @@
                     if (pNum && owlNum) {
                         const pClean = cleanStr(pkey);
                         if (pClean.length === 0 || owlClean.length === 0) return true; // If only number exists, trust it.
+                        // Ensure it's not JUST a number match if the strings are clearly different branches
+                        // (e.g., "77th Air Defense" should not match "77th Motor Rifle" if possible)
+                        const isAirDefense = owlClean.includes('airdefense') || owlClean.includes('missile');
+                        const isMotorized = owlClean.includes('motorized') || owlClean.includes('motorrifle') || owlClean.includes('infantry');
+                        const pAir = pClean.includes('airdefense') || pClean.includes('missile');
+                        const pMotor = pClean.includes('motorized') || pClean.includes('motorrifle') || pClean.includes('infantry');
+
+                        if ((isAirDefense && pMotor) || (isMotorized && pAir)) {
+                            // High probability of mismatch despite same number.
+                            // Only match if one name is fully contained in another.
+                            if (pClean.length > 3 && owlClean.includes(pClean)) return true;
+                            if (owlClean.length > 3 && pClean.includes(owlClean)) return true;
+                            return false;
+                        }
+
                         if (pClean.length > 2 && owlClean.includes(pClean)) return true;
                         if (owlClean.length > 2 && pClean.includes(owlClean)) return true;
                         return false;
@@ -3656,11 +3671,22 @@
         txt = txt.replace(/^AND\s+/i, '').replace(/^[\-\u2022*]+\s*/, '').trim();
         const cleanedVal = stripHtml(txt);
         const cleanTxt = (!cleanedVal || cleanedVal === 'N/A') ? 'Geolocation point' : cleanedVal;
+        
+        // Simple location extraction: everything after the first comma is usually the zone
+        let location = '';
+        if (cleanTxt.includes(',')) {
+            const parts = cleanTxt.split(',');
+            if (parts.length > 1) {
+                location = parts.slice(1).join(',').trim();
+            }
+        }
+
         engagementItems.push({
           source: 'OWL',
           sortDate: parseTimelineDate(dateTxt),
           dateText: dateTxt,
           title: cleanTxt,
+          location: location,
           url,
           seq: idx,
         });
@@ -3670,10 +3696,11 @@
     relatedEvents.forEach((e, idx) => {
       engagementItems.push({
         source: 'OSINT',
-        sortDate: parseTimelineDate(e.date),
-        dateText: e.date || 'Unknown Date',
+        sortDate: new Date(e.event_date || e.date),
+        dateText: formatDate ? formatDate(e.event_date || e.date) : (e.event_date || e.date),
         title: e.title || 'Untitled Event',
-        eventRef: e,
+        location: e.location_name || '',
+        eventRef: e.event_id || e.id,
         seq: idx,
       });
     });
@@ -3686,8 +3713,6 @@
       return a.seq - b.seq;
     });
 
-    console.log(`[UNIT_MODAL] engagements merged: owl=${engagementItems.filter(x => x.source === 'OWL').length} osint=${engagementItems.filter(x => x.source === 'OSINT').length} total=${engagementItems.length}`);
-
     if (listEl) {
       listEl.innerHTML = '';
       if (engagementItems.length === 0) {
@@ -3696,36 +3721,47 @@
         engagementItems.slice(0, 80).forEach(item => {
           const el = document.createElement('div');
           el.className = 'ud-event-item';
-          if (item.source === 'OWL') {
-            el.style.borderLeft = '3px solid #f59e0b';
-            el.style.background = 'rgba(15, 23, 42, 0.4)';
-            el.style.padding = '8px 12px';
-            el.style.marginBottom = '8px';
-            if (item.url) {
-              el.onclick = () => window.open(item.url, '_blank');
-              el.title = 'View map source';
-              el.style.cursor = 'pointer';
-            }
-            el.innerHTML = `
-              <div style="display:flex; flex-direction:column; gap:6px;">
-                <div style="font-size:0.75rem; color:#f59e0b; display:flex; justify-content:space-between; align-items:flex-start;">
-                  <span style="display:flex; align-items:center; gap:6px; font-weight:700;"><i class="fa-solid fa-location-crosshairs"></i> ${item.dateText}</span>
-                  <span style="font-size:0.65rem; font-weight:700; color:#cbd5e1; background:rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); padding:2px 6px; border-radius:4px; letter-spacing:0.5px;">MAP DATA</span>
-                </div>
-                <div style="font-size:0.85rem; font-weight:500; color:#e2e8f0; white-space:normal; line-height:1.5;">${item.title}</div>
-              </div>
-            `;
-          } else {
-            el.style.padding = '8px 12px';
-            el.style.marginBottom = '8px';
+          
+          const isOwl = item.source === 'OWL';
+          const badgeColor = isOwl ? '#f59e0b' : '#3b82f6';
+          const badgeBg = isOwl ? 'rgba(245, 158, 11, 0.15)' : 'rgba(59, 130, 246, 0.15)';
+          const badgeText = isOwl ? 'MAP DATA' : 'SMART FUSION';
+          const icon = isOwl ? 'fa-location-crosshairs' : 'fa-satellite-dish';
+
+          if (isOwl && item.url) {
+            el.onclick = () => window.open(item.url, '_blank');
+          } else if (!isOwl && item.eventRef) {
             el.onclick = () => window.openModal(item.eventRef);
-            el.innerHTML = `
-              <div style="display:flex; flex-direction:column; gap:4px;">
-                <div style="font-size:0.75rem; color:#3b82f6; font-weight:600;"><i class="fa-light fa-satellite-dish" style="margin-right:6px;"></i>${item.dateText}</div>
-                <div style="font-size:0.85rem; font-weight:600; color:#f8fafc; white-space:normal; line-height:1.4;">${item.title}</div>
-              </div>
-            `;
           }
+
+          el.innerHTML = `
+            <div class="ud-activity-header">
+              <span class="ud-activity-date">
+                <i class="fa-solid fa-calendar-day"></i> ${item.dateText}
+              </span>
+              <span class="ud-activity-badge" style="background:${badgeBg}; color:${badgeColor}; border:1px solid ${badgeColor}40;">
+                ${badgeText}
+              </span>
+            </div>
+            <div class="ud-activity-body">
+              <i class="fa-solid ${icon}" style="margin-right:8px; color:${badgeColor}; font-size:0.75rem;"></i>
+              ${item.title}
+            </div>
+            ${item.location ? `
+              <div class="ud-activity-zone">
+                <i class="fa-solid fa-location-dot"></i> ${item.location}
+              </div>
+            ` : ''}
+            ${isOwl && item.url ? `
+              <div class="ud-activity-link">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Source
+              </div>
+            ` : (!isOwl && item.eventRef ? `
+              <div class="ud-activity-link">
+                <i class="fa-solid fa-file-lines"></i> Open Smart Dossier
+              </div>
+            ` : '')}
+          `;
           listEl.appendChild(el);
         });
       }
