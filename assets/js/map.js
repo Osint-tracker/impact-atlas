@@ -2663,19 +2663,31 @@
 
                 let matchedKey = null;
 
-                // 1. Direct overlap check first
-                matchedKey = parabellumKeys.find(pkey => pkey === owlName || pkey.includes(owlName) || owlName.includes(pkey));
-
-                // 2. Fuzzy match based on Number + Branch heuristic
-                if (!matchedKey && owlNum) {
-                    matchedKey = parabellumKeys.find(pkey => {
-                        if (getUnitNum(pkey) !== owlNum) return false;
+                // Match based on Number + Branch heuristic
+                // Strict rule: they MUST share the same numeric ID if numbers exist.
+                matchedKey = parabellumKeys.find(pkey => {
+                    const pNum = getUnitNum(pkey);
+                    // Match numbers
+                    if (pNum !== owlNum) return false; 
+                    
+                    // If both have numbers and they match, check strings
+                    if (pNum && owlNum) {
                         const pClean = cleanStr(pkey);
+                        if (pClean.length === 0 || owlClean.length === 0) return true; // If only number exists, trust it.
                         if (pClean.length > 2 && owlClean.includes(pClean)) return true;
                         if (owlClean.length > 2 && pClean.includes(owlClean)) return true;
                         return false;
-                    });
-                }
+                    }
+                    
+                    // If neither has numbers, do string match
+                    if (!pNum && !owlNum) {
+                        if (pkey === owlName) return true;
+                        if (pkey.length > 5 && owlName.includes(pkey)) return true;
+                        if (owlName.length > 5 && pkey.includes(owlName)) return true;
+                    }
+                    
+                    return false;
+                });
 
                 if (matchedKey) {
                   const existing = mergedUnits.get(matchedKey);
