@@ -2640,34 +2640,56 @@
             // 3. UPSERT LOGIC
             const mergedUnits = new Map();
 
-            // Helper: Normalize for matching
-            const normalize = (str) => (str || '').toLowerCase().replace(/separate|mechanized|brigade|regiment|infantry|marine|assault|airborne|battalion|group|tactical/g, '').trim();
+            // Helper: Extract unit numeric ID
+            const getUnitNum = (str) => { const m = (str||'').match(/\d+/); return m ? m[0] : null; };
+            // Helper: Clean string for loose matching
+            const cleanStr = (str) => (str || '').toLowerCase().replace(/separate|mechanized|brigade|regiment|infantry|marine|assault|airborne|battalion|group|tactical|naval|forces|motorized|rifle/g, '').replace(/[^a-z0-9]/g, '');
 
             // A. Load Parabellum Units First (authoritative positions)
+            const parabellumKeys = [];
             userUnits.forEach(u => {
-              const key = normalize(u.unit_name || u.full_name_en || u.orbat_id);
-              mergedUnits.set(key, u);
+              const nameIdx = (u.unit_name || u.full_name_en || u.orbat_id || '').trim().toLowerCase();
+              mergedUnits.set(nameIdx, u);
+              parabellumKeys.push(nameIdx);
             });
 
-            // B. Enrich from Owl (METADATA ONLY Ã¢â‚¬â€ no coordinate injection)
-            // Owl coords are garrison/base locations, NOT frontline positions.
-            // Parabellum provides the authoritative geo-positions.
+            // B. Enrich from Owl (METADATA ONLY — no coordinate injection)
             if (owl && owl.units) {
               let enrichCount = 0;
-              owl.units.forEach((feature, key) => {
-                const existing = mergedUnits.get(key);
-                if (existing) {
-                  // ENRICH: Add Owl metadata only. Never override Parabellum coordinates.
-                  existing.owl_meta = feature.properties;
-                  existing.owl_garrison_lat = feature.geometry.coordinates[1];
-                  existing.owl_garrison_lon = feature.geometry.coordinates[0];
-                  enrichCount++;
-                }
-                // DO NOT add new units from Owl Ã¢â‚¬â€ their coordinates are unreliable
-              });
-              console.log(`Ã°Å¸Â¦â€° Owl enriched ${enrichCount} units with metadata.`);
-            }
+              owl.units.forEach((feature, owlKeyOriginal) => {
+                const owlName = (feature.properties.name || owlKeyOriginal || '').trim().toLowerCase();
+                const owlNum = getUnitNum(owlName);
+                const owlClean = cleanStr(owlName);
 
+                let matchedKey = null;
+
+                // 1. Direct overlap check first
+                matchedKey = parabellumKeys.find(pkey => pkey === owlName || pkey.includes(owlName) || owlName.includes(pkey));
+
+                // 2. Fuzzy match based on Number + Branch heuristic
+                if (!matchedKey && owlNum) {
+                    matchedKey = parabellumKeys.find(pkey => {
+                        if (getUnitNum(pkey) !== owlNum) return false;
+                        const pClean = cleanStr(pkey);
+                        if (pClean.length > 2 && owlClean.includes(pClean)) return true;
+                        if (owlClean.length > 2 && pClean.includes(owlClean)) return true;
+                        return false;
+                    });
+                }
+
+                if (matchedKey) {
+                  const existing = mergedUnits.get(matchedKey);
+                  if (existing) {
+                    // ENRICH: Add Owl metadata only.
+                    existing.owl_meta = feature.properties;
+                    existing.owl_garrison_lat = feature.geometry.coordinates[1];
+                    existing.owl_garrison_lon = feature.geometry.coordinates[0];
+                    enrichCount++;
+                  }
+                }
+              });
+              console.log(`🦉 Owl enriched ${enrichCount} units with metadata.`);
+            }
             const finalData = Array.from(mergedUnits.values());
             console.log(`Ã¢Å“â€¦ Final Units: ${finalData.length} (Parabellum: ${userUnits.length})`);
 
@@ -3571,7 +3593,8 @@
       // 1. Emblem (Media Link)
       if (owl.emblem_url && elFlag) {
         if (owl.emblem_url.includes('hostedimage')) {
-            elFlag.innerHTML = `<img src="${owl.emblem_url}" style="width:100%; height:100%; object-fit:cover; border-radius:4px;">`;
+            const fbSvg = elFlag.innerHTML.replace(/'/g, "\'").replace(/"/g, "&quot;");
+            elFlag.innerHTML = `<img src="${owl.emblem_url}" onerror="this.outerHTML='${fbSvg}'" style="width:100%; height:100%; object-fit:cover; border-radius:4px;">`;
         }
       }
 
@@ -3662,32 +3685,39 @@
           const el = document.createElement('div');
           el.className = 'ud-event-item';
           if (item.source === 'OWL') {
-            el.style.borderLeft = '2px solid #3b82f6';
-            el.style.background = 'rgba(59, 130, 246, 0.05)';
+            el.style.borderLeft = '3px solid #f59e0b';
+            el.style.background = 'rgba(15, 23, 42, 0.4)';
+            el.style.padding = '8px 12px';
+            el.style.marginBottom = '8px';
             if (item.url) {
               el.onclick = () => window.open(item.url, '_blank');
               el.title = 'View map source';
+              el.style.cursor = 'pointer';
             }
             el.innerHTML = `
-              <div style="font-size:0.75rem; color:#3b82f6; margin-bottom:2px; display:flex; justify-content:space-between;">
-                <span><i class="fa-solid fa-location-crosshairs" style="margin-right:4px;"></i>${item.dateText}</span>
-                <span style="font-size:0.6rem; opacity:0.7;">MAP DATA</span>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <div style="font-size:0.75rem; color:#f59e0b; display:flex; justify-content:space-between; align-items:flex-start;">
+                  <span style="display:flex; align-items:center; gap:6px; font-weight:700;"><i class="fa-solid fa-location-crosshairs"></i> ${item.dateText}</span>
+                  <span style="font-size:0.65rem; font-weight:700; color:#cbd5e1; background:rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); padding:2px 6px; border-radius:4px; letter-spacing:0.5px;">MAP DATA</span>
+                </div>
+                <div style="font-size:0.85rem; font-weight:500; color:#e2e8f0; white-space:normal; line-height:1.5;">${item.title}</div>
               </div>
-              <div style="font-size:0.85rem; font-weight:600; color:#cbd5e1; white-space:normal; overflow:hidden;">${item.title}</div>
             `;
           } else {
+            el.style.padding = '8px 12px';
+            el.style.marginBottom = '8px';
             el.onclick = () => window.openModal(item.eventRef);
             el.innerHTML = `
-              <div style="font-size:0.75rem; color:#f59e0b; margin-bottom:2px;">${item.dateText}</div>
-              <div style="font-size:0.85rem; font-weight:600; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</div>
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <div style="font-size:0.75rem; color:#3b82f6; font-weight:600;"><i class="fa-light fa-satellite-dish" style="margin-right:6px;"></i>${item.dateText}</div>
+                <div style="font-size:0.85rem; font-weight:600; color:#f8fafc; white-space:normal; line-height:1.4;">${item.title}</div>
+              </div>
             `;
           }
           listEl.appendChild(el);
         });
       }
     }
-
-
     // === VERIFIED CASUALTIES (UALosses enrichment) ===
     const casualtiesPanel = document.getElementById('udCasualtiesPanel');
     const casualtiesList = document.getElementById('udCasualtiesList');
