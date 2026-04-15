@@ -3361,6 +3361,12 @@
     // Helper must be function-scoped
     const safeText = (txt) => txt || 'N/A';
     const format = (v) => v || '--';
+    const stripHtml = (raw) => {
+      if (!raw) return 'N/A';
+      const el = document.createElement('div');
+      el.innerHTML = String(raw);
+      return (el.textContent || el.innerText || 'N/A').trim().replace(/\s+/g, ' ');
+    };
 
     try {
       const modal = document.getElementById('unitModal');
@@ -3416,14 +3422,6 @@
       const elBranch = document.getElementById('udBranch');
       if (elBranch) elBranch.innerText = safeText(unit.branch);
 
-      // Helper: Strip HTML tags via DOM parser
-      const stripHtml = (raw) => {
-        if (!raw) return 'N/A';
-        const el = document.createElement('div');
-        el.innerHTML = raw;
-        return (el.textContent || el.innerText || 'N/A').trim().replace(/\s+/g, ' ');
-      };
-
       const elGarrison = document.getElementById('udGarrison');
       if (elGarrison) elGarrison.innerText = stripHtml(unit.garrison);
 
@@ -3459,17 +3457,17 @@
     // Note: event.units is a string or array.
     const relatedEvents = allEvents.filter(e => {
       if (!e.units) return false;
-      // e.units might be JSON string
       let uList = [];
       try {
         uList = typeof e.units === 'string' ? JSON.parse(e.units) : e.units;
-      } catch (e) { }
-
-      // Check fuzzy match in list
+      } catch (err) {
+        uList = [];
+      }
+      if (!Array.isArray(uList)) return false;
       return uList.some(u => {
-        const n = (u.unit_name || u.unit_id || '').toLowerCase();
-        const oid = (u.orbat_id || '');
-        return n.includes(unitName) || (unit.orbat_id && oid === unit.orbat_id);
+        const n = String(u?.unit_name || u?.unit_id || '').toLowerCase();
+        const oid = String(u?.orbat_id || '');
+        return n.includes(unitName) || (unit.orbat_id && oid === String(unit.orbat_id));
       });
     });
 
@@ -3510,11 +3508,64 @@
     // If it was clicked from the OSINT search/list, `unit.owl_meta` contains them.
     const owl = unit.owl_meta || unit;
     
-    // We prepare the events list right away so we can inject OWL Geolocations into it
     const listEl = document.getElementById('udEventsList');
-    listEl.innerHTML = '';
-    
-    let hasOwlEvents = false;
+    if (listEl) listEl.innerHTML = '';
+    const engagementItems = [];
+
+    const parseTimelineDate = (raw) => {
+      if (!raw) return null;
+      const s = String(raw).trim();
+      if (!s) return null;
+      let m = s.match(/\b(20\d{2})-(\d{1,2})-(\d{1,2})\b/);
+      if (m) {
+        const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+        return Number.isNaN(d.getTime()) ? null : d;
+      }
+      m = s.match(/\b(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})\b/);
+      if (m) {
+        const yyyy = Number(m[3]) < 100 ? (2000 + Number(m[3])) : Number(m[3]);
+        const d = new Date(yyyy, Number(m[2]) - 1, Number(m[1]));
+        return Number.isNaN(d.getTime()) ? null : d;
+      }
+      m = s.match(/\b((?:19|20)\d{2})\b/);
+      if (m) {
+        const d = new Date(Number(m[1]), 0, 1);
+        return Number.isNaN(d.getTime()) ? null : d;
+      }
+      const fallback = new Date(s);
+      return Number.isNaN(fallback.getTime()) ? null : fallback;
+    };
+
+    const normalizeTimelineLines = (rawValue) => {
+      const lines = [];
+      const consume = (value) => {
+        if (value === null || value === undefined) return;
+        if (Array.isArray(value)) {
+          value.forEach(consume);
+          return;
+        }
+        if (typeof value === 'object') {
+          const datePart = value.date || value.when || value.timestamp || '';
+          const textPart = value.description || value.location || value.text || value.name || '';
+          const urlPart = value.url || value.source_url || value.link || '';
+          const joined = `${datePart} ${textPart} ${urlPart}`.trim();
+          if (joined) lines.push(joined);
+          return;
+        }
+        let s = String(value);
+        if (!s.trim()) return;
+        s = s
+          .replace(/<br\s*\/?>/gi, '\n')
+          .replace(/<\/li>/gi, '\n')
+          .replace(/<li[^>]*>/gi, '');
+        s.split(/\r?\n/).forEach(part => {
+          const cleaned = stripHtml(part).trim();
+          if (cleaned && cleaned !== 'N/A') lines.push(cleaned);
+        });
+      };
+      consume(rawValue);
+      return lines;
+    };
 
     if (owl) {
       // 1. Emblem (Media Link)
@@ -3555,76 +3606,85 @@
           }
       }
 
-      // 4. Geolocation Timeline -> Injected into Recent Engagements!
-      let geoRaw = '';
-      if (owl.older_geolocations_2) geoRaw += owl.older_geolocations_2 + '\n';
-      if (owl.older_geolocations) geoRaw += owl.older_geolocations + '\n';
-      
-      const geoLines = geoRaw.split('\n').map(l => l.trim()).filter(l => l.length > 5);
-      
-      if (geoLines.length > 0) {
-          geoLines.forEach((line) => {
-              let url = '';
-              let txt = line;
-              const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
-              if (urlMatch) {
-                  url = urlMatch[1];
-                  txt = line.replace(urlMatch[1], '').trim();
-              }
-              
-              let dateTxt = 'Archive';
-              const dateMatch = txt.match(/(\d{1,2}\/\d{1,2}\/\d{2,4}|\b202\d{1}\b)/);
-              if (dateMatch) {
-                  dateTxt = dateMatch[1];
-                  txt = txt.replace(dateMatch[1], '').trim();
-              }
-              
-              txt = txt.replace(/^AND\s+/i, '').replace(/^-+\s*/, '').trim();
-              if (!txt) txt = "Geolocation Point";
-              
-              const cleanTxt = stripHtml(txt);
-              
-              const el = document.createElement('div');
-              el.className = 'ud-event-item';
-              el.style.borderLeft = '2px solid #3b82f6';
-              el.style.background = 'rgba(59, 130, 246, 0.05)';
-              
-              if (url) {
-                  el.onclick = () => window.open(url, '_blank');
-                  el.title = "View Map Source";
-              }
-              
-              el.innerHTML = `
-                 <div style="font-size:0.75rem; color:#3b82f6; margin-bottom:2px; display:flex; justify-content:space-between;">
-                    <span><i class="fa-solid fa-location-crosshairs" style="margin-right:4px;"></i>${dateTxt}</span>
-                    <span style="font-size:0.6rem; opacity:0.7;">MAP DATA</span>
-                 </div>
-                 <div style="font-size:0.85rem; font-weight:600; color:#cbd5e1; white-space:normal; overflow:hidden;">${cleanTxt}</div>
-               `;
-              listEl.appendChild(el);
-              hasOwlEvents = true;
-          });
-      }
+      // 4. Geolocation Timeline -> merge into Recent Engagements
+      const geoLines = [
+        ...normalizeTimelineLines(owl.older_geolocations_2),
+        ...normalizeTimelineLines(owl.older_geolocations),
+      ];
+      geoLines.forEach((line, idx) => {
+        const urlMatch = line.match(/(https?:\/\/[^\s<>"']+)/i);
+        const url = urlMatch ? urlMatch[1] : '';
+        let txt = line.replace(/(https?:\/\/[^\s<>"']+)/gi, ' ').trim();
+        const dateMatch = txt.match(/\b(20\d{2}-\d{1,2}-\d{1,2}|\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|(?:19|20)\d{2})\b/);
+        const dateTxt = dateMatch ? dateMatch[1] : 'Archive';
+        if (dateMatch) txt = txt.replace(dateMatch[1], ' ').trim();
+        txt = txt.replace(/^AND\s+/i, '').replace(/^[\-\u2022*]+\s*/, '').trim();
+        const cleanedVal = stripHtml(txt);
+        const cleanTxt = (!cleanedVal || cleanedVal === 'N/A') ? 'Geolocation point' : cleanedVal;
+        engagementItems.push({
+          source: 'OWL',
+          sortDate: parseTimelineDate(dateTxt),
+          dateText: dateTxt,
+          title: cleanTxt,
+          url,
+          seq: idx,
+        });
+      });
     }
 
-    if (relatedEvents.length === 0 && !hasOwlEvents) {
-      listEl.innerHTML = '<div class="ud-event-item" style="cursor:default; color:#64748b; border:none;">No recent activity linked.</div>';
-    } else {
-      // Setup OSINT events
-      relatedEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      relatedEvents.slice(0, 50).forEach(e => {
-        const el = document.createElement('div');
-        el.className = 'ud-event-item';
-        el.onclick = () => {
-          window.openModal(e);
-        };
-        el.innerHTML = `
-             <div style="font-size:0.75rem; color:#f59e0b; margin-bottom:2px;">${e.date}</div>
-             <div style="font-size:0.85rem; font-weight:600; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${e.title}</div>
-           `;
-        listEl.appendChild(el);
+    relatedEvents.forEach((e, idx) => {
+      engagementItems.push({
+        source: 'OSINT',
+        sortDate: parseTimelineDate(e.date),
+        dateText: e.date || 'Unknown Date',
+        title: e.title || 'Untitled Event',
+        eventRef: e,
+        seq: idx,
       });
+    });
+
+    engagementItems.sort((a, b) => {
+      const at = a.sortDate ? a.sortDate.getTime() : -1;
+      const bt = b.sortDate ? b.sortDate.getTime() : -1;
+      if (at !== bt) return bt - at;
+      if (a.source !== b.source) return a.source === 'OWL' ? -1 : 1;
+      return a.seq - b.seq;
+    });
+
+    console.log(`[UNIT_MODAL] engagements merged: owl=${engagementItems.filter(x => x.source === 'OWL').length} osint=${engagementItems.filter(x => x.source === 'OSINT').length} total=${engagementItems.length}`);
+
+    if (listEl) {
+      listEl.innerHTML = '';
+      if (engagementItems.length === 0) {
+        listEl.innerHTML = '<div class="ud-event-item" style="cursor:default; color:#64748b; border:none;">No recent activity linked.</div>';
+      } else {
+        engagementItems.slice(0, 80).forEach(item => {
+          const el = document.createElement('div');
+          el.className = 'ud-event-item';
+          if (item.source === 'OWL') {
+            el.style.borderLeft = '2px solid #3b82f6';
+            el.style.background = 'rgba(59, 130, 246, 0.05)';
+            if (item.url) {
+              el.onclick = () => window.open(item.url, '_blank');
+              el.title = 'View map source';
+            }
+            el.innerHTML = `
+              <div style="font-size:0.75rem; color:#3b82f6; margin-bottom:2px; display:flex; justify-content:space-between;">
+                <span><i class="fa-solid fa-location-crosshairs" style="margin-right:4px;"></i>${item.dateText}</span>
+                <span style="font-size:0.6rem; opacity:0.7;">MAP DATA</span>
+              </div>
+              <div style="font-size:0.85rem; font-weight:600; color:#cbd5e1; white-space:normal; overflow:hidden;">${item.title}</div>
+            `;
+          } else {
+            el.onclick = () => window.openModal(item.eventRef);
+            el.innerHTML = `
+              <div style="font-size:0.75rem; color:#f59e0b; margin-bottom:2px;">${item.dateText}</div>
+              <div style="font-size:0.85rem; font-weight:600; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</div>
+            `;
+          }
+          listEl.appendChild(el);
+        });
+      }
     }
 
 
