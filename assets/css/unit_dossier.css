@@ -3,6 +3,29 @@
    Design System: Slate-900 (#0f172a) + Amber-500 (#f59e0b)
    ============================================================================= */
 
+/* --- GRID LAYOUT --- */
+.ud-content-grid {
+  display: flex;
+  gap: 20px;
+  padding: 15px;
+  min-height: 400px;
+}
+
+.ud-left-col {
+  flex: 1.2;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.ud-right-col {
+  flex: 0.8;
+  min-width: 0;
+  border-left: 1px solid #1e293b;
+  padding-left: 20px;
+}
+
 /* --- DOSSIER ANALYTICS SECTION --- */
 .ud-analytics-section {
   display: flex;

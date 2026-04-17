@@ -1209,6 +1209,7 @@ fd305fdd-39b8-4449-a789-6b66e4ca2779,2026-04-13 18:28:43,Russian Drone Attack on
 5d49dcf1-1a98-47c2-937a-94243e3339e2,2026-04-14 20:37:56,Damage to Power Station Reported in Zaporizhzhia R,46.8467267,35.3827281,100.0,7.0,8.0,6.0,50,0.0,0,1
 63dca1e7-700e-4187-bc16-1c6defe8f71f,2026-04-15 15:25:53,Poland and Netherlands Provide Air Defense Missile,48.964,32.312,0.0,1.0,1.0,1.0,70,0.0,1,1
 827a0e1d-7f9e-4262-925c-cc82452f2dbc,2026-04-15 14:04:03,Russian Drone Activity Detected over Ukraine,48.5069416,32.2321643,0.0,8.0,2.0,1.0,50,2.0,0,1
+8bdc16e6-d414-4916-b23c-2cd2e1d0058a,2026-04-14 20:02:23,Russian Forces Attack Civilian Ship and Commercial,45.3511307,28.8361514,3.0,3.0,4.0,1.0,70,0.0,1,1
 90c70d76-0c1a-4ab2-b4f5-e0cc7586f20d,2026-04-15 09:06:43,UK Supplies Drones to Ukraine,49.052,32.972,0.0,1.0,1.0,1.0,70,0.8,1,1
 917dcfb4-4d1f-4250-aa2c-af3bde949c44,2026-04-14 20:12:07,Ukrainian Forces Attack Electrical Substation in M,46.8467267,35.3827281,94.0,7.0,8.0,5.0,70,-2.0,1,1
 a1538f46-6aa5-43c2-afab-adfbc308be18,2026-04-15 04:34:22,Russian Forces Conduct Missile and Drone Strikes i,47.8507859,35.1182867,18.0,7.0,2.0,9.0,82,4.8,1,1
@@ -1221,7 +1222,9 @@ ae3c20e8-b794-405e-b823-ca5f551bdf4b,2026-04-15 05:55:10,Ukrainian Forces Attack
 c1d18b0d-f445-4bc9-8ec6-342d880c73b3,2026-04-15 11:02:43,Ukrainian Forces Prevent Drone Strike in Donetsk R,48.0077889,37.8607102,5.0,3.0,5.0,1.0,70,0.0,1,1
 ce07f7e5-2470-491a-a4aa-0349d35ab724,2026-04-15 06:22:38,Cuban Nationals Reportedly Supporting Russian Forc,50.196,31.548,0.0,1.0,1.0,1.0,70,0.0,1,1
 cef6f823-e662-41a0-aee9-89a810c7d2dd,2026-04-15 11:50:16,Ukrainian Forces Conduct Strikes on Russian Milita,47.817471,36.352119,100.0,7.0,8.0,7.0,70,2.5,1,1
+cff2bcc9-401e-486e-9d4d-7de6c019b891,2026-04-14 20:02:00,Fire Incident Affects Production Facility in Gagar,50.416,31.982,87.0,6.0,9.0,4.0,70,0.0,1,1
 d05d2ed7-10db-42e1-a2aa-2e58b593463b,2026-04-15 06:02:31,Ukrainian Air Defence Engaged in Drone Interceptio,49.078,32.298,18.0,7.0,8.0,1.0,70,2.0,1,1
 d25f6840-e8d7-4b5b-b613-76d6133228b2,2026-04-15 14:54:25,Russian Forces Conduct Simulated Missile Launches,54.6571958,39.6308884,0.0,9.0,9.0,1.0,50,0.0,0,1
 d570a5a3-9da3-4a4a-9f53-d5592b20157f,2026-04-15 11:29:54,Russian Forces Closed Airspace over Kapustin Yar,48.575634,45.766895,0.0,7.0,5.0,1.0,50,2.0,0,1
+dc4d66d7-0916-4824-a6d9-5164ac5ecc4d,2026-04-14 20:05:57,Power Outage Reported in Kherson Region,46.637456,32.6143593,99.0,6.0,8.0,6.0,50,0.0,0,1
 f2833ec3-5d92-4e3a-bda3-058475d33699,2026-04-15 06:11:32,Russian Forces Attack on Civilian Areas in Ukraine,47.8507859,35.1182867,19.0,8.0,2.0,9.0,70,-4.0,1,1
