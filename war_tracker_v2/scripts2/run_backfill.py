@@ -44,7 +44,7 @@ def main():
     # Timezone Aware (UTC)
     start_dt = datetime(2026, 2, 23, 0, 0, 0, tzinfo=timezone.utc)
     # Impostiamo la fine a "domani" per essere sicuri di prendere tutto oggi
-    end_dt = datetime(2026, 4, 17, 0, 0, 0, tzinfo=timezone.utc)
+    end_dt = datetime(2026, 4, 24, 0, 0, 0, tzinfo=timezone.utc)
 
     # 1. Esegui Telegram
     print("\n--- AVVIO TELEGRAM ---")
