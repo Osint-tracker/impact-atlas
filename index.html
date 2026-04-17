@@ -34,6 +34,10 @@
 
   <link rel="stylesheet" href="assets/css/style.css?v=2">
   <link rel="stylesheet" href="assets/css/dossier_styles.css?v=2">
+  <link rel="stylesheet" href="assets/css/unit_dossier.css?v=1">
+
+  <!-- Chart.js (Radar + Sparkline for Unit Dossier) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
   <style>
     /* ==========================================
@@ -3973,11 +3977,20 @@
                   <span class="ud-stat-label">Base / Station</span>
                   <span class="ud-stat-value" id="udBase">--</span>
                 </div>
+                <h5 style="margin:10px 0 5px 0; color:#64748b; font-size:0.75rem;">UNIT STRENGTH & ASSETS</h5>
+                <div id="udAssetsContainer" class="ud-assets-container">
+                  <!-- Pill badges injected by unit_dossier.js -->
+                </div>
 
-                <h5 style="margin:10px 0 5px 0; color:#64748b; font-size:0.75rem;">ACTIVITY TREND</h5>
-                <div class="timeline-mini-chart" id="udSparkline"
-                  style="display:flex; align-items:end; gap:2px; padding:5px;">
-                  <!-- Spans (bars) injected by JS -->
+                <div id="udChartRow" class="ud-chart-row" style="margin-top:10px;">
+                  <div class="ud-chart-box">
+                    <span class="ud-chart-label">T.I.E. RADAR</span>
+                    <canvas id="udRadarCanvas"></canvas>
+                  </div>
+                  <div class="ud-chart-box">
+                    <span class="ud-chart-label">30-DAY ACTIVITY</span>
+                    <canvas id="udSparkCanvas"></canvas>
+                  </div>
                 </div>
               </div>
 
@@ -4844,6 +4857,7 @@
       </div>
 
   </div> <!-- end app-shell -->
+  <script src="assets/js/unit_dossier.js?v=1"></script>
 </body>
 
 </html>

@@ -3816,12 +3816,15 @@
       }
     }
 
-    // Sparkline (Activity over time)
-    renderSparkline(relatedEvents);
+    // Dossier Analytics (Chart.js radar + sparkline + assets + timeline)
+    if (typeof window.renderUnitDossierAnalytics === 'function') {
+      window.renderUnitDossierAnalytics(unit);
+    }
   };
 
   function renderSparkline(events) {
     const container = document.getElementById('udSparkline');
+    if (!container) return; // Guard: container replaced by Chart.js canvas
     container.innerHTML = '';
     if (!events.length) return;
 

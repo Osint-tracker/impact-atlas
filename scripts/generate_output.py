@@ -317,8 +317,8 @@ def classify_sector(lat, lon, target_type):
 
 
 def update_unit_stats(stats_acc, unit, event_data):
-    """Accumulate statistics for AI Triage."""
-    # Key by ORBAT ID (Priority 1) -> Unit ID -> Unit Name
+    """Accumulate statistics for AI Triage + Dossier Card aggregation."""
+    import re as _re_local
     key = unit.get('orbat_id')
     if not key:
         key = unit.get('unit_id') or unit.get('unit_name') or 'UNKNOWN'
@@ -330,25 +330,121 @@ def update_unit_stats(stats_acc, unit, event_data):
             "engagement_count": 0,
             "last_active": "2000-01-01",
             "total_tie": 0,
-            "tactics_hist": {}, # Histogram of event classifications
+            "tactics_hist": {},
             "roles_hist": {},
-            "orbat_id": unit.get('orbat_id')
+            "orbat_id": unit.get('orbat_id'),
+            "tie_vectors": [],
+            "assets_set": set(),
+            "daily_dates": [],
+            "recent_events": [],
         }
         
     entry = stats_acc[key]
     entry["engagement_count"] += 1
     
-    # Date Update
     evt_date = event_data.get('date', '2000-01-01')
-    if evt_date > entry["last_active"]:
+    if evt_date and evt_date > entry["last_active"]:
         entry["last_active"] = evt_date
         
-    # Scores
     entry["total_tie"] += event_data.get('tie_score', 0)
     
-    # Tactics (Event Classification)
     cls = event_data.get('classification', 'UNKNOWN')
     entry["tactics_hist"][cls] = entry["tactics_hist"].get(cls, 0) + 1
+
+    # --- DOSSIER: T.I.E. Vector Collection ---
+    k = event_data.get('kinetic_score', 0)
+    t = event_data.get('target_score', 0)
+    e = event_data.get('effect_score', 0)
+    if k or t or e:
+        entry["tie_vectors"].append({"kinetic": float(k), "target": float(t), "effect": float(e)})
+
+    # --- DOSSIER: Asset Detection (Visionary + Regex Fallback) ---
+    detected_assets = event_data.get('detected_assets', [])
+    if detected_assets:
+        for a in detected_assets:
+            atype = a.get('type', '') if isinstance(a, dict) else str(a)
+            if atype and atype not in ('UNKNOWN_ARMOR', 'UNKNOWN_VEHICLE', 'UNKNOWN_SYSTEM', 'UNKNOWN_AIRCRAFT'):
+                entry["assets_set"].add(atype)
+    else:
+        _ASSET_RE = _re_local.compile(
+            r'\b(T-(?:72|80|90|64|55)[A-Z0-9]*|BMP-[123][A-Z]*|BTR-[0-9]+[A-Z]*'
+            r'|2S(?:1|3|5|7|19|35)[A-Z\- ]*|HIMARS|GMLRS|M270|M142'
+            r'|Grad|Smerch|Uragan|TOS-1[A]?|S-[234]00[A-Z0-9]*|Buk[- ]?[A-Z0-9]*'
+            r'|Patriot|NASAMS|IRIS-T|Gepard|Iskander[- ]?[MK]?|Kalibr|Kinzhal'
+            r'|Shahed[- ]?1[0-9]{2}|Lancet[- ]?[0-9]*|FPV|Orlan[- ]?10'
+            r'|Ka-52|Su-[0-9]+[A-Z]*|Leopard[- ]?[12][A-Z0-9]*|Bradley|CV90'
+            r'|CAESAR|PzH[- ]?2000|Krab|M777|Storm Shadow|ATACMS|Javelin|NLAW'
+            r'|Stugna[- ]?P?|Kornet)\b', _re_local.IGNORECASE
+        )
+        text_blob = f"{event_data.get('title', '')} {event_data.get('description', '')}"
+        for m in _ASSET_RE.findall(text_blob):
+            entry["assets_set"].add(m.strip())
+
+    # --- DOSSIER: Daily Date for Sparkline ---
+    if evt_date and evt_date != '2000-01-01':
+        entry["daily_dates"].append(evt_date[:10])
+
+    # --- DOSSIER: Recent Events ---
+    entry["recent_events"].append({
+        "date": evt_date,
+        "title": event_data.get('title', ''),
+        "location": event_data.get('location', ''),
+        "lat": event_data.get('lat'),
+        "lon": event_data.get('lon'),
+        "url": event_data.get('url', ''),
+        "event_id": event_data.get('event_id', ''),
+    })
+
+
+def _build_dossier_fields(stats_entry):
+    """Convert accumulated raw stats into final dossier card fields."""
+    import datetime as _dt_local
+    result = {}
+
+    vecs = stats_entry.get('tie_vectors', [])
+    if vecs:
+        n = len(vecs)
+        result['avg_tie'] = {
+            'kinetic': round(sum(v['kinetic'] for v in vecs) / n, 2),
+            'target': round(sum(v['target'] for v in vecs) / n, 2),
+            'effect': round(sum(v['effect'] for v in vecs) / n, 2),
+        }
+    else:
+        result['avg_tie'] = {'kinetic': 0, 'target': 0, 'effect': 0}
+
+    result['assets_detected'] = sorted(list(stats_entry.get('assets_set', set())))
+
+    raw_dates = stats_entry.get('daily_dates', [])
+    if raw_dates:
+        valid_dates = sorted([d for d in raw_dates if d and len(d) >= 10])
+        anchor = _dt_local.datetime.strptime(valid_dates[-1], '%Y-%m-%d').date() if valid_dates else _dt_local.date.today()
+    else:
+        anchor = _dt_local.date.today()
+
+    trend = [0] * 30
+    date_counter = {}
+    for d in raw_dates:
+        date_counter[d] = date_counter.get(d, 0) + 1
+    for i in range(30):
+        day_key = (anchor - _dt_local.timedelta(days=29 - i)).strftime('%Y-%m-%d')
+        trend[i] = date_counter.get(day_key, 0)
+
+    result['engagement_trend_30d'] = trend
+    result['engagement_trend_anchor'] = anchor.isoformat()
+
+    total_30d = sum(trend)
+    if total_30d > 8:
+        result['engagement_freq_label'] = 'High'
+    elif total_30d >= 3:
+        result['engagement_freq_label'] = 'Medium'
+    else:
+        result['engagement_freq_label'] = 'Low'
+
+    recent = stats_entry.get('recent_events', [])
+    recent_sorted = sorted(recent, key=lambda x: x.get('date', ''), reverse=True)
+    result['recent_engagements'] = recent_sorted[:5]
+
+    return result
 
 
 # =============================================================================
@@ -591,24 +687,42 @@ def export_units(unit_stats=None, orbat_data=None):
             if not u.get('display_name'):
                 u['display_name'] = u.get('unit_id') or 'Unknown Unit'
             
-            # === AI TRIAGE MERGE ===
+            # Enrich u with ORBAT metadata for accurate stats matching
+            matches = enrich_units([u], orbat_data)
+            u = matches[0] if matches else u
+            
+            # === AI TRIAGE MERGE + DOSSIER CARD FIELDS ===
             if unit_stats:
-                # Key Match: Registry Unit ID uses orbat_id if available
-                key = (u.get('unit_id') or u.get('unit_name') or '').lower()
+                # Key Match: Registry matches update_unit_stats key logic
+                key = u.get('orbat_id')
+                if not key:
+                    key = (u.get('unit_id') or u.get('unit_name') or '').lower()
                 
-                stats = unit_stats.get(key)
+                stats = unit_stats.get(str(key).lower())
                 
                 if stats:
                     u['engagement_count'] = stats['engagement_count']
                     u['last_active'] = stats['last_active']
-                    u['avg_tie'] = round(stats['total_tie'] / stats['engagement_count'], 1)
                     
                     # Top Tactic
                     sorted_tactics = sorted(stats['tactics_hist'].items(), key=lambda x: x[1], reverse=True)
                     u['primary_tactic'] = sorted_tactics[0][0] if sorted_tactics else 'UNKNOWN'
+
+                    # --- DOSSIER CARD FIELDS ---
+                    dossier = _build_dossier_fields(stats)
+                    u['avg_tie'] = dossier['avg_tie']
+                    u['assets_detected'] = dossier['assets_detected']
+                    u['engagement_trend_30d'] = dossier['engagement_trend_30d']
+                    u['engagement_trend_anchor'] = dossier['engagement_trend_anchor']
+                    u['engagement_freq_label'] = dossier['engagement_freq_label']
+                    u['recent_engagements'] = dossier['recent_engagements']
                 else:
                     u['engagement_count'] = 0
-                    u['avg_tie'] = 0
+                    u['avg_tie'] = {'kinetic': 0, 'target': 0, 'effect': 0}
+                    u['assets_detected'] = []
+                    u['engagement_trend_30d'] = [0] * 30
+                    u['engagement_freq_label'] = 'Low'
+                    u['recent_engagements'] = []
             
             units.append(u)
         
@@ -965,7 +1079,7 @@ def main():
             radius, color = get_marker_style(tie_score, e_score)
             
             # Enrich Units
-            raw_units = ai_data.get('military_units_detected', []) if ai_data else []
+            raw_units = ai_data.get('tactics', {}).get('military_units_detected', []) if ai_data else []
             enriched_units = enrich_units(raw_units, orbat_data)
 
             # Strategic Campaign Fields
@@ -1043,12 +1157,36 @@ def main():
             }
             geojson_features.append(feature)
             
-            # --- AI TRIAGE UPDATE ---
+            # --- AI TRIAGE + DOSSIER UPDATE ---
+            # Extract Visionary detected_assets for dossier card
+            detected_assets_raw = []
+            if ai_data:
+                tactics_d = ai_data.get('tactics', {})
+                vis = tactics_d.get('visionary_report', {}) if isinstance(tactics_d, dict) else {}
+                if vis and isinstance(vis, dict):
+                    detected_assets_raw = vis.get('detected_assets', [])
+
+            # First source URL for the engagement link
+            first_url = ''
+            if structured_sources:
+                first_url = structured_sources[0].get('url', '')
+
             for u in enriched_units:
                 update_unit_stats(unit_stats_acc, u, {
                     "date": date,
+                    "event_id": event_id,
                     "tie_score": tie_score,
-                    "classification": classification
+                    "kinetic_score": k_score,
+                    "target_score": t_score,
+                    "effect_score": e_score,
+                    "classification": classification,
+                    "title": title,
+                    "description": description,
+                    "location": row.get('operational_sector', ''),
+                    "lat": lat,
+                    "lon": lon,
+                    "url": first_url,
+                    "detected_assets": detected_assets_raw,
                 })
             
             # Build CSV Row
