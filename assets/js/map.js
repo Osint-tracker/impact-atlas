@@ -3538,9 +3538,12 @@
     }
 
     // Engagement Freq (events in last 30 days)
-    document.getElementById('udEngFreq').innerText = relatedEvents.length > 0
-      ? (relatedEvents.length / 30).toFixed(1) + "/day"
-      : "Low";
+    // Only set if unit has no backend dossier data (which will be set by renderUnitDossierAnalytics)
+    if (!unit.engagement_freq_label) {
+      document.getElementById('udEngFreq').innerText = relatedEvents.length > 0
+        ? (relatedEvents.length / 30).toFixed(1) + "/day"
+        : "Low";
+    }
 
     // --- OWL METADATA -> METRICS ---
     const eqRow = document.getElementById('udEquipmentRow');
@@ -3716,7 +3719,12 @@
     if (listEl) {
       listEl.innerHTML = '';
       if (engagementItems.length === 0) {
-        listEl.innerHTML = '<div class="ud-event-item" style="cursor:default; color:#64748b; border:none;">No recent activity linked.</div>';
+        // Only show empty state if the unit also has no backend dossier engagements
+        // (renderUnitDossierAnalytics will populate this from units.json data)
+        if (!unit.recent_engagements || unit.recent_engagements.length === 0) {
+          listEl.innerHTML = '<div class="ud-event-item" style="cursor:default; color:#64748b; border:none;">No recent activity linked.</div>';
+        }
+        // else: leave empty — unit_dossier.js will fill it
       } else {
         engagementItems.slice(0, 80).forEach(item => {
           const el = document.createElement('div');
