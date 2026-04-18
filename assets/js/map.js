@@ -3522,7 +3522,18 @@
 
     // Update Metrics
     document.getElementById('udMentions').innerText = relatedEvents.length;
-    document.getElementById('udAvgTie').innerText = unit.avg_tie || '--';
+    const avgTie = unit.avg_tie;
+    const avgTieEl = document.getElementById('udAvgTie');
+    if (avgTieEl) {
+      if (avgTie && typeof avgTie === 'object') {
+        const k = (avgTie.kinetic || 0).toFixed(1);
+        const t = (avgTie.target || 0).toFixed(1);
+        const e = (avgTie.effect || 0).toFixed(1);
+        avgTieEl.innerText = `K:${k} T:${t} E:${e}`;
+      } else {
+        avgTieEl.innerText = avgTie || '--';
+      }
+    }
     document.getElementById('udTactic').innerText = unit.primary_tactic || '--';
 
     // Last Location (Coordinates) Ã¢â‚¬â€ user coords only, NOT Owl garrison coords
@@ -3537,12 +3548,18 @@
       }
     }
 
-    // Engagement Freq (events in last 30 days)
-    // Only set if unit has no backend dossier data (which will be set by renderUnitDossierAnalytics)
-    if (!unit.engagement_freq_label) {
-      document.getElementById('udEngFreq').innerText = relatedEvents.length > 0
-        ? (relatedEvents.length / 30).toFixed(1) + "/day"
-        : "Low";
+    // Engagement Freq (30d) — use backend dossier label if available, else calculate
+    const engFreqEl = document.getElementById('udEngFreq');
+    if (engFreqEl) {
+      if (unit.engagement_freq_label) {
+        const freqLabel = unit.engagement_freq_label;
+        const freqClass = freqLabel === 'High' ? 'freq-high' : (freqLabel === 'Medium' ? 'freq-medium' : 'freq-low');
+        engFreqEl.innerHTML = `<span class="ud-freq-badge ${freqClass}">${freqLabel}</span>`;
+      } else {
+        engFreqEl.innerText = relatedEvents.length > 0
+          ? (relatedEvents.length / 30).toFixed(1) + "/day"
+          : "Low";
+      }
     }
 
     // --- OWL METADATA -> METRICS ---
@@ -3708,6 +3725,23 @@
       });
     });
 
+    // Backend dossier engagements (from units.json pipeline)
+    // These are pre-computed by generate_output.py and stored in unit.recent_engagements
+    if (engagementItems.length === 0 && Array.isArray(unit.recent_engagements) && unit.recent_engagements.length > 0) {
+      unit.recent_engagements.forEach((eng, idx) => {
+        engagementItems.push({
+          source: 'OSINT',
+          sortDate: new Date(eng.date || ''),
+          dateText: eng.date ? eng.date.substring(0, 10) : 'Unknown',
+          title: eng.title || 'Untitled Event',
+          location: eng.location || '',
+          eventRef: eng.event_id || null,
+          url: eng.url || '',
+          seq: idx,
+        });
+      });
+    }
+
     engagementItems.sort((a, b) => {
       const at = a.sortDate ? a.sortDate.getTime() : -1;
       const bt = b.sortDate ? b.sortDate.getTime() : -1;
@@ -3719,12 +3753,7 @@
     if (listEl) {
       listEl.innerHTML = '';
       if (engagementItems.length === 0) {
-        // Only show empty state if the unit also has no backend dossier engagements
-        // (renderUnitDossierAnalytics will populate this from units.json data)
-        if (!unit.recent_engagements || unit.recent_engagements.length === 0) {
-          listEl.innerHTML = '<div class="ud-event-item" style="cursor:default; color:#64748b; border:none;">No recent activity linked.</div>';
-        }
-        // else: leave empty — unit_dossier.js will fill it
+        listEl.innerHTML = '<div class="ud-event-item" style="cursor:default; color:#64748b; border:none;">No recent activity linked.</div>';
       } else {
         engagementItems.slice(0, 80).forEach(item => {
           const el = document.createElement('div');
