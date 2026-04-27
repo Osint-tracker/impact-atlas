@@ -1,7 +1,12 @@
 /**
  * UNIT DOSSIER CARD — Frontend Rendering Module
- * Renders high-density tactical analytics from units.json dossier fields.
- * Dependencies: Chart.js (v4.4.4+), Leaflet
+ * Renders Chart.js analytics and asset pills for the Unit Dossier modal.
+ * Dependencies: Chart.js (v4.4.4+)
+ *
+ * NOTE: Timeline (udEventsList) and Frequency Badge (udEngFreq) are rendered
+ * exclusively by map.js to avoid DOM conflicts. This module handles ONLY:
+ *   - Asset pill badges (udAssetsContainer)
+ *   - Radar chart + Sparkline (udChartRow)
  */
 (function () {
   'use strict';
@@ -10,26 +15,18 @@
   let _sparkChart = null;
 
   /**
-   * Main entry point: populate the dossier analytics section.
+   * Main entry point — called by map.js after it finishes populating the modal.
    */
   window.renderUnitDossierAnalytics = function (unit) {
     console.log("[UD] Rendering analytics for:", unit.unit_id);
-    
+
     try {
       _renderAssets(unit.assets_detected || []);
     } catch (e) { console.error("[UD] Assets error:", e); }
 
     try {
-      _renderFrequencyBadge(unit.engagement_freq_label || 'Low');
-    } catch (e) { console.error("[UD] Freq badge error:", e); }
-
-    try {
       _renderCharts(unit.avg_tie || {}, unit.engagement_trend_30d || []);
     } catch (e) { console.error("[UD] Charts error:", e); }
-
-    try {
-      _renderTacticalTimeline(unit.recent_engagements || []);
-    } catch (e) { console.error("[UD] Timeline error:", e); }
   };
 
   // =========================================================================
@@ -51,17 +48,6 @@
       pill.innerHTML = '<i class="fa-solid fa-crosshairs"></i> ' + _escapeHtml(name);
       container.appendChild(pill);
     });
-  }
-
-  // =========================================================================
-  // FREQUENCY BADGE
-  // =========================================================================
-  function _renderFrequencyBadge(label) {
-    const el = document.getElementById('udEngFreq');
-    if (!el) return;
-
-    const cssClass = label === 'High' ? 'freq-high' : (label === 'Medium' ? 'freq-medium' : 'freq-low');
-    el.innerHTML = '<span class="ud-freq-badge ' + cssClass + '">' + label + '</span>';
   }
 
   // =========================================================================
@@ -140,7 +126,7 @@
 
     const ctx = canvas.getContext('2d');
     const labels = Array(trend30d.length || 30).fill('');
-    
+
     // Gradient
     const gradient = ctx.createLinearGradient(0, 0, 0, 80);
     gradient.addColorStop(0, 'rgba(245, 158, 11, 0.3)');
@@ -166,56 +152,6 @@
         plugins: { legend: { display: false } },
         scales: { x: { display: false }, y: { display: false, beginAtZero: true } }
       }
-    });
-  }
-
-  // =========================================================================
-  // TACTICAL TIMELINE
-  // =========================================================================
-  function _renderTacticalTimeline(engagements) {
-    const container = document.getElementById('udEventsList');
-    if (!container) return;
-
-    container.innerHTML = '';
-    container.className = 'ud-tactical-timeline';
-
-    if (!engagements || !engagements.length) {
-      container.className = '';
-      container.innerHTML =
-        '<div class="ud-empty-state">' +
-          '<i class="fa-solid fa-satellite-dish"></i>' +
-          '<span>No recent engagements recorded</span>' +
-        '</div>';
-      return;
-    }
-
-    engagements.forEach(function (eng) {
-      const entry = document.createElement('div');
-      entry.className = 'ud-tl-entry';
-
-      const dateStr = (eng.date || 'Unknown').substring(0, 10);
-      const title = eng.title || 'Untitled Event';
-      const locHtml = eng.location ? `<div class="ud-tl-location"><i class="fa-solid fa-location-dot"></i>${_escapeHtml(eng.location)}</div>` : '';
-
-      let actionsHtml = '<div class="ud-tl-actions">';
-      if (eng.lat && eng.lon) {
-        actionsHtml += `<button onclick="event.stopPropagation(); window._dossierFlyTo(${eng.lat},${eng.lon})" title="Fly to location"><i class="fa-solid fa-location-crosshairs"></i></button>`;
-      }
-      if (eng.url) {
-        actionsHtml += `<a href="${_escapeHtml(eng.url)}" target="_blank" rel="noopener" title="Source"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>`;
-      }
-      actionsHtml += '</div>';
-
-      entry.innerHTML = `
-        <div class="ud-tl-content">
-          <div class="ud-tl-date">${_escapeHtml(dateStr)}</div>
-          <div class="ud-tl-title">${_escapeHtml(title)}</div>
-          ${locHtml}
-        </div>
-        ${actionsHtml}
-      `;
-
-      container.appendChild(entry);
     });
   }
 
