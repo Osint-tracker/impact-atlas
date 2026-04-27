@@ -67,14 +67,18 @@
           [
             37.7809825,
             47.9212914
+          ],
+          [
+            37.7809825,
+            47.9212914
           ]
         ]
       },
       "properties": {
         "id": "gloc_13",
-        "event_count": 3,
+        "event_count": 4,
         "start_ts": 1776091321000,
-        "end_ts": 1776155496000,
+        "end_ts": 1776178793000,
         "sectors": [
           "UNKNOWN_SECTOR"
         ]
