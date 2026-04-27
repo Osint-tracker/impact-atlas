@@ -1114,10 +1114,9 @@ RAW TEXT:
 """
 
         try:
-            # USIAMO IL MODELLO REASONER (V3.2 STANDARD)
-            # Questo modello supporta JSON mode E ha il "Thinking Process"
+            # USIAMO IL MODELLO REASONER (V4 FLASH)
             response = self.brain_client.chat.completions.create(
-                model="deepseek/deepseek-v3.2",
+                model="deepseek/deepseek-v4-flash",
 
                 messages=[
                     {"role": "system", "content": "You are a strategic reasoning engine. Output valid JSON only."},
@@ -1133,11 +1132,41 @@ RAW TEXT:
                 },
 
                 temperature=0.0,
-                response_format={"type": "json_object"}
+                response_format={"type": "json_object"},
+                stream=True
             )
 
+            full_content = ""
+            full_reasoning = []
+            reasoning_tokens = 0
+
+            for chunk in response:
+                delta = chunk.choices[0].delta if chunk.choices else None
+                if delta:
+                    if getattr(delta, "content", None):
+                        full_content += delta.content
+                        print(delta.content, end="", flush=True)
+                    
+                    reasoning_piece = getattr(delta, "reasoning", None)
+                    if not reasoning_piece and hasattr(delta, "model_extra") and delta.model_extra:
+                        reasoning_piece = delta.model_extra.get("reasoning")
+                    if reasoning_piece:
+                        full_reasoning.append(reasoning_piece)
+                
+                if hasattr(chunk, "usage") and chunk.usage:
+                    reasoning_tokens = getattr(chunk.usage, "reasoningTokens", 0)
+
+            print("\n")
+
+            # Costruzione oggetto messaggio per chat history (con reasoning incluso)
+            assistant_message = {
+                "role": "assistant",
+                "content": full_content,
+                "reasoning_details": "".join(full_reasoning)
+            }
+
             # Parsing della risposta
-            content = response.choices[0].message.content.strip()
+            content = full_content.strip()
 
             # Gestione markdown code blocks (DeepSeek a volte li mette anche in JSON mode)
             if "```json" in content:
@@ -1815,12 +1844,35 @@ If you cannot determine the real location, output:
 """
         try:
             response = self.brain_client.chat.completions.create(
-                model="deepseek/deepseek-chat-v3-0324",
+                model="deepseek/deepseek-v4-flash",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.0,
-                response_format={"type": "json_object"}
+                response_format={"type": "json_object"},
+                stream=True
             )
-            result = json.loads(response.choices[0].message.content)
+            
+            full_content = ""
+            full_reasoning = []
+            
+            for chunk in response:
+                delta = chunk.choices[0].delta if chunk.choices else None
+                if delta:
+                    if getattr(delta, "content", None):
+                        full_content += delta.content
+                    
+                    reasoning_piece = getattr(delta, "reasoning", None)
+                    if not reasoning_piece and hasattr(delta, "model_extra") and delta.model_extra:
+                        reasoning_piece = delta.model_extra.get("reasoning")
+                    if reasoning_piece:
+                        full_reasoning.append(reasoning_piece)
+            
+            assistant_message = {
+                "role": "assistant",
+                "content": full_content,
+                "reasoning_details": "".join(full_reasoning)
+            }
+
+            result = json.loads(full_content.strip())
             return result.get('correct_location')
         except Exception as e:
             print(f"      ❌ AI Correction Error: {e}")
@@ -1858,12 +1910,39 @@ OR
 """
         try:
             response = self.brain_client.chat.completions.create(
-                model="deepseek/deepseek-chat-v3-0324",
+                model="deepseek/deepseek-v4-flash",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.0,
-                response_format={"type": "json_object"}
+                response_format={"type": "json_object"},
+                stream=True
             )
-            return json.loads(response.choices[0].message.content)
+            
+            full_content = ""
+            full_reasoning = []
+            
+            for chunk in response:
+                delta = chunk.choices[0].delta if chunk.choices else None
+                if delta:
+                    if getattr(delta, "content", None):
+                        full_content += delta.content
+                    
+                    reasoning_piece = getattr(delta, "reasoning", None)
+                    if not reasoning_piece and hasattr(delta, "model_extra") and delta.model_extra:
+                        reasoning_piece = delta.model_extra.get("reasoning")
+                    if reasoning_piece:
+                        full_reasoning.append(reasoning_piece)
+            
+            assistant_message = {
+                "role": "assistant",
+                "content": full_content,
+                "reasoning_details": "".join(full_reasoning)
+            }
+            
+            content = full_content.strip()
+            if "```json" in content:
+                content = content.split("```json")[1].split("```")[0].strip()
+            
+            return json.loads(content)
         except Exception as e:
             print(f"      ❌ AI Rerank Error: {e}")
             return None
@@ -2200,7 +2279,7 @@ OR
 
 def _step_5_the_strategist(client_or, final_report):
     """
-    THE STRATEGIST (DeepSeek-V3.2 via OpenRouter)
+    THE STRATEGIST (DeepSeek-V4 via OpenRouter)
     Generates high-level strategic insight in EN and IT.
     """
     print("   ♟️  Step 5: The Strategist is assessing impact (Dual Lang)...")
@@ -2246,16 +2325,37 @@ def _step_5_the_strategist(client_or, final_report):
 
     try:
         response = client_or.chat.completions.create(
-            model="deepseek/deepseek-chat",  # [FIX] Nome modello corretto (v3 standard)
+            model="deepseek/deepseek-v4-flash",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": dossier}
             ],
-            temperature=0.1,
-            max_tokens=100
+            temperature=0.0,
+            stream=True
         )
 
-        insight_raw = response.choices[0].message.content.strip()
+        full_content = ""
+        full_reasoning = []
+        
+        for chunk in response:
+            delta = chunk.choices[0].delta if chunk.choices else None
+            if delta:
+                if getattr(delta, "content", None):
+                    full_content += delta.content
+                
+                reasoning_piece = getattr(delta, "reasoning", None)
+                if not reasoning_piece and hasattr(delta, "model_extra") and delta.model_extra:
+                    reasoning_piece = delta.model_extra.get("reasoning")
+                if reasoning_piece:
+                    full_reasoning.append(reasoning_piece)
+
+        assistant_message = {
+            "role": "assistant",
+            "content": full_content,
+            "reasoning_details": "".join(full_reasoning)
+        }
+
+        insight_raw = full_content.strip()
         print(f"      🧠 Strategist Output:\n{insight_raw}")
         return insight_raw
 

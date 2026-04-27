@@ -3692,20 +3692,15 @@
         const cleanedVal = stripHtml(txt);
         const cleanTxt = (!cleanedVal || cleanedVal === 'N/A') ? 'Geolocation point' : cleanedVal;
         
-        // Simple location extraction: everything after the first comma is usually the zone
+        // Fallback title formatting
+        let finalTitle = cleanTxt;
+        if (finalTitle.length > 80) finalTitle = finalTitle.substring(0, 80) + '...';
         let location = '';
-        if (cleanTxt.includes(',')) {
-            const parts = cleanTxt.split(',');
-            if (parts.length > 1) {
-                location = parts.slice(1).join(',').trim();
-            }
-        }
-
         engagementItems.push({
           source: 'OWL',
           sortDate: parseTimelineDate(dateTxt),
           dateText: dateTxt,
-          title: cleanTxt,
+          title: finalTitle,
           location: location,
           url,
           seq: idx,
