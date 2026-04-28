@@ -3661,8 +3661,32 @@
     const owl = unit.owl_meta || unit;
     
     const listEl = document.getElementById('udEventsList');
+    const eventsShellEl = document.getElementById('udEventsShell');
     if (listEl) listEl.innerHTML = '';
     const engagementItems = [];
+    const updateEngagementScrollCues = () => {
+      if (!listEl || !eventsShellEl) return;
+      const overflow = listEl.scrollHeight > (listEl.clientHeight + 2);
+      const atTop = listEl.scrollTop <= 1;
+      const atBottom = (listEl.scrollTop + listEl.clientHeight) >= (listEl.scrollHeight - 1);
+      eventsShellEl.classList.toggle('show-top-cue', overflow && !atTop);
+      eventsShellEl.classList.toggle('show-bottom-cue', overflow && !atBottom);
+    };
+    const syncEngagementViewport = () => {
+      const modal = document.getElementById('unitModal');
+      const leftCol = modal ? modal.querySelector('.ud-left-col') : null;
+      const rightCol = modal ? modal.querySelector('.ud-right-col') : null;
+      const rightPanel = rightCol ? rightCol.querySelector('.ud-panel') : null;
+      if (leftCol && rightPanel) {
+        const leftHeight = leftCol.getBoundingClientRect().height;
+        if (leftHeight > 0) {
+          const px = `${Math.floor(leftHeight)}px`;
+          rightPanel.style.height = px;
+          rightPanel.style.maxHeight = px;
+        }
+      }
+      updateEngagementScrollCues();
+    };
 
     const parseTimelineDate = (raw) => {
       if (!raw) return null;
@@ -3881,6 +3905,18 @@
         });
       }
     }
+    if (listEl && !listEl.dataset.scrollCueBound) {
+      listEl.addEventListener('scroll', updateEngagementScrollCues, { passive: true });
+      listEl.dataset.scrollCueBound = '1';
+    }
+    if (window.__unitModalResizeHandler) {
+      window.removeEventListener('resize', window.__unitModalResizeHandler);
+    }
+    window.__unitModalResizeHandler = () => syncEngagementViewport();
+    window.addEventListener('resize', window.__unitModalResizeHandler);
+    requestAnimationFrame(syncEngagementViewport);
+    setTimeout(syncEngagementViewport, 90);
+
     // === VERIFIED CASUALTIES (UALosses enrichment) ===
     const casualtiesPanel = document.getElementById('udCasualtiesPanel');
     const casualtiesList = document.getElementById('udCasualtiesList');
@@ -3935,6 +3971,7 @@
     if (typeof window.renderUnitDossierAnalytics === 'function') {
       window.renderUnitDossierAnalytics(unit);
     }
+    setTimeout(syncEngagementViewport, 140);
   };
 
   function renderSparkline(events) {
