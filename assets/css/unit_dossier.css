@@ -9,6 +9,7 @@
   gap: 20px;
   padding: 15px;
   min-height: 400px;
+  align-items: stretch;
 }
 
 .ud-left-col {
@@ -22,8 +23,80 @@
 .ud-right-col {
   flex: 0.8;
   min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   border-left: 1px solid #1e293b;
   padding-left: 20px;
+}
+
+.ud-right-col .ud-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.ud-stat-row.ud-stat-row-expandable {
+  align-items: flex-start;
+}
+
+.ud-stat-value.ud-stat-expandable {
+  max-width: 68%;
+  overflow: visible;
+  white-space: normal;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.ud-stat-value .ud-expandable-content {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.ud-stat-value.ud-stat-expandable.is-expanded .ud-expandable-content {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+  white-space: normal;
+}
+
+.ud-expand-toggle {
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: 10px;
+  padding: 1px 8px;
+  line-height: 1.6;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.ud-expand-toggle:hover {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: rgba(245, 158, 11, 0.55);
+  color: #f8fafc;
+}
+
+.ud-inline-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(245, 158, 11, 0.6);
+  text-underline-offset: 2px;
+  word-break: break-all;
+}
+
+.ud-inline-link:hover {
+  color: #f8fafc;
+  text-decoration-color: #f59e0b;
 }
 
 /* --- DOSSIER ANALYTICS SECTION --- */

@@ -751,6 +751,7 @@
     grid-template-columns: 1fr 1.2fr;
     gap: 24px;
     padding: 24px;
+    align-items: stretch;
 }
 
 /* Panels */
@@ -837,9 +838,25 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 320px;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
     overflow-y: auto;
+    overflow-x: hidden;
     padding-right: 5px;
+}
+
+.ud-inline-link {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: rgba(245, 158, 11, 0.6);
+    text-underline-offset: 2px;
+    word-break: break-all;
+}
+
+.ud-inline-link:hover {
+    color: #f8fafc;
+    text-decoration-color: #f59e0b;
 }
 
 /* Custom Scrollbar */
@@ -958,4 +975,4 @@
     color: white;
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.2);
-}
+}

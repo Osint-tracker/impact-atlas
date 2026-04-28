@@ -3416,6 +3416,84 @@
       el.innerHTML = String(raw);
       return (el.textContent || el.innerText || 'N/A').trim().replace(/\s+/g, ' ');
     };
+    const URL_TOKEN_REGEX = /(https?:\/\/[^\s]+|(?:t\.me\/[^\s]+))/i;
+    const escapeHtml = (raw) => {
+      return String(raw || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    };
+    const linkifyText = (raw) => {
+      const cleaned = stripHtml(raw);
+      if (!cleaned || cleaned === 'N/A') return '--';
+      const urlRegex = /(https?:\/\/[^\s]+|(?:t\.me\/[^\s]+))/gi;
+      let html = '';
+      let lastIndex = 0;
+      let match;
+      while ((match = urlRegex.exec(cleaned)) !== null) {
+        const start = match.index;
+        const end = start + match[0].length;
+        const token = match[0];
+        const href = token.startsWith('http') ? token : `https://${token}`;
+        html += escapeHtml(cleaned.slice(lastIndex, start));
+        html += `<a class="ud-inline-link" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(token)}</a>`;
+        lastIndex = end;
+      }
+      html += escapeHtml(cleaned.slice(lastIndex));
+      return html || escapeHtml(cleaned);
+    };
+    const resetExpandableField = (el) => {
+      if (!el) return;
+      el.classList.remove('ud-stat-expandable', 'is-expanded');
+      const row = el.closest('.ud-stat-row');
+      if (row) row.classList.remove('ud-stat-row-expandable', 'is-expanded');
+    };
+    const renderStatValue = (el, rawValue, opts = {}) => {
+      if (!el) return;
+      const placeholder = opts.placeholder || 'N/A';
+      const enableLinkify = opts.enableLinkify !== false;
+      const enableExpandOnLink = opts.enableExpandOnLink !== false;
+      const cleaned = stripHtml(rawValue);
+      resetExpandableField(el);
+
+      if (!cleaned || cleaned === 'N/A' || cleaned === '--') {
+        el.textContent = placeholder;
+        return;
+      }
+
+      const hasLink = URL_TOKEN_REGEX.test(cleaned);
+      if (enableLinkify && hasLink) {
+        const bodyHtml = linkifyText(cleaned);
+        if (enableExpandOnLink) {
+          el.classList.add('ud-stat-expandable');
+          const row = el.closest('.ud-stat-row');
+          if (row) row.classList.add('ud-stat-row-expandable');
+          el.innerHTML = `
+            <span class="ud-expandable-content">${bodyHtml}</span>
+            <button type="button" class="ud-expand-toggle" aria-expanded="false">More</button>
+          `;
+          const btn = el.querySelector('.ud-expand-toggle');
+          if (btn) {
+            btn.onclick = (ev) => {
+              ev.preventDefault();
+              ev.stopPropagation();
+              const expanded = el.classList.toggle('is-expanded');
+              const parentRow = el.closest('.ud-stat-row');
+              if (parentRow) parentRow.classList.toggle('is-expanded', expanded);
+              btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+              btn.textContent = expanded ? 'Less' : 'More';
+            };
+          }
+        } else {
+          el.innerHTML = bodyHtml;
+        }
+        return;
+      }
+
+      el.textContent = cleaned;
+    };
 
     try {
       const modal = document.getElementById('unitModal');
@@ -3472,7 +3550,7 @@
       if (elBranch) elBranch.innerText = safeText(unit.branch);
 
       const elGarrison = document.getElementById('udGarrison');
-      if (elGarrison) elGarrison.innerText = stripHtml(unit.garrison);
+      renderStatValue(elGarrison, unit.garrison, { placeholder: 'N/A' });
 
       const elStatus = document.getElementById('udStatus');
       if (elStatus) {
@@ -3482,13 +3560,13 @@
 
       // New Fields (all HTML-stripped)
       const elCmd = document.getElementById('udCommander');
-      if (elCmd) elCmd.innerText = stripHtml(unit.commander);
+      renderStatValue(elCmd, unit.commander, { placeholder: 'N/A' });
 
       const elSup = document.getElementById('udSuperior');
-      if (elSup) elSup.innerText = stripHtml(unit.superior);
+      renderStatValue(elSup, unit.superior, { placeholder: 'N/A' });
 
       const elDist = document.getElementById('udDistrict');
-      if (elDist) elDist.innerText = stripHtml(unit.district);
+      renderStatValue(elDist, unit.district, { placeholder: 'N/A' });
 
       console.log("Ã¢Å“â€¦ Unit Modal Content Population Complete.");
 
@@ -3540,11 +3618,16 @@
     const lat = unit.last_seen_lat || unit.lat;
     const lon = unit.last_seen_lon || unit.lon;
     const elLoc = document.getElementById('udLastLocation');
+    const explicitLastLocation = unit.last_known_location || unit.last_location || '';
     if (elLoc) {
-      if (lat && lon) {
-        elLoc.innerText = `${parseFloat(lat).toFixed(4)}, ${parseFloat(lon).toFixed(4)}`;
+      if (explicitLastLocation) {
+        renderStatValue(elLoc, explicitLastLocation, { placeholder: '--' });
+      } else if (lat && lon) {
+        resetExpandableField(elLoc);
+        elLoc.textContent = `${parseFloat(lat).toFixed(4)}, ${parseFloat(lon).toFixed(4)}`;
       } else {
-        elLoc.innerText = '--';
+        resetExpandableField(elLoc);
+        elLoc.textContent = '--';
       }
     }
 
@@ -3648,13 +3731,13 @@
       // 2. Military Unit Number
       if (owl.military_unit_number) {
         if (muRow) muRow.style.display = 'flex';
-        document.getElementById('udMilUnit').innerText = stripHtml(owl.military_unit_number);
+        renderStatValue(document.getElementById('udMilUnit'), owl.military_unit_number, { placeholder: '--' });
       }
       
       // 2b. Last Known Location (Inject into Operational Profile)
       if (owl.last_known_location) {
           const elLastLoc = document.getElementById('udLastLocation');
-          if (elLastLoc) elLastLoc.innerHTML = stripHtml(owl.last_known_location);
+          renderStatValue(elLastLoc, owl.last_known_location, { placeholder: '--' });
       }
 
       // 3. Extracted Equipment/Base from old description
@@ -3668,11 +3751,11 @@
           
           if (equipMatch && equipMatch[1].trim().length > 2) {
             if (eqRow) eqRow.style.display = 'flex';
-            document.getElementById('udEquipment').innerText = equipMatch[1].trim();
+            renderStatValue(document.getElementById('udEquipment'), equipMatch[1].trim(), { placeholder: '--' });
           }
           if (basedMatch && basedMatch[1].trim().length > 2) {
             if (baseRow) baseRow.style.display = 'flex';
-            document.getElementById('udBase').innerText = basedMatch[1].trim();
+            renderStatValue(document.getElementById('udBase'), basedMatch[1].trim(), { placeholder: '--' });
           }
       }
 
