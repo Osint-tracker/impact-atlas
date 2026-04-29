@@ -1028,13 +1028,7 @@
           onclick="openModal('${id}')"> 
           <i class="fas fa-folder-open"></i> OPEN DOSSIER
         </button>
-        <a
-          class="custom-dossier-btn report-error-btn"
-          href="${reportUrl}"
-          target="_blank"
-          rel="noopener noreferrer">
-          <i class="fa-solid fa-triangle-exclamation"></i> SEGNALA ERRORE
-        </a>
+        
       </div>
       
       ${sourceFooter}
@@ -1811,11 +1805,11 @@
       const withheld = metadata && Number(metadata.opsec_withheld_count || 0) > 0
         ? ` | OPSEC withheld: ${metadata.opsec_withheld_count}`
         : '';
-      publicBadge.textContent = `Ultimo aggiornamento dati: ${label}${withheld}`;
+      publicBadge.textContent = `Last data update: ${label}${withheld}`;
     }
     if (archiveBtn) {
       archiveBtn.disabled = !!isArchive;
-      archiveBtn.textContent = isArchive ? 'Archivio completo caricato' : 'Carica archivio completo';
+      archiveBtn.textContent = isArchive ? 'Full archive loaded' : 'Load full archive';
       archiveBtn.classList.toggle('is-loaded', !!isArchive);
     }
   }
@@ -4059,6 +4053,20 @@
 
     // --- 1. CONTEXT (Left Column) ---
     document.getElementById('modalTitle').innerText = eventData.title || "Title not available";
+
+    const reportErrorLink = document.getElementById('modalReportError');
+    if (reportErrorLink) {
+      let primaryUrl = '';
+      try {
+        if (eventData.sources_list) {
+          let sources = typeof eventData.sources_list === 'string' ? JSON.parse(eventData.sources_list) : eventData.sources_list;
+          if (sources.length > 0) {
+            primaryUrl = typeof sources[0] === 'object' ? (sources[0].url || sources[0].link || '') : sources[0];
+          }
+        }
+      } catch (e) {}
+      reportErrorLink.href = (typeof buildReportIssueUrl === 'function') ? buildReportIssueUrl(eventData.id || eventData.event_id || '', eventData.title || '', primaryUrl) : "https://github.com/Osint-tracker/impact-atlas/issues/new";
+    }
     document.getElementById('modalDate').innerText = eventData.date || "Unknown Date";
 
     // Type Tag

@@ -41,7 +41,6 @@ CHANNELS_METADATA = {
     # UA Sources
     'deepstatemap': {'bias': 'PRO_UA', 'reliability': 0.85, 'type': 'UA_MILITARY'},
     'DeepStateUA': {'bias': 'PRO_UA', 'reliability': 0.85, 'type': 'UA_MILITARY'},
-    'CinCA_AFU': {'bias': 'PRO_UA', 'reliability': 0.80, 'type': 'UA_MILITARY'},
     'MAKS23_NAFO': {'bias': 'PRO_UA', 'reliability': 0.75, 'type': 'UA_ACTIVIST'},
     'Tatarigami_UA': {'bias': 'PRO_UA', 'reliability': 0.80, 'type': 'UA_ANALYST'},
     'ukrliberation': {'bias': 'PRO_UA', 'reliability': 0.65, 'type': 'UA_NEWS'},
@@ -52,6 +51,10 @@ CHANNELS_METADATA = {
     'magyarbirds414': {'bias': 'PRO_UA', 'reliability': 0.90, 'type': 'UA_MILITARY'},
     'ssternenko': {'bias': 'PRO_UA', 'reliability': 0.90, 'type': 'UA_MILITARY'},
     'insiderUKR': {'bias': 'PRO_UA', 'reliability': 0.90, 'type': 'UA_MILITARY'},
+    'serhii_flash': {'bias': 'PRO_UA', 'reliability': 0.90, 'type': 'UA_MILITARY'},
+    'AMK_Mapping': {'bias': 'PRO_UA', 'reliability': 0.90, 'type': 'UA_MILITARY'},
+    'bahshiddemon': {'bias': 'PRO_UA', 'reliability': 0.90, 'type': 'UA_MILITARY'},
+
 
     # RU Sources
     'rybar': {'bias': 'PRO_RU', 'reliability': 0.70, 'type': 'RU_MILITARY'},
@@ -60,23 +63,25 @@ CHANNELS_METADATA = {
     'lost_armour': {'bias': 'PRO_RU', 'reliability': 0.60, 'type': 'RU_ANALYST'},
     'grey_zone': {'bias': 'PRO_RU', 'reliability': 0.60, 'type': 'WAGNER'},
     'voenkorKotenok': {'bias': 'PRO_RU', 'reliability': 0.65, 'type': 'REPORTER'},
+    'belarusian_silovik': {'bias': 'PRO_RU', 'reliability': 0.65, 'type': 'MILITARY_OFFICIAL'},
+
 
     # Neutral/Western/OSINT
     'GeoConfirmed': {'bias': 'NEUTRAL', 'reliability': 0.90, 'type': 'OSINT'},
     'Osinttechnical': {'bias': 'NEUTRAL', 'reliability': 0.88, 'type': 'OSINT'},
     'WarMonitors': {'bias': 'NEUTRAL', 'reliability': 0.85, 'type': 'AGGREGATOR'},
-    'DefenceHQ': {'bias': 'WESTERN_MEDIA', 'reliability': 0.95, 'type': 'OFFICIAL'},
     'noel_reports': {'bias': 'WESTERN_MEDIA', 'reliability': 0.75, 'type': 'JOURNALIST'},
     'ChrisO_wiki': {'bias': 'WESTERN_MEDIA', 'reliability': 0.80, 'type': 'ANALYST'},
     'Majakovsk73': {'bias': 'ANALYST', 'reliability': 0.85, 'type': 'BLOGGER'},
     'parabellumcommunity': {'bias': 'ANALYST', 'reliability': 0.80, 'type': 'BLOGGER'},
     'UkraineWarReports': {'bias': 'PRO_UA', 'reliability': 0.70, 'type': 'UA_NEWS'},
     'myro_shnykov': {'bias': 'PRO_UA', 'reliability': 0.75, 'type': 'UA_NEWS'},
+    'spravdi': {'bias': 'PRO_UA', 'reliability': 0.70, 'type': 'UA_MILITARY'},
+
 
     # NEW_CHANNELS
     'supernova_plus': {'bias': 'PRO_UA', 'reliability': 0.85, 'type': 'AGGREGATOR'},
     'dva_majors': {'bias': 'PRO_RU', 'reliability': 0.45, 'type': 'MILBLOGGER'},
-    'sternenko': {'bias': 'PRO_UA', 'reliability': 0.70, 'type': 'MILBLOGGER'},
     'astrapress': {'bias': 'NEUTRAL', 'reliability': 0.90, 'type': 'OSINT'},
     'sashakots': {'bias': 'PRO_RU', 'reliability': 0.30, 'type': 'PROPAGANDA'},
     'ab3army': {'bias': 'PRO_UA', 'reliability': 0.95, 'type': 'MILITARY_OFFICIAL'},

@@ -3300,11 +3300,11 @@
       <div class="public-safety-strip" role="status" aria-live="polite">
         <div class="ai-disclaimer">
           <strong>&#9888; AI Disclaimer:</strong>
-          I dati sono aggregati ed elaborati da Intelligenze Artificiali in modo automatizzato. Possono contenere allucinazioni, errori di classificazione o bias legati alle fonti.
+          Data is aggregated and processed automatically by AI models. It may contain hallucinations, misclassifications, or source-related bias.
         </div>
         <div class="data-public-controls">
-          <span id="dataUpdateBadge" class="data-update-badge">Ultimo aggiornamento dati: Loading...</span>
-          <button id="loadArchiveBtn" type="button" onclick="loadFullEventsArchive()">Carica archivio completo</button>
+          <span id="dataUpdateBadge" class="data-update-badge">Last data update: Loading...</span>
+          <button id="loadArchiveBtn" type="button" onclick="loadFullEventsArchive()">Load full archive</button>
           <a href="legal.html" target="_blank" rel="noopener noreferrer">Legal / TOS</a>
         </div>
       </div>
@@ -3863,7 +3863,10 @@
             <!-- LEFT COLUMN: CONTEXT -->
             <div class="dossier-left">
               <div class="dossier-header-group">
-                <h3 id="modalTitle">Event Title</h3>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                  <h3 id="modalTitle">Event Title</h3>
+                  <a id="modalReportError" href="#" target="_blank" rel="noopener noreferrer" style="font-size:0.65rem; color:#ef4444; text-decoration:none; text-transform:uppercase; letter-spacing:0.5px; border:1px solid rgba(239, 68, 68, 0.4); padding:3px 8px; border-radius:4px; opacity:0.8; transition:all 0.2s; background:rgba(239, 68, 68, 0.05);" onmouseover="this.style.opacity='1'; this.style.background='rgba(239, 68, 68, 0.15)'; this.style.borderColor='#ef4444'" onmouseout="this.style.opacity='0.8'; this.style.background='rgba(239, 68, 68, 0.05)'; this.style.borderColor='rgba(239, 68, 68, 0.4)'">Report Error</a>
+                </div>
                 <div class="dossier-meta-row">
                   <span id="modalDate">YYYY-MM-DD</span>
                   <span class="dossier-separator">|</span>
@@ -5037,25 +5040,25 @@
             <i class="fa-solid fa-xmark"></i>
           </button>
           <div class="tutorial-kicker">Impact Atlas</div>
-          <h2 id="tutorialTitle">Guida rapida</h2>
+          <h2 id="tutorialTitle">Quick Start Guide</h2>
           <div class="tutorial-grid">
             <section>
               <i class="fa-solid fa-map-location-dot"></i>
-              <h3>Mappa</h3>
-              <p>Visualizza eventi aggregati, frontline e layer OSINT. Apri un marker per dossier, fonte e segnalazione errore.</p>
+              <h3>Map View</h3>
+              <p>Visualize aggregated events, frontlines, and OSINT layers. Open a marker to view its dossier, source, and report errors.</p>
             </section>
             <section>
               <i class="fa-solid fa-filter"></i>
-              <h3>Filtri</h3>
-              <p>Usa settore, finestra temporale, affidabilita e categorie per ridurre il rumore informativo.</p>
+              <h3>Filters</h3>
+              <p>Use sector, timeframe, reliability, and category filters to reduce informational noise.</p>
             </section>
             <section>
               <i class="fa-solid fa-timeline"></i>
               <h3>Timeline</h3>
-              <p>Il caricamento iniziale mostra gli ultimi 7 giorni. L'archivio completo viene scaricato solo su richiesta.</p>
+              <p>Initial load displays the last 7 days. The complete archive is downloaded only upon request.</p>
             </section>
           </div>
-          <button class="tutorial-primary" type="button" onclick="dismissImpactAtlasTutorial()">Ho capito</button>
+          <button class="tutorial-primary" type="button" onclick="dismissImpactAtlasTutorial()">Understood</button>
         </div>
       </div>
 

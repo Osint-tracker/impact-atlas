@@ -2225,10 +2225,10 @@ OR
         Your job is to rewrite raw, biased war reports into NEUTRAL, FACTUAL database entries.
 
         GDPR / OPSEC PII RULES (HIGHEST PRIORITY):
-        - Do NOT output names/surnames of civilians, prisoners, individual soldiers, commanders, casualties, detainees, or license plates.
+        - Do NOT output names/surnames of civilians, prisoners, individual soldiers, commanders, casualties, detainees, or license plates, UNLESS of famous RU or UA generals (i.e. Putin, Zelenskyi, Shoigu, Gerasimov, Zaluzhnyi, Syrskyi) or Leaders. APPLY this restriction only to PII from non-high ranking soldiers or civilians.
         - Replace personal identifiers with aggregate roles only: "civilian", "military personnel", "commander", "unit personnel", "vehicle", or "civilian vehicle".
-        - Military unit names are allowed only when they identify formations, not individual people.
-        - If raw text contains personal details, omit them completely from title and description.
+        - Military unit names are allowed only when they identify formations, not individual people, UNLESS high-ranking military personnell or Leaders.
+        - If raw text contains personal details, omit them completely from title and description, UNLESS high-ranking military personnell or Leaders.
         - Deterministic downstream redaction is only a fallback; your output must already be sanitized.
 
         INPUT CONTEXT (Raw Telegram Text):
@@ -2238,7 +2238,7 @@ OR
         - Aggressor Side: {aggressor}
         - Target Side: {target}
 
-        ⚠️ "DE-BIASING" RULES (STRICT):
+        "DE-BIASING" RULES (STRICT):
         1. **SOURCE BIAS REMOVAL:** The source text is BIASED (e.g., Ukrainian sources call Russians "The Enemy", "Orcs", "Occupiers").
            - YOU MUST REPLACE "The Enemy" with the specific army name (e.g., "Russian Forces").
            - YOU MUST REPLACE "Our troops" with "Ukrainian Forces".
