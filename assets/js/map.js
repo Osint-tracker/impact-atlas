@@ -3466,8 +3466,15 @@
     if (e && e.target.id !== 'unitModal' && !e.target.classList.contains('close-modal')) {
       return;
     }
-    const modal = document.getElementById('unitModal');
     if (modal) modal.style.display = 'none';
+  };
+
+  window.openUnitModalFromId = function (unitId) {
+    if (!window.orbatData || !unitId) return;
+    const unit = window.orbatData.find(u => u.unit_id === unitId);
+    if (unit) {
+      window.openUnitModal(unit);
+    }
   };
 
   window.openUnitModal = function (unit) {
@@ -4099,26 +4106,46 @@
         unitsList.innerHTML = units.map(u => {
           const isUA = u.faction === 'UA';
           const isRU = u.faction === 'RU' || u.faction === 'RU_PROXY' || u.faction === 'RU_PMC';
-          const bgColor = isUA ? 'rgba(59, 130, 246, 0.2)' : (isRU ? 'rgba(239, 68, 68, 0.2)' : 'rgba(100, 116, 139, 0.2)');
-          const borderColor = isUA ? '#3b82f6' : (isRU ? '#ef4444' : '#64748b');
-          const flag = isUA ? '🇺🇦' : (isRU ? '🇷🇺' : '🏳️');
+          const accentColor = isUA ? '#3b82f6' : (isRU ? '#ef4444' : '#64748b');
+          const unitName = u.display_name || u.unit_name || u.unit_id || "Unknown Unit";
+          const unitLinkAttr = u.unit_id ? `onclick="window.openUnitModalFromId('${u.unit_id}')" title="Open Unit Dossier"` : '';
+          const cursorStyle = u.unit_id ? 'cursor: pointer;' : '';
 
           return `
-            <div style="
+            <div ${unitLinkAttr} style="
               display: inline-flex;
               align-items: center;
-              gap: 6px;
-              background: ${bgColor};
-              border: 1px solid ${borderColor};
-              padding: 4px 8px;
+              background: rgba(15, 23, 42, 0.6);
+              border: 1px solid rgba(51, 65, 85, 0.6);
+              border-left: 3px solid ${accentColor};
+              padding: 6px 12px;
               border-radius: 4px;
-              font-size: 0.75rem;
-              color: #f1f5f9;
               font-family: 'JetBrains Mono', monospace;
-            ">
-              <span style="font-size: 0.9rem;">${flag}</span>
-              <span style="font-weight: 600;">${u.display_name || u.unit_name || u.unit_id}</span>
-              <span style="opacity: 0.6; font-size: 0.7rem;">${u.status || 'ACTIVE'}</span>
+              gap: 12px;
+              min-width: 180px;
+              ${cursorStyle}
+            " class="tactical-unit-card">
+              <div style="display: flex; flex-direction: column;">
+                <span style="color: #64748b; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;">
+                  ${isUA ? 'UA FORCES' : (isRU ? 'RU FORCES' : 'UNKNOWN')}
+                </span>
+                <span style="color: #f8fafc; font-size: 0.85rem; font-weight: 600; white-space: nowrap;">
+                  ${unitName}
+                </span>
+              </div>
+              <div style="margin-left: auto;">
+                <span style="
+                  background: rgba(245, 158, 11, 0.15);
+                  color: #f59e0b;
+                  border: 1px solid rgba(245, 158, 11, 0.4);
+                  padding: 2px 6px;
+                  border-radius: 3px;
+                  font-size: 0.6rem;
+                  font-weight: 700;
+                  letter-spacing: 0.5px;
+                ">ENGAGED</span>
+              </div>
+            </div>
           `;
         }).join('');
       } else {

@@ -828,6 +828,111 @@ class SuperSquadAgent:
             return id_matches[0]
         
         return None
+    def _normalize_units_ai(self, raw_units, context_text):
+        """
+        Two-Step Hybrid Normalization:
+        1. Local candidate search (Regex/Fuzzy)
+        2. AI Disambiguation via minimax-m2.5:free
+        """
+        if not raw_units:
+            return []
+
+        import re
+        import difflib
+        normalized_results = []
+        
+        for unit in raw_units:
+            raw_name = unit.get('raw_name', '')
+            faction = unit.get('faction', 'UNK')
+            if not raw_name: continue
+
+            # 1. Local Candidate Search
+            numbers = re.findall(r'\d+', raw_name)
+            candidates = []
+            faction_prefix = faction.upper() + '_' if faction in ['UKR', 'RUS'] else ''
+            
+            # Search by numbers
+            if numbers:
+                for num in numbers:
+                    for key, uid in self.orbat_reverse_lookup.items():
+                        if num in key and (not faction_prefix or uid.startswith(faction_prefix)):
+                            candidates.append({"name": key, "id": uid})
+            
+            # If no number match or too many, try fuzzy as well
+            keys = [k for k, v in self.orbat_reverse_lookup.items() if not faction_prefix or v.startswith(faction_prefix)]
+            fuzzy_matches = difflib.get_close_matches(raw_name.lower(), keys, n=5, cutoff=0.6)
+            for m in fuzzy_matches:
+                candidates.append({"name": m, "id": self.orbat_reverse_lookup[m]})
+
+            # De-duplicate candidates
+            unique_candidates = []
+            seen_ids = set()
+            for c in candidates:
+                if c['id'] not in seen_ids:
+                    unique_candidates.append(c)
+                    seen_ids.add(c['id'])
+            
+            unique_candidates = unique_candidates[:10] # Token safety
+
+            # 2. AI Disambiguation
+            if not unique_candidates:
+                normalized_results.append({
+                    "unit_id": None,
+                    "unit_name": raw_name,
+                    "faction": faction,
+                    "status": "ENGAGED"
+                })
+                continue
+
+            try:
+                candidate_list_str = "\n".join([f"- {c['name']} (ID: {c['id']})" for c in unique_candidates])
+                prompt = f"""
+                You are a Military Intelligence Analyst.
+                RAW TEXT CONTEXT: "{context_text[:2000]}"
+                EXTRACTED UNIT NAME: "{raw_name}"
+                
+                POSSIBLE ORBAT MATCHES:
+                {candidate_list_str}
+                
+                TASK:
+                Pick the EXACT match from the ORBAT list that corresponds to the extracted unit based on context.
+                If none match perfectly, pick the closest logical one or return 'NULL'.
+                Return ONLY the unit ID.
+                """
+                
+                response = self.brain_client.chat.completions.create(
+                    model="minimax/minimax-m2.5:free",
+                    messages=[
+                        {"role": "system", "content": "Return ONLY the canonical unit ID or 'NULL'."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.0
+                )
+                
+                final_id = response.choices[0].message.content.strip().upper()
+                if "NULL" in final_id or final_id not in self.orbat_whitelist:
+                    final_id = None
+
+                matched_name = raw_name
+                if final_id:
+                    for c in unique_candidates:
+                        if c['id'] == final_id:
+                            matched_name = c['name']
+                            break
+
+                normalized_results.append({
+                    "unit_id": final_id,
+                    "unit_name": matched_name.upper(),
+                    "faction": faction,
+                    "status": "ENGAGED"
+                })
+                print(f"      🔗 AI Normalized: '{raw_name}' -> {final_id or 'UNKNOWN'}")
+                
+            except Exception as e:
+                print(f"   ⚠️ Normalization AI Error: {e}")
+                normalized_results.append({"unit_id": None, "unit_name": raw_name, "faction": faction, "status": "ENGAGED"})
+
+        return normalized_results
 
     # =========================================================================
     # STEP 0: THE BOUNCER v2.0 (Hybrid: Regex + AI)
@@ -1093,28 +1198,29 @@ RAW TEXT:
         - IF tone is highly emotional/propagandistic -> SUBTRACT 10.
         - IF "unconfirmed" or "rumors" is explicitly stated -> SET SCORE TO MAX 30.
 
-        OBJECTIVES:
-        1. Calculate Reliability based exclusively on the algorithm above.
-        2. Hallucination Check & Strategic Analysis.
-        3. Bias Estimation (-10 to +10).
+**PROTOCOL 5: UNIT EXTRACTION (CRITICAL FALLBACK)**
+    - If the raw text mentions specific military units (e.g. "214th Assault Battalion", "82nd Airborne", "Kraken") that were NOT properly captured by The Soldier, YOU MUST extract them.
+    - Output them as an array of objects containing `raw_name` and `faction` (UKR/RUS/UNK).
 
 **OUTPUT SCHEMA (JSON ONLY)**
 {{
     "verification_status": boolean,
     "rejection_reason": "null or string (e.g. 'Fundraising')",
     "correction_notes": "String explaining corrections (e.g. 'Fixed wrong Actor from UKR to RUS')",
+    "verified_units": [
+        {{ "raw_name": "String (Exactly as written in text)", "faction": "UKR | RUS | UNK" }}
+    ],
     "verified_data": {{
         "actor": "RUS | UKR | UNK",
         "reliability_score": int (0-100, based on calculation),
-            "reliability_reasoning": "string (Explain the math: 'Base 30 + 20 Visual + 10 Specificity')",
-            "is_hallucination": boolean,
-            "correction_notes": "string",
-            "ai_bias_estimate": int (-10 to 10),
-            "location_precision_category": "string (EXACT_COORDINATES, CITY_LEVEL, REGION_LEVEL)",
-            "strategic_value_assessment": "string",
-            "event_category": "string"
+        "reliability_reasoning": "string (Explain the math: 'Base 30 + 20 Visual + 10 Specificity')",
+        "is_hallucination": boolean,
+        "correction_notes": "string",
+        "ai_bias_estimate": int (-10 to 10),
+        "location_precision_category": "string (EXACT_COORDINATES, CITY_LEVEL, REGION_LEVEL)",
+        "strategic_value_assessment": "string",
+        "event_category": "string",
         "implicit_signal": "Tactical summary",
-        "location_precision_category": "ENUM from Protocol 4",
         "corrected_coordinates": {{ "lat": float, "lon": float }} // Only if you found better ones
     }}
 }}
@@ -3762,6 +3868,36 @@ def main():
             if brain_review.get("correction_notes"):
                 print(
                     f"   🔧 Correction Applied: {brain_review.get('correction_notes')}")
+
+            # --- [NUOVO] AI UNIT NORMALIZATION PIPELINE ---
+            raw_units_to_normalize = []
+            # From Soldier (if any)
+            for u in soldier_result.get('military_units_detected', []):
+                raw_units_to_normalize.append({
+                    "raw_name": u.get('unit_name') or u.get('unit_id'),
+                    "faction": u.get('faction', 'UNK')
+                })
+            # From Brain (the fallback)
+            for u in brain_review.get('verified_units', []):
+                raw_units_to_normalize.append(u)
+                
+            if raw_units_to_normalize:
+                normalized_units = agent._normalize_units_ai(raw_units_to_normalize, combined_text)
+                
+                # Update soldier_result with normalized/de-duplicated list
+                final_units = []
+                seen_ids = set()
+                for nu in normalized_units:
+                    uid = nu.get('unit_id')
+                    if uid:
+                        if uid not in seen_ids:
+                            final_units.append(nu)
+                            seen_ids.add(uid)
+                    else:
+                        # Keep it even if unnormalized if it has a name
+                        final_units.append(nu)
+                
+                soldier_result['military_units_detected'] = final_units
 
             # Recupere liste fonti dal DB
             db_urls = row['urls_list']
