@@ -2143,6 +2143,9 @@
   // TASK 1: TACTICAL TIME COMMAND (Global API)
   // ============================================
   window.setTimeWindow = function (hours) {
+    if (hours === 0 && window.loadFullEventsArchive) {
+      window.loadFullEventsArchive();
+    }
     tacticalTimeWindowHours = hours;
     const customInput = document.getElementById('ttbCustomHours');
     const isPreset = [0, 24, 48, 72].includes(hours);
