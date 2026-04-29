@@ -46,6 +46,9 @@
   let axisThermalPromise = null;
   let axisPanelMode = 'expanded';
   let axisPanelDismissedSector = '';
+  let currentEventsDataUrl = 'assets/data/events_latest.json';
+  let archiveLoaded = false;
+  window.eventsMetadata = null;
 
   // Central helper to define what is civilian
   function isCivilianEvent(e) {
@@ -935,6 +938,22 @@
     return marker;
   }
 
+  function buildReportIssueUrl(eventId, title, sourceUrl) {
+    const issueTitle = `[Data correction] ${eventId || 'event'}`;
+    const body = [
+      'Event ID: ' + (eventId || 'unknown'),
+      'Title: ' + (title || 'unknown'),
+      'Source: ' + (sourceUrl || 'not available'),
+      '',
+      'Describe the suspected error:',
+      ''
+    ].join('\n');
+    return 'https://github.com/Osint-tracker/impact-atlas/issues/new?title='
+      + encodeURIComponent(issueTitle)
+      + '&body='
+      + encodeURIComponent(body);
+  }
+
   // ==========================================
   // 1. POPUP GENERATION (Correct and with Elegant Style)
   // ==========================================
@@ -985,6 +1004,7 @@
 
     // 4. Popup HTML Construction (Elegant Style Restored)
     // Note: Button has INLINE style to ensure it is blue and beautiful as before.
+    const reportUrl = buildReportIssueUrl(id, e.title, primaryUrl);
     return `
     <div class="acled-popup" style="color:#e2e8f0; font-family: 'Inter', sans-serif; min-width: 260px;">
       
@@ -1008,6 +1028,13 @@
           onclick="openModal('${id}')"> 
           <i class="fas fa-folder-open"></i> OPEN DOSSIER
         </button>
+        <a
+          class="custom-dossier-btn report-error-btn"
+          href="${reportUrl}"
+          target="_blank"
+          rel="noopener noreferrer">
+          <i class="fa-solid fa-triangle-exclamation"></i> SEGNALA ERRORE
+        </a>
       </div>
       
       ${sourceFooter}
@@ -1763,14 +1790,59 @@
       });
   }
 
-  function loadEventsData() {
+  function formatDataTimestamp(metadata) {
+    if (!metadata) return new Date().toLocaleDateString();
+    const raw = metadata.generated_at || metadata.latest_event_date;
+    if (!raw) return new Date().toLocaleDateString();
+    const dt = new Date(raw);
+    if (!Number.isNaN(dt.getTime())) {
+      return dt.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+    }
+    return String(raw);
+  }
+
+  function updateDataStatusBadge(metadata, isArchive) {
+    const label = formatDataTimestamp(metadata);
+    const lastUpdate = document.getElementById('lastUpdate');
+    const publicBadge = document.getElementById('dataUpdateBadge');
+    const archiveBtn = document.getElementById('loadArchiveBtn');
+    if (lastUpdate) lastUpdate.innerText = label;
+    if (publicBadge) {
+      const withheld = metadata && Number(metadata.opsec_withheld_count || 0) > 0
+        ? ` | OPSEC withheld: ${metadata.opsec_withheld_count}`
+        : '';
+      publicBadge.textContent = `Ultimo aggiornamento dati: ${label}${withheld}`;
+    }
+    if (archiveBtn) {
+      archiveBtn.disabled = !!isArchive;
+      archiveBtn.textContent = isArchive ? 'Archivio completo caricato' : 'Carica archivio completo';
+      archiveBtn.classList.toggle('is-loaded', !!isArchive);
+    }
+  }
+
+  function normalizeEventsPayload(data) {
+    window.eventsMetadata = data && data.metadata ? data.metadata : null;
+    if (data && Array.isArray(data.features)) return data.features;
+    if (Array.isArray(data)) return data;
+    return [];
+  }
+
+  window.loadFullEventsArchive = function () {
+    if (archiveLoaded) return;
+    archiveLoaded = true;
+    currentEventsDataUrl = 'assets/data/events.geojson';
+    loadEventsData(true);
+  };
+
+  function loadEventsData(isArchiveLoad) {
  console.log("°¸¥ Starting event download...");
 
-    fetch('assets/data/events.geojson')
+    fetch(currentEventsDataUrl)
       .then(response => response.json())
       .then(data => {
         // 1. Raw Data
-        window.allEventsData = data.features || data;
+        window.allEventsData = normalizeEventsPayload(data);
+        updateDataStatusBadge(window.eventsMetadata, !!isArchiveLoad);
  console.log(`°¸¾ Data downloaded: ${window.allEventsData.length} raw events`);
 
         if (window.allEventsData.length === 0) {
@@ -2027,7 +2099,7 @@
 
         if (document.getElementById('eventCount')) {
           document.getElementById('eventCount').innerText = window.globalEvents.length;
-          document.getElementById('lastUpdate').innerText = new Date().toLocaleDateString();
+          updateDataStatusBadge(window.eventsMetadata, !!isArchiveLoad);
         }
 
         // Charts Init
@@ -3917,51 +3989,24 @@
     requestAnimationFrame(syncEngagementViewport);
     setTimeout(syncEngagementViewport, 90);
 
-    // === VERIFIED CASUALTIES (UALosses enrichment) ===
+    // === UALosses aggregate only: never render person-level records ===
     const casualtiesPanel = document.getElementById('udCasualtiesPanel');
     const casualtiesList = document.getElementById('udCasualtiesList');
     const casualtyBadge = document.getElementById('udCasualtyBadge');
 
- console.log('°¸©¸ CASUALTY DEBUG:', {
-      panelFound: !!casualtiesPanel,
-      listFound: !!casualtiesList,
-      hasCasualties: !!(unit.verified_casualties),
-      casualtyCount: unit.casualty_count || 0,
-      casualtiesLength: (unit.verified_casualties || []).length,
-      unitId: unit.unit_id,
-      unitName: unit.display_name,
-      faction: unit.faction
-    });
-
     if (casualtiesPanel && casualtiesList) {
-      const casualties = unit.verified_casualties || [];
-      const casualtyCount = unit.casualty_count || 0;
+      const personLevelFallback = Array.isArray(unit.verified_casualties) ? unit.verified_casualties.length : 0;
+      const casualtyCount = Number(unit.missing_count || unit.casualty_count || personLevelFallback || 0);
 
-      if (casualtyCount > 0 && casualties.length > 0) {
+      if (casualtyCount > 0) {
         casualtiesPanel.style.display = 'block';
-        casualtyBadge.innerText = casualtyCount;
-        casualtiesList.innerHTML = '';
-
-        casualties.forEach(c => {
-          const item = document.createElement('div');
-          item.style.cssText = 'display:flex; align-items:center; gap:8px; padding:6px 8px; background:rgba(239,68,68,0.06); border-radius:6px; border-left:2px solid #ef444444;';
-
-          const rankBadge = c.rank && c.rank !== 'Unknown'
-            ? `<span style="font-size:0.65rem; color:#f59e0b; background:#f59e0b22; padding:1px 5px; border-radius:3px; font-weight:600; white-space:nowrap;">${c.rank}</span>`
-            : '';
-
-          const sourceLink = c.source_url
-            ? `<a href="${c.source_url}" target="_blank" rel="noopener" style="color:#64748b; font-size:0.7rem; margin-left:auto; white-space:nowrap;" title="Source"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>`
-            : '';
-
-          item.innerHTML = `
-            <i class="fa-solid fa-skull" style="color:#ef4444; font-size:0.65rem; opacity:0.6;"></i>
-            ${rankBadge}
-            <span style="font-size:0.8rem; color:#cbd5e1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${c.name || 'Unknown'}</span>
-            ${sourceLink}
-          `;
-          casualtiesList.appendChild(item);
-        });
+        if (casualtyBadge) casualtyBadge.innerText = casualtyCount;
+        casualtiesList.innerHTML = `
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 10px; background:rgba(239,68,68,0.06); border-radius:6px; border-left:2px solid #ef444444;">
+            <span style="font-size:0.8rem; color:#cbd5e1; font-family:'JetBrains Mono', monospace;">Dispersi: ${casualtyCount}</span>
+            <span style="font-size:0.65rem; color:#64748b;">aggregato per unita</span>
+          </div>
+        `;
       } else {
         casualtiesPanel.style.display = 'none';
       }
@@ -4707,6 +4752,41 @@
     window.closeReportModal();
   };
 
+  window.attachImpactTooltip = function (element, text) {
+    if (!element || !text) return;
+    element.classList.add('impact-tooltip');
+    element.setAttribute('data-tooltip', text);
+  };
+
+  window.dismissImpactAtlasTutorial = function () {
+    const modal = document.getElementById('firstRunTutorial');
+    if (modal) {
+      modal.classList.remove('visible');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    try {
+      localStorage.setItem('impactAtlasTutorialSeen', '1');
+    } catch (err) { }
+  };
+
+  function initProductionUi() {
+    document.querySelectorAll('[data-term="tie-score"]').forEach(function (el) {
+      window.attachImpactTooltip(el, 'T.I.E. Score combines Kinetic intensity, Target value and Effect into a 0-100 event significance metric.');
+    });
+
+    const modal = document.getElementById('firstRunTutorial');
+    if (modal) {
+      let seen = false;
+      try {
+        seen = localStorage.getItem('impactAtlasTutorialSeen') === '1';
+      } catch (err) { }
+      if (!seen) {
+        modal.classList.add('visible');
+        modal.setAttribute('aria-hidden', 'false');
+      }
+    }
+  }
+
   // ============================================
   // 12. APPLICATION START (Sequential Execution)
   // ============================================
@@ -4715,6 +4795,7 @@
   function startApp() {
  console.log("°¸¡¬ Starting Impact Atlas...");
     initAxisStatsPanelControls();
+    initProductionUi();
     syncAxisHudOffset();
     window.addEventListener('resize', syncAxisHudOffset);
     initMap();

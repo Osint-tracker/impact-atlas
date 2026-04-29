@@ -889,6 +889,331 @@ header nav a:hover {
   }
 }
 
+.public-safety-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  background: rgba(15, 23, 42, 0.94);
+  border-bottom: 1px solid #334155;
+  font-size: 0.76rem;
+  color: #cbd5e1;
+}
+
+.ai-disclaimer {
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.data-public-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.data-update-badge,
+#loadArchiveBtn,
+.data-public-controls a {
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 5px 8px;
+  background: #111827;
+  color: #e2e8f0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+}
+
+#loadArchiveBtn {
+  cursor: pointer;
+}
+
+#loadArchiveBtn:hover:not(:disabled) {
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+#loadArchiveBtn:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+.report-error-btn {
+  margin-top: 6px;
+  background: #3f1d1d !important;
+  border-color: #ef4444 !important;
+  color: #fecaca !important;
+}
+
+.impact-tooltip {
+  position: relative;
+  cursor: help;
+  border-bottom: 1px dotted #f59e0b;
+}
+
+.impact-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  width: min(260px, 80vw);
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #e2e8f0;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 7000;
+  pointer-events: none;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+}
+
+.impact-tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.tutorial-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(10, 15, 31, 0.78);
+  backdrop-filter: blur(8px);
+}
+
+.tutorial-modal.visible {
+  display: flex;
+}
+
+.tutorial-card {
+  width: min(760px, 100%);
+  background: #16213e;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 22px;
+  color: #e2e8f0;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+}
+
+.tutorial-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: 1px solid #334155;
+  color: #94a3b8;
+  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.tutorial-kicker {
+  font-family: 'JetBrains Mono', monospace;
+  color: #f59e0b;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tutorial-card h2 {
+  margin: 6px 0 14px;
+  font-size: 1.35rem;
+}
+
+.tutorial-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.tutorial-grid section {
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.tutorial-grid i {
+  color: #f59e0b;
+}
+
+.tutorial-grid h3 {
+  margin: 8px 0 5px;
+  font-size: 0.95rem;
+}
+
+.tutorial-grid p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.tutorial-primary {
+  margin-top: 16px;
+  border: 1px solid #f59e0b;
+  background: #f59e0b;
+  color: #0f172a;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  html,
+  body {
+    overflow: hidden;
+  }
+
+  .app-shell {
+    height: 100dvh;
+  }
+
+  .main-content {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    padding: 0 !important;
+  }
+
+  .kpi-bar {
+    display: none !important;
+  }
+
+  .public-safety-strip {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1200;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+    padding: 7px 10px;
+    font-size: 0.68rem;
+  }
+
+  .data-public-controls {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .map-container-wrapper,
+  #map {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+  }
+
+  .nav-rail {
+    position: fixed !important;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    width: 100vw !important;
+    min-width: 0 !important;
+    height: 58px !important;
+    flex-direction: row !important;
+    justify-content: space-around;
+    padding: 4px 6px;
+    border-right: 0 !important;
+    border-top: 1px solid #334155;
+    z-index: 1800;
+  }
+
+  .nav-rail-logo,
+  .nav-divider,
+  .nav-spacer,
+  .collapse-btn {
+    display: none !important;
+  }
+
+  .nav-item {
+    width: 42px !important;
+    margin: 0 !important;
+  }
+
+  .sidebar-shell {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 58px !important;
+    top: auto !important;
+    width: 100vw !important;
+    min-width: 0 !important;
+    height: min(72dvh, 560px) !important;
+    transform: translateY(calc(100% - 42px));
+    border-right: 0 !important;
+    border-top: 1px solid #334155;
+    border-radius: 8px 8px 0 0;
+    z-index: 1700;
+    transition: transform 0.28s ease;
+  }
+
+  .sidebar-shell::before {
+    content: '';
+    display: block;
+    width: 44px;
+    height: 4px;
+    border-radius: 999px;
+    background: #64748b;
+    margin: 8px auto;
+  }
+
+  .sidebar-shell:focus-within,
+  .sidebar-shell:hover,
+  .sidebar-shell.dossier-open {
+    transform: translateY(0);
+  }
+
+  .active-panel,
+  .dossier-panel {
+    top: 20px !important;
+    overflow-y: auto;
+  }
+
+  .tactical-hud-container {
+    left: 8px !important;
+    right: 8px !important;
+    top: 112px !important;
+    width: auto !important;
+  }
+
+  .tactical-time-bar {
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    max-width: calc(100vw - 16px);
+  }
+
+  .map-topbar {
+    display: none !important;
+  }
+
+  .analytics-drawer {
+    display: none !important;
+  }
+
+  .tutorial-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* --- TOOLTIP STYLE (Info Icon) --- */
 .info-icon-wrapper {
   display: inline-block;

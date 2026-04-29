@@ -8,6 +8,7 @@ import json
 import os
 import csv
 import sys
+import re
 from urllib.parse import urlparse
 from dotenv import load_dotenv
 
@@ -28,6 +29,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, '../war_tracker_v2/data/raw_events.db')
 IMPACT_ATLAS_DB_PATH = os.path.join(BASE_DIR, '../impact_atlas.db')
 GEOJSON_PATH = os.path.join(BASE_DIR, '../assets/data/events.geojson')
+EVENTS_LATEST_PATH = os.path.join(BASE_DIR, '../assets/data/events_latest.json')
 CSV_PATH = os.path.join(BASE_DIR, '../assets/data/events_export.csv')
 UNITS_JSON_PATH = os.path.join(BASE_DIR, '../assets/data/units.json')
 ORBAT_JSON_PATH = os.path.join(BASE_DIR, '../assets/data/orbat_units.json')
@@ -43,6 +45,32 @@ CAMPAIGNS_GEO_PATH = os.path.join(BASE_DIR, '../assets/data/campaigns_geo.json')
 import datetime as _dt
 
 load_dotenv()
+
+OPSEC_CUTOFF_HOURS = 24
+LATEST_WINDOW_DAYS = 7
+SENSITIVE_MOVEMENT_CLASSES = {
+    'MANOEUVRE',
+    'MANEUVER',
+    'SHAPING_MANOEUVRE',
+    'SHAPING_MANEUVER',
+}
+
+PII_REDACTION = '[REDACTED]'
+PERSON_TITLE_PATTERN = re.compile(
+    r'\b(?:Lt\.?\s*Gen\.?|Lieutenant\s+General|Major\s+General|Brigadier\s+General|'
+    r'Colonel|Col\.?|Lieutenant|Lt\.?|Captain|Capt\.?|Major|Sgt\.?|Sergeant|'
+    r'Commander|President|Minister|Governor|General),?\s+'
+    r'[A-Z][A-Za-z\'-]+(?:\s+[A-Z][A-Za-z\'-]+){0,3}\b'
+)
+CYRILLIC_PERSON_TITLE_PATTERN = re.compile(
+    r'\b(?:генерал|полковник|майор|капітан|лейтенант|командир|міністр|губернатор)\s+'
+    r'[А-ЯЁІЇЄҐ][а-яёіїєґ\'-]+(?:\s+[А-ЯЁІЇЄҐ][а-яёіїєґ\'-]+){0,3}\b',
+    re.IGNORECASE
+)
+LICENSE_PLATE_PATTERN = re.compile(
+    r'\b(?:[A-ZА-ЯІЇЄҐ]{1,3}[-\s]?\d{3,5}[-\s]?[A-ZА-ЯІЇЄҐ]{1,3}|'
+    r'\d{2,4}[-\s]?[A-ZА-ЯІЇЄҐ]{2,4}[-\s]?\d{2,4})\b'
+)
 
 
 try:
@@ -94,6 +122,126 @@ def _date_to_epoch_ms(date_str):
         except (ValueError, OverflowError):
             continue
     return 0
+
+
+def _parse_event_datetime_utc(date_str):
+    """Parse known event date formats into timezone-aware UTC datetimes."""
+    if not date_str or not isinstance(date_str, str):
+        return None
+    clean = date_str.strip()
+    if not clean or clean.lower() in {'unknown', 'none', 'nat', 'null'}:
+        return None
+
+    try:
+        dt = _dt.datetime.fromisoformat(clean.replace('Z', '+00:00'))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=_dt.timezone.utc)
+        return dt.astimezone(_dt.timezone.utc)
+    except ValueError:
+        pass
+
+    for fmt in ('%Y-%m-%d %H:%M:%S%z', '%Y-%m-%d %H:%M:%S', '%Y-%m-%d', '%d/%m/%Y', '%d/%m/%y'):
+        try:
+            dt = _dt.datetime.strptime(clean[:len(fmt) + 5], fmt)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=_dt.timezone.utc)
+            return dt.astimezone(_dt.timezone.utc)
+        except (ValueError, OverflowError):
+            continue
+    return None
+
+
+def _is_sensitive_movement_event(classification, category, title, description):
+    text = ' '.join(str(v or '') for v in (classification, category, title, description)).upper()
+    return any(token in text for token in SENSITIVE_MOVEMENT_CLASSES)
+
+
+def _should_publish_event(date_str, classification, category, title, description, export_now):
+    if not _is_sensitive_movement_event(classification, category, title, description):
+        return True
+    event_dt = _parse_event_datetime_utc(date_str)
+    if not event_dt:
+        return False
+    return event_dt <= export_now - _dt.timedelta(hours=OPSEC_CUTOFF_HOURS)
+
+
+def sanitize_public_text(value):
+    """Fallback PII redaction. Primary sanitation is enforced in LLM prompts."""
+    if value is None:
+        return value
+    text = str(value)
+    text = PERSON_TITLE_PATTERN.sub(PII_REDACTION, text)
+    text = CYRILLIC_PERSON_TITLE_PATTERN.sub(PII_REDACTION, text)
+    text = LICENSE_PLATE_PATTERN.sub(PII_REDACTION, text)
+    return text
+
+
+def sanitize_public_object(value):
+    if isinstance(value, dict):
+        sanitized = {}
+        drop_keys = {
+            'name', 'rank', 'commander', 'source_url', 'context', 'person',
+            'full_name', 'first_name', 'last_name', 'patronymic', 'license_plate'
+        }
+        for key, item in value.items():
+            key_l = str(key).lower()
+            if key_l in drop_keys:
+                continue
+            sanitized[key] = sanitize_public_object(item)
+        return sanitized
+    if isinstance(value, list):
+        return [sanitize_public_object(item) for item in value]
+    if isinstance(value, str):
+        return sanitize_public_text(value)
+    return value
+
+
+def sanitize_public_feature(feature):
+    props = feature.get('properties', {})
+    for key in ('title', 'description', 'ai_reasoning', 'visual_analysis'):
+        if key in props:
+            props[key] = sanitize_public_text(props.get(key))
+    if props.get('units'):
+        try:
+            units = json.loads(props['units']) if isinstance(props['units'], str) else props['units']
+            props['units'] = json.dumps(sanitize_public_object(units), ensure_ascii=False)
+        except Exception:
+            props['units'] = sanitize_public_text(props.get('units'))
+    return feature
+
+
+def build_public_payload(features, generated_at, opsec_withheld_count):
+    latest_dt = None
+    for feature in features:
+        props = feature.get('properties', {})
+        event_dt = _parse_event_datetime_utc(props.get('date'))
+        if event_dt and (latest_dt is None or event_dt > latest_dt):
+            latest_dt = event_dt
+    return {
+        "type": "FeatureCollection",
+        "metadata": {
+            "generated_at": generated_at,
+            "latest_event_date": latest_dt.date().isoformat() if latest_dt else None,
+            "latest_window_days": LATEST_WINDOW_DAYS,
+            "opsec_cutoff_hours": OPSEC_CUTOFF_HOURS,
+            "opsec_withheld_count": opsec_withheld_count,
+            "pii_sanitized": True
+        },
+        "features": features
+    }
+
+
+def build_latest_features(features):
+    dated = []
+    for feature in features:
+        event_dt = _parse_event_datetime_utc(feature.get('properties', {}).get('date'))
+        if event_dt:
+            dated.append((event_dt, feature))
+    if not dated:
+        return []
+    latest_dt = max(dt for dt, _ in dated)
+    cutoff = latest_dt - _dt.timedelta(days=LATEST_WINDOW_DAYS)
+    return [feature for event_dt, feature in dated if event_dt >= cutoff]
 
 
 def parse_sources_to_list(sources_str):
@@ -378,7 +526,7 @@ def enrich_units_with_casualties(units_list):
         rows = cursor.fetchall()
         conn.close()
 
-        # Build lookup: unit_raw (lowercase) -> list of casualties
+        # Build lookup: unit_raw (lowercase) -> aggregate counts only.
         # unit_raw is the AUTHORITATIVE field scraped from ualosses.org
         casualties_by_unit_raw = {}
         no_unit_count = 0
@@ -394,15 +542,7 @@ def enrich_units_with_casualties(units_list):
                 # e.g., "105th Separate Territorial Defense Battalion Master" -> "105th Separate Territorial Defense Battalion"
                 unit_key = unit_raw.lower()
                 
-                if unit_key not in casualties_by_unit_raw:
-                    casualties_by_unit_raw[unit_key] = []
-                
-                casualties_by_unit_raw[unit_key].append({
-                    "name": data.get('name', 'Unknown'),
-                    "rank": data.get('rank'),
-                    "source_url": data.get('source_url', ''),
-                    "context": data.get('context', '')
-                })
+                casualties_by_unit_raw[unit_key] = casualties_by_unit_raw.get(unit_key, 0) + 1
             except Exception:
                 pass
 
@@ -438,7 +578,7 @@ def enrich_units_with_casualties(units_list):
             best_match = None
             best_count = 0
             
-            for unit_key, cas_list in casualties_by_unit_raw.items():
+            for unit_key, cas_count in casualties_by_unit_raw.items():
                 for candidate in candidates:
                     # Require substantial overlap, not just substring "5" matching everything
                     # Both strings must share significant content
@@ -447,9 +587,9 @@ def enrich_units_with_casualties(units_list):
                     
                     # Strategy 1: One contains the other
                     if candidate in unit_key or unit_key in candidate:
-                        if len(cas_list) > best_count:
+                        if cas_count > best_count:
                             best_match = unit_key
-                            best_count = len(cas_list)
+                            best_count = cas_count
                     
                     # Strategy 2: Shared numeric identifier matches
                     # e.g., "47th" in both strings
@@ -463,15 +603,16 @@ def enrich_units_with_casualties(units_list):
                         cand_words = set(candidate.split())
                         key_words = set(unit_key.split())
                         shared_types = (cand_words & key_words) & type_keywords
-                        if shared_types and len(cas_list) > best_count:
+                        if shared_types and cas_count > best_count:
                             best_match = unit_key
-                            best_count = len(cas_list)
+                            best_count = cas_count
             
             if best_match:
-                unit['verified_casualties'] = casualties_by_unit_raw[best_match]
-                unit['casualty_count'] = len(casualties_by_unit_raw[best_match])
+                unit.pop('verified_casualties', None)
+                unit['casualty_count'] = casualties_by_unit_raw[best_match]
+                unit['missing_count'] = casualties_by_unit_raw[best_match]
                 matched += 1
-                total_casualties_assigned += len(casualties_by_unit_raw[best_match])
+                total_casualties_assigned += casualties_by_unit_raw[best_match]
 
         print(f"   [CASUALTIES] Enriched {matched} UA units with {total_casualties_assigned} total casualty records.")
 
@@ -647,6 +788,7 @@ def export_units(unit_stats=None, orbat_data=None):
 
         # === IMPACT ATLAS: Enrich with UALosses casualties ===
         units = enrich_units_with_casualties(units)
+        units = sanitize_public_object(units)
 
         # Save to JSON
         with open(UNITS_JSON_PATH, 'w', encoding='utf-8') as f:
@@ -761,6 +903,9 @@ def main():
     
     geojson_features = []
     csv_rows = []
+    export_now = _dt.datetime.now(_dt.timezone.utc)
+    generated_at = export_now.isoformat(timespec='seconds').replace('+00:00', 'Z')
+    opsec_withheld_count = 0
     csv_headers = [
         "ID", "Date", "Title", "Lat", "Lon", "TIE", "K", "T", "E", 
         "Reliability", "Bias", "HasVideo", "Sources"
@@ -933,6 +1078,16 @@ def main():
             source_domains = domains_from_structured_sources(structured_sources)
             classification = extract_classification(ai_data)
             faction = extract_faction(ai_data, f"{title} {description}")
+            category_hint = (
+                ai_data.get('classification')
+                or ai_data.get('category')
+                or (ai_data.get('tactics', {}) or {}).get('classification')
+                or (ai_data.get('tactics', {}) or {}).get('event_analysis', {}).get('summary_en')
+                or ''
+            )
+            if not _should_publish_event(date, classification, category_hint, title, description, export_now):
+                opsec_withheld_count += 1
+                continue
             discrepancy_flag = str(v_status).upper() == 'CONTRADICTED'
             institutional_flag = any(d in INSTITUTIONAL_DOMAINS for d in source_domains)
             hash_duplicate_flag = str(row.get('ai_analysis_status') or '').upper() == 'NULL'
@@ -1041,7 +1196,7 @@ def main():
                     "campaign_tagged_at": row.get('campaign_tagged_at')
                 }
             }
-            geojson_features.append(feature)
+            geojson_features.append(sanitize_public_feature(feature))
             
             # --- AI TRIAGE UPDATE ---
             for u in enriched_units:
@@ -1094,11 +1249,14 @@ def main():
 
     # Save GeoJSON
     os.makedirs(os.path.dirname(GEOJSON_PATH), exist_ok=True)
+    public_payload = build_public_payload(geojson_features, generated_at, opsec_withheld_count)
     with open(GEOJSON_PATH, 'w', encoding='utf-8') as f:
-        json.dump({
-            "type": "FeatureCollection",
-            "features": geojson_features
-        }, f, indent=2, ensure_ascii=False)
+        json.dump(public_payload, f, indent=2, ensure_ascii=False)
+
+    latest_features = build_latest_features(geojson_features)
+    latest_payload = build_public_payload(latest_features, generated_at, opsec_withheld_count)
+    with open(EVENTS_LATEST_PATH, 'w', encoding='utf-8') as f:
+        json.dump(latest_payload, f, indent=2, ensure_ascii=False)
     
     write_json(SECTOR_ANOMALIES_PATH, {
         "generated_at": _dt.datetime.utcnow().isoformat(timespec='seconds'),
@@ -1128,6 +1286,8 @@ def main():
     
     print(f"\n[DONE] Export complete!")
     print(f"   GeoJSON: {len(geojson_features)} events -> {GEOJSON_PATH}")
+    print(f"   Latest: {len(latest_features)} events -> {EVENTS_LATEST_PATH}")
+    print(f"   OPSEC withheld: {opsec_withheld_count} sensitive movement events (<{OPSEC_CUTOFF_HOURS}h)")
     print(f"   CSV: {len(csv_rows)} rows -> {CSV_PATH}")
     print(f"   Campaigns Geo: {len(campaign_geo_payload.get('campaigns', []))} campaigns -> {CAMPAIGNS_GEO_PATH}")
     print(f"   Campaign Reports: {len(campaign_reports_payload.get('campaigns', []))} campaigns -> {CAMPAIGN_REPORTS_PATH}")

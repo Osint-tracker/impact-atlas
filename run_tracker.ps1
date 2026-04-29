@@ -12,7 +12,7 @@ echo "--- Avvio Tracker: $(Get-Date) ---" >> tracker_log.txt
 python scripts/osint_agent.py
 
 # 4. Git Push Automatizzato
-git add assets/data/events.geojson
+git add assets/data/events.geojson assets/data/events_latest.json
 git commit -m "🤖 Auto-update da Locale: $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
 
 # Tentativo di push

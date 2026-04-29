@@ -5,6 +5,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Impact Atlas | Conflict Monitor</title>
+  <meta name="description" content="Impact Atlas is an experimental university OSINT research dashboard for aggregated conflict monitoring and AI-assisted source analysis.">
+  <link rel="canonical" href="https://osint-tracker.github.io/impact-atlas/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Impact Atlas">
+  <meta property="og:title" content="Impact Atlas | Conflict Monitor">
+  <meta property="og:description" content="Experimental OSINT research dashboard with AI-assisted aggregation, map analytics and source links.">
+  <meta property="og:url" content="https://osint-tracker.github.io/impact-atlas/">
+  <meta property="og:image" content="https://osint-tracker.github.io/impact-atlas/assets/images/impact_atlas_banner.png">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Impact Atlas | Conflict Monitor">
+  <meta name="twitter:description" content="Experimental OSINT research dashboard with AI-assisted aggregation, map analytics and source links.">
+  <meta name="twitter:image" content="https://osint-tracker.github.io/impact-atlas/assets/images/impact_atlas_banner.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +25,7 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Merriweather:wght@700&family=Rajdhani:wght@500;600;700&display=swap"
     rel="stylesheet">
 
-  <link rel="preload" href="assets/data/events.geojson" as="fetch" crossorigin>
+  <link rel="preload" href="assets/data/events_latest.json" as="fetch" crossorigin>
 
   <link rel="stylesheet" href="assets/css/style.css?v=4">
   <link rel="stylesheet" href="assets/css/dossier_styles.css?v=4">
@@ -3105,7 +3118,7 @@
               style="cursor:pointer; background:var(--bg-card); border:1px solid var(--border-main); border-radius:6px; padding:10px; transition:border-color 0.2s;">
               <div
                 style="font-family:var(--font-mono); font-size:0.6rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; display:flex; align-items:center; gap:5px;">
-                <i class="fas fa-crosshairs" style="color:var(--amber-500); font-size:0.65rem;"></i> T.I.E. SCORE
+                <i class="fas fa-crosshairs" style="color:var(--amber-500); font-size:0.65rem;"></i> <span data-term="tie-score">T.I.E. SCORE</span>
                 DISTRIBUTION
                 <i class="fas fa-expand-alt" style="margin-left:auto; font-size:0.5rem; color:var(--slate-600);"></i>
               </div>
@@ -3281,6 +3294,18 @@
         <div class="kpi-card" id="categoryStats">
           <span class="kpi-label">System Status</span>
           <span class="kpi-value" style="color:#f59e0b; font-size:1.2rem;">ONLINE</span>
+        </div>
+      </div>
+
+      <div class="public-safety-strip" role="status" aria-live="polite">
+        <div class="ai-disclaimer">
+          <strong>&#9888; AI Disclaimer:</strong>
+          I dati sono aggregati ed elaborati da Intelligenze Artificiali in modo automatizzato. Possono contenere allucinazioni, errori di classificazione o bias legati alle fonti.
+        </div>
+        <div class="data-public-controls">
+          <span id="dataUpdateBadge" class="data-update-badge">Ultimo aggiornamento dati: Loading...</span>
+          <button id="loadArchiveBtn" type="button" onclick="loadFullEventsArchive()">Carica archivio completo</button>
+          <a href="legal.html" target="_blank" rel="noopener noreferrer">Legal / TOS</a>
         </div>
       </div>
 
@@ -3885,7 +3910,7 @@
               <!-- CARD 1: METRICS (Radar + Bars) -->
               <div class="dossier-card metrics-card">
                 <div class="card-label">
-                  T.I.E. SCORE
+                  <span data-term="tie-score">T.I.E. SCORE</span>
                   <div class="info-icon-wrapper pos-bottom">
                     <div class="info-icon">i</div>
                     <div class="tooltip-card">
@@ -4543,6 +4568,7 @@
             appShell.classList.remove('sidebar-collapsed');
             setTimeout(function () { if (window.map && typeof window.map.invalidateSize === 'function') window.map.invalidateSize(); }, 400);
           }
+          setTimeout(function () { if (window.map && typeof window.map.invalidateSize === 'function') window.map.invalidateSize(); }, 320);
           _activePanel = panelId;
         }
 
@@ -5002,6 +5028,34 @@
               <div class="drawer-big-label">kinetic efficiency</div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div id="firstRunTutorial" class="tutorial-modal" aria-hidden="true">
+        <div class="tutorial-card" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
+          <button class="tutorial-close" type="button" onclick="dismissImpactAtlasTutorial()" aria-label="Close tutorial">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+          <div class="tutorial-kicker">Impact Atlas</div>
+          <h2 id="tutorialTitle">Guida rapida</h2>
+          <div class="tutorial-grid">
+            <section>
+              <i class="fa-solid fa-map-location-dot"></i>
+              <h3>Mappa</h3>
+              <p>Visualizza eventi aggregati, frontline e layer OSINT. Apri un marker per dossier, fonte e segnalazione errore.</p>
+            </section>
+            <section>
+              <i class="fa-solid fa-filter"></i>
+              <h3>Filtri</h3>
+              <p>Usa settore, finestra temporale, affidabilita e categorie per ridurre il rumore informativo.</p>
+            </section>
+            <section>
+              <i class="fa-solid fa-timeline"></i>
+              <h3>Timeline</h3>
+              <p>Il caricamento iniziale mostra gli ultimi 7 giorni. L'archivio completo viene scaricato solo su richiesta.</p>
+            </section>
+          </div>
+          <button class="tutorial-primary" type="button" onclick="dismissImpactAtlasTutorial()">Ho capito</button>
         </div>
       </div>
 

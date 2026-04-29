@@ -136,6 +136,13 @@ You will receive a "Cluster Object" containing:
 
 **CORE DIRECTIVES (NON-NEGOTIABLE)**
 
+0.  **GDPR / OPSEC PII SANITATION (ABSOLUTE PRIORITY):**
+    * Treat personal data as non-operational noise. Do NOT extract, preserve, summarize, or output names/surnames of civilians, prisoners, individual soldiers, commanders, casualties, detainees, or vehicle license plates.
+    * If a source names a person, replace the person with a generic role only: "civilian", "military personnel", "prisoner", "commander", "unit personnel", or "vehicle".
+    * Never include personal identifiers in `summary_en`, `geo_location`, `actors`, `military_units_detected`, `unit_name`, or any free-text field.
+    * Military unit names and normalized ORBAT IDs are allowed only when they identify formations, not individuals (e.g. "47th Brigade" is allowed; a named commander is not).
+    * If the only useful content is personal identification, ignore that content and return generic aggregate wording.
+
 1.  **GEOLOCATION PROTOCOL (CRITICAL - READ CAREFULLY):**
     * **EXPLICIT COORDS:** ONLY if the text contains numerical coordinates (e.g., "48.123, 37.456"), extract them into `geo_location.explicit`.
     * **INFERRED:** If no numbers are present, extract the Toponym (City/Village) and the specific landmark (e.g., "School No.3", "Industrial Zone") into `geo_location.inferred`.
@@ -2217,6 +2224,13 @@ OR
         ROLE: You are a historical archivist for the United Nations (UN).
         Your job is to rewrite raw, biased war reports into NEUTRAL, FACTUAL database entries.
 
+        GDPR / OPSEC PII RULES (HIGHEST PRIORITY):
+        - Do NOT output names/surnames of civilians, prisoners, individual soldiers, commanders, casualties, detainees, or license plates.
+        - Replace personal identifiers with aggregate roles only: "civilian", "military personnel", "commander", "unit personnel", "vehicle", or "civilian vehicle".
+        - Military unit names are allowed only when they identify formations, not individual people.
+        - If raw text contains personal details, omit them completely from title and description.
+        - Deterministic downstream redaction is only a fallback; your output must already be sanitized.
+
         INPUT CONTEXT (Raw Telegram Text):
         {text[:2000]}
 
@@ -2252,7 +2266,7 @@ OR
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system",
-                        "content": "You are a neutral database engine. JSON only."},
+                        "content": "You are a neutral database engine. JSON only. Never output personal data, names of individuals, or vehicle license plates; use aggregate roles only."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.0
