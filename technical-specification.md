@@ -1,9 +1,9 @@
 # MASTER TECHNICAL SPECIFICATION DOCUMENT (TSD)
 
 **Project:** OSINT Military Intelligence Tracker & Analysis Platform  
-**Version:** 4.1.0 (Consolidated Master)  
-**Date:** February 17, 2026  
-**Status:** Production-Ready  
+**Version:** 5.0.0 (Consolidated Master)  
+**Date:** May 02, 2026  
+**Status:** Operational / Field-Proven  
 **Maintainer:** Senior AI Architect & Technical Product Manager
 
 ---
@@ -30,15 +30,16 @@
 ## METADATA
 ```yaml
 document_type: technical_specification
-semantic_version: 4.1.0
-status: PRODUCTION_READY
-last_updated: 2026-02-17
+semantic_version: 5.0.0
+status: OPERATIONAL
+last_updated: 2026-05-02
 scope: complete_system
 components:
   - AI_Military_Intelligence_Analyst
   - Project_Owl_Integration
   - OSINT_Tracker_Backend
   - Impact_Atlas_Frontend
+  - Campaigns_Engine_Planned
 ```
 
 ---
@@ -59,7 +60,7 @@ rule_priority_order:
 
 **PRIMARY_OBJECTIVE:**  
 ```yaml
-value: Transform unstructured OSINT data (Telegram, social media, news) into structured military intelligence
+value: Convert high-volume, multi-lingual OSINT (Telegram, Web, GDELT) into structured, tactical military intelligence.
 ```
 
 **SPECIFIC_GOALS:**
@@ -106,27 +107,29 @@ graph TD
     A[Owl KMZ] --> Ingest[Ingest Scripts]
     B[Owl TS Units] --> Ingest
     C[Telegram/GDELT] --> Ingest
+    D[NASA FIRMS] --> Ingest
     Ingest --> DB[(SQLite WAL)]
     end
 
-    subgraph Tier 2: AI Processing
-    DB --> Pipeline[Super Squad AI]
-    Pipeline --> Fusion[Smart Fusion]
-    Fusion --> Analysis[Strategic Analysis]
+    subgraph Tier 2: AI Intelligence
+    DB --> Pipeline[Super Squad Swarm]
+    Pipeline --> Fusion[Smart Fusion V4.3]
+    Fusion --> Campaigns[Campaigns Engine]
+    Campaigns --> Analysis[Strategic Analysis]
     Analysis --> DB
     end
 
     subgraph Tier 3: Visualization
     DB --> GeoJSON[GeoJSON Output]
-    GeoJSON --> Leaflet[Leaflet Map]
-    DB --> Dashboard[Analytics Dashboard]
+    GeoJSON --> Leaflet[C4ISR Dashboard]
+    DB --> Report[NATO-Grade Briefing]
     end
 ```
 
 ```yaml
 tier_1:
-  name: DATA_INGESTION_AND_AI_PROCESSING
-  purpose: Raw data acquisition and intelligent preprocessing
+  name: DATA_INGESTION_AND_PREPROCESSING
+  purpose: Multi-source acquisition and normalization
   components:
     - Owl Map Harvester (KMZ -> GeoJSON)
     - Owl Unit Harvester (TypeScript -> JSON)
@@ -134,26 +137,25 @@ tier_1:
     - NASA FIRMS Thermal Scraper
     - GDELT Event Ingestion
     - Parabellum & WarSpotting DB Connectors
-    - Super Squad AI Pipeline
-    - SQLite database
+    - SQLite database (WAL Mode)
   
 tier_2:
-  name: AI_CLASSIFICATION_AND_FINE_TUNING
-  purpose: Event classification via fine-tuned LLM
+  name: AI_ANALYSIS_AND_FUSION
+  purpose: Event classification, IMINT verification, and deduplication
   components:
-    - Fine-Tuned LLM (Gpt 4o-mini + QLoRA)
-    - Teach Trident RLHF Loop
-    - Training Dataset (JSONL format)
+    - Super Squad AI Pipeline (7-Agent Swarm)
+    - The Visionary (IMINT Verification)
+    - Smart Fusion Engine (Judge-AI based)
+    - Campaigns Engine (Strategic Grouping - PLANNED)
   
 tier_3:
-  name: VISUALIZATION_AND_DELIVERY
-  purpose: Cartographic and analytical presentation
+  name: VISUALIZATION_AND_REPORTING
+  purpose: Command-level presentation and reporting
   components:
     - V2 C4ISR Navigation Interface
-    - Leaflet.js Map with Semantic Clustering
-    - Interactive Analytics Drawer
-    - Tactical Graveyard & Operational Tempo Panels
-    - NATO-Grade Intelligence Briefing Generator
+    - Leaflet.js Tactical Map
+    - ORBAT Tracker & Operational Tempo
+    - Intelligence Briefing Generator
 ```
 
 ### TECHNOLOGY_STACK
@@ -161,7 +163,7 @@ tier_3:
 runtime:
   value:
     language: Python
-    version: ">=3.12"
+    version: ">=3.13"
   constraint: HARD_CONSTRAINT
 
 database:
@@ -176,24 +178,24 @@ llm_inference:
     providers:
       - OpenRouter
       - OpenAI
-    strategy: Hybrid provider routing
+    models:
+      orchestration: DeepSeek V4 Flash
+      extraction: Qwen 3.5 Flash
+      vision: Qwen-VL
+      fusion: MiniMax M2.5
   constraint: HARD_CONSTRAINT
 
 fine_tuning:
   value:
     method: QLoRA
-    base_model: Gpt 4o-mini
-  rationale: Memory-efficient training
+    base_model: GPT-4o-mini
+    version: Titan v5
   constraint: HARD_CONSTRAINT
 
 frontend:
   value:
-    technologies:
-      - HTML5
-      - Vanilla JavaScript
-      - Leaflet.js
+    technologies: [HTML5, Vanilla JS, Leaflet.js]
     framework: NONE
-  rationale: Zero framework overhead
   constraint: HARD_CONSTRAINT
 
 hosting:
@@ -257,81 +259,69 @@ sequenceDiagram
 ```yaml
 agent_1:
   name: The Bouncer
-  role: Security and spam filter
-  purpose: Hybrid Regex + AI filter. Discards crypto spam, non-military news, malformed inputs.
-  model: Qwen 3.5 flash (via OpenRouter)
+  role: Security and Spam Filter
+  purpose: Discards crypto spam, non-military news, and malformed inputs.
+  model: Qwen 3.5 Flash
   temperature: 0.0
-  output_format: Boolean + Short Reason
-  constraint: HARD_CONSTRAINT
+  output_format: Boolean + Reason
 
 agent_2:
   name: The Brain
-  role: Strategic coordinator
-  purpose: Analyze general context, decide political/military relevance, orchestrate decision flow.
-  model: DeepSeek V3.2
+  role: Strategic Coordinator
+  purpose: Analyzes general context and orchestrates decision flow.
+  model: DeepSeek V4 Flash
   temperature: 0.0
   output_format: Structured Decision JSON
-  constraint: HARD_CONSTRAINT
 
 agent_3:
   name: The Soldier
-  role: Hard data extraction
-  purpose: Extract geographic coordinates (Lat/Lon), ISO timestamp, military units, weaponry.
-  model: Qwen 3.5 flash (via OpenRouter)
+  role: Tactical Data Extraction
+  purpose: Extracts coordinates, timestamps, units, and weaponry using TITAN-10 protocol.
+  model: Qwen 3.5 Flash
   temperature: 0.0
   output_format: Strict JSON
   failure_mode: ABORT_IF_NO_VALID_DATE
-  constraint: HARD_CONSTRAINT
 
 agent_3.5:
   name: The Visionary
-  role: Surgical IMINT Verification & Equipment ID
-  purpose: Provide ground-truth visual validation of text-based claims. Cross-references The Soldier's extraction against image/video evidence. Identifies specific military hardware variants and assesses kinetic damage levels for TIE Effect Vector.
-  model: qwen/qwen3-vl-235b-a22b-instruct
-  provider: OpenRouter
+  role: IMINT Verification & Equipment ID
+  purpose: Visual validation of claims. Cross-references extraction against image/video evidence.
+  model: Qwen-VL (via OpenRouter)
   temperature: 0.0
-  output_format: Strict JSON (visual_confirmation, detected_assets, kinetic_effect, geo_clues)
-  activation_trigger: "Conditional — activates ONLY if event payload contains valid media files (image/video URLs). Bypassed entirely when media_urls is empty."
-  pipeline_position: After The Soldier (agent_3), Before The Titan (agent_4)
-  tie_integration: "Overrides Effect Vector (E) in TIE calculation when IMINT confidence >= 0.5"
-  constraint: HARD_CONSTRAINT
+  activation_trigger: Conditional — media_urls present
+  pipeline_position: After The Soldier, Before The Titan
 
 agent_4:
   name: The Titan
   role: Fine-Tuned Classification
-  purpose: Specialized diverse classification (Attrition, Manoeuvre, Shaping) using fine-tuned model.
-  model: Titan v4 (Fine-Tuned GPT-4o-mini)
+  purpose: Specialized classification (Attrition, Manoeuvre, Shaping) via Titan v5 model.
+  model: Titan v5 (FT GPT-4o-mini)
   temperature: 0.0
   output_format: JSON Classification
-  constraint: HARD_CONSTRAINT
 
 agent_5:
   name: The Calculator
-  role: Scoring engine
-  purpose: Calculate Reliability (0-100), Bias (L/R/N), Intensity (0-10), Confidence (0-1).
+  role: Scoring Engine
+  purpose: Calculates Reliability, Bias, and TITAN-10 scores.
   model: Python Deterministic (TitanSensor)
   provider: INTERNAL
-  temperature: N/A
   output_format: JSON Numbers
-  constraint: HARD_CONSTRAINT
 
 agent_6:
   name: The Journalist
-  role: Content synthesis
-  purpose: Generate catchy headline, bilingual summary (IT/EN), neutral journalistic style.
+  role: Content Synthesis
+  purpose: Generates headlines and bilingual summaries (IT/EN) in a neutral style.
   model: GPT-4o-mini
   temperature: 0.0
   output_format: JSON Text Fields
-  constraint: HARD_CONSTRAINT
 
 agent_7:
   name: The Strategist
-  role: Deep tactical insight
+  role: Tactical Insight
   purpose: High-level analysis of strategic implications and campaign impact.
-  model: DeepSeek V3.2
+  model: DeepSeek V4 Flash
   temperature: 0.1
   output_format: Analytical Text
-  constraint: HARD_CONSTRAINT
 ```
 
 **IMPLEMENTATION_RULES:**
@@ -368,65 +358,66 @@ rule_4:
 
 **PURPOSE:**  
 ```yaml
-value: Entity resolution and event deduplication
+value: Entity resolution, event deduplication, and propaganda filtering
 ```
 
 **CORE_QUESTION:**  
 ```yaml
-value: "Do these two news items refer to the same event?"
+value: "Do these two news items refer to the same physical event?"
 ```
 
 **FUNNEL_LOGIC:**
 ```yaml
-stage_1_status_check:
-  name: Fresh Blood Protocol
+stage_1_propaganda_gate:
+  name: pHash Anti-Recycling
   value:
-    permitted_comparisons:
-      - PENDING vs PENDING
-      - PENDING vs MERGED
-    prohibited_comparisons:
-      - MERGED vs MERGED
-  rationale: Anti-loop protection
+    similarity_threshold: 95%
+    lookback: 60 days
+    action: Tag as NULL if recycled asset detected
   constraint: HARD_CONSTRAINT
 
-stage_2_time_filter:
+stage_2_temporal_filter:
   name: Temporal Delta Check
   value:
-    threshold: 96 hours
-    action_if_exceeded: IMMEDIATE_DISCARD
+    threshold: 48 hours
   constraint: HARD_CONSTRAINT
 
 stage_3_vector_filter:
   name: Semantic Similarity
   value:
     model: text-embedding-3-small
-    provider: OpenAI
-    threshold: 0.55
-    cosine_similarity_min: 0.55
-  rationale: Tolerance for short/multilingual texts
+    threshold: 0.45
   constraint: HARD_CONSTRAINT
 
 stage_4_geo_spatial_filter:
   name: Dynamic Geographic Distance
   value:
     standard_threshold: 150 km
-    semantic_override:
-      condition: Vector Score > 0.93
-      extended_threshold: 5000 km
-  rationale: Merge localized reports with generic "in Ukraine" reports
+    fast_track_threshold: 10 km (Auto-merge if Sim >= 0.85)
   constraint: HARD_CONSTRAINT
 
 stage_5_llm_validation:
   name: The Judge
   value:
-    model: Llama 3.3 70B
+    model: MiniMax M2.5
     prompt_type: Entity Resolution Task
-    output_format:
-      type: JSON Boolean
-      schema:
-        is_same_event:
-          type: boolean
+    output_format: JSON Boolean
   constraint: HARD_CONSTRAINT
+```
+
+**MERGE_PROTOCOL:**
+```yaml
+incremental_mode:
+  value: Uses fusion_checked_at timestamp to avoid redundant scans
+  constraint: HARD_CONSTRAINT
+
+fast_track_rules:
+  rule_1: "Sim >= 0.85 + Dist <= 10km + Time <= 12h -> AUTO_MERGE"
+  rule_2: "Sim >= 0.95 (No Geo) -> AUTO_MERGE"
+
+source_reputation:
+  value: Dynamic scoring (0-100) per domain
+  penalty: -10 points for detected propaganda (pHash hit)
 ```
 
 **MERGE_PROTOCOL:**
@@ -748,76 +739,36 @@ value: Persistent storage for processed intelligence events
 
 **TABLE_DEFINITION:**
 ```yaml
-table_name: unique_events
+table_name: unique_events (war_tracker_v2/data/raw_events.db)
 
 columns:
-  event_id:
-    type: TEXT
-    constraint: PRIMARY KEY
-    description: Unique SHA-256 hash
-    
-  date:
-    type: DATETIME
-    constraint: NOT NULL
-    description: Naive (no timezone)
-    
-  title:
-    type: TEXT
-    constraint: NOT NULL
-    description: Generated by The Journalist
-    
-  full_text_dossier:
-    type: TEXT
-    constraint: NONE
-    description: Cumulative content (Master + Merged)
-    
-  ai_report_json:
-    type: TEXT
-    constraint: NONE
-    description: Serialized JSON output from Super Squad
-    
-  embedding_vector:
-    type: BLOB
-    constraint: NONE
-    description: Serialized numpy array (768-dim)
-    
-  ai_analysis_status:
-    type: TEXT
-    constraint: NOT NULL
-    enum: [PENDING, COMPLETED, VERIFIED, MERGED]
-    
-  lat:
-    type: REAL
-    constraint: NONE
-    description: Decimal latitude
-    
-  lon:
-    type: REAL
-    constraint: NONE
-    description: Decimal longitude
-    
-  sources_list:
-    type: TEXT
-    constraint: NONE
-    description: Aggregated domain/URL list (JSON array)
-    
-  intensity_score:
-    type: INTEGER
-    constraint: NONE
-    range: [0, 10]
-    description: Calculated by The Calculator
-    
-  reliability_score:
-    type: INTEGER
-    constraint: NONE
-    range: [0, 100]
-    description: Calculated by The Calculator
-    
-  confidence:
-    type: REAL
-    constraint: NONE
-    range: [0.0, 1.0]
-    description: Calculated by The Strategist
+  event_id: { type: TEXT, constraint: PRIMARY KEY, description: SHA-256 hash }
+  first_seen_date: { type: TEXT, description: Initial ingestion timestamp }
+  last_seen_date: { type: TEXT, description: Last activity timestamp (ISO) }
+  article_count: { type: INTEGER, description: Number of sources reporting this event }
+  sources_list: { type: TEXT, description: Aggregated domain list (JSON array) }
+  urls_list: { type: TEXT, description: Aggregated URL list (JSON array) }
+  full_text_dossier: { type: TEXT, description: Concatenated raw content }
+  ai_analysis_status: { type: TEXT, default: "'PENDING'", enum: [PENDING, COMPLETED, VERIFIED, MERGED, NULL] }
+  ai_report_json: { type: TEXT, description: Serialized output from Super Squad }
+  embedding_vector: { type: TEXT, description: JSON-serialized 1536-dim vector }
+  tie_score: { type: FLOAT, description: Normalized TITAN-10 total score }
+  kinetic_score: { type: REAL, description: TITAN-10 Vector K }
+  target_score: { type: REAL, description: TITAN-10 Vector T }
+  effect_score: { type: REAL, description: TITAN-10 Vector E }
+  reliability: { type: INTEGER, range: [0, 100] }
+  bias_score: { type: REAL, range: [-1.0, 1.0] }
+  ai_summary: { type: TEXT, description: Neutral tactical summary }
+  has_video: { type: INTEGER, description: Boolean flag for media presence }
+  media_urls: { type: TEXT, description: JSON array of image/video URLs }
+  operational_sector: { type: TEXT, description: Geographic sector ID }
+  source_reputation_score: { type: REAL, description: Aggregated reputation }
+  image_phash: { type: TEXT, description: Perceptual hash for image deduplication }
+  lat: { type: REAL, description: Decimal latitude }
+  lon: { type: REAL, description: Decimal longitude }
+  fusion_checked_at: { type: TEXT, description: Last Smart Fusion run timestamp }
+  campaign_id: { type: TEXT, description: Linked strategic campaign ID }
+  campaign_match_meta: { type: TEXT, description: AI reasoning for campaign link }
 ```
 
 **DATABASE_CONFIGURATION:**
@@ -1374,72 +1325,29 @@ constraint_8:
 
 ## ROADMAP
 
-### PHASE_1: CONSOLIDATION
-
-**Timeline:** Current - Q1 2026  
+### PHASE_1: FOUNDATION & PIZZA
 **Status:** COMPLETE
-```yaml
-completed_items:
-  - Migration to Slate & Amber theme
-  - Map performance optimization (Canvas/Chunked)
-  - Analytics Dashboard integration (Timeline, Radar, Pie)
-  - Stable Super Squad pipeline
-  - Smart Fusion anti-loop fix
-```
+- Migration to Slate & Amber design system.
+- Map performance optimization (Canvas/Chunked).
+- Stable Super Squad pipeline with Visionary agent.
+- Smart Fusion V4.3 (pHash anti-propaganda).
 
 ---
 
-### PHASE_2: ADVANCED_INTELLIGENCE
-
-**Timeline:** Q2 2026  
-**Status:** PLANNED
-```yaml
-planned_item_1:
-  name: Automated Satellite Imagery
-  value:
-    description: Script for pre/post image retrieval from Sentinel-2/Maxar
-    purpose: Juxtapose slider
-    
-planned_item_2:
-  name: PDF Report Export
-  value:
-    description: Automatic report generation of current view
-    
-planned_item_3:
-  name: NASA FIRMS Integration
-  value:
-    description: Automatic active fire layer
-    
-planned_item_4:
-  name: Fine-Tuned Model v2
-  value:
-    description: Deployment of Gpt 4o-mini model specialized on Gold dataset
-  rationale: Cost reduction
-```
+### PHASE_2: STRATEGIC INTELLIGENCE
+**Status:** ACTIVE
+- **Operational Sectors:** Division of theatre into 5 tactical zones.
+- **Campaigns Engine:** Pilot phase for strategic objective grouping.
+- **Titan v5:** Deployment of GPT-4o-mini fine-tuned model on Gold dataset.
+- **NASA FIRMS:** Automated thermal hotspot overlay.
 
 ---
 
-### PHASE_3: SCALE_AND_AUTOMATION
-
-**Timeline:** Q3 2026  
-**Status:** PLANNED
-```yaml
-planned_item_1:
-  name: Multi-Conflict Support
-  value:
-    description: Architecture extension to multiple conflicts
-    examples: [Middle East, Taiwan]
-    
-planned_item_2:
-  name: Real-Time Streaming
-  value:
-    description: WebSocket integration for live updates
-    
-planned_item_3:
-  name: Mobile App
-  value:
-    description: Progressive Web App (PWA) for mobile deployment
-```
+### PHASE_3: SCALE & AUTOMATION
+**Status:** PLANNED (Q3-Q4 2026)
+- **Multi-Conflict Support:** Expanding to Middle East and Taiwan theatres.
+- **Real-Time Streaming:** WebSocket integration for instant C4ISR updates.
+- **Automated SATINT:** Direct integration with Sentinel-2 for BDA (Battle Damage Assessment).
 
 ---
 
@@ -1588,92 +1496,20 @@ priority_3:
 
 ---
 
-## ADDENDUM: FEATURES IMPLEMENTED POST v1.3 (January 2026)
-
-The following sections document features added after the initial specification.
-
----
-
-### COMPONENT_7: T.I.E. SCORING PROTOCOL
+### COMPONENT_7: TITAN-10 SCORING PROTOCOL
 
 **PURPOSE:**
 ```yaml
-value: Standardized intensity measurement using three orthogonal vectors
-acronym: Target-Kinetic-Effect
+value: Standardized intensity measurement using three orthogonal vectors (K, T, E)
 ```
 
-**VECTOR DEFINITIONS:**
-```yaml
-kinetic_score:
-  name: Vector K
-  range: [1, 10]
-  measures: Weapon magnitude / Physics
-  scale:
-    - 1: Small Arms, Sniper
-    - 3: Heavy Mortars, FPV Drone
-    - 5: MLRS (Grad), Tank
-    - 7: Heavy Strike (Iskander, KAB-500)
-    - 10: WMD / Dam Breach
+**VECTOR DEFINITIONS (1-10 Scale):**
 
-target_score:
-  name: Vector T
-  range: [1, 10]
-  measures: Target strategic value
-  scale:
-    - 1: Empty Terrain
-    - 5: Heavy Armor (Tanks, IFVs)
-    - 8: Strategic Air Defense, Airfields
-    - 10: National Leadership, Nuclear
-
-effect_score:
-  name: Vector E
-  range: [1, 10]
-  measures: Damage outcome / Reality
-  scale:
-    - 1: Failure / Intercepted
-    - 5: Moderate Damage
-    - 7: Destruction (single)
-    - 10: Total Erase
-```
-
-**INTENSITY DATABASE:**
-```yaml
-purpose: Maps target categories to base intensity values
-file: ai_agent.py (INTENSITY_DB constant)
-
-tier_a_existential:
-  CRITICAL_NUCLEAR: 1.0
-  CRITICAL_DAM: 0.9
-
-tier_b_strategic:
-  MIL_AIRBASE: 0.7
-  IND_DEFENSE_PLANT: 0.7
-  INFRA_REFINERY: 0.65
-  INFRA_GENERATION: 0.65
-
-tier_c_operational:
-  MIL_AMMO_DEPOT: 0.55
-  MIL_HQ: 0.5
-  MIL_AIR_DEFENSE_LONG: 0.5
-
-tier_d_tactical:
-  MIL_ARTILLERY: 0.35
-  MIL_APC_TANK: 0.35
-
-tier_e_minor:
-  MIL_TRENCH: 0.1
-  CIV_RESIDENTIAL: 0.1
-  OPEN_FIELD: 0.05
-```
-
-**DAMAGE MODIFIERS:**
-```yaml
-CRITICAL: 1.5  # Destroyed - boost to reach 1.0
-HEAVY: 1.2     # Serious damage
-LIGHT: 0.5     # Halves value (crucial for skirmishes)
-NONE: 0.0
-UNKNOWN: 0.5   # Conservative estimate
-```
+| Vector | Name | Definition | Key Examples |
+| :--- | :--- | :--- | :--- |
+| **Vector K** | Kinetic | Weapon magnitude / Physics | 1: Small Arms, 7: Iskander/KAB-500, 10: WMD/Dam Breach |
+| **Vector T** | Target | Strategic value of objective | 1: Empty Field, 5: Heavy Armor, 8: Airfields, 10: Nuclear/Leadership |
+| **Vector E** | Effect | Visualized damage / Reality | 1: Intercepted, 5: Moderate Damage, 9: Annihilation, 10: Total Erase |
 
 **TIE TOTAL CALCULATION:**
 ```yaml
@@ -1681,6 +1517,37 @@ formula: (K × T × E) ÷ 10
 range: [0, 100]
 normalization: Capped at 100
 ```
+
+---
+
+### COMPONENT_11: CAMPAIGNS ENGINE (PROPOSED)
+
+**STATUS:** **NON-OPERATIONAL / DESIGN PHASE**
+
+**CONCEPT:**
+The Campaigns Engine groups individual intelligence events into broader "Strategic Objectives" or "Campaigns" to identify operational patterns.
+
+**MECHANISM:**
+1. **Definition:** Campaigns are defined by a set of `target_types` and `keywords` (e.g., "Energy Infrastructure Strike Campaign").
+2. **Matching:** The engine scans incoming processed events. If an event's `target_type` and `full_text` match a campaign's criteria, it is tagged with a `campaign_id`.
+3. **Analytics:** Once tagged, the system calculates cumulative T.I.E. scores and "Operational Tempo" (events per day) specifically for that campaign.
+4. **Briefing:** A Strategic Brief is generated (via DeepSeek) to summarize the campaign's current posture (LIVE vs. STANDBY).
+
+**VISUALIZATION:**
+Campaigns are displayed on the dashboard with specific color coding and sparkline graphs to show intensity over time.
+
+---
+
+### COMPONENT_12: ORBAT INTEGRITY GATEKEEPER (v2.0)
+
+**PURPOSE:**
+Ensures all military units extracted by the AI swarm exist within the authorized ORBAT registry.
+
+**LOGIC:**
+1. **Whitelist Check:** Every `unit_id` is validated against the canonical `units.json` registry.
+2. **Fuzzy Resolution:** If a unit name is found but the ID is missing or malformed, the system attempts a high-confidence fuzzy match (Score > 0.85) against unit aliases.
+3. **Placeholder Rejection:** Obvious placeholders (e.g., "?", "UNKNOWN") are stripped and flagged for manual review.
+4. **GDPR/OPSEC Gate:** Automatically sanitizes personal names of personnel, replacing them with generic roles (e.g., "Unit Commander").
 
 ---
 
@@ -1818,41 +1685,24 @@ actions:
   - Locate on Map (flyTo)
 ```
 
----
-
-### FEATURE_6: UI_VIEWS_SYSTEM
+### FEATURE_6: OPERATIONAL SECTORS SYSTEM
 
 **PURPOSE:**
-```yaml
-value: Multiple visualization paradigms for different analysis needs
-```
+Divides the conflict theatre into distinct zones for localized intelligence analysis and trend tracking.
 
-**VIEWS:**
-```yaml
-view_1:
-  name: TACTICAL
-  id: view-visual
-  components:
-    - Operational Tempo Gauge (48h)
-    - Intensity Heatmap Toggle
-    - Equipment Losses Feed
+**SECTOR DEFINITIONS:**
+| Sector ID | Name | Geographic Focus |
+| :--- | :--- | :--- |
+| **SEC_NORTH** | Northern Frontier | Kharkiv, Sumy, Chernihiv |
+| **SEC_DONBAS** | Donbas Core | Bakhmut, Avdiivka, Lyman |
+| **SEC_SOUTH** | Southern Axe | Zaporizhzhia, Vuhledar |
+| **SEC_KHERS_CRIM** | Kherson/Crimea | Dnipro River, Crimean Peninsula |
+| **SEC_REAR** | Rear Ops | Kyiv, Western UA, Russian Hinterland |
 
-view_2:
-  name: WAR ROOM
-  id: view-kanban
-  layout: Kanban Board
-  columns:
-    - GROUND OPS
-    - AIR / STRIKE
-    - STRATEGIC / CIVIL
-
-view_3:
-  name: INTEL FEED
-  id: view-intel
-  layout: Master-Detail
-  left_panel: Chronological event list
-  right_panel: Full dossier with TIE metrics
-```
+**LOGIC:**
+- Events are assigned to a sector based on their geocoded coordinates.
+- If an event lacks coordinates, the "Brain" assigns a sector based on toponym extraction.
+- Dashboard filters allow analysts to focus on specific sectors to identify shifts in operational tempo.
 
 ---
 
