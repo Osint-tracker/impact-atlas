@@ -676,7 +676,7 @@ class SuperSquadAgent:
                 print(f"⚠️ ORBAT whitelist not loaded: {units_path} not found")
                 return
             
-            with open(units_path, 'r', encoding='utf-8') as f:
+            with open(units_path, 'r', encoding='utf-8-sig') as f:
                 units = json.load(f)
             
             for unit in units:

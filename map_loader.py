@@ -12,6 +12,7 @@ from typing import Dict, Optional, List
 import logging
 from datetime import datetime, timedelta
 import os
+from shapely.geometry import Point, Polygon, MultiPolygon
 
 # Configure logging
 logging.basicConfig(
@@ -33,6 +34,37 @@ class MapDataLoader:
         })
         # --- CONFIGURAZIONE CHIAVI ---
         self.firms_api_key = "29ca712bddef41c37ea9989a2b521dea"
+        self.borders = self._load_borders()
+
+    def _load_borders(self) -> List[Polygon]:
+        """Loads UA and RU borders from GeoJSON for filtering."""
+        borders_path = Path("assets/data/national_borders.geojson")
+        polygons = []
+        if not borders_path.exists():
+            logger.warning(f"Borders file not found: {borders_path}")
+            return polygons
+
+        try:
+            with open(borders_path, 'r', encoding='utf-8-sig') as f:
+                data = json.load(f)
+                for feature in data.get('features', []):
+                    geom = feature.get('geometry', {})
+                    if geom.get('type') == 'Polygon':
+                        polygons.append(Polygon(geom['coordinates'][0]))
+                    elif geom.get('type') == 'MultiPolygon':
+                        for poly_coords in geom['coordinates']:
+                            polygons.append(Polygon(poly_coords[0]))
+            logger.info(f"Loaded {len(polygons)} boundary polygons for filtering.")
+        except Exception as e:
+            logger.error(f"Failed to load borders: {e}")
+        return polygons
+
+    def is_in_theater(self, lat: float, lon: float) -> bool:
+        """Checks if a point is within allowed UA/RU boundaries."""
+        if not self.borders:
+            return True  # Fallback if borders can't be loaded
+        point = Point(lon, lat)
+        return any(poly.contains(point) for poly in self.borders)
 
     def create_dummy_geojson(self, filename: str, feature_type: str = "LineString") -> Dict:
         """Creates a valid empty GeoJSON file as fallback."""
@@ -91,8 +123,13 @@ class MapDataLoader:
             logger.warning("FIRMS API Key missing!")
             return False
 
-        # Area: Ukraine + border regions bounding box
-        bbox = "22.1,44.3,40.2,52.4"
+        # Area: Ukraine + Russia expanded bounding box
+        # Large BBox: [22.1, 44.0, 60.0, 65.0]
+        # We split it into two to avoid API limits (400 Bad Request)
+        bboxes = [
+            "22.1,44.0,41.0,65.0", # Western Sector (UA + Border)
+            "41.0,44.0,60.0,65.0"  # Eastern Sector (RU Deep)
+        ]
         
         # Multiple satellite sources for better coverage
         satellites = [
@@ -108,7 +145,8 @@ class MapDataLoader:
         logger.info(f"Fetching NASA FIRMS from {len(satellites)} satellite sources ({days}-day window)...")
         
         for source_id, source_label in satellites:
-            url = f"https://firms.modaps.eosdis.nasa.gov/api/area/csv/{self.firms_api_key}/{source_id}/{bbox}/{days}"
+            for bbox in bboxes:
+                url = f"https://firms.modaps.eosdis.nasa.gov/api/area/csv/{self.firms_api_key}/{source_id}/{bbox}/{days}"
             
             response = self.fetch_with_retry(url)
             if not response:
@@ -134,6 +172,10 @@ class MapDataLoader:
                     lat = float(data['latitude'])
                     lon = float(data['longitude'])
                     
+                    # Mandatory Geo-Filtering (Backend)
+                    if not self.is_in_theater(lat, lon):
+                        continue
+
                     # Deduplication by rounded coordinates (prevent near-duplicates)
                     coord_key = (round(lat, 3), round(lon, 3))
                     if coord_key in seen_coords:

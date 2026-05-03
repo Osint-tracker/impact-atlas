@@ -164,6 +164,7 @@
   const AXIS_THERMAL_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
   const AXIS_THERMAL_MATCH_DISTANCE_KM = 3;
   const AXIS_THERMAL_MATCH_WINDOW_MS = 36 * 60 * 60 * 1000;
+  let firmsActive = false;
 
   // ============================================
   // 3. HELPER FUNCTIONS (Define Before Use)
@@ -2017,6 +2018,11 @@
           updateAxisStatsPanel(selectedSector, filtered);
 
           if (window.Dashboard) window.Dashboard.update(filtered);
+
+           // 8. Re-render FIRMS if active
+           if (firmsActive) {
+             renderFIRMSLayer();
+           }
         };
 
         // Helper to Populate Category Dropdown
@@ -2120,7 +2126,7 @@
 
       }) // <--- THIS CLOSES THE .THEN (The critical point of previous errors)
       .catch(err => {
-        console.error("Ã¢ÂÅ’ CRITICAL: Failed to load events:", err);
+        console.error("Ã¢Â Å’ CRITICAL: Failed to load events:", err);
       });
   }
 
@@ -2383,7 +2389,7 @@
       }
     }
 
- console.log(`°¸ž Switching map source: ${sourceName}`);
+ console.log(`°¸ ž Switching map source: ${sourceName}`);
 
     let dataUrl = '';
     let colorStyle = '#ff3838';
@@ -2440,222 +2446,10 @@
       } else {
         if (eventsLayer) map.removeLayer(eventsLayer);
       }
-    }
-
-    if (layerName === 'firms') {
+    } else if (layerName === 'firms') {
+      firmsActive = isChecked;
       if (isChecked) {
-        // Use cached FIRMS support data when available.
-        loadAxisThermalFeatures()
-          .then(features => {
-            if (!features || features.length === 0) {
- console.warn("¢¡ ¯¸ No recent FIRMS data available inside Ukraine/Russia land territory");
-              return;
-            }
-
-            // Create layer group for thermal hotspots
-            if (firmsLayer) {
-              map.removeLayer(firmsLayer);
-            }
-            firmsLayer = L.layerGroup();
-
-            let visibleHotspots = 0;
-            features.forEach(feature => {
-              visibleHotspots += 1;
-              const coords = [feature.lon, feature.lat];
-              const props = feature.properties || {};
-              const brightness = props.brightness || 300;
-
-              // Color based on brightness (hotter = more red)
-              let color = '#ff6b35'; // Default orange
-              if (brightness >= 350) color = '#ff0000'; // Red hot
-              else if (brightness >= 330) color = '#ff4500'; // Orange-red
-              else if (brightness >= 310) color = '#ff6b35'; // Orange
-              else color = '#ffa500'; // Yellow-orange
-
-              const marker = L.circleMarker([coords[1], coords[0]], {
-                radius: 6,
-                fillColor: color,
-                color: '#000',
-                weight: 1,
-                opacity: 0.8,
-                fillOpacity: 0.7
-              });
-
-              // Popup with dossier-matching styling
-              const confidenceLabel = props.confidence === 'h' ? 'HIGH' : props.confidence === 'l' ? 'LOW' : 'NOMINAL';
-              const confidenceColor = props.confidence === 'h' ? '#22c55e' : props.confidence === 'l' ? '#ef4444' : '#f59e0b';
-              const intensityPercent = Math.min(100, ((brightness - 280) / 120) * 100);
-              const frpValue = props.frp || 0;
-              const timeFormatted = props.acq_time ? `${String(props.acq_time).padStart(4, '0').slice(0, 2)}:${String(props.acq_time).padStart(4, '0').slice(2)} UTC` : 'N/A';
-
-              marker.bindPopup(`
-                <div class="firms-popup-content" style="
-                  min-width: 260px;
-                  max-width: 320px;
-                  font-family: 'Inter', sans-serif;
-                  background: #0f172a;
-                  border-radius: 8px;
-                  overflow: visible;
-                  border: 1px solid #334155;
-                ">
-                  <!-- Header matching dossier style -->
-                  <div style="
-                    background: linear-gradient(90deg, ${color}, #d97706);
-                    padding: 16px;
-                    border-bottom: 1px solid rgba(0,0,0,0.3);
-                  ">
-                    <div style="
-                      font-size: 1.1rem;
-                      font-weight: 700;
-                      line-height: 1.3;
-                      color: #fff;
-                    ">Thermal Anomaly Detected</div>
-                    <div style="
-                      display: flex;
-                      align-items: center;
-                      gap: 8px;
-                      margin-top: 6px;
-                      font-size: 0.8rem;
-                      color: rgba(255,255,255,0.8);
-                    ">
-                      <span>${props.acq_date || 'N/A'}</span>
-                      <span style="color: rgba(255,255,255,0.4);">|</span>
-                      <span style="
-                        background: rgba(0,0,0,0.25);
-                        padding: 2px 8px;
-                        border-radius: 4px;
-                        font-weight: 600;
-                        font-size: 0.7rem;
-                      ">NASA FIRMS</span>
-                    </div>
-                  </div>
-                  
-                  <!-- Body -->
-                  <div style="padding: 16px;">
-                    <!-- Brightness Meter -->
-                    <div style="margin-bottom: 16px;">
-                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <div style="display: flex; align-items: center; gap: 4px;">
-                          <span style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Brightness Temperature</span>
-                          <div class="info-icon-wrapper">
-                            <div class="info-icon">i</div>
-                            <div class="tooltip-card">
-                              <div class="tooltip-header">Brightness Temperature</div>
-                              <div class="tooltip-body">Temperature measured by satellite infrared sensor. Higher values indicate more intense thermal radiation from fires or explosions.</div>
-                              <div class="tooltip-footer">Scale: 280K (cool) to 400K+ (intense)</div>
-                            </div>
-                          </div>
-                        </div>
-                        <span style="
-                          font-family: 'JetBrains Mono', monospace;
-                          color: ${color};
-                          font-weight: 700;
-                          font-size: 1.1rem;
-                        ">${brightness.toFixed(0)} K</span>
-                      </div>
-                      <div style="background: #1e293b; border-radius: 4px; height: 6px; overflow: hidden;">
-                        <div style="
-                          width: ${intensityPercent}%;
-                          height: 100%;
-                          background: linear-gradient(90deg, #ffa500, ${color});
-                          border-radius: 4px;
-                        "></div>
-                      </div>
-                    </div>
-                    
-                    <!-- Stats Grid -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                      <div style="background: rgba(30,41,59,0.5); padding: 10px; border-radius: 6px; border: 1px solid #334155;">
-                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
-                          <span style="color: #94a3b8; font-size: 0.6rem; text-transform: uppercase; font-weight: 700;">Satellite</span>
-                          <div class="info-icon-wrapper">
-                            <div class="info-icon">i</div>
-                            <div class="tooltip-card">
-                              <div class="tooltip-header">Satellite Source</div>
-                              <div class="tooltip-body">NASA satellite that captured this detection. VIIRS sensors provide 375m spatial resolution.</div>
-                              <div class="tooltip-footer">Updated every 12 hours per satellite.</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div style="color: #f8fafc; font-weight: 600; font-size: 0.85rem;">${props.satellite || 'VIIRS'}</div>
-                      </div>
-                      <div style="background: rgba(30,41,59,0.5); padding: 10px; border-radius: 6px; border: 1px solid #334155;">
-                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
-                          <span style="color: #94a3b8; font-size: 0.6rem; text-transform: uppercase; font-weight: 700;">FRP</span>
-                          <div class="info-icon-wrapper">
-                            <div class="info-icon">i</div>
-                            <div class="tooltip-card">
-                              <div class="tooltip-header">Fire Radiative Power</div>
-                              <div class="tooltip-body">Rate of radiant energy released, measured in Megawatts. Higher FRP indicates larger or more intense fires.</div>
-                              <div class="tooltip-footer">Typical range: 1-50 MW for fires.</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div style="color: #f8fafc; font-weight: 600; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">${frpValue.toFixed(1)} MW</div>
-                      </div>
-                      <div style="background: rgba(30,41,59,0.5); padding: 10px; border-radius: 6px; border: 1px solid #334155;">
-                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
-                          <span style="color: #94a3b8; font-size: 0.6rem; text-transform: uppercase; font-weight: 700;">Detection Time</span>
-                          <div class="info-icon-wrapper">
-                            <div class="info-icon">i</div>
-                            <div class="tooltip-card">
-                              <div class="tooltip-header">Acquisition Time</div>
-                              <div class="tooltip-body">Time when the satellite sensor detected this thermal anomaly, in Coordinated Universal Time.</div>
-                              <div class="tooltip-footer">Detection window is ~5 minutes.</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div style="color: #f8fafc; font-weight: 600; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">${timeFormatted}</div>
-                      </div>
-                      <div style="background: rgba(30,41,59,0.5); padding: 10px; border-radius: 6px; border: 1px solid #334155;">
-                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
-                          <span style="color: #94a3b8; font-size: 0.6rem; text-transform: uppercase; font-weight: 700;">Confidence</span>
-                          <div class="info-icon-wrapper">
-                            <div class="info-icon">i</div>
-                            <div class="tooltip-card">
-                              <div class="tooltip-header">Detection Confidence</div>
-                              <div class="tooltip-body">Algorithm confidence level. High = strong thermal signature. Low = possible false positive from industrial activity.</div>
-                              <div class="tooltip-footer">Based on NASA FIRMS algorithm.</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div style="
-                          color: ${confidenceColor};
-                          font-weight: 700;
-                          font-size: 0.85rem;
-                        ">${confidenceLabel}</div>
-                      </div>
-                    </div>
-                    
-                    <!-- Coordinates Footer -->
-                    <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #334155; text-align: center;">
-                      <span style="color: #64748b; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace;">
-                        ${coords[1].toFixed(5)}Ã‚Â°N, ${coords[0].toFixed(5)}Ã‚Â°E
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              `, {
-                className: 'firms-popup',
-                maxWidth: 340,
-                minWidth: 260
-              });
-
-              firmsLayer.addLayer(marker);
-            });
-
-            firmsLayer.addTo(map);
-            console.log(`Ã¢Å“â€¦ FIRMS layer loaded: ${visibleHotspots}/${features.length} recent in-theater hotspots`);
-
-            // Show metadata info
-            if (window.axisThermalMetadata) {
-              console.log(`   Source: ${window.axisThermalMetadata.source}`);
-              console.log(`   Generated: ${window.axisThermalMetadata.generated}`);
-            }
-          })
-          .catch(err => {
-            console.error("Ã¢ÂÅ’ Failed to load FIRMS data:", err);
-          });
+        renderFIRMSLayer();
       } else {
         if (firmsLayer) {
           map.removeLayer(firmsLayer);
@@ -4806,6 +4600,99 @@
       localStorage.setItem('impactAtlasTutorialSeen', '1');
     } catch (err) { }
   };
+
+  function renderFIRMSLayer() {
+    if (!firmsActive) return;
+
+    loadAxisThermalFeatures().then(features => {
+      if (!features || features.length === 0) return;
+
+      if (firmsLayer) {
+        map.removeLayer(firmsLayer);
+      }
+      firmsLayer = L.layerGroup();
+
+      // Temporal Filtering logic (Task 3)
+      let cutoff = 0;
+      if (tacticalTimeWindowHours > 0) {
+        // Use max timestamp from global events as reference for consistency
+        const maxTimestamp = window.globalEvents && window.globalEvents.length > 0 
+          ? Math.max(...window.globalEvents.map(ev => ev.timestamp || 0))
+          : Date.now();
+        cutoff = maxTimestamp - (tacticalTimeWindowHours * 3600000);
+      }
+
+      const filteredFeatures = features.filter(f => !cutoff || f.timestampMs >= cutoff);
+      
+      // Use Canvas for performance
+      filteredFeatures.forEach(feature => {
+        const props = feature.properties || {};
+        const brightness = props.brightness || 300;
+        let color = '#ff6b35';
+        if (brightness >= 350) color = '#ff0000';
+        else if (brightness >= 330) color = '#ff4500';
+        else if (brightness >= 310) color = '#ff6b35';
+        else color = '#ffa500';
+
+        const marker = L.circleMarker([feature.lat, feature.lon], {
+          radius: 6,
+          fillColor: color,
+          color: '#000',
+          weight: 1,
+          opacity: 0.8,
+          fillOpacity: 0.7,
+          renderer: strategicCanvasRenderer // Using existing canvas renderer
+        });
+
+        const confidenceLabel = props.confidence === 'h' ? 'HIGH' : props.confidence === 'l' ? 'LOW' : 'NOMINAL';
+        const confidenceColor = props.confidence === 'h' ? '#22c55e' : props.confidence === 'l' ? '#ef4444' : '#f59e0b';
+        const intensityPercent = Math.min(100, ((brightness - 280) / 120) * 100);
+        const frpValue = props.frp || 0;
+        const timeFormatted = props.acq_time ? `${String(props.acq_time).padStart(4, '0').slice(0, 2)}:${String(props.acq_time).padStart(4, '0').slice(2)} UTC` : 'N/A';
+
+        marker.bindPopup(`
+          <div class="firms-popup-content" style="min-width: 260px; max-width: 320px; font-family: 'Inter', sans-serif; background: #0f172a; border-radius: 8px; border: 1px solid #334155;">
+            <div style="background: linear-gradient(90deg, ${color}, #d97706); padding: 16px; border-bottom: 1px solid rgba(0,0,0,0.3);">
+              <div style="font-size: 1.1rem; font-weight: 700; color: #fff;">Thermal Anomaly Detected</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 0.8rem; color: rgba(255,255,255,0.8);">
+                <span>${props.acq_date || 'N/A'}</span> | <span>NASA FIRMS</span>
+              </div>
+            </div>
+            <div style="padding: 16px;">
+              <div style="margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 0.65rem; color: #94a3b8; font-weight: 700;">BRIGHTNESS</span>
+                  <span style="font-family: 'JetBrains Mono'; color: ${color}; font-weight: 700;">${brightness.toFixed(0)} K</span>
+                </div>
+                <div style="background: #1e293b; height: 6px; border-radius: 3px; margin-top: 4px;">
+                  <div style="width: ${intensityPercent}%; height: 100%; background: ${color}; border-radius: 3px;"></div>
+                </div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.75rem;">
+                <div style="background: #1e293b; padding: 8px; border-radius: 4px;">
+                  <div style="color: #94a3b8;">SAT</div><div style="color: #fff;">${props.satellite || 'VIIRS'}</div>
+                </div>
+                <div style="background: #1e293b; padding: 8px; border-radius: 4px;">
+                  <div style="color: #94a3b8;">FRP</div><div style="color: #fff;">${frpValue.toFixed(1)} MW</div>
+                </div>
+                <div style="background: #1e293b; padding: 8px; border-radius: 4px;">
+                  <div style="color: #94a3b8;">TIME</div><div style="color: #fff;">${timeFormatted}</div>
+                </div>
+                <div style="background: #1e293b; padding: 8px; border-radius: 4px;">
+                  <div style="color: #94a3b8;">CONF</div><div style="color: ${confidenceColor}; font-weight: 700;">${confidenceLabel}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `, { className: 'firms-popup' });
+
+        firmsLayer.addLayer(marker);
+      });
+
+      firmsLayer.addTo(map);
+      console.log(`\u2705 FIRMS re-rendered: ${filteredFeatures.length} points visible (Cutoff: ${cutoff > 0 ? new Date(cutoff).toISOString() : 'NONE'})`);
+    });
+  }
 
   function initProductionUi() {
     document.querySelectorAll('[data-term="tie-score"]').forEach(function (el) {
