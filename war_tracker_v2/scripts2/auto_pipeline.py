@@ -34,7 +34,7 @@ env = os.environ.copy()
 env["PYTHONIOENCODING"] = "utf-8"
 
 SCRIPTS = [
-    "run_daily.py",
+    "run_backfill.py",
     "refiner_fast.py",
     "event_builder.py"
 ]
