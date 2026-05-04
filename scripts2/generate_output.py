@@ -17,6 +17,7 @@ from campaigns_engine import (
     build_campaigns_geo,
     ensure_campaign_columns,
     load_campaign_definitions,
+    load_campaign_definitions_from_csv,
 )
 
 # Windows Unicode Fix
@@ -39,6 +40,7 @@ SECTOR_ANOMALIES_PATH = os.path.join(BASE_DIR, '../assets/data/sector_anomalies.
 ASYMMETRY_INDEX_PATH = os.path.join(BASE_DIR, '../assets/data/asymmetry_index.json')
 GLOCS_PATH = os.path.join(BASE_DIR, '../assets/data/glocs.geojson')
 CAMPAIGN_DEFINITIONS_CACHE_PATH = os.path.join(BASE_DIR, '../assets/data/campaign_definitions.json')
+CURATED_CSV_PATH = os.path.join(BASE_DIR, '../bootstrap/campaign_definitions.curated.csv')
 CAMPAIGN_REPORTS_PATH = os.path.join(BASE_DIR, '../assets/data/campaign_reports.json')
 CAMPAIGNS_GEO_PATH = os.path.join(BASE_DIR, '../assets/data/campaigns_geo.json')
 
@@ -828,6 +830,10 @@ def main():
         cache_path=CAMPAIGN_DEFINITIONS_CACHE_PATH,
         tab_name='campaign_definitions',
     )
+    # Fallback: load from local curated CSV if sheet/cache failed
+    if not campaign_definitions and os.path.exists(CURATED_CSV_PATH):
+        campaign_definitions = load_campaign_definitions_from_csv(CURATED_CSV_PATH)
+        print(f"[INFO] Loaded campaigns from curated CSV fallback.")
     campaign_index = {c.get('campaign_id'): c for c in campaign_definitions}
     print(f"[INFO] Loaded {len(campaign_definitions)} campaign definitions.")
     sys.stdout.flush()

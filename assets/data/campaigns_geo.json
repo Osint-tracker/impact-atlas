@@ -1,4 +1,67 @@
 {
-  "generated_at": "2026-05-03T12:57:05.306807+00:00",
-  "campaigns": []
+  "generated_at": "2026-05-04T16:43:38.667116+00:00",
+  "campaigns": [
+    {
+      "campaign_id": "refineries_and_oil_hubs",
+      "name": "Refineries And Oil Hubs",
+      "color": "#f59e0b",
+      "status": "STANDBY",
+      "total_events": 1,
+      "last_event_date": "2026-01-23T00:00:00+00:00",
+      "points": [
+        {
+          "event_id": "fus_332428_1768864389",
+          "lat": 45.7684014,
+          "lon": 39.0261044,
+          "date": "2026-01-23",
+          "vec_e": 7.0,
+          "tie_total": 100.0
+        }
+      ]
+    },
+    {
+      "campaign_id": "civilian_pressure_ops",
+      "name": "Civilian Pressure Ops",
+      "color": "#94a3b8",
+      "status": "STANDBY",
+      "total_events": 1,
+      "last_event_date": "2026-01-23T00:00:00+00:00",
+      "points": [
+        {
+          "event_id": "fus_332462_1768864389",
+          "lat": 50.3984937,
+          "lon": 30.8816326,
+          "date": "2026-01-23",
+          "vec_e": 7.0,
+          "tie_total": 99.0
+        }
+      ]
+    },
+    {
+      "campaign_id": "energy_grid_degradation",
+      "name": "Energy Grid Degradation",
+      "color": "#eab308",
+      "status": "STANDBY",
+      "total_events": 2,
+      "last_event_date": "2026-01-24T00:00:00+00:00",
+      "points": [
+        {
+          "event_id": "fus_418441_1768864394",
+          "lat": 46.4843023,
+          "lon": 30.7322878,
+          "date": "2026-01-23",
+          "vec_e": 5.0,
+          "tie_total": 66.0
+        },
+        {
+          "event_id": "fus_669733_1768864469",
+          "lat": 48.662589,
+          "lon": 34.9501715,
+          "date": "2026-01-24",
+          "vec_e": 6.0,
+          "tie_total": 100.0
+        }
+      ]
+    }
+  ]
 }
