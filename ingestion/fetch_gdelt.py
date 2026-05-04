@@ -40,19 +40,19 @@ def fetch_gdelt_window(start_str, end_str):
     }
 
     try:
-        # Retry loop for 429/503 errors
-        max_retries = 3
+        # Retry loop for 429/503 errors with exponential backoff
+        max_retries = 5
         for attempt in range(max_retries):
             response = requests.get(
-                url, params=params, headers=headers, timeout=15)
+                url, params=params, headers=headers, timeout=20)
 
             if response.status_code == 200:
                 data = response.json()
                 return data.get('articles', [])
             
-            elif response.status_code == 429:
-                wait_time = (2 ** attempt) * 5  # 5s, 10s, 20s
-                print(f"   [WARNING] HTTP 429 Too Many Requests. Waiting {wait_time}s...")
+            elif response.status_code in (429, 503):
+                wait_time = min((2 ** attempt) * 5, 120)  # 5s, 10s, 20s, 40s, 80s (cap 120s)
+                print(f"   [WARNING] HTTP {response.status_code}. Backoff {wait_time}s (attempt {attempt+1}/{max_retries})...")
                 time.sleep(wait_time)
                 continue
             
@@ -60,6 +60,7 @@ def fetch_gdelt_window(start_str, end_str):
                 print(f"   [ERROR] HTTP {response.status_code}")
                 return []
         
+        print(f"   [ERROR] GDELT rate-limit exhausted after {max_retries} retries. Skipping window.")
         return []
 
     except Exception as e:
@@ -119,8 +120,8 @@ def fetch_gdelt_news(start_date, end_date):
 
         # Avanziamo il cursore
         current_cursor = next_cursor
-        # Pausa di cortesia per non bombardare l'API (Incremented to 2.0s)
-        time.sleep(2.0)
+        # Pausa di cortesia tra finestre per evitare HTTP 429
+        time.sleep(4.0)
 
     print(f"[SUCCESS] GDELT COMPLETATO: {total_saved} articoli totali salvati nel DB.")
 

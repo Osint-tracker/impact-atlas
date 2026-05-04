@@ -49,11 +49,18 @@ class MapDataLoader:
                 data = json.load(f)
                 for feature in data.get('features', []):
                     geom = feature.get('geometry', {})
+                    if not geom: continue
+                    
                     if geom.get('type') == 'Polygon':
-                        polygons.append(Polygon(geom['coordinates'][0]))
+                        # Validating coordinates structure
+                        coords = geom.get('coordinates', [])
+                        if coords and isinstance(coords[0], list):
+                            polygons.append(Polygon(coords[0]))
                     elif geom.get('type') == 'MultiPolygon':
-                        for poly_coords in geom['coordinates']:
-                            polygons.append(Polygon(poly_coords[0]))
+                        for poly_coords in geom.get('coordinates', []):
+                            if poly_coords and isinstance(poly_coords[0], list):
+                                polygons.append(Polygon(poly_coords[0]))
+                                
             logger.info(f"Loaded {len(polygons)} boundary polygons for filtering.")
         except Exception as e:
             logger.error(f"Failed to load borders: {e}")
@@ -147,22 +154,22 @@ class MapDataLoader:
         for source_id, source_label in satellites:
             for bbox in bboxes:
                 url = f"https://firms.modaps.eosdis.nasa.gov/api/area/csv/{self.firms_api_key}/{source_id}/{bbox}/{days}"
-            
-            response = self.fetch_with_retry(url)
-            if not response:
-                logger.warning(f"  {source_label}: No response")
-                continue
-            
-            lines = response.text.strip().split('\n')
-            if len(lines) < 2:
-                logger.info(f"  {source_label}: No data")
-                continue
-            
-            headers = lines[0].split(',')
-            count = 0
-            
-            for line in lines[1:]:
-                values = line.split(',')
+                
+                response = self.fetch_with_retry(url)
+                if not response:
+                    logger.warning(f"  {source_label} ({bbox}): No response")
+                    continue
+                
+                lines = response.text.strip().split('\n')
+                if len(lines) < 2:
+                    logger.info(f"  {source_label} ({bbox}): No data")
+                    continue
+                
+                headers = lines[0].split(',')
+                count = 0
+                
+                for line in lines[1:]:
+                    values = line.split(',')
                 if len(values) < 3:
                     continue
                 
