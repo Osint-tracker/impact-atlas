@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-05-04T16:43:38.667116+00:00",
+  "generated_at": "2026-05-05T14:21:50.585577+00:00",
   "campaigns": [
     {
       "campaign_id": "refineries_and_oil_hubs",
-      "name": "Refineries And Oil Hubs",
+      "name": "REFINERIES_AND_OIL_HUBS",
       "color": "#f59e0b",
-      "status": "STANDBY",
-      "total_events": 1,
-      "last_event_date": "2026-01-23T00:00:00+00:00",
+      "status": "LIVE",
+      "total_events": 3,
+      "last_event_date": "2026-04-27T14:21:01+00:00",
       "points": [
         {
           "event_id": "fus_332428_1768864389",
@@ -16,15 +16,31 @@
           "date": "2026-01-23",
           "vec_e": 7.0,
           "tie_total": 100.0
+        },
+        {
+          "event_id": "fus_467510_1769034273",
+          "lat": 48.7081906,
+          "lon": 44.5153353,
+          "date": "2026-02-07",
+          "vec_e": 3.0,
+          "tie_total": 49.0
+        },
+        {
+          "event_id": "a43d9d49-9602-4297-b087-7739404705a5",
+          "lat": 44.0984747,
+          "lon": 39.0718875,
+          "date": "2026-04-27 14:21:01",
+          "vec_e": 8.0,
+          "tie_total": 100.0
         }
       ]
     },
     {
       "campaign_id": "civilian_pressure_ops",
-      "name": "Civilian Pressure Ops",
-      "color": "#94a3b8",
+      "name": "CIVILIAN_PRESSURE_OPS",
+      "color": "#f59e0b",
       "status": "STANDBY",
-      "total_events": 1,
+      "total_events": 2,
       "last_event_date": "2026-01-23T00:00:00+00:00",
       "points": [
         {
@@ -34,15 +50,49 @@
           "date": "2026-01-23",
           "vec_e": 7.0,
           "tie_total": 99.0
+        },
+        {
+          "event_id": "fus_332462_1769034251",
+          "lat": 50.3984937,
+          "lon": 30.8816326,
+          "date": "2026-01-23",
+          "vec_e": 7.0,
+          "tie_total": 100.0
+        }
+      ]
+    },
+    {
+      "campaign_id": "logistics_network_attrition",
+      "name": "LOGISTICS_NETWORK_ATTRITION",
+      "color": "#f59e0b",
+      "status": "LIVE",
+      "total_events": 2,
+      "last_event_date": "2026-05-02T14:28:54+00:00",
+      "points": [
+        {
+          "event_id": "fus_418394_1768864393",
+          "lat": 46.4843023,
+          "lon": 30.7322878,
+          "date": "2026-01-24",
+          "vec_e": 5.0,
+          "tie_total": 82.0
+        },
+        {
+          "event_id": "4014ae99-8c31-46aa-a991-d4be57a39c09",
+          "lat": 47.9102734,
+          "lon": 33.3917703,
+          "date": "2026-05-02 14:28:54",
+          "vec_e": 5.0,
+          "tie_total": 24.0
         }
       ]
     },
     {
       "campaign_id": "energy_grid_degradation",
-      "name": "Energy Grid Degradation",
-      "color": "#eab308",
+      "name": "ENERGY_GRID_DEGRADATION",
+      "color": "#f59e0b",
       "status": "STANDBY",
-      "total_events": 2,
+      "total_events": 3,
       "last_event_date": "2026-01-24T00:00:00+00:00",
       "points": [
         {
@@ -60,6 +110,66 @@
           "date": "2026-01-24",
           "vec_e": 6.0,
           "tie_total": 100.0
+        },
+        {
+          "event_id": "fus_333408_1769034260",
+          "lat": 50.9080532,
+          "lon": 28.3867504,
+          "date": "2026-01-23",
+          "vec_e": 6.0,
+          "tie_total": 100.0
+        }
+      ]
+    },
+    {
+      "campaign_id": "missile_and_strike_complex",
+      "name": "MISSILE_AND_STRIKE_COMPLEX",
+      "color": "#f59e0b",
+      "status": "LIVE",
+      "total_events": 3,
+      "last_event_date": "2026-04-15T15:42:54+00:00",
+      "points": [
+        {
+          "event_id": "fus_669984_1769034366",
+          "lat": 50.4500336,
+          "lon": 30.5241361,
+          "date": "2026-01-23",
+          "vec_e": 6.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "25d585a9-0b88-4830-a84b-9cbb0e7b4876",
+          "lat": 42.0,
+          "lon": 51.0,
+          "date": "2026-04-15 15:28:10",
+          "vec_e": 1.0,
+          "tie_total": 0.0
+        },
+        {
+          "event_id": "2f73529a-c01c-4417-b6e6-612b07f75913",
+          "lat": 43.5,
+          "lon": 34.0,
+          "date": "2026-04-15 15:42:54",
+          "vec_e": 1.0,
+          "tie_total": 0.0
+        }
+      ]
+    },
+    {
+      "campaign_id": "air_defense_suppression",
+      "name": "AIR_DEFENSE_SUPPRESSION",
+      "color": "#f59e0b",
+      "status": "LIVE",
+      "total_events": 1,
+      "last_event_date": "2026-05-02T14:23:34+00:00",
+      "points": [
+        {
+          "event_id": "bbad0622-f0fa-4546-b578-f354eb188bf8",
+          "lat": 50.4500336,
+          "lon": 30.5241361,
+          "date": "2026-05-02 14:23:34",
+          "vec_e": 3.0,
+          "tie_total": 25.0
         }
       ]
     }
