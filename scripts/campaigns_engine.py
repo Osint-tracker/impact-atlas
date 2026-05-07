@@ -1,4 +1,4 @@
-﻿import csv
+import csv
 import io
 import json
 import os
@@ -219,10 +219,16 @@ def load_campaign_definitions(
             with open(cache_path, "r", encoding="utf-8") as handle:
                 payload = json.load(handle)
             cached = payload.get("campaigns", payload if isinstance(payload, list) else [])
-            if isinstance(cached, list):
+            if isinstance(cached, list) and cached:
                 return normalize_campaign_rows(cached)
     except Exception:
         pass
+
+    # Fallback to bootstrap curated csv
+    local_csv = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'bootstrap', 'campaign_definitions.curated.csv')
+    fallback = load_campaign_definitions_from_csv(local_csv)
+    if fallback:
+        return fallback
 
     return []
 
