@@ -109,18 +109,15 @@ def is_relevant_loose(text, url, source_type):
     if not content.strip() or len(content) < MIN_TEXT_LENGTH:
         return False
     
-    # GDELT/WEB_NEWS: Use looser filter
+    # GDELT/WEB_NEWS: Complete bypass. The API query already ensures relevance.
     if source_type in ['GDELT', 'WEB_NEWS']:
-        for anchor in MANDATORY_ANCHORS_LOOSE:
-            if anchor in content:
-                return True
-        return False
-    else:
-        # Telegram: Keep original strict filter
-        for anchor in MANDATORY_ANCHORS_STRICT:
-            if anchor in content:
-                return True
-        return False
+        return True
+    
+    # Telegram: Keep original strict filter
+    for anchor in MANDATORY_ANCHORS_STRICT:
+        if anchor in content:
+            return True
+    return False
 
 
 def dry_run_comparison(conn):

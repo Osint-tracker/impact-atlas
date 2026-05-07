@@ -63,9 +63,14 @@ def fetch_gdelt_window(start_str, end_str):
         print(f"   [ERROR] GDELT rate-limit exhausted after {max_retries} retries. Skipping window.")
         return []
 
+    except requests.exceptions.Timeout:
+        print(f"   [ERROR] GDELT timeout (server unresponsive). Skipping window.")
+        return []
+    except requests.exceptions.ConnectionError as e:
+        print(f"   [ERROR] GDELT connection failed: {e}")
+        return []
     except Exception as e:
-        # Spesso GDELT restituisce errore se non trova nulla in quel range preciso
-        # Non crashiamo, andiamo avanti
+        print(f"   [ERROR] GDELT unexpected error: {type(e).__name__}: {e}")
         return []
 
 
@@ -128,4 +133,4 @@ def fetch_gdelt_news(start_date, end_date):
 
 # Test rapido
 if __name__ == "__main__":
-    fetch_gdelt_news("20251225000000", "20260101000000")
+    fetch_gdelt_news("20260425000000", "20260510000000")

@@ -572,13 +572,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -587,8 +587,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -616,11 +614,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -656,15 +665,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -895,11 +895,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 0,
+    "engagement_count": 2,
+    "last_active": "2026-05-04 14:20:26",
+    "primary_tactic": "LOGISTICS_NON_KINETIC",
     "avg_tie": {
-      "kinetic": 0,
-      "target": 0,
-      "effect": 0
+      "kinetic": 1.5,
+      "target": 2.0,
+      "effect": 2.0
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -932,10 +934,30 @@
       0,
       0,
       0,
-      0
+      2
     ],
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
-    "recent_engagements": []
+    "recent_engagements": [
+      {
+        "date": "2026-05-04 14:20:26",
+        "title": "Ukrainian Forces Strengthen Defense near Transnistria",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.364,
+        "lon": 32.156,
+        "url": "https://t.me/DeepStateUA/23470",
+        "event_id": "5f04b8c2-f021-48e5-9293-db180228c330"
+      },
+      {
+        "date": "2026-05-04 13:57:01",
+        "title": "Russian Forces Advanced near Andriivka-Klevtsove",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.0281471,
+        "lon": 36.6447258,
+        "url": "https://t.me/DeepStateUA/23469",
+        "event_id": "b160aa20-11a0-46bf-a6fa-50b5e45f1a9d"
+      }
+    ]
   },
   {
     "unit_id": "RU_135TH_BN",
@@ -1146,11 +1168,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 0,
+    "engagement_count": 2,
+    "last_active": "2026-05-04 14:20:26",
+    "primary_tactic": "LOGISTICS_NON_KINETIC",
     "avg_tie": {
-      "kinetic": 0,
-      "target": 0,
-      "effect": 0
+      "kinetic": 1.5,
+      "target": 2.0,
+      "effect": 2.0
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -1183,10 +1207,30 @@
       0,
       0,
       0,
-      0
+      2
     ],
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
-    "recent_engagements": []
+    "recent_engagements": [
+      {
+        "date": "2026-05-04 14:20:26",
+        "title": "Ukrainian Forces Strengthen Defense near Transnistria",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.364,
+        "lon": 32.156,
+        "url": "https://t.me/DeepStateUA/23470",
+        "event_id": "5f04b8c2-f021-48e5-9293-db180228c330"
+      },
+      {
+        "date": "2026-05-04 13:57:01",
+        "title": "Russian Forces Advanced near Andriivka-Klevtsove",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.0281471,
+        "lon": 36.6447258,
+        "url": "https://t.me/DeepStateUA/23469",
+        "event_id": "b160aa20-11a0-46bf-a6fa-50b5e45f1a9d"
+      }
+    ]
   },
   {
     "unit_id": "UA_413TH_RAID_BN",
@@ -2139,20 +2183,18 @@
     "echelon_symbol": "XXXX",
     "sub_branch": null,
     "superior": "YUVO",
-    "engagement_count": 2,
-    "last_active": "2026-05-02 16:35:12",
+    "engagement_count": 3,
+    "last_active": "2026-05-04 12:20:27",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.5,
-      "target": 3.5,
-      "effect": 5.5
+      "kinetic": 3.67,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [
       "FPV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -2180,11 +2222,22 @@
       0,
       0,
       0,
+      1,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-04",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:20:27",
+        "title": "Russian Forces Advance near Orikhiv",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.848,
+        "lon": 32.004,
+        "url": "https://t.me/sashakots/61507",
+        "event_id": "ee899f07-df45-48b6-91b9-a022d6b51303"
+      },
       {
         "date": "2026-05-02 16:35:12",
         "title": "Russian Forces Target Vehicle Logistics near Preobrazhenka",
@@ -2403,11 +2456,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 0,
+    "engagement_count": 2,
+    "last_active": "2026-05-04 14:20:26",
+    "primary_tactic": "LOGISTICS_NON_KINETIC",
     "avg_tie": {
-      "kinetic": 0,
-      "target": 0,
-      "effect": 0
+      "kinetic": 1.5,
+      "target": 2.0,
+      "effect": 2.0
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -2440,10 +2495,30 @@
       0,
       0,
       0,
-      0
+      2
     ],
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
-    "recent_engagements": []
+    "recent_engagements": [
+      {
+        "date": "2026-05-04 14:20:26",
+        "title": "Ukrainian Forces Strengthen Defense near Transnistria",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.364,
+        "lon": 32.156,
+        "url": "https://t.me/DeepStateUA/23470",
+        "event_id": "5f04b8c2-f021-48e5-9293-db180228c330"
+      },
+      {
+        "date": "2026-05-04 13:57:01",
+        "title": "Russian Forces Advanced near Andriivka-Klevtsove",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.0281471,
+        "lon": 36.6447258,
+        "url": "https://t.me/DeepStateUA/23469",
+        "event_id": "b160aa20-11a0-46bf-a6fa-50b5e45f1a9d"
+      }
+    ]
   },
   {
     "unit_id": "RU_27TH_DIV",
@@ -3283,13 +3358,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -3298,8 +3373,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -3327,11 +3400,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -3367,15 +3451,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -3572,13 +3647,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -3587,8 +3662,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -3616,11 +3689,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -3656,15 +3740,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -3923,13 +3998,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -3938,8 +4013,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -3967,11 +4040,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -4007,15 +4091,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -4417,13 +4492,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -4456,13 +4531,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -4498,15 +4582,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -5299,13 +5374,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -5338,13 +5413,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -5380,15 +5464,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -5727,13 +5802,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -5766,13 +5841,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -5808,15 +5892,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -5902,13 +5977,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -5941,13 +6016,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -5983,15 +6067,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -6073,13 +6148,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -6088,8 +6163,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -6117,11 +6190,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -6157,15 +6241,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -8570,13 +8645,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -8609,13 +8684,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -8651,15 +8735,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -9586,13 +9661,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -9625,13 +9700,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -9667,15 +9751,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -10727,20 +10802,18 @@
     "echelon_symbol": "XXXX",
     "sub_branch": null,
     "superior": "YUVO",
-    "engagement_count": 2,
-    "last_active": "2026-05-02 16:35:12",
+    "engagement_count": 3,
+    "last_active": "2026-05-04 12:20:27",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.5,
-      "target": 3.5,
-      "effect": 5.5
+      "kinetic": 3.67,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [
       "FPV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -10768,11 +10841,22 @@
       0,
       0,
       0,
+      1,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-04",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:20:27",
+        "title": "Russian Forces Advance near Orikhiv",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.848,
+        "lon": 32.004,
+        "url": "https://t.me/sashakots/61507",
+        "event_id": "ee899f07-df45-48b6-91b9-a022d6b51303"
+      },
       {
         "date": "2026-05-02 16:35:12",
         "title": "Russian Forces Target Vehicle Logistics near Preobrazhenka",
@@ -14273,13 +14357,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -14312,13 +14396,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -14354,15 +14447,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -16319,13 +16403,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -16334,8 +16418,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -16363,11 +16445,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -16403,15 +16496,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -17302,13 +17386,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -17317,8 +17401,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -17346,11 +17428,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -17386,15 +17479,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -18340,13 +18424,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -18355,8 +18439,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -18384,11 +18466,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -18424,15 +18517,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -21122,13 +21206,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -21137,8 +21221,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -21166,11 +21248,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -21206,15 +21299,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -21353,13 +21437,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -21392,13 +21476,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -21434,15 +21527,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -21884,13 +21968,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -21899,8 +21983,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -21928,11 +22010,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -21968,15 +22061,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -23005,11 +23089,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 0,
+    "engagement_count": 2,
+    "last_active": "2026-05-04 14:20:26",
+    "primary_tactic": "LOGISTICS_NON_KINETIC",
     "avg_tie": {
-      "kinetic": 0,
-      "target": 0,
-      "effect": 0
+      "kinetic": 1.5,
+      "target": 2.0,
+      "effect": 2.0
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -23042,10 +23128,30 @@
       0,
       0,
       0,
-      0
+      2
     ],
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
-    "recent_engagements": []
+    "recent_engagements": [
+      {
+        "date": "2026-05-04 14:20:26",
+        "title": "Ukrainian Forces Strengthen Defense near Transnistria",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.364,
+        "lon": 32.156,
+        "url": "https://t.me/DeepStateUA/23470",
+        "event_id": "5f04b8c2-f021-48e5-9293-db180228c330"
+      },
+      {
+        "date": "2026-05-04 13:57:01",
+        "title": "Russian Forces Advanced near Andriivka-Klevtsove",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.0281471,
+        "lon": 36.6447258,
+        "url": "https://t.me/DeepStateUA/23469",
+        "event_id": "b160aa20-11a0-46bf-a6fa-50b5e45f1a9d"
+      }
+    ]
   },
   {
     "unit_id": "UA_157TH_BDE",
@@ -25484,13 +25590,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -25523,13 +25629,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -25565,15 +25680,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -26260,11 +26366,13 @@
     "garrison": null,
     "district": null,
     "branch": null,
-    "engagement_count": 0,
+    "engagement_count": 1,
+    "last_active": "2026-05-04 08:24:53",
+    "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 0,
-      "target": 0,
-      "effect": 0
+      "kinetic": 2.0,
+      "target": 3.0,
+      "effect": 1.0
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -26297,10 +26405,21 @@
       0,
       0,
       0,
-      0
+      1
     ],
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
-    "recent_engagements": []
+    "recent_engagements": [
+      {
+        "date": "2026-05-04 08:24:53",
+        "title": "Ukrainian Border Guards Destroy UAV in Kharkiv Region",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.9895375,
+        "lon": 36.2353424,
+        "url": "https://t.me/MAKS23_NAFO/97799",
+        "event_id": "49444703-29a7-46b3-a93c-3d48f9bee2bd"
+      }
+    ]
   },
   {
     "unit_id": "UA_127TH_BDE",
@@ -29555,20 +29674,18 @@
     "echelon_symbol": "XXXX",
     "sub_branch": null,
     "superior": "YUVO",
-    "engagement_count": 2,
-    "last_active": "2026-05-02 16:35:12",
+    "engagement_count": 3,
+    "last_active": "2026-05-04 12:20:27",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.5,
-      "target": 3.5,
-      "effect": 5.5
+      "kinetic": 3.67,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [
       "FPV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -29596,11 +29713,22 @@
       0,
       0,
       0,
+      1,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-04",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:20:27",
+        "title": "Russian Forces Advance near Orikhiv",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.848,
+        "lon": 32.004,
+        "url": "https://t.me/sashakots/61507",
+        "event_id": "ee899f07-df45-48b6-91b9-a022d6b51303"
+      },
       {
         "date": "2026-05-02 16:35:12",
         "title": "Russian Forces Target Vehicle Logistics near Preobrazhenka",
@@ -29982,13 +30110,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -29997,8 +30125,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -30026,11 +30152,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -30066,15 +30203,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -31675,13 +31803,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -31690,8 +31818,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -31719,11 +31845,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -31759,15 +31896,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -34980,13 +35108,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -34995,8 +35123,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -35024,11 +35150,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -35064,15 +35201,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -36791,13 +36919,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -36830,13 +36958,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -36872,15 +37009,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -38168,13 +38296,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -38207,13 +38335,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -38249,15 +38386,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -38356,20 +38484,18 @@
     "echelon_symbol": "XXXX",
     "sub_branch": null,
     "superior": "YUVO",
-    "engagement_count": 2,
-    "last_active": "2026-05-02 16:35:12",
+    "engagement_count": 3,
+    "last_active": "2026-05-04 12:20:27",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.5,
-      "target": 3.5,
-      "effect": 5.5
+      "kinetic": 3.67,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [
       "FPV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -38397,11 +38523,22 @@
       0,
       0,
       0,
+      1,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-04",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:20:27",
+        "title": "Russian Forces Advance near Orikhiv",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.848,
+        "lon": 32.004,
+        "url": "https://t.me/sashakots/61507",
+        "event_id": "ee899f07-df45-48b6-91b9-a022d6b51303"
+      },
       {
         "date": "2026-05-02 16:35:12",
         "title": "Russian Forces Target Vehicle Logistics near Preobrazhenka",
@@ -40010,13 +40147,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -40025,8 +40162,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -40054,11 +40189,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -40094,15 +40240,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -41593,13 +41730,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -41632,13 +41769,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -41674,15 +41820,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -41892,13 +42029,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -41931,13 +42068,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -41973,15 +42119,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -42387,13 +42524,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -42402,8 +42539,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -42431,11 +42566,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -42471,15 +42617,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -44055,13 +44192,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -44094,13 +44231,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -44136,15 +44282,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -45600,13 +45737,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -45639,13 +45776,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -45681,15 +45827,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -47091,13 +47228,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -47130,13 +47267,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -47172,15 +47318,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -47653,20 +47790,18 @@
     "echelon_symbol": "XXXX",
     "sub_branch": null,
     "superior": "YUVO",
-    "engagement_count": 2,
-    "last_active": "2026-05-02 16:35:12",
+    "engagement_count": 3,
+    "last_active": "2026-05-04 12:20:27",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.5,
-      "target": 3.5,
-      "effect": 5.5
+      "kinetic": 3.67,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [
       "FPV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -47694,11 +47829,22 @@
       0,
       0,
       0,
+      1,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-04",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:20:27",
+        "title": "Russian Forces Advance near Orikhiv",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.848,
+        "lon": 32.004,
+        "url": "https://t.me/sashakots/61507",
+        "event_id": "ee899f07-df45-48b6-91b9-a022d6b51303"
+      },
       {
         "date": "2026-05-02 16:35:12",
         "title": "Russian Forces Target Vehicle Logistics near Preobrazhenka",
@@ -47889,13 +48035,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -47928,13 +48074,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -47970,15 +48125,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -48349,20 +48495,18 @@
     "echelon_symbol": "XXXX",
     "sub_branch": null,
     "superior": "YUVO",
-    "engagement_count": 2,
-    "last_active": "2026-05-02 16:35:12",
+    "engagement_count": 3,
+    "last_active": "2026-05-04 12:20:27",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.5,
-      "target": 3.5,
-      "effect": 5.5
+      "kinetic": 3.67,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [
       "FPV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -48390,11 +48534,22 @@
       0,
       0,
       0,
+      1,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-04",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:20:27",
+        "title": "Russian Forces Advance near Orikhiv",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.848,
+        "lon": 32.004,
+        "url": "https://t.me/sashakots/61507",
+        "event_id": "ee899f07-df45-48b6-91b9-a022d6b51303"
+      },
       {
         "date": "2026-05-02 16:35:12",
         "title": "Russian Forces Target Vehicle Logistics near Preobrazhenka",
@@ -48800,13 +48955,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -48815,8 +48970,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -48844,11 +48997,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -48884,15 +49048,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -49177,13 +49332,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -49192,8 +49347,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -49221,11 +49374,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -49261,15 +49425,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -49293,20 +49448,18 @@
     "echelon_symbol": "XXXX",
     "sub_branch": null,
     "superior": "YUVO",
-    "engagement_count": 2,
-    "last_active": "2026-05-02 16:35:12",
+    "engagement_count": 3,
+    "last_active": "2026-05-04 12:20:27",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.5,
-      "target": 3.5,
-      "effect": 5.5
+      "kinetic": 3.67,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [
       "FPV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -49334,11 +49487,22 @@
       0,
       0,
       0,
+      1,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-04",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:20:27",
+        "title": "Russian Forces Advance near Orikhiv",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.848,
+        "lon": 32.004,
+        "url": "https://t.me/sashakots/61507",
+        "event_id": "ee899f07-df45-48b6-91b9-a022d6b51303"
+      },
       {
         "date": "2026-05-02 16:35:12",
         "title": "Russian Forces Target Vehicle Logistics near Preobrazhenka",
@@ -50863,13 +51027,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -50878,8 +51042,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -50907,11 +51069,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -50947,15 +51120,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -51721,13 +51885,17 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 0,
+    "engagement_count": 1,
+    "last_active": "2026-05-04 12:07:21",
+    "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 0,
-      "target": 0,
-      "effect": 0
+      "kinetic": 3.0,
+      "target": 8.0,
+      "effect": 3.0
     },
-    "assets_detected": [],
+    "assets_detected": [
+      "S-400"
+    ],
     "engagement_trend_30d": [
       0,
       0,
@@ -51758,10 +51926,21 @@
       0,
       0,
       0,
-      0
+      1
     ],
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
-    "recent_engagements": []
+    "recent_engagements": [
+      {
+        "date": "2026-05-04 12:07:21",
+        "title": "Ukrainian Forces Bypass Russian Air Defense Positions",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 55.625578,
+        "lon": 37.6063916,
+        "url": "https://t.me/noel_reports/45904",
+        "event_id": "a3564cfd-6761-4b75-8b01-d5452811ea4f"
+      }
+    ]
   },
   {
     "unit_id": "RU_5TH_DIV",
@@ -54380,13 +54559,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -54419,13 +54598,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -54461,15 +54649,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -55417,13 +55596,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -55432,8 +55611,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -55461,11 +55638,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -55501,15 +55689,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -55666,13 +55845,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -55681,8 +55860,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -55710,11 +55887,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -55750,15 +55938,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -55964,13 +56143,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -56003,13 +56182,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -56045,15 +56233,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -56786,13 +56965,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -56801,8 +56980,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -56830,11 +57007,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -56870,15 +57058,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -58027,11 +58206,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 0,
+    "engagement_count": 2,
+    "last_active": "2026-05-04 14:20:26",
+    "primary_tactic": "LOGISTICS_NON_KINETIC",
     "avg_tie": {
-      "kinetic": 0,
-      "target": 0,
-      "effect": 0
+      "kinetic": 1.5,
+      "target": 2.0,
+      "effect": 2.0
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -58064,10 +58245,30 @@
       0,
       0,
       0,
-      0
+      2
     ],
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
-    "recent_engagements": []
+    "recent_engagements": [
+      {
+        "date": "2026-05-04 14:20:26",
+        "title": "Ukrainian Forces Strengthen Defense near Transnistria",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.364,
+        "lon": 32.156,
+        "url": "https://t.me/DeepStateUA/23470",
+        "event_id": "5f04b8c2-f021-48e5-9293-db180228c330"
+      },
+      {
+        "date": "2026-05-04 13:57:01",
+        "title": "Russian Forces Advanced near Andriivka-Klevtsove",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.0281471,
+        "lon": 36.6447258,
+        "url": "https://t.me/DeepStateUA/23469",
+        "event_id": "b160aa20-11a0-46bf-a6fa-50b5e45f1a9d"
+      }
+    ]
   },
   {
     "unit_id": "RU_239TH_RGT",
@@ -58288,11 +58489,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 0,
+    "engagement_count": 2,
+    "last_active": "2026-05-04 14:20:26",
+    "primary_tactic": "LOGISTICS_NON_KINETIC",
     "avg_tie": {
-      "kinetic": 0,
-      "target": 0,
-      "effect": 0
+      "kinetic": 1.5,
+      "target": 2.0,
+      "effect": 2.0
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -58325,10 +58528,30 @@
       0,
       0,
       0,
-      0
+      2
     ],
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
-    "recent_engagements": []
+    "recent_engagements": [
+      {
+        "date": "2026-05-04 14:20:26",
+        "title": "Ukrainian Forces Strengthen Defense near Transnistria",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.364,
+        "lon": 32.156,
+        "url": "https://t.me/DeepStateUA/23470",
+        "event_id": "5f04b8c2-f021-48e5-9293-db180228c330"
+      },
+      {
+        "date": "2026-05-04 13:57:01",
+        "title": "Russian Forces Advanced near Andriivka-Klevtsove",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.0281471,
+        "lon": 36.6447258,
+        "url": "https://t.me/DeepStateUA/23469",
+        "event_id": "b160aa20-11a0-46bf-a6fa-50b5e45f1a9d"
+      }
+    ]
   },
   {
     "unit_id": "RU_1454TH_RGT",
@@ -58795,13 +59018,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -58810,8 +59033,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -58839,11 +59060,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -58879,15 +59111,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -59326,13 +59549,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -59365,13 +59588,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -59407,15 +59639,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -59439,13 +59662,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -59454,8 +59677,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -59483,11 +59704,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -59523,15 +59755,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -61307,20 +61530,18 @@
     "echelon_symbol": "XXXX",
     "sub_branch": null,
     "superior": "YUVO",
-    "engagement_count": 2,
-    "last_active": "2026-05-02 16:35:12",
+    "engagement_count": 3,
+    "last_active": "2026-05-04 12:20:27",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.5,
-      "target": 3.5,
-      "effect": 5.5
+      "kinetic": 3.67,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [
       "FPV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -61348,11 +61569,22 @@
       0,
       0,
       0,
+      1,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-04",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:20:27",
+        "title": "Russian Forces Advance near Orikhiv",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.848,
+        "lon": 32.004,
+        "url": "https://t.me/sashakots/61507",
+        "event_id": "ee899f07-df45-48b6-91b9-a022d6b51303"
+      },
       {
         "date": "2026-05-02 16:35:12",
         "title": "Russian Forces Target Vehicle Logistics near Preobrazhenka",
@@ -61878,20 +62110,18 @@
     "echelon_symbol": "XXXX",
     "sub_branch": null,
     "superior": "YUVO",
-    "engagement_count": 2,
-    "last_active": "2026-05-02 16:35:12",
+    "engagement_count": 3,
+    "last_active": "2026-05-04 12:20:27",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.5,
-      "target": 3.5,
-      "effect": 5.5
+      "kinetic": 3.67,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [
       "FPV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -61919,11 +62149,22 @@
       0,
       0,
       0,
+      1,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-04",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:20:27",
+        "title": "Russian Forces Advance near Orikhiv",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.848,
+        "lon": 32.004,
+        "url": "https://t.me/sashakots/61507",
+        "event_id": "ee899f07-df45-48b6-91b9-a022d6b51303"
+      },
       {
         "date": "2026-05-02 16:35:12",
         "title": "Russian Forces Target Vehicle Logistics near Preobrazhenka",
@@ -62400,20 +62641,18 @@
     "echelon_symbol": "XXXX",
     "sub_branch": null,
     "superior": "YUVO",
-    "engagement_count": 2,
-    "last_active": "2026-05-02 16:35:12",
+    "engagement_count": 3,
+    "last_active": "2026-05-04 12:20:27",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.5,
-      "target": 3.5,
-      "effect": 5.5
+      "kinetic": 3.67,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [
       "FPV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -62441,11 +62680,22 @@
       0,
       0,
       0,
+      1,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-04",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:20:27",
+        "title": "Russian Forces Advance near Orikhiv",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.848,
+        "lon": 32.004,
+        "url": "https://t.me/sashakots/61507",
+        "event_id": "ee899f07-df45-48b6-91b9-a022d6b51303"
+      },
       {
         "date": "2026-05-02 16:35:12",
         "title": "Russian Forces Target Vehicle Logistics near Preobrazhenka",
@@ -63648,20 +63898,18 @@
     "echelon_symbol": "XXXX",
     "sub_branch": null,
     "superior": "YUVO",
-    "engagement_count": 2,
-    "last_active": "2026-05-02 16:35:12",
+    "engagement_count": 3,
+    "last_active": "2026-05-04 12:20:27",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.5,
-      "target": 3.5,
-      "effect": 5.5
+      "kinetic": 3.67,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [
       "FPV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -63689,11 +63937,22 @@
       0,
       0,
       0,
+      1,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-04",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:20:27",
+        "title": "Russian Forces Advance near Orikhiv",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.848,
+        "lon": 32.004,
+        "url": "https://t.me/sashakots/61507",
+        "event_id": "ee899f07-df45-48b6-91b9-a022d6b51303"
+      },
       {
         "date": "2026-05-02 16:35:12",
         "title": "Russian Forces Target Vehicle Logistics near Preobrazhenka",
@@ -64233,20 +64492,18 @@
     "echelon_symbol": "XXXX",
     "sub_branch": null,
     "superior": "YUVO",
-    "engagement_count": 2,
-    "last_active": "2026-05-02 16:35:12",
+    "engagement_count": 3,
+    "last_active": "2026-05-04 12:20:27",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.5,
-      "target": 3.5,
-      "effect": 5.5
+      "kinetic": 3.67,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [
       "FPV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -64274,11 +64531,22 @@
       0,
       0,
       0,
+      1,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-04",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:20:27",
+        "title": "Russian Forces Advance near Orikhiv",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.848,
+        "lon": 32.004,
+        "url": "https://t.me/sashakots/61507",
+        "event_id": "ee899f07-df45-48b6-91b9-a022d6b51303"
+      },
       {
         "date": "2026-05-02 16:35:12",
         "title": "Russian Forces Target Vehicle Logistics near Preobrazhenka",
@@ -64910,13 +65178,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -64925,8 +65193,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -64954,11 +65220,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -64994,15 +65271,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -65383,13 +65651,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -65422,13 +65690,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -65464,15 +65741,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -66289,13 +66557,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -66328,13 +66596,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -66370,15 +66647,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -66847,13 +67115,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -66886,13 +67154,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -66928,15 +67205,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -66960,13 +67228,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -66975,8 +67243,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -67004,11 +67270,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -67044,15 +67321,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -67138,13 +67406,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -67177,13 +67445,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -67219,15 +67496,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ]
   },
@@ -69165,13 +69433,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -69180,8 +69448,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -69209,11 +69475,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -69249,15 +69526,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -70000,13 +70268,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -70015,8 +70283,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -70044,11 +70310,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -70084,15 +70361,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ]
   },
@@ -70503,13 +70771,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -70518,8 +70786,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -70547,11 +70813,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -70587,15 +70864,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ],
     "casualty_count": 43,
@@ -70762,13 +71030,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -70777,8 +71045,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -70806,11 +71072,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -70846,15 +71123,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ],
     "casualty_count": 26,
@@ -71475,13 +71743,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -71514,13 +71782,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -71556,15 +71833,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ],
     "casualty_count": 16,
@@ -72267,13 +72535,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 8,
-    "last_active": "2026-05-02 17:11:50",
+    "engagement_count": 9,
+    "last_active": "2026-05-04 09:48:55",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 4.38,
-      "target": 4.62,
-      "effect": 5.38
+      "kinetic": 4.22,
+      "target": 4.44,
+      "effect": 5.33
     },
     "assets_detected": [
       "Bukhanka"
@@ -72306,13 +72574,22 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 09:48:55",
+        "title": "Ukrainian Forces Conduct Operation in Pokrovsk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.2771086,
+        "lon": 37.1772482,
+        "url": "https://t.me/MAKS23_NAFO/97822",
+        "event_id": "5d74b24c-eaa9-42ab-929f-56df9a339226"
+      },
       {
         "date": "2026-05-02 17:11:50",
         "title": "Russian Soldiers Captured near Antonivskyi Bridge",
@@ -72348,15 +72625,6 @@
         "lon": 38.9150477,
         "url": "https://t.me/MAKS23_NAFO/86793",
         "event_id": "d89d3387-0b7f-4ac4-8d52-34b9c508a361"
-      },
-      {
-        "date": "2026-01-26 10:09:29",
-        "title": "Russian Strike in Kyiv Results in Casualties and Damage",
-        "location": "Rear_Area_UA",
-        "lat": 50.4500336,
-        "lon": 30.5241361,
-        "url": "https://t.me/MAKS23_NAFO",
-        "event_id": "64548c61-6353-4f86-9b96-8d31243c0b33"
       }
     ],
     "casualty_count": 41,
@@ -72495,13 +72763,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -72510,8 +72778,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -72539,11 +72805,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -72579,15 +72856,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ],
     "casualty_count": 29,
@@ -73059,11 +73327,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 0,
+    "engagement_count": 2,
+    "last_active": "2026-05-04 14:20:26",
+    "primary_tactic": "LOGISTICS_NON_KINETIC",
     "avg_tie": {
-      "kinetic": 0,
-      "target": 0,
-      "effect": 0
+      "kinetic": 1.5,
+      "target": 2.0,
+      "effect": 2.0
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -73096,10 +73366,30 @@
       0,
       0,
       0,
-      0
+      2
     ],
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Low",
-    "recent_engagements": [],
+    "recent_engagements": [
+      {
+        "date": "2026-05-04 14:20:26",
+        "title": "Ukrainian Forces Strengthen Defense near Transnistria",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.364,
+        "lon": 32.156,
+        "url": "https://t.me/DeepStateUA/23470",
+        "event_id": "5f04b8c2-f021-48e5-9293-db180228c330"
+      },
+      {
+        "date": "2026-05-04 13:57:01",
+        "title": "Russian Forces Advanced near Andriivka-Klevtsove",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.0281471,
+        "lon": 36.6447258,
+        "url": "https://t.me/DeepStateUA/23469",
+        "event_id": "b160aa20-11a0-46bf-a6fa-50b5e45f1a9d"
+      }
+    ],
     "casualty_count": 8,
     "missing_count": 8
   },
@@ -73200,13 +73490,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 12,
-    "last_active": "2026-05-02 18:55:18",
+    "engagement_count": 13,
+    "last_active": "2026-05-04 12:56:36",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.08,
-      "target": 3.67,
-      "effect": 5.42
+      "kinetic": 3.15,
+      "target": 3.92,
+      "effect": 5.08
     },
     "assets_detected": [
       "Buk surface",
@@ -73215,8 +73505,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
       0,
       0,
       0,
@@ -73244,11 +73532,22 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-02",
+    "engagement_trend_anchor": "2026-05-04",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-04 12:56:36",
+        "title": "Ukrainian Forces Repel Russian Assault near Lyman",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.9801314,
+        "lon": 37.8168012,
+        "url": "https://t.me/insiderUKR/123621",
+        "event_id": "78a0013a-28d0-44ee-93ac-c8d2fb95136c"
+      },
       {
         "date": "2026-05-02 18:55:18",
         "title": "Ukrainian FPV Unit Engages Russian Forces in Donetsk Region",
@@ -73284,15 +73583,6 @@
         "lon": 32.702,
         "url": "https://t.me/ukrliberation/19540",
         "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
-      },
-      {
-        "date": "2026-04-13 14:59:59",
-        "title": "Ukrainian Forces Withdraw from Dvorichanske Area",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 50.017227,
-        "lon": 37.678602,
-        "url": "https://t.me/ukrliberation/19527",
-        "event_id": "e0a52569-f9a7-4bff-85ea-b9cae9956e25"
       }
     ],
     "casualty_count": 12,
