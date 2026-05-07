@@ -4,7 +4,7 @@
 
 (function () {
   'use strict';
- console.log("°¸¡¬ MAP.JS UPDATED VERSION LOADED °¸¡¬");
+  console.log("[MAP.JS] RESTORED & INITIALIZED");
 
   // ============================================
   // 1. GLOBAL STATE (Declared First)
@@ -24,6 +24,10 @@
   let strategicHullLayer = null;
   let strategicCampaignDefinitions = [];
   let strategicCampaignReports = [];
+  
+  // Exporting to window for access by index.html dossier modal
+  window.strategicCampaignDefinitions = [];
+  window.strategicCampaignReports = [];
   let selectedStrategicCampaignId = null;
   const strategicSparklineCharts = {};
   const strategicCanvasRenderer = L.canvas();
@@ -1355,6 +1359,11 @@
       const defsPayload = result[1] || {};
       strategicCampaignReports = Array.isArray(reportsPayload.campaigns) ? reportsPayload.campaigns : [];
       strategicCampaignDefinitions = Array.isArray(defsPayload.campaigns) ? defsPayload.campaigns : [];
+      
+      // Update window references for dossier modal
+      window.strategicCampaignReports = strategicCampaignReports;
+      window.strategicCampaignDefinitions = strategicCampaignDefinitions;
+      
       renderStrategicCampaignCards();
     });
   }

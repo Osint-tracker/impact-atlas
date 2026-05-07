@@ -315,10 +315,11 @@ def _maybe_generate_llm_brief(
     try:
         client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key)
         prompt = (
-            "Write a concise strategic brief (max 3 sentences) for a military campaign dashboard. "
+            "Write a concise strategic brief (max 2 sentences) for a military campaign dashboard. "
             f"Campaign: {campaign_name}. Status: {status}. Tagged events: {total_events}. "
             f"Weekly cumulative TIE: {weekly_tie_cumulative:.1f}. Cumulative Effect vector: {sum_vec_e:.1f}. "
-            "Focus on operational implication, not narrative storytelling."
+            "IMPORTANT: Return ONLY the plain text. Do NOT use markdown (no **). Do NOT include 'Strategic Brief:' or any other prefix. "
+            "Keep it clinical and direct."
         )
 
         # Robust retry logic for external API calls (Resilience Upgrade)
