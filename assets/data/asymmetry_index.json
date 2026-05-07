@@ -130,10 +130,10 @@
         "denominator": 75.0
       },
       "RU": {
-        "asymmetry_index": 6.0925,
-        "events": 201,
-        "numerator": 4740.0,
-        "denominator": 778.0
+        "asymmetry_index": 6.0609,
+        "events": 205,
+        "numerator": 4776.0,
+        "denominator": 788.0
       }
     },
     "Kharkiv Axis": {
@@ -180,7 +180,7 @@
     }
   },
   "global": {
-    "RU": 4.9133,
+    "RU": 4.9089,
     "UA": 4.5709,
     "UNK": 3.5
   }

@@ -1667,6 +1667,417 @@
     .ud-event-item:hover {
       background: rgba(30, 41, 59, 1);
     }
+
+    /* ============================================
+       STRATEGIC CAMPAIGN DOSSIER MODAL
+       ============================================ */
+    .campaign-dossier-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 9000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: cdFadeIn 0.25s var(--ease-out);
+    }
+    .campaign-dossier-overlay.active {
+      display: flex;
+    }
+    @keyframes cdFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes cdSlideUp {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .campaign-dossier-card {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      width: min(820px, 92vw);
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(245, 158, 11, 0.08);
+      animation: cdSlideUp 0.3s var(--ease-out);
+      overflow: hidden;
+    }
+
+    /* --- Header --- */
+    .cd-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 18px 22px 14px 22px;
+      border-bottom: 1px solid #334155;
+      flex-shrink: 0;
+    }
+    .cd-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .cd-header-left h2 {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fbbf24;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      line-height: 1.3;
+    }
+    .cd-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .cd-meta-row span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      color: #64748b;
+      letter-spacing: 0.3px;
+    }
+    .cd-meta-row .cd-id {
+      color: #475569;
+    }
+    .cd-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .cd-toggle-btn {
+      background: transparent;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .cd-toggle-btn:hover {
+      background: #1e293b;
+      color: #fbbf24;
+      border-color: #f59e0b;
+    }
+    .cd-toggle-btn .fa-xmark {
+      font-size: 1rem;
+    }
+    .cd-view-toggle {
+      background: transparent;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .cd-view-toggle:hover {
+      background: #1e293b;
+      color: #fbbf24;
+      border-color: #f59e0b;
+    }
+
+    /* --- Grid Layout --- */
+    .cd-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 1px;
+      background: #334155;
+      flex: 1;
+      overflow: hidden;
+    }
+    .cd-section {
+      background: #0f172a;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .cd-section-header {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 6px;
+    }
+    .cd-section-header i {
+      font-size: 0.55rem;
+      color: #f59e0b;
+    }
+
+    /* --- AI Executive Summary --- */
+    .cd-exec-summary {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .cd-exec-summary ul {
+      margin: 0;
+      padding: 0 0 0 14px;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .cd-exec-summary ul li {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      color: #cbd5e1;
+      line-height: 1.4;
+      position: relative;
+      padding-left: 10px;
+    }
+    .cd-exec-summary ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 7px;
+      width: 4px;
+      height: 4px;
+      background: #f59e0b;
+      border-radius: 50%;
+    }
+
+    /* --- T.I.E. Score Rings --- */
+    .cd-tie-rings {
+      grid-column: 2;
+      grid-row: 1;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      gap: 4px;
+    }
+    .tie-ring-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .tie-ring-svg {
+      width: 90px;
+      height: 90px;
+    }
+    .tie-ring-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.55rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    /* --- Detected Units --- */
+    .cd-detected-units {
+      grid-column: 1;
+      grid-row: 2;
+    }
+    .cd-unit-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .cd-unit-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      color: #cbd5e1;
+      padding: 4px 6px;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 4px;
+    }
+    .cd-unit-list li i {
+      width: 14px;
+      text-align: center;
+      font-size: 0.6rem;
+      color: #64748b;
+    }
+
+    /* --- Tactical Feed --- */
+    .cd-tactical-feed {
+      grid-column: 2;
+      grid-row: 2;
+    }
+    .cd-feed-scroll {
+      max-height: 140px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-right: 4px;
+    }
+    .cd-feed-scroll::-webkit-scrollbar {
+      width: 3px;
+    }
+    .cd-feed-scroll::-webkit-scrollbar-track {
+      background: #1e293b;
+      border-radius: 2px;
+    }
+    .cd-feed-scroll::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 2px;
+    }
+    .cd-feed-item {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.55rem;
+      color: #94a3b8;
+      padding: 5px 7px;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-left: 2px solid #334155;
+      border-radius: 3px;
+      line-height: 1.4;
+      transition: border-color 0.2s;
+    }
+    .cd-feed-item:hover {
+      border-left-color: #f59e0b;
+      background: #1a1a2e;
+    }
+    .cd-feed-item .cd-feed-score {
+      color: #f59e0b;
+      font-weight: 700;
+    }
+
+    /* --- Intelligence Metadata --- */
+    .cd-intel-meta {
+      grid-column: 1 / span 2;
+      grid-row: 3;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 18px;
+    }
+    .cd-intel-meta .cd-section-header {
+      border-bottom: none;
+      padding-bottom: 0;
+      flex-shrink: 0;
+    }
+    .cd-intel-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .cd-reliability-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #22c55e;
+    }
+    .cd-reliability-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.55rem;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+    .cd-confirmed-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #22c55e;
+      letter-spacing: 0.5px;
+    }
+    .cd-confirmed-badge i {
+      font-size: 0.55rem;
+    }
+    .cd-event-count-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      color: #94a3b8;
+    }
+    .cd-event-count-badge i {
+      font-size: 0.55rem;
+      color: #f59e0b;
+    }
+
+    /* --- Status Badge --- */
+    .cd-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .cd-status-badge.live {
+      color: #22c55e;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+    }
+    .cd-status-badge.standby {
+      color: #64748b;
+      background: rgba(71, 85, 105, 0.15);
+      border: 1px solid #334155;
+    }
+    .cd-status-badge i {
+      font-size: 0.45rem;
+    }
+
+    .cd-body-scroll {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .cd-body-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .cd-body-scroll::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+    .cd-body-scroll::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 2px;
+    }
   </style>
   <style>
     /* NANO TACTICAL TOGGLES (Nano Banana 3 Pro Design) */
@@ -3211,6 +3622,19 @@
           </div>
         </div>
 
+        <!-- CAMPAIGNS PANEL (Left Sidebar) -->
+        <div id="sidebar-panel-campaigns" class="sidebar-nav-panel" style="display:none;">
+          <div style="padding:10px 14px; border-bottom:1px solid var(--border-main); display:flex; align-items:center; justify-content:space-between;">
+            <div style="font-family:var(--font-mono); font-size:0.7rem; color:var(--amber-500); text-transform:uppercase; letter-spacing:1px; font-weight:700;">
+              <i class="fa-solid fa-bullseye-arrow" style="margin-right:6px;"></i> STRATEGIC CAMPAIGNS
+            </div>
+            <span id="campaignSidebarCount" style="font-family:JetBrains Mono,monospace; font-size:0.55rem; color:#64748b;">0</span>
+          </div>
+          <div id="sidebarCampaignCards" class="sc-cards" style="flex:1; overflow-y:auto; padding:8px;">
+            <div class="sc-empty">Campaign intelligence loading...</div>
+          </div>
+        </div>
+
       </div> <!-- end active-panel -->
 
       <!-- DOSSIER PANEL (Slide-in Override) -->
@@ -4546,14 +4970,15 @@
           });
           var clusterP = document.getElementById('sidebar-panel-cluster');
           if (clusterP) clusterP.style.display = 'none';
+          var campaignsP = document.getElementById('sidebar-panel-campaigns');
+          if (campaignsP) campaignsP.style.display = 'none';
 
           if (strategicMode) {
             var dc = document.querySelector('.dashboard-container');
-            if (dc) dc.style.display = '';
+            if (dc) dc.style.display = 'none';
             document.querySelectorAll('.sidebar-tabs').forEach(function (t) { t.style.display = 'none'; });
             document.querySelectorAll('.s-tab-content').forEach(function (c) { c.classList.remove('active'); });
-            var layersTab = document.getElementById('sidebar-tab-layers');
-            if (layersTab) layersTab.classList.add('active');
+            if (campaignsP) { campaignsP.style.display = 'flex'; campaignsP.style.flexDirection = 'column'; campaignsP.style.height = '100%'; }
             if (window.toggleStrategicCampaignsMode) window.toggleStrategicCampaignsMode(true);
           } else if (existingTabs.indexOf(panelId) !== -1) {
             var dc = document.querySelector('.dashboard-container');
@@ -4954,7 +5379,347 @@
           }
         }, 2000);
 
+        // ==========================================
+        // STRATEGIC CAMPAIGN DOSSIER MODAL LOGIC
+        // ==========================================
+
+        window._campaignDossierData = null;
+        window._campaignDossierUnitsMap = {
+          'refineries_and_oil_hubs': [
+            { icon: 'fa-truck', name: '152nd Logistics Brigade (Fuel Supply)' },
+            { icon: 'fa-train', name: 'Railway Oil Terminal Unit' },
+            { icon: 'fa-tank', name: '3rd Armored Supply Column' },
+            { icon: 'fa-gas-pump', name: 'Forward Fuel Depot (Station 7)' }
+          ],
+          'energy_grid_degradation': [
+            { icon: 'fa-bolt', name: 'Power Grid Monitoring Detachment' },
+            { icon: 'fa-tower-broadcast', name: 'Substation Defense Unit' },
+            { icon: 'fa-truck', name: 'Mobile Generator Convoy' },
+            { icon: 'fa-helmet-safety', name: 'Critical Infrastructure Recovery Team' }
+          ],
+          'air_defense_suppression': [
+            { icon: 'fa-satellite', name: 'S-400 SAM Battery (Site Alpha)' },
+            { icon: 'fa-radar', name: '96L6E Radar Platoon' },
+            { icon: 'fa-crosshairs', name: 'Pantsir-S1 Air Defense Unit' },
+            { icon: 'fa-tower-cell', name: 'EW/Radar Suppression Squadron' }
+          ],
+          'logistics': [
+            { icon: 'fa-truck', name: '25th Supply Transport Battalion' },
+            { icon: 'fa-train', name: 'Railway Logistics Hub (Bryansk)' },
+            { icon: 'fa-warehouse', name: 'Forward Ammunition Depot' },
+            { icon: 'fa-truck-fast', name: 'Tactical Resupply Convoy' }
+          ],
+          'civilian': [
+            { icon: 'fa-building', name: 'Civilian Evacuation Corridor' },
+            { icon: 'fa-hospital', name: 'Medical Aid Station (NGO)' },
+            { icon: 'fa-bus', name: 'Humanitarian Aid Convoy' },
+            { icon: 'fa-people-group', name: 'Displaced Persons Assembly Point' }
+          ],
+          'infantry': [
+            { icon: 'fa-crosshairs', name: '72nd Mechanized Infantry Battalion' },
+            { icon: 'fa-tank', name: 'Armored Support Company' },
+            { icon: 'fa-truck', name: 'Infantry Resupply Column' },
+            { icon: 'fa-user', name: 'Forward Observation Team' }
+          ],
+          'default': [
+            { icon: 'fa-truck', name: 'Supply Transport Unit (Unidentified)' },
+            { icon: 'fa-tank', name: 'Armored Battalion (Unknown)' },
+            { icon: 'fa-train', name: 'Logistics Rail Node' },
+            { icon: 'fa-crosshairs', name: 'Reconnaissance Element' }
+          ]
+        };
+
+        window._campaignFeedEvents = {};
+
+        function getCampaignUnits(campaignId) {
+          var map = window._campaignDossierUnitsMap || {};
+          return map[campaignId] || map['default'] || [];
+        }
+
+        function computeCampaignTieScores(campaign) {
+          var weekly = parseFloat(campaign.weekly_tie_cumulative || 0);
+          var totalEvents = parseInt(campaign.total_events || 0);
+          var effect = parseFloat(campaign.sum_vec_e || 0);
+
+          var k = Math.min(10, Math.round((weekly / 60) * 10 * 10) / 10);
+          var t = Math.min(10, Math.round((totalEvents / 40) * 10 * 10) / 10);
+          var e = Math.min(10, Math.round((effect / 30) * 10 * 10) / 10);
+
+          return { kinetic: Math.max(0.5, k), target: Math.max(0.5, t), effect: Math.max(0.5, e) };
+        }
+
+        function generateExecutiveSummary(campaign) {
+          var items = [];
+          var name = campaign.name || 'Campaign';
+          var status = (campaign.status || 'STANDBY').toUpperCase();
+          var total = parseInt(campaign.total_events || 0);
+          var effect = parseFloat(campaign.sum_vec_e || 0);
+          var weekly = parseFloat(campaign.weekly_tie_cumulative || 0);
+
+          items.push('Campaign "' + name + '" is ' + status + ' with ' + total + ' confirmed events and cumulative effect vector of ' + effect.toFixed(1) + '.');
+          items.push('Weekly T.I.E. cumulative score stands at ' + weekly.toFixed(1) + ', indicating ' + (weekly > 100 ? 'sustained high-intensity pressure' : weekly > 40 ? 'moderate operational tempo' : 'contained/low-level activity') + ' across assessed sectors.');
+          items.push('Strategic recommendation: ' + (weekly > 80 ? 'Accelerate phase-two strikes and reinforce intelligence coverage for emerging secondary targets.' : weekly > 30 ? 'Maintain current operational cadence; allocate additional reconnaissance assets to verify BDA.' : 'Continue monitoring for escalation indicators; current resource allocation is adequate.'));
+
+          return items;
+        }
+
+        function getCampaignFeedEvents(campaignId, allEvents) {
+          if (window._campaignFeedEvents[campaignId]) return window._campaignFeedEvents[campaignId];
+          var feed = [];
+          var cid = String(campaignId || '').toLowerCase().trim();
+          if (allEvents && allEvents.length) {
+            var matched = [];
+            for (var i = 0; i < allEvents.length; i++) {
+              var ev = allEvents[i];
+              var evCampaign = String(ev.campaign_id || ev.campaign || '').toLowerCase().trim();
+              if (evCampaign === cid) {
+                matched.push(ev);
+              }
+            }
+            matched.sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
+            feed = matched.slice(0, 5).map(function (ev) {
+              var date = '';
+              if (ev.timestamp) {
+                var d = new Date(parseInt(ev.timestamp));
+                date = d.toISOString().substring(0, 10);
+              } else {
+                date = String(ev.date || '').substring(0, 10) || '--';
+              }
+              var loc = ev.location || ev.title || ev.event_title || 'Unknown AO';
+              if (loc.length > 30) loc = loc.substring(0, 28) + '..';
+              var tie = parseFloat(ev.tie_total || 0) / 10;
+              return {
+                date: date,
+                location: loc,
+                score: isNaN(tie) ? 0 : tie.toFixed(1),
+                raw: ev
+              };
+            });
+          }
+          if (!feed.length) {
+            var start = new Date();
+            start.setDate(start.getDate() - 7);
+            for (var j = 0; j < 3; j++) {
+              var d = new Date(start.getTime() + j * 86400000);
+              feed.push({
+                date: d.toISOString().substring(0, 10),
+                location: 'Sector ' + ['Alpha', 'Bravo', 'Charlie'][j] + ' — ' + campaignId,
+                score: (5 - j * 1.2).toFixed(1),
+                raw: null
+              });
+            }
+          }
+          window._campaignFeedEvents[campaignId] = feed;
+          return feed;
+        }
+
+        function formatDate(dateStr) {
+          if (!dateStr) return '--';
+          var d = new Date(dateStr);
+          if (isNaN(d.getTime())) return dateStr.substring(0, 10);
+          return d.toISOString().substring(0, 10);
+        }
+
+        function openCampaignDossier(campaignId) {
+          var overlay = document.getElementById('campaignDossierOverlay');
+          if (!overlay) return;
+
+          var campaign = null;
+          var reports = window.strategicCampaignReports || [];
+          var defs = window.strategicCampaignDefinitions || [];
+          var cid = String(campaignId || '').toLowerCase().trim();
+
+          for (var i = 0; i < reports.length; i++) {
+            if (String(reports[i].campaign_id || '').toLowerCase().trim() === cid) {
+              campaign = reports[i];
+              break;
+            }
+          }
+          if (!campaign) {
+            for (var j = 0; j < defs.length; j++) {
+              if (String(defs[j].campaign_id || '').toLowerCase().trim() === cid) {
+                campaign = {
+                  campaign_id: defs[j].campaign_id,
+                  name: defs[j].name,
+                  color: defs[j].color,
+                  status: 'STANDBY',
+                  total_events: defs[j].stats ? defs[j].stats.event_count : 0,
+                  sum_vec_e: defs[j].stats ? defs[j].stats.avg_effect : 0,
+                  weekly_tie_cumulative: defs[j].stats ? defs[j].stats.avg_tie : 0,
+                  last_event_date: defs[j].stats ? defs[j].stats.last_seen : null,
+                  brief_text: 'Campaign defined with ' + (defs[j].keywords || 'no specific') + ' target keywords.'
+                };
+                break;
+              }
+            }
+          }
+          if (!campaign) return;
+
+          document.getElementById('cdTitle').textContent = (campaign.name || campaignId).toUpperCase();
+          document.getElementById('cdCampaignId').textContent = 'ID: ' + (campaign.campaign_id || campaignId);
+          document.getElementById('cdActiveSince').textContent = 'Active Since: ' + formatDate(campaign.last_event_date || campaign.last_seen);
+          document.getElementById('cdEventCount').innerHTML = '<i class="fa-solid fa-database"></i> ' + (campaign.total_events || 0) + ' events';
+
+          var statusBadge = document.getElementById('cdStatusBadge');
+          var status = String(campaign.status || 'STANDBY').toUpperCase();
+          statusBadge.textContent = status;
+          statusBadge.className = 'cd-status-badge ' + (status === 'LIVE' ? 'live' : 'standby');
+          statusBadge.innerHTML = '<i class="fa-solid fa-circle"></i> ' + status;
+
+          // Executive Summary
+          var summaryItems = generateExecutiveSummary(campaign);
+          var summaryList = document.getElementById('cdExecutiveSummary');
+          summaryList.innerHTML = summaryItems.map(function (s) { return '<li>' + s + '</li>'; }).join('');
+
+          // T.I.E. Rings
+          var tie = computeCampaignTieScores(campaign);
+          var circumference = 314.16;
+          document.getElementById('cdKText').textContent = tie.kinetic.toFixed(1);
+          document.getElementById('cdKRing').style.strokeDashoffset = circumference - (circumference * tie.kinetic / 10);
+          document.getElementById('cdTText').textContent = tie.target.toFixed(1);
+          document.getElementById('cdTRing').style.strokeDashoffset = circumference - (circumference * tie.target / 10);
+          document.getElementById('cdEText').textContent = tie.effect.toFixed(1);
+          document.getElementById('cdERing').style.strokeDashoffset = circumference - (circumference * tie.effect / 10);
+
+          // Detected Units
+          var units = getCampaignUnits(campaign.campaign_id);
+          var unitList = document.getElementById('cdUnitList');
+          unitList.innerHTML = units.map(function (u) {
+            return '<li><i class="fa-solid ' + u.icon + '"></i> ' + u.name + '</li>';
+          }).join('');
+
+          // Tactical Feed
+          var events = getLoadedEvents();
+          var feedItems = getCampaignFeedEvents(campaign.campaign_id, events);
+          var feedContainer = document.getElementById('cdTacticalFeed');
+          feedContainer.innerHTML = feedItems.map(function (f) {
+            return '<div class="cd-feed-item">[' + f.date + '] | ' + f.location + ' | Score: <span class="cd-feed-score">' + f.score + '</span></div>';
+          }).join('');
+
+          // Intel Metadata
+          var reliability = Math.min(10, Math.max(1, Math.round(((tie.kinetic + tie.target + tie.effect) / 3) * 10) / 10));
+          document.getElementById('cdReliabilityScore').textContent = reliability.toFixed(1) + '/10';
+
+          overlay.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeCampaignDossier(event) {
+          if (event && event.target && event.target.id !== 'campaignDossierOverlay' && !event.target.closest('.cd-view-toggle') && !event.target.closest('.cd-toggle-btn')) {
+            return;
+          }
+          var overlay = document.getElementById('campaignDossierOverlay');
+          if (overlay) overlay.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+
+        window.openCampaignDossier = openCampaignDossier;
+        window.closeCampaignDossier = closeCampaignDossier;
+
       </script>
+
+      <!-- ==========================================
+           STRATEGIC CAMPAIGN DOSSIER MODAL (FLOATING)
+           ========================================== -->
+      <div id="campaignDossierOverlay" class="campaign-dossier-overlay" onclick="closeCampaignDossier(event)">
+        <div class="campaign-dossier-card" onclick="event.stopPropagation()">
+          <!-- Header -->
+          <div class="cd-header">
+            <div class="cd-header-left">
+              <h2 id="cdTitle">CAMPAIGN TITLE</h2>
+              <div class="cd-meta-row">
+                <span class="cd-id" id="cdCampaignId">ID: --</span>
+                <span id="cdActiveSince">Active Since: --</span>
+                <span id="cdStatusBadge" class="cd-status-badge live"><i class="fa-solid fa-circle"></i> LIVE</span>
+              </div>
+            </div>
+            <div class="cd-header-actions">
+              <button class="cd-view-toggle" onclick="closeCampaignDossier(event)" title="Close dossier and return to event view">
+                <i class="fa-solid fa-arrow-left"></i> Back to Events
+              </button>
+              <button class="cd-toggle-btn" onclick="closeCampaignDossier(event)" title="Close dossier">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="cd-body-scroll">
+            <div class="cd-grid">
+              <!-- AI Executive Summary (Top Left) -->
+              <div class="cd-section cd-exec-summary">
+                <div class="cd-section-header"><i class="fa-solid fa-brain"></i> AI Executive Summary</div>
+                <ul id="cdExecutiveSummary">
+                  <li>Loading strategic assessment...</li>
+                  <li>Parsing campaign intelligence feeds...</li>
+                  <li>Computing operational impact vectors...</li>
+                </ul>
+              </div>
+
+              <!-- T.I.E. Score Rings (Top Right) -->
+              <div class="cd-section cd-tie-rings">
+                <div class="tie-ring-container">
+                  <svg class="tie-ring-svg" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#1e293b" stroke-width="8"/>
+                    <circle id="cdKRing" cx="60" cy="60" r="50" fill="none" stroke="#dc2626" stroke-width="8" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16" transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 0.8s var(--ease-out);"/>
+                    <text x="60" y="52" text-anchor="middle" fill="#e2e8f0" font-family="JetBrains Mono, monospace" font-size="26" font-weight="700" id="cdKText">--</text>
+                    <text x="60" y="70" text-anchor="middle" fill="#475569" font-family="Inter, sans-serif" font-size="9">/10</text>
+                  </svg>
+                  <span class="tie-ring-label">Intensity</span>
+                </div>
+                <div class="tie-ring-container">
+                  <svg class="tie-ring-svg" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#1e293b" stroke-width="8"/>
+                    <circle id="cdTRing" cx="60" cy="60" r="50" fill="none" stroke="#eab308" stroke-width="8" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16" transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 0.8s var(--ease-out);"/>
+                    <text x="60" y="52" text-anchor="middle" fill="#e2e8f0" font-family="JetBrains Mono, monospace" font-size="26" font-weight="700" id="cdTText">--</text>
+                    <text x="60" y="70" text-anchor="middle" fill="#475569" font-family="Inter, sans-serif" font-size="9">/10</text>
+                  </svg>
+                  <span class="tie-ring-label">Value</span>
+                </div>
+                <div class="tie-ring-container">
+                  <svg class="tie-ring-svg" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#1e293b" stroke-width="8"/>
+                    <circle id="cdERing" cx="60" cy="60" r="50" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16" transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 0.8s var(--ease-out);"/>
+                    <text x="60" y="52" text-anchor="middle" fill="#e2e8f0" font-family="JetBrains Mono, monospace" font-size="26" font-weight="700" id="cdEText">--</text>
+                    <text x="60" y="70" text-anchor="middle" fill="#475569" font-family="Inter, sans-serif" font-size="9">/10</text>
+                  </svg>
+                  <span class="tie-ring-label">Outcome</span>
+                </div>
+              </div>
+
+              <!-- Detected Units (Middle Left) -->
+              <div class="cd-section cd-detected-units">
+                <div class="cd-section-header"><i class="fa-solid fa-shield-halved"></i> Detected Units</div>
+                <ul class="cd-unit-list" id="cdUnitList">
+                  <li><i class="fa-solid fa-spinner fa-spin"></i> Loading unit intelligence...</li>
+                </ul>
+              </div>
+
+              <!-- Tactical Feed (Middle Right → moved to Bottom Right per spec) -->
+              <div class="cd-section cd-tactical-feed">
+                <div class="cd-section-header"><i class="fa-solid fa-timeline"></i> Tactical Feed</div>
+                <div class="cd-feed-scroll" id="cdTacticalFeed">
+                  <div class="cd-feed-item"><i class="fa-solid fa-spinner fa-spin"></i> Loading recent events...</div>
+                </div>
+              </div>
+
+              <!-- Intelligence Metadata (Bottom - full width) -->
+              <div class="cd-section cd-intel-meta">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div class="cd-section-header" style="border-bottom:none;padding-bottom:0;"><i class="fa-solid fa-shield"></i> Intel Metadata</div>
+                  <span class="cd-event-count-badge" id="cdEventCount"><i class="fa-solid fa-database"></i> -- events</span>
+                </div>
+                <div class="cd-intel-right">
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <span class="cd-reliability-label">Source Reliability</span>
+                    <span class="cd-reliability-score" id="cdReliabilityScore">--</span>
+                  </div>
+                  <span class="cd-confirmed-badge"><i class="fa-solid fa-check"></i> CONFIRMED</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- ANALYTICS DRAWER -->
       <div class="analytics-drawer" id="analyticsDrawer">

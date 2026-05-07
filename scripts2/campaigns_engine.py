@@ -1,4 +1,4 @@
-﻿import csv
+import csv
 import io
 import json
 import os
@@ -320,17 +320,35 @@ def _maybe_generate_llm_brief(
             f"Weekly cumulative TIE: {weekly_tie_cumulative:.1f}. Cumulative Effect vector: {sum_vec_e:.1f}. "
             "Focus on operational implication, not narrative storytelling."
         )
-        response = client.chat.completions.create(
-            model="deepseek/deepseek-chat",
-            messages=[
-                {"role": "system", "content": "You are The Strategist, a strict military analyst."},
-                {"role": "user", "content": prompt},
-            ],
-            temperature=0.1,
-            max_tokens=120,
-        )
-        content = (response.choices[0].message.content or "").strip()
-        return content or None
+
+        # Robust retry logic for external API calls (Resilience Upgrade)
+        import time
+        import random
+        max_attempts = 3
+        for attempt in range(1, max_attempts + 1):
+            try:
+                response = client.chat.completions.create(
+                    model="deepseek/deepseek-v4-flash",
+                    messages=[
+                        {"role": "system", "content": "You are The Strategist, a strict military analyst."},
+                        {"role": "user", "content": prompt},
+                    ],
+                    temperature=0.1,
+                    max_tokens=120,
+                )
+                content = (response.choices[0].message.content or "").strip()
+                return content or None
+            except Exception as e:
+                err_str = str(e).lower()
+                is_transient = any(x in err_str for x in ["rate limit", "timeout", "bad gateway", "overloaded", "429", "502", "503"])
+                
+                if not is_transient or attempt == max_attempts:
+                    raise e
+                    
+                wait_time = 2.0 * (2 ** (attempt - 1)) + random.uniform(0, 1)
+                print(f"      [RETRY] API Error ({type(e).__name__}). Retrying in {wait_time:.1f}s...")
+                time.sleep(wait_time)
+                
     except Exception:
         return None
 

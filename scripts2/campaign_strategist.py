@@ -475,28 +475,46 @@ def create_openrouter_client(api_key: str) -> Any:
 def call_llm(client: Any, system: str, user_prompt: str) -> Tuple[str, float]:
     """
     Call deepseek/deepseek-v4-flash and return (raw_response, elapsed_seconds).
-    Retries once on empty response. Raises on hard failure.
+    Retries on empty response or transient API errors (429, 502, 503, etc.).
     """
+    import random
     t0 = time.monotonic()
-    for attempt in range(3):
-        response = client.chat.completions.create(
-            model=STRATEGIST_MODEL,
-            messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": user_prompt},
-            ],
-            temperature=LLM_TEMPERATURE,
-            max_tokens=LLM_MAX_TOKENS,
-            response_format={"type": "json_object"},
-        )
-        raw = (response.choices[0].message.content or "").strip()
-        if raw:
-            break
-        if attempt == 0:
-            logger.warning("Empty LLM response, retrying after 1s...")
-            time.sleep(1.0)
-    elapsed = time.monotonic() - t0
-    return raw, elapsed
+    max_attempts = 3
+    
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = client.chat.completions.create(
+                model=STRATEGIST_MODEL,
+                messages=[
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user_prompt},
+                ],
+                temperature=LLM_TEMPERATURE,
+                max_tokens=LLM_MAX_TOKENS,
+                response_format={"type": "json_object"},
+            )
+            raw = (response.choices[0].message.content or "").strip()
+            if raw:
+                elapsed = time.monotonic() - t0
+                return raw, elapsed
+            
+            logger.warning("Empty LLM response (Attempt %d/%d)", attempt, max_attempts)
+            if attempt == max_attempts:
+                break
+        except Exception as e:
+            err_str = str(e).lower()
+            is_transient = any(x in err_str for x in ["rate limit", "timeout", "bad gateway", "overloaded", "429", "502", "503"])
+            
+            if not is_transient or attempt == max_attempts:
+                logger.error("LLM Hard Error: %s", e)
+                raise e
+            
+            wait_time = 2.0 * (2 ** (attempt - 1)) + random.uniform(0, 1)
+            logger.warning("API Transient Error (%s). Retrying in %.1fs (Attempt %d/%d)...", 
+                           type(e).__name__, wait_time, attempt, max_attempts)
+            time.sleep(wait_time)
+            
+    return "", time.monotonic() - t0
 
 
 # ============================================================================

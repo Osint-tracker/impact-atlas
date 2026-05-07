@@ -1,15 +1,14 @@
 import sqlite3
-import requests
-from bs4 import BeautifulSoup
+import asyncio
+import httpx
 import os
 import json
 import re
 import difflib
-import time
 import math
 import logging
-from datetime import datetime, timedelta
-from openai import OpenAI
+from datetime import datetime
+from openai import AsyncOpenAI
 from dotenv import load_dotenv
 from campaigns_engine import (
     ensure_campaign_columns,
@@ -25,12 +24,9 @@ except ImportError:
         from instruments.vision_instrument import MediaProcessor
     except ImportError:
         MediaProcessor = None  # Graceful degradation if opencv not installed
-from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut
 from geo_instrument import GeoProbe  
 from history_instrument import UnitHistoryProbe
 from debug_instrument import CrashRecorder
-from ai_inference_node import TitanIntelligenceNode  # Trident: Fine-tuned classifier
 from layer1_sensor import TitanSensor  # Trident: Physics-based scorer
 import sys
 
@@ -42,8 +38,6 @@ except Exception:
 # Windows Unicode Fix
 sys.stdout.reconfigure(encoding='utf-8')
 
-geolocator = Nominatim(user_agent="ai_agent_fixer_v2")
-
 # --- SETUP LOGGING ---
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
@@ -51,6 +45,8 @@ logger = logging.getLogger("SUPER_SQUAD")
 
 # --- LOAD ENV ---
 load_dotenv()
+
+API_SEMAPHORE = asyncio.Semaphore(30)
 
 # Absolute Paths for JSON Databases
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -360,23 +356,18 @@ class SuperSquadAgent:
         self.openai_api_key = os.getenv("OPENAI_API_KEY")
         self.openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
 
-        # MODIFICA: Carichiamo Serper
-        self.serper_api_key = os.getenv("SERPER_API_KEY")
-        if not self.serper_api_key:
-            print("ATTENZIONE: Manca SERPER_API_KEY nel file .env")
-
         if not self.openai_api_key or not self.openrouter_api_key:
             raise ValueError("ERROR: API Keys missing")
 
         # 2. Initialize Clients
-        self.openai_client = OpenAI(api_key=self.openai_api_key, timeout=120.0, max_retries=3)
-        self.openrouter_client = OpenAI(
+        self.openai_client = AsyncOpenAI(api_key=self.openai_api_key, timeout=120.0, max_retries=3)
+        self.openrouter_client = AsyncOpenAI(
             base_url="https://openrouter.ai/api/v1",
             api_key=self.openrouter_api_key,
             timeout=120.0,
             max_retries=3,
         )
-        self.brain_client = OpenAI(
+        self.brain_client = AsyncOpenAI(
             base_url="https://openrouter.ai/api/v1",
             api_key=os.getenv("OPENROUTER_API_KEY"),
             default_headers={
@@ -386,7 +377,7 @@ class SuperSquadAgent:
             timeout=180.0,
             max_retries=3,
         )
-        self.router_client = OpenAI(
+        self.router_client = AsyncOpenAI(
             base_url="https://openrouter.ai/api/v1",
             api_key=os.getenv("OPENROUTER_API_KEY"),
             default_headers={
@@ -402,7 +393,7 @@ class SuperSquadAgent:
         self.keywords_db = self._load_json_db(KEYWORDS_DB_PATH, "keywords")
 
         # 4. Initialize Geographic Sanity Probe (Sanfilippo Method)
-        self.geo_probe = GeoProbe(use_reverse_geocoding=True, timeout=5)
+        self.geo_probe = GeoProbe(use_reverse_geocoding=False, timeout=5)
         
         # 5. Initialize Kinetic Plausibility Probe (Sanfilippo Method - Part 2)
         self.history_probe = UnitHistoryProbe()
@@ -416,7 +407,7 @@ class SuperSquadAgent:
         self.orbat_reverse_lookup = {}  # lowercase name -> canonical unit_id
         self._load_orbat_whitelist()
 
-        print("Super Squad Agent Initialized (Engine: Google Serper Time-Machine).")
+        print("Super Squad Agent Initialized (Engine: Async AI Swarm).")
 
     # =========================================================================
     # 🗺️ ACLED FULL SOURCE MAP (180+ SOURCES)
@@ -661,9 +652,46 @@ class SuperSquadAgent:
             print(f"❌ Error loading DB {path}: {e}")
             return {}
 
-    # =========================================================================
-    # 🛡️ ORBAT INTEGRITY GATEKEEPER (v2.0 — Unit Assignment Validator)
-    # =========================================================================
+    async def _call_llm_with_backoff(self, client, **kwargs):
+        """
+        Wrapper for API calls with Exponential Backoff for transient errors.
+        Ensures high-concurrency OSINT pipeline stability.
+        """
+        import random
+        import asyncio
+        import openai
+        import httpx
+        
+        max_attempts = 4
+        base_delay = 2.0
+        
+        for attempt in range(1, max_attempts + 1):
+            try:
+                return await client.chat.completions.create(**kwargs)
+            except Exception as e:
+                # Identify transient errors (Rate Limits, Timeouts, Server Overload)
+                is_transient = False
+                err_msg = str(e).lower()
+                
+                # Check for OpenAI specific transient errors
+                if hasattr(e, 'status_code') and getattr(e, 'status_code') in [429, 502, 503, 504]:
+                    is_transient = True
+                elif any(x in err_msg for x in ["rate limit", "timeout", "bad gateway", "connection error", "overloaded"]):
+                    is_transient = True
+                elif type(e).__name__ in ["RateLimitError", "APIConnectionError", "APITimeoutError", "TimeoutException"]:
+                    is_transient = True
+                    
+                if not is_transient or attempt == max_attempts:
+                    # Log failure if all retries exhausted or not a transient error
+                    if attempt == max_attempts:
+                        print(f"      [ERROR] API Retries exhausted: {type(e).__name__} - {e}")
+                    raise e
+                
+                # Exponential backoff with jitter: delay = base * 2^(n-1) + random[0, 1]
+                wait_time = base_delay * (2 ** (attempt - 1)) + random.uniform(0, 1)
+                print(f"      [RETRY] API Transient Error ({type(e).__name__}). Retrying in {wait_time:.1f}s (Attempt {attempt}/{max_attempts})...")
+                await asyncio.sleep(wait_time)
+
     def _load_orbat_whitelist(self):
         """
         Loads the ORBAT registry from units.json and builds:
@@ -828,7 +856,7 @@ class SuperSquadAgent:
             return id_matches[0]
         
         return None
-    def _normalize_units_ai(self, raw_units, context_text):
+    async def _normalize_units_ai(self, raw_units, context_text):
         """
         Two-Step Hybrid Normalization:
         1. Local candidate search (Regex/Fuzzy)
@@ -900,14 +928,15 @@ class SuperSquadAgent:
                 Return ONLY the unit ID.
                 """
                 
-                response = self.brain_client.chat.completions.create(
-                    model="minimax/minimax-m2.5:free",
-                    messages=[
-                        {"role": "system", "content": "Return ONLY the canonical unit ID or 'NULL'."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    temperature=0.0
-                )
+                async with API_SEMAPHORE:
+                    response = await self._call_llm_with_backoff(self.brain_client, 
+                        model="minimax/minimax-m2.5:free",
+                        messages=[
+                            {"role": "system", "content": "Return ONLY the canonical unit ID or 'NULL'."},
+                            {"role": "user", "content": prompt}
+                        ],
+                        temperature=0.0
+                    )
                 
                 final_id = response.choices[0].message.content.strip().upper()
                 if "NULL" in final_id or final_id not in self.orbat_whitelist:
@@ -979,7 +1008,7 @@ class SuperSquadAgent:
 
         return False, None
 
-    def _step_0_the_bouncer(self, text):
+    async def _step_0_the_bouncer(self, text):
         print("   Step 0: The Bouncer v2.0 analyzing...")
 
         # --- FASE 1: FILTRO MECCANICO (Gratis) ---
@@ -1024,7 +1053,8 @@ class SuperSquadAgent:
             if not hasattr(self, 'router_client'):
                 return {"is_relevant": True, "reason": "Client Error - Fallback"}
 
-            response = self.router_client.chat.completions.create(
+            async with API_SEMAPHORE:
+                response = await self._call_llm_with_backoff(self.router_client, 
                 model="qwen/qwen3.5-flash-02-23",
                 messages=[
                     {"role": "system", "content": "Output valid JSON only."},
@@ -1032,7 +1062,7 @@ class SuperSquadAgent:
                 ],
                 temperature=0.0,
                 response_format={"type": "json_object"}
-            )
+                )
 
             content = response.choices[0].message.content.strip()
 
@@ -1063,7 +1093,7 @@ class SuperSquadAgent:
             # In caso di dubbio (errore API), lasciamo passare per non perdere dati
             return {"is_relevant": True, "reason": "Error Fallback"}
 
-    def _step_titan_classifier(self, text):
+    async def _step_titan_classifier(self, text):
         """
         Chiama il modello Fine-Tuned per ottenere la classificazione precisa.
         """
@@ -1096,15 +1126,16 @@ OUTPUT FORMAT:
             model_id = TITAN_MODEL_ID
             print(f"      🧬 Model: {model_id}")
 
-            response = self.openai_client.chat.completions.create(
+            async with API_SEMAPHORE:
+                response = await self._call_llm_with_backoff(self.openai_client, 
                 model=model_id,
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": text[:15000]}
+                    {"role": "user", "content": text[:25000]}
                 ],
                 temperature=0.0,
                 response_format={"type": "json_object"}
-            )
+                )
             result = json.loads(response.choices[0].message.content)
             if "classification" in result:
                 result["classification"] = result["classification"].upper()
@@ -1116,7 +1147,7 @@ OUTPUT FORMAT:
     # =========================================================================
     # STEP 1: THE BRAIN (DeepSeek V3 via OpenRouter)
     # =========================================================================
-    def _step_1_the_brain(self, text, metadata):
+    async def _step_1_the_brain(self, text, metadata):
         """
         Role: Strategy & Context.
         Analysis of raw clusters to determine relevance, actors, and bias.
@@ -1228,7 +1259,8 @@ RAW TEXT:
 
         try:
             # USIAMO IL MODELLO REASONER (V4 FLASH)
-            response = self.brain_client.chat.completions.create(
+            async with API_SEMAPHORE:
+                response = await self._call_llm_with_backoff(self.brain_client, 
                 model="deepseek/deepseek-v4-flash",
 
                 messages=[
@@ -1247,13 +1279,13 @@ RAW TEXT:
                 temperature=0.0,
                 response_format={"type": "json_object"},
                 stream=True
-            )
+                )
 
             full_content = ""
             full_reasoning = []
             reasoning_tokens = 0
 
-            for chunk in response:
+            async for chunk in response:
                 delta = chunk.choices[0].delta if chunk.choices else None
                 if delta:
                     if getattr(delta, "content", None):
@@ -1307,11 +1339,8 @@ RAW TEXT:
 
             # --- SALVATAGGIO DEL "PENSIERO NASCOSTO" (AMNESIA FIX) ---
             try:
-                msg = response.choices[0].message
-                reasoning_trace = getattr(msg, 'reasoning_content', None)
-
+                reasoning_trace = "".join(full_reasoning)
                 if reasoning_trace:
-                    # Salviamo i primi 1500 caratteri per non appesantire troppo il DB
                     brain_json['_hidden_reasoning_trace'] = reasoning_trace[:1500] + "..."
             except Exception:
                 pass  # Se non c'è il trace, pazienza
@@ -1332,7 +1361,7 @@ RAW TEXT:
     # =========================================================================
     # 🔧 AI MECHANIC: JSON REPAIR (GPT-4o-mini)
     # =========================================================================
-    def _repair_json_with_ai(self, broken_text, error_context):
+    async def _repair_json_with_ai(self, broken_text, error_context):
         """
         Calls a fast model (GPT-4o-mini) to fix JSON syntax errors.
         
@@ -1357,11 +1386,12 @@ RAW TEXT:
         """
 
         try:
-            response = self.openai_client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": repair_prompt}],
-                temperature=0.0
-            )
+            async with API_SEMAPHORE:
+                response = await self._call_llm_with_backoff(self.openai_client, 
+                    model="gpt-4o-mini",
+                    messages=[{"role": "user", "content": repair_prompt}],
+                    temperature=0.0
+                )
             fixed_text = response.choices[0].message.content.strip()
 
             # Remove residual backticks
@@ -1463,7 +1493,7 @@ RAW TEXT:
     # 🤖 STEP 2: THE SOLDIER v2.1 (With Auto-Repair)
     # =========================================================================
 
-    def _step_2_the_soldier(self, cluster_data):
+    async def _step_2_the_soldier(self, cluster_data):
         """
         Role: Strict Extraction from Cluster with Fallback Repair.
         
@@ -1513,7 +1543,8 @@ RAW TEXT:
                     current_user_content = feedback_prompt
                 
                 # LLM Call
-                response = self.openrouter_client.chat.completions.create(
+                async with API_SEMAPHORE:
+                    response = await self._call_llm_with_backoff(self.openrouter_client, 
                     model="qwen/qwen3.5-flash-02-23",
                     messages=[
                         {"role": "system", "content": SOLDIER_SYSTEM_PROMPT},
@@ -1521,7 +1552,7 @@ RAW TEXT:
                     ],
                     temperature=0.0,
                     response_format={"type": "json_object"}
-                )
+                    )
                 raw_response_text = response.choices[0].message.content
 
                 # Parse JSON
@@ -1530,7 +1561,7 @@ RAW TEXT:
                 # AUTO-REPAIR if JSON is broken
                 if not parsed_data:
                     print("   ⚠️ JSON Syntax Error detected. Calling Mechanic...")
-                    parsed_data = self._repair_json_with_ai(
+                    parsed_data = await self._repair_json_with_ai(
                         raw_response_text, "Invalid JSON format")
 
                 if not parsed_data:
@@ -1597,7 +1628,7 @@ RAW TEXT:
                 print(f"   ⚠️ Soldier Exception on attempt {attempt}: {e}")
                 if raw_response_text:
                     print("   🔧 Attempting emergency repair on raw text...")
-                    parsed_data = self._repair_json_with_ai(raw_response_text, str(e))
+                    parsed_data = await self._repair_json_with_ai(raw_response_text, str(e))
                     if parsed_data:
                         break
                 if attempt >= self.GEO_MAX_RETRIES:
@@ -1634,7 +1665,7 @@ RAW TEXT:
     # MODEL: qwen/qwen3-vl-235b-a22b-instruct (MANDATORY HARD CONSTRAINT)
     # =========================================================================
 
-    def _step_visionary(self, soldier_data: dict, frame_dicts: list) -> dict | None:
+    async def _step_visionary(self, soldier_data: dict, frame_dicts: list) -> dict | None:
         """
         Role: Surgical IMINT Verification & Equipment ID with per-frame analysis.
         
@@ -1700,7 +1731,8 @@ Output ONLY valid JSON per your instructions."""
             })
         
         try:
-            response = self.openrouter_client.chat.completions.create(
+            async with API_SEMAPHORE:
+                response = await self._call_llm_with_backoff(self.openrouter_client, 
                 model="qwen/qwen3-vl-235b-a22b-instruct",  # MANDATORY HARD CONSTRAINT
                 messages=[
                     {"role": "system", "content": VISIONARY_SYSTEM_PROMPT},
@@ -1708,14 +1740,14 @@ Output ONLY valid JSON per your instructions."""
                 ],
                 temperature=0.0,  # Strict Determinism
                 max_tokens=2048
-            )
+                )
             
             raw_response = response.choices[0].message.content
             parsed = self._clean_and_parse_json(raw_response)
             
             if not parsed:
                 print("   \u26a0\ufe0f Visionary JSON parse failed. Attempting repair...")
-                parsed = self._repair_json_with_ai(raw_response, "Visionary output malformed")
+                parsed = await self._repair_json_with_ai(raw_response, "Visionary output malformed")
             
             if parsed:
                 # Log key findings
@@ -1777,7 +1809,7 @@ Output ONLY valid JSON per your instructions."""
                           "assault", "infantry", "mechanized", "trenchline",
                           "фронт", "окоп", "передова", "лінія зіткнення"]
 
-    def _step_geo_verifier(self, location_name: str, context_text: str):
+    async def _step_geo_verifier(self, location_name: str, context_text: str):
         """
         🌍 GEO-VERIFIER: Validates and corrects geolocation extracted by Soldier.
         
@@ -1788,9 +1820,6 @@ Output ONLY valid JSON per your instructions."""
         
         Returns: dict with {'lat': float, 'lon': float} or None
         """
-        from geopy.geocoders import Nominatim
-        import time
-        
         if not location_name or not isinstance(location_name, str):
             return None
         
@@ -1809,6 +1838,11 @@ Output ONLY valid JSON per your instructions."""
             print(f"      ⚠️ COUNTRY-LEVEL EXTRACT DETECTED: '{location_name}'. Rejecting to prevent capital centroid snap.")
             return None
 
+        cached_coords = await geo_cache_lookup(location_name)
+        if cached_coords:
+            print(f"      📍 GeoCache: Zero-latency match for '{location_name}'")
+            return cached_coords
+
         if is_suspicious:
             # Check if context implies frontline combat (metonymy detection)
             context_lower = context_text.lower()
@@ -1819,7 +1853,7 @@ Output ONLY valid JSON per your instructions."""
                 print(f"         → Skipping capital city. Triggering AI correction...")
                 
                 # Trigger AI correction to find the REAL target
-                corrected_location = self._ai_correct_location(location_name, context_text)
+                corrected_location = await self._ai_correct_location(location_name, context_text)
                 if corrected_location:
                     location_name = corrected_location
                     print(f"      ✅ AI Corrected Location: '{corrected_location}'")
@@ -1833,20 +1867,24 @@ Output ONLY valid JSON per your instructions."""
         local_coords = self.geo_probe.gazetteer_lookup(location_name)
         if local_coords:
             print(f"      📍 Local Gazetteer: Zero-latency match for '{location_name}'")
+            await geo_cache_store(location_name, local_coords.get("lat"), local_coords.get("lon"))
             return local_coords
             
         # =====================================================================
         # STEP 2: PHOTON LOOKUP (Get Candidates) 
         # =====================================================================
-        # Replaced Nominatim with Photon for zero-cost, high rate-limit fuzzy matching
+        # Photon lookup for zero-cost, high rate-limit fuzzy matching.
         
         candidates_list = []
         try:
-            import requests
             # Search Photon API (Prioritize UA by adding it to query if not present, though Photon handles it implicitly well)
-            url = f"https://photon.komoot.io/api/?q={location_name}&limit=5"
-            resp = requests.get(url, timeout=10)
-            data = resp.json()
+            async with httpx.AsyncClient(timeout=10) as client:
+                resp = await client.get(
+                    "https://photon.komoot.io/api/",
+                    params={"q": location_name, "limit": 5},
+                )
+                resp.raise_for_status()
+                data = resp.json()
             
             if data and "features" in data:
                 for i, f in enumerate(data["features"]):
@@ -1881,6 +1919,7 @@ Output ONLY valid JSON per your instructions."""
             # Single result - verify it's within war zone
             result = candidates_list[0]
             if self._is_in_war_zone(result['lat'], result['lon']):
+                await geo_cache_store(location_name, result['lat'], result['lon'])
                 return {'lat': result['lat'], 'lon': result['lon']}
             else:
                 print(f"      ⚠️ Single result outside war zone. Rejecting.")
@@ -1888,7 +1927,7 @@ Output ONLY valid JSON per your instructions."""
         
         # Multiple candidates - use AI to pick the best one
         try:
-            rerank_result = self._ai_rerank_geo_candidates(
+            rerank_result = await self._ai_rerank_geo_candidates(
                 location_name, context_text, candidates_list
             )
             
@@ -1897,6 +1936,7 @@ Output ONLY valid JSON per your instructions."""
                 for c in candidates_list:
                     if self._is_in_war_zone(c['lat'], c['lon']):
                         print(f"      📍 Fallback: Using first war-zone candidate")
+                        await geo_cache_store(location_name, c['lat'], c['lon'])
                         return {'lat': c['lat'], 'lon': c['lon']}
                 return None
             
@@ -1905,8 +1945,7 @@ Output ONLY valid JSON per your instructions."""
                 corrected_name = rerank_result.get('correct_name')
                 if corrected_name and corrected_name != location_name:
                     print(f"      🔄 AI says wrong target. Re-geocoding: '{corrected_name}'")
-                    time.sleep(0.5)  # Rate limiting
-                    return self._step_geo_verifier(corrected_name, context_text)
+                    return await self._step_geo_verifier(corrected_name, context_text)
                 return None
             
             # Handle selected_id response
@@ -1914,6 +1953,7 @@ Output ONLY valid JSON per your instructions."""
             if selected_id is not None and 0 <= selected_id < len(candidates_list):
                 chosen = candidates_list[selected_id]
                 print(f"      ✅ AI Selected: {chosen['display_name'][:50]}...")
+                await geo_cache_store(location_name, chosen['lat'], chosen['lon'])
                 return {'lat': chosen['lat'], 'lon': chosen['lon']}
             
         except Exception as e:
@@ -1922,6 +1962,7 @@ Output ONLY valid JSON per your instructions."""
         # Ultimate fallback
         for c in candidates_list:
             if self._is_in_war_zone(c['lat'], c['lon']):
+                await geo_cache_store(location_name, c['lat'], c['lon'])
                 return {'lat': c['lat'], 'lon': c['lon']}
         
         return None
@@ -1932,7 +1973,7 @@ Output ONLY valid JSON per your instructions."""
         MIN_LON, MAX_LON = 22.0, 55.0
         return MIN_LAT <= lat <= MAX_LAT and MIN_LON <= lon <= MAX_LON
     
-    def _ai_correct_location(self, wrong_location: str, context_text: str) -> str:
+    async def _ai_correct_location(self, wrong_location: str, context_text: str) -> str:
         """
         Uses DeepSeek to extract the REAL kinetic target from context
         when a metonymy error is detected.
@@ -1956,18 +1997,19 @@ If you cannot determine the real location, output:
 {{"correct_location": null}}
 """
         try:
-            response = self.brain_client.chat.completions.create(
-                model="deepseek/deepseek-v4-flash",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.0,
-                response_format={"type": "json_object"},
-                stream=True
-            )
+            async with API_SEMAPHORE:
+                response = await self._call_llm_with_backoff(self.brain_client, 
+                    model="deepseek/deepseek-v4-flash",
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.0,
+                    response_format={"type": "json_object"},
+                    stream=True
+                )
             
             full_content = ""
             full_reasoning = []
             
-            for chunk in response:
+            async for chunk in response:
                 delta = chunk.choices[0].delta if chunk.choices else None
                 if delta:
                     if getattr(delta, "content", None):
@@ -1991,7 +2033,7 @@ If you cannot determine the real location, output:
             print(f"      ❌ AI Correction Error: {e}")
             return None
     
-    def _ai_rerank_geo_candidates(self, location_name: str, context_text: str, 
+    async def _ai_rerank_geo_candidates(self, location_name: str, context_text: str,
                                    candidates: list) -> dict:
         """
         Uses DeepSeek to select the best geolocation candidate based on context.
@@ -2022,18 +2064,19 @@ OR
 {{"status": "WRONG_EXTRACTION", "correct_name": "..."}}
 """
         try:
-            response = self.brain_client.chat.completions.create(
-                model="deepseek/deepseek-v4-flash",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.0,
-                response_format={"type": "json_object"},
-                stream=True
-            )
+            async with API_SEMAPHORE:
+                response = await self._call_llm_with_backoff(self.brain_client, 
+                    model="deepseek/deepseek-v4-flash",
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.0,
+                    response_format={"type": "json_object"},
+                    stream=True
+                )
             
             full_content = ""
             full_reasoning = []
             
-            for chunk in response:
+            async for chunk in response:
                 delta = chunk.choices[0].delta if chunk.choices else None
                 if delta:
                     if getattr(delta, "content", None):
@@ -2312,7 +2355,7 @@ OR
             "description_en": "Data could not be summarized neutrally."
         }
 
-    def _step_4_the_journalist(self, text, brain_data, soldier_data):
+    async def _step_4_the_journalist(self, text, brain_data, soldier_data):
         """
         Role: Description & Title.
         Generates Master English content and translates to Italian.
@@ -2337,8 +2380,12 @@ OR
         - If raw text contains personal details, omit them completely from title and description, UNLESS high-ranking military personnell or Leaders.
         - Deterministic downstream redaction is only a fallback; your output must already be sanitized.
 
-        INPUT CONTEXT (Raw Telegram Text):
-        {text[:2000]}
+        INPUT CONTEXT (Verified AI Dossier):
+        BRAIN_VERIFIED_DATA:
+        {json.dumps(brain_data, ensure_ascii=False)[:6000]}
+
+        SOLDIER_EXTRACTION:
+        {json.dumps(soldier_data, ensure_ascii=False)[:8000]}
 
         DETECTED ACTORS:
         - Aggressor Side: {aggressor}
@@ -2368,15 +2415,16 @@ OR
 
         try:
             # 1. Chiamata API (Temperatura 0 = Robotico)
-            response = self.openai_client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system",
-                        "content": "You are a neutral database engine. JSON only. Never output personal data, names of individuals, or vehicle license plates; use aggregate roles only."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.0
-            )
+            async with API_SEMAPHORE:
+                response = await self._call_llm_with_backoff(self.openai_client, 
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "system",
+                            "content": "You are a neutral database engine. JSON only. Never output personal data, names of individuals, or vehicle license plates; use aggregate roles only."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.0
+                )
 
             # 2. Parsing
             result_text = response.choices[0].message.content
@@ -2397,7 +2445,7 @@ OR
 # =========================================================================
 
 
-def _step_5_the_strategist(client_or, final_report):
+async def _step_5_the_strategist(client_or, final_report):
     """
     THE STRATEGIST (DeepSeek-V4 via OpenRouter)
     Generates high-level strategic insight in EN and IT.
@@ -2444,20 +2492,21 @@ def _step_5_the_strategist(client_or, final_report):
     """
 
     try:
-        response = client_or.chat.completions.create(
-            model="deepseek/deepseek-v4-flash",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": dossier}
-            ],
-            temperature=0.0,
-            stream=True
-        )
+        async with API_SEMAPHORE:
+            response = await self._call_llm_with_backoff(client_or, 
+                model="deepseek/deepseek-v4-flash",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": dossier}
+                ],
+                temperature=0.0,
+                stream=True
+            )
 
         full_content = ""
         full_reasoning = []
         
-        for chunk in response:
+        async for chunk in response:
             delta = chunk.choices[0].delta if chunk.choices else None
             if delta:
                 if getattr(delta, "content", None):
@@ -2487,866 +2536,6 @@ def _step_5_the_strategist(client_or, final_report):
     # 🔄 MAIN PROCESS FLOW
     # =========================================================================
 
-
-def perform_search(self, query, event_date_str=None):
-    """
-    Motore Google (Serper) con TIME MACHINE BLINDATA.
-    Se la data non è leggibile, ABORTISCE la ricerca per sicurezza.
-    """
-    if not self.serper_api_key:
-        print("   ❌ Errore: SERPER_API_KEY mancante.")
-        return "", "unknown", []
-
-    url = "https://google.serper.dev/search"
-    date_filter = ""
-
-    # --- LOGICA DI SICUREZZA TEMPORALE ---
-    if event_date_str:
-        # 1. Pulizia preliminare della data
-        clean_date = str(event_date_str).strip().replace(
-            '.', '/').replace('-', '/')
-        dt = None
-
-        # 2. Lista estesa di formati per non fallire
-        formats = [
-            '%d/%m/%Y',  # 25/12/2023
-            '%Y/%m/%d',  # 2023/12/25
-            '%d-%m-%Y',  # 25-12-2023
-            '%d/%m/%y',  # 25/12/23
-            '%Y%m%d',    # 20231225
-            '%m/%d/%Y',  # 12/25/2023 (US style)
-            '%d %b %Y'   # 25 Dec 2023
-        ]
-
-        for fmt in formats:
-            try:
-                dt = datetime.strptime(clean_date, fmt)
-                break  # Trovato!
-            except ValueError:
-                continue
-
-        if dt:
-            # DATA VALIDA -> Attivo Time Machine
-            start_date = (dt - timedelta(days=30)).strftime('%Y-%m-%d')
-            end_date = (dt + timedelta(days=30)).strftime('%Y-%m-%d')
-            date_filter = f" after:{start_date} before:{end_date}"
-        else:
-            # DATA INVALIDA -> SAFETY STOP!
-            # Questo impedisce di cercare "a caso" e trovare news sbagliate
-            print(
-                f"   🛑 DATA ILLEGIBILE: '{event_date_str}' -> BLOCCO RICERCA.")
-            return "", "skipped_bad_date", []
-
-    # Se non c'è proprio la data nel DB (None), è rischioso cercare.
-    # Decommenta le due righe sotto se vuoi bloccare anche questi casi:
-    # else:
-    #     return "", "skipped_no_date", []
-
-    final_query = f"{query}{date_filter}"
-    print(f"   🗓️ Time Machine: '{final_query}'")
-
-    payload = json.dumps({
-        "q": final_query,
-        "num": 10,
-        "gl": "us",      # US per indice globale
-        "hl": "en"       # Inglese per max compatibilità
-    })
-
-    headers = {
-        'X-API-KEY': self.serper_api_key,
-        'Content-Type': 'application/json'
-    }
-
-    try:
-        response = requests.request(
-            "POST", url, headers=headers, data=payload)
-        results = response.json()
-
-        candidates = results.get("news", []) + results.get("organic", [])
-
-        if not candidates:
-            return "", "unknown", []
-
-        text_snippets = []
-        urls = []
-
-        for item in candidates[:5]:
-            link = item.get('link')
-            snippet_date = item.get('date', 'Unknown Date')
-            title = item.get('title', '')
-            body = item.get('snippet', '')
-
-            entry = f"SOURCE: {link}\nGOOGLE_DATE: {snippet_date}\nTITLE: {title}\nTEXT: {body}\n---"
-            text_snippets.append(entry)
-            urls.append(link)
-
-        return "\n".join(text_snippets), (urls[0] if urls else "unknown"), urls
-
-    except Exception as e:
-        print(f"   ❌ Serper Error: {e}")
-        return "", "unknown", []
-
-    # ... (questo è l'ultimo metodo corretto della classe)
-
-
-def parse_date_strict(self, date_str):
-    """
-    Tenta di interpretare la data con ogni formato umanamente possibile.
-    Se fallisce, restituisce None (segnale di STOP).
-    """
-    if not date_str:
-        return None
-
-    date_str = str(date_str).strip().replace('.', '/').replace('-', '/')
-
-    # Lista estesa dei formati accettati
-    formats = [
-        '%d/%m/%Y',  # 25/12/2023
-        '%Y/%m/%d',  # 2023/12/25
-        '%d/%m/%y',  # 25/12/23
-        '%m/%d/%Y',  # 12/25/2023 (US)
-        '%Y%m%d',    # 20231225
-        '%d %b %Y',  # 25 Dec 2023
-        '%d %B %Y'   # 25 December 2023
-    ]
-
-    for fmt in formats:
-        try:
-            return datetime.strptime(date_str, fmt)
-        except ValueError:
-            continue
-
-    return None
-
-
-def fetch_url_text(self, url):
-    """Scrape specific URL"""
-    try:
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        response = requests.get(url, headers=headers, timeout=10)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            return ' '.join([p.get_text() for p in soup.find_all(['p', 'h1', 'h2'])])[:6000]
-    except Exception:
-        pass
-    return None
-
-    # =========================================================================
-    # 🎯 HELPER: CLASSIFICAZIONE TIPO ATTACCO (Priorità Cinetica)
-    # =========================================================================
-    # NOTA: Ho aggiunto l'indentazione qui sotto per farlo rientrare nella classe
-
-
-def _classify_event_type(self, text):
-    """
-    Determina il "Type" basandosi su regex keywords (Priorità Utente).
-    """
-    if not text:
-        return "Unknown"
-    t = text.lower()
-
-    # --- PRIORITÀ 1: EVENTI MILITARI CINETICI ---
-    if re.search(r"naval|sea|ship|boat|maritime|vessel", t):
-        return "Naval Engagement"
-    if re.search(r"drone|uav|loitering|kamikaze|quadcopter|unmanned", t):
-        return "Drone Strike"
-    if re.search(r"missile|rocket|ballistic|cruise|himars|mlrs", t):
-        return "Missile Strike"
-    if re.search(r"air|jet|plane|bombing|airstrike|su-", t):
-        return "Airstrike"
-    if re.search(r"artillery|shelling|mortar|howitzer|grad|cannon", t):
-        return "Artillery Shelling"
-    if re.search(r"ied|mine|landmine|vbied|explosion|trap", t):
-        return "IED / Explosion"
-    if re.search(r"clash|firefight|skirmish|ambush|raid|attack|ground|shooting|sniper", t):
-        return "Ground Clash"
-
-    # --- PRIORITÀ 2: CONTESTO CIVILE E POLITICO ---
-    if re.search(r"politic|protest|riot|demonstration|diploma|unrest|arrest", t):
-        return "Political / Unrest"
-
-    # --- PRIORITÀ 3: CIVIL / ACCIDENT ---
-    if re.search(r"civil|accident|crash|fire|infrastructure|logistics|humanitarian", t):
-        return "Civil / Accident"
-
-    return "Others"
-
-    # ---------------------------------------------------------
-    # 1. SMART QUERY (La funzione che hai appena modificato)
-    # ---------------------------------------------------------
-
-
-def _generate_event_fingerprints(self, title, location, date_str):
-    """
-    Analizza l'evento per estrarre 'Impronte Digitali' uniche (Fingerprints)
-    invece di keyword generiche.
-    """
-    system_prompt = """
-        You are an elite OSINT Analyst specializing in the Ukraine War (2022-2025).
-        Your goal is to extract SEARCH FINGERPRINTS to find a specific historical event.
-
-        DEFINITION:
-        Search fingerprints are highly specific, low-noise elements that uniquely identify an event and survive reposting.
-        They are NOT generic words like "battle", "shelling", or "attack".
-        Focus on:
-        - Units (e.g., "72nd Brigade", "DPR Battalion")
-        - NO: "Battle", "Attack", "War" (Too generic)
-        - YES: "72nd Brigade", "Tochka-U", "Pontoon bridge", "School No. 3", "Mayor Fedorov"
-
-        INSTRUCTIONS:
-        1. Extract 5–8 fingerprints maximum.
-        2. Provide them in Ukrainian, Russian, and English.
-        3. Prefer noun phrases over sentences.
-        4. Avoid generic military terminology.
-
-
-        INPUT DATA:
-        Event: {title}
-        Location: {location}
-        Date: {date}
-
-        OUTPUT JSON FORMAT:
-        {
-            "ua": [...],
-            "ru": [...],
-            "en": [...]
-        }
-        """
-
-    user_content = f"Event: {title}\nLocation: {location}\nDate: {date_str}"
-
-    try:
-        response = self.openai_client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_content}
-            ],
-            temperature=0.2,
-            response_format={"type": "json_object"}  # Forza output JSON
-        )
-        return json.loads(response.choices[0].message.content)
-    except Exception as e:
-        print(f"   ⚠️ Fingerprint Error: {e}")
-        # Fallback di emergenza
-        return {"ua": [location], "ru": [location], "en": [location]}
-
-
-def build_sniper_query(self, fingerprints_list, date, domain):
-    """
-    Costruisce una query Google Dork precisa: site:domain + "keyword" + "data"
-    """
-    try:
-        # Converte YYYY-MM-DD in "DD Month YYYY" (es. "24 February 2022")
-        # Questo formato è molto più efficace per la ricerca di news
-        date_obj = datetime.strptime(date, "%Y-%m-%d")
-        date_str = date_obj.strftime("%d %B %Y")
-    except Exception as e:
-        # Fallback se la data non è parseabile
-        date_str = date
-
-    # Prende solo le prime 3 keyword per non confondere Google
-    terms = fingerprints_list[:3]
-
-    # Le mette tra virgolette per forzare la corrispondenza esatta
-    quoted = " ".join([f'"{t}"' for t in terms])
-
-    return f'site:{domain} {quoted} "{date_str}"'
-
-    # ---------------------------------------------------------
-    # 2. PROCESS ROW (La funzione principale corretta)
-    # ---------------------------------------------------------
-
-
-def process_row(self, row):
-    """ Orchestrates the Super Squad Pipeline with Quality-First Cross-Referencing."""
-
-    # 1. Estrazione Dati Iniziali
-    # Cerchiamo il titolo ovunque, dando priorità alle note ACLED (che sono più descrittive)
-    title = row.get('Title') or row.get('notes') or row.get('Event')
-    if not title:
-        return None
-
-    # --- Helper Fallback (Copia questo blocco così com'è) ---
-    def create_fallback_entry(reason):
-        print(f"   ⚠️ Fallback Triggered: {reason}")
-        return {
-            "Title": title,
-            "Date": row.get("Date"),
-            "Type": row.get("Type", "Unknown"),
-            "Location": row.get("Location") or "Unknown",
-            "Latitude": row.get("Latitude", 0.0),
-            "Longitude": row.get("Longitude", 0.0),
-            "Source": row.get("Source") or "Search Failed",
-            "Archived": "No",
-            "Verification": "Unconfirmed",
-            "Description": "",
-            "Notes": f"AUTO-SKIPPED: {reason}",
-            "Video": "No",
-            "Intensity": 0.0,
-            "Actor": row.get("Actor", "Unknown"),
-            "Bias dominante": "Neutral",
-            "Location Precision": "UNKNOWN",
-            "Aggregated Sources": "",
-            "Reliability": 0,
-            "Bias Score": 0
-        }
-
-    print(f"\n🚀 Processing Event: {title[:50]}...")
-
-    # A. SMART QUERY (Generazione Keyword)
-    smart_query_text = self._generate_event_fingerprints(
-        title, row.get('Location', ''), row.get('Date', ''))
-
-    # =====================================================================
-    # NUOVA LOGICA IBRIDA: FINGERPRINTS + SNIPER + ARCHEOLOGO (FIXED)
-    # =====================================================================
-
-    # 1. SETUP DOSSIER & FINGERPRINTS
-    acled_source = row.get('ACLED_Original_Source') or row.get('source')
-    event_ctx = self._init_event_context(row, acled_source)
-
-    # Inizializziamo subito per sicurezza (evita "undefined variable")
-    event_ctx["source_name"] = "Unknown"
-
-    print(f"\n🚀 Investigating: {event_ctx['title'][:50]}...")
-
-    # Generazione Impronte Digitali
-    fingerprints = self._generate_event_fingerprints(
-        event_ctx['title'], event_ctx['location'], event_ctx['date'])
-    print(f"   🔍 Fingerprints (UA): {fingerprints.get('ua', [])}")
-
-    # ---------------------------------------------------------------------
-    # 2. FASE SNIPER (Target: Fonte Originale)
-    # ---------------------------------------------------------------------
-    target_domain = None
-    if acled_source:
-        for name, domain in self.ACLED_SOURCE_MAP.items():
-            if name.lower() in str(acled_source).lower():
-                target_domain = domain
-                break
-
-    if target_domain:
-        sniper_query = self.build_sniper_query(
-            fingerprints.get('ua', []),
-            event_ctx['date'],
-            target_domain
-        )
-        print(f"   🎯 Sniper Attempt: {sniper_query}")
-
-        s_text, s_source, s_urls = self.perform_search(
-            sniper_query, event_ctx['date'])
-
-        if s_urls:
-            event_ctx["status"] = "ORIGINAL_FOUND"
-            event_ctx["verification_method"] = "SNIPER"
-            event_ctx["best_link"] = s_urls[0]
-            # Salviamo la fonte trovata!
-            event_ctx["source_name"] = s_source
-            event_ctx["confidence_score"] = 0.95
-            event_ctx["sniper_results"] = s_text
-            print("   ✅ Sniper Hit! Original source confirmed.")
-
-    # ---------------------------------------------------------------------
-    # 3. FASE ARCHEOLOGO (MODIFICATA: Corroborazione FORZATA)
-    # ---------------------------------------------------------------------
-    # ORA ESEGUIAMO SEMPRE QUESTA FASE per popolare "Aggregated Sources",
-    # anche se lo Sniper ha già trovato il link Telegram originale.
-
-    print("   🌍 Activating Archeologist Protocol (Broad Search)...")
-
-    # Assicuriamoci che la lista URL esista
-    if "all_urls" not in event_ctx:
-        event_ctx["all_urls"] = []
-
-    # Costruzione Query
-    ua_keys = " OR ".join(
-        [f'"{k}"' for k in fingerprints.get('ua', [])[:4]])
-    ru_keys = " OR ".join(
-        [f'"{k}"' for k in fingerprints.get('ru', [])[:4]])
-
-    arch_query = f"({ua_keys} OR {ru_keys}) {event_ctx['location']}"
-    arch_query += " (news OR report OR новини OR новости)"
-
-    # Eseguiamo la ricerca
-    a_text, a_source, a_urls = self.perform_search(
-        arch_query, event_ctx['date'])
-
-    # LOGICA DI UNIONE RISULTATI
-    if a_urls:
-        # Aggiungiamo i nuovi URL alla lista esistente
-        event_ctx["all_urls"].extend(a_urls)
-
-        # CASO A: Avevamo già trovato la fonte originale (Sniper Success)
-        if event_ctx["status"] == "ORIGINAL_FOUND":
-            # Upgrade dello status!
-            event_ctx["status"] = "CONFIRMED_MULTI_SOURCE"
-            event_ctx["confidence_score"] = 0.99
-            # Salviamo il testo dell'articolo come fallback se necessario
-            if not event_ctx.get("sniper_results"):
-                event_ctx["fallback_results"] = a_text
-            print(
-                f"   ✅ News Corroboration! Added {len(a_urls)} external sources.")
-
-        # CASO B: Non avevamo trovato nulla prima
-        elif event_ctx["status"] == "PENDING":
-            event_ctx["status"] = "CORROBORATED"
-            event_ctx["verification_method"] = "ARCHEOLOGIST"
-            event_ctx["best_link"] = a_urls[0]
-            event_ctx["source_name"] = a_source
-            event_ctx["confidence_score"] = 0.70
-            event_ctx["fallback_results"] = a_text
-            print(f"   ✅ Event Corroborated. Found {len(a_urls)} sources.")
-
-    else:
-        # Se l'archeologo non trova nulla...
-        if event_ctx["status"] == "PENDING":
-            # ...e non avevamo trovato nulla nemmeno prima: ALLORA è perso.
-            event_ctx["status"] = "NOT_FOUND"
-            event_ctx["confidence_score"] = 0.1
-            print("   ❌ Event Lost in Digital Rot.")
-
-    # ---------------------------------------------------------------------
-    # 4. PONTE DI COMPATIBILITÀ & FILTRO INTELLIGENTE FONTI
-    # ---------------------------------------------------------------------
-    if event_ctx["status"] == "NOT_FOUND":
-        return create_fallback_entry("Acled Only (Digital Rot - No web verification)")
-
-    # Assegnazione variabili principali
-    primary_link = event_ctx["best_link"]
-    primary_source = event_ctx["source_name"]
-
-    # --- LOGICA DI FILTRAGGIO AVANZATO PER "AGGREGATED SOURCES" ---
-    raw_urls = event_ctx.get("all_urls", [])
-    final_aggregated_urls = []
-    seen_domains = set()
-
-    # 1. Aggiungiamo sempre il Primary Link (se esiste)
-    if primary_link:
-        final_aggregated_urls.append(primary_link)
-        # Estraiamo il dominio per evitare duplicati dello stesso sito
-        try:
-            from urllib.parse import urlparse
-            domain = urlparse(primary_link).netloc.replace("www.", "")
-            seen_domains.add(domain)
-        except:
-            pass
-
-    # 2. Analizziamo gli altri candidati
-    for url in raw_urls:
-        # Ci fermiamo se abbiamo già 5 fonti valide
-        if len(final_aggregated_urls) >= 5:
-            break
-
-        # Saltiamo se è lo stesso link del primario
-        if url == primary_link:
-            continue
-
-        try:
-            domain = urlparse(url).netloc.replace("www.", "")
-
-            # A. FILTRO DUPLICATI DI DOMINIO
-            # Se abbiamo già una fonte da "pravda.com.ua", magari evitiamo di metterne
-            # altre 3 dello stesso sito per dare varietà.
-            # (Se preferisci averne più dello stesso sito, commenta queste due righe sotto)
-            if domain in seen_domains:
-                continue
-
-            # B. FILTRO SPAM / IRRILEVANTI (Blacklist al volo)
-            # Scartiamo domini che sappiamo non contenere notizie utili
-            junk_domains = ["facebook.com", "twitter.com",
-                            "instagram.com", "youtube.com", "google.com", "t.me"]
-            if any(junk in domain for junk in junk_domains):
-                # Eccezione: accettiamo link diretti a post specifici, non home page
-                if len(url) < 40:  # Link troppo corto = probabilmente homepage inutile
-                    continue
-
-            # C. PROMOZIONE FONTI AFFIDABILI
-            # Se il dominio è nella nostra mappa, è oro colato.
-            is_trusted = False
-            for trusted_name, trusted_domain in self.ACLED_SOURCE_MAP.items():
-                if trusted_domain in domain:
-                    is_trusted = True
-                    break
-
-            # Se è fidato lo prendiamo subito, altrimenti lo prendiamo ma teniamo d'occhio il limite
-            final_aggregated_urls.append(url)
-            seen_domains.add(domain)
-
-        except Exception:
-            continue  # Se l'URL è malformato, ignoralo
-
-    # Assegnamo la lista pulita alla variabile 'urls'
-    urls = final_aggregated_urls
-
-    # Log di verifica per te
-    if len(urls) > 1:
-        print(
-            f"   📚 Aggregated Sources: {len(urls)} links selected (Filtered from {len(raw_urls)})")
-
-    # Recuperiamo il testo per il Deep Verify (snippet di ricerca)
-    search_text = event_ctx.get("sniper_results") or event_ctx.get(
-        "fallback_results") or ""
-
-    # Scarichiamo contenuto SOLO del link migliore (Primary)
-    # Nota: Non facciamo scraping degli altri 4 per non rallentare l'agente del 500%
-    deep_content = ""
-    if primary_link:
-        print(f"   🕵️ Deep Verifying Best Source: {primary_link}...")
-        deep_content = self.fetch_url_text(primary_link)
-        if deep_content:
-            deep_content = f"=== VERIFIED CONTENT ({event_ctx['verification_method']}) ===\n{deep_content[:15000]}"
-
-    # D. COSTRUZIONE CONTESTO
-    combined_text = f"""
-        === ACLED SOURCE NOTES ===
-        {title}
-
-        {deep_content}
-
-        === WEB SEARCH CONTEXT (SNIPPETS) ===
-        {search_text[:3000]}
-        """
-    # =====================================================================
-    # ⚡ STEP 1: TITAN GATEKEEPER (Fine-Tuned)
-    # =====================================================================
-    # Chiamiamo prima lo specialista per capire se vale la pena procedere.
-    titan_result = self._step_titan_classifier(combined_text)
-
-    # HARD FILTER: Se Titan dice NULL, abortiamo subito.
-    if titan_result.get('classification') == 'NULL':
-        print(f"   🗑️ Titan Rejected: {titan_result.get('reasoning')}")
-        return create_fallback_entry("Titan Filtered (Noise/Political)")
-
-    print(
-        f"   🤖 TITAN CLASS: {titan_result.get('classification')} (Conf: {titan_result.get('confidence')})")
-
-    # 2. RUN PIPELINE
-    # Step 1: Brain (Now analyzes the hybrid context)
-    brain_out = self._step_1_the_brain(
-        combined_text, {"Title": title, "Date": row.get("Date")})
-
-    # --- MODIFICA 3: Sostituisci i controlli su brain_out ---
-    if not brain_out:
-        return create_fallback_entry("AI Analysis Failed (Brain Error)")
-
-    if not brain_out.get("is_relevant", True):
-        return create_fallback_entry("Deemed Irrelevant by AI")
-
-    # Adattiamo i dati della singola riga al formato "Cluster" richiesto dal nuovo prompt
-    # --- INIZIO BLOCCO LAYER 1 ---
-    soldier_input_packet = {
-        "reference_timestamp": row.get("Date"),
-        "raw_messages": [combined_text]
-    }
-
-    # 1. Chiamata al Soldato
-    # Nota: Usiamo 'soldier_input_packet' perché è il formato richiesto dalla funzione.
-    soldier_out = self._step_2_the_soldier(soldier_input_packet)
-
-    # 2. Controllo Fallimento Soldier
-    if not soldier_out:
-        print("   ⚠️ Soldier failed. Skipping.")
-        return create_fallback_entry("AI Analysis Failed (Soldier Error)")
-
-    # =========================================================================
-    # 🌍 GEO-VERIFIER INTEGRATION: Validate/Correct Soldier's Location
-    # =========================================================================
-    # Extract location from Soldier output
-    geo_data = soldier_out.get('geo_location', {})
-    explicit_coords = geo_data.get('explicit')
-    inferred_loc = geo_data.get('inferred', {})
-    toponym_raw = inferred_loc.get('toponym_raw')
-    
-    verified_coords = None
-    
-    # Priority 1: Use explicit coordinates if valid
-    if explicit_coords:
-        ex_lat = explicit_coords.get('lat')
-        ex_lon = explicit_coords.get('lon')
-        if ex_lat and ex_lon and ex_lat not in [0, 0.0, "0", None] and ex_lon not in [0, 0.0, "0", None]:
-            # Validate explicit coords are in war zone
-            if self._is_in_war_zone(float(ex_lat), float(ex_lon)):
-                verified_coords = {'lat': float(ex_lat), 'lon': float(ex_lon)}
-                print(f"      📍 Using Soldier's explicit coords: ({ex_lat}, {ex_lon})")
-            else:
-                print(f"      ⚠️ Soldier's explicit coords outside war zone. Triggering Geo-Verifier...")
-    
-    # Priority 2: If no valid explicit coords, run Geo-Verifier on toponym
-    if not verified_coords and toponym_raw:
-        verified_coords = self._step_geo_verifier(toponym_raw, combined_text)
-        if verified_coords:
-            # Update soldier_out with verified coordinates
-            if 'geo_location' not in soldier_out:
-                soldier_out['geo_location'] = {}
-            soldier_out['geo_location']['verified'] = verified_coords
-            print(f"      📍 Geo-Verifier Success: ({verified_coords['lat']}, {verified_coords['lon']})")
-    
-    # Priority 3: Fallback to event_ctx location if available
-    if not verified_coords and event_ctx.get('location'):
-        fallback_loc = event_ctx.get('location')
-        verified_coords = self._step_geo_verifier(fallback_loc, combined_text)
-        if verified_coords:
-            print(f"      📍 Fallback Geo-Verifier: {fallback_loc} -> ({verified_coords['lat']}, {verified_coords['lon']})")
-    
-    # Store verified coordinates for later use
-    soldier_out['verified_coordinates'] = verified_coords
-
-    # =========================================================================
-    # 🪖 ORBAT TRACKER UPDATE with KINETIC PLAUSIBILITY CHECK
-    # =========================================================================
-    units_detected = soldier_out.get('military_units_detected', [])
-    if units_detected:
-        # Use verified coords if available, else explicit, else row
-        final_lat = verified_coords.get('lat') if verified_coords else (soldier_out.get("geo_location", {}).get("explicit", {}).get("lat"))
-        final_lon = verified_coords.get('lon') if verified_coords else (soldier_out.get("geo_location", {}).get("explicit", {}).get("lon"))
-        
-        # Fallback to row data if everything else fails (but usually verified_coords handles it)
-        if not final_lat: final_lat = row.get("Latitude", 0.0)
-        if not final_lon: final_lon = row.get("Longitude", 0.0)
-
-        if final_lat and final_lat != 0.0:
-            # =========================================================
-            # KINETIC PLAUSIBILITY CHECK (Sanfilippo Method - Part 2)
-            # =========================================================
-            # Validate each unit's movement before updating the registry
-            event_date = row.get("Date")
-            # =========================================================
-            # ORBAT INTEGRITY GATEKEEPER (v2.0)
-            # Validate unit_ids against known ORBAT registry
-            # =========================================================
-            units_detected = self._validate_units_against_orbat(units_detected)
-            
-            validated_units = []
-            implausible_units = []
-            
-            for unit in units_detected:
-                unit_id = unit.get('unit_id')
-                if not unit_id:
-                    continue
-                    
-                # Check if this movement is physically plausible
-                plausibility = self.history_probe.check_plausibility(
-                    unit_id, final_lat, final_lon, event_date
-                )
-                
-                if plausibility['is_plausible']:
-                    validated_units.append(unit)
-                    if plausibility['status'] == 'KNOWN':
-                        print(f"      ✅ Kinetic OK: {unit_id} ({plausibility['distance_km']:.1f}km in {plausibility['time_delta_hours']:.1f}h)")
-                    else:
-                        print(f"      ✅ Kinetic OK: {unit_id} (NEW - no prior history)")
-                else:
-                    implausible_units.append((unit, plausibility))
-                    print(f"      ⚠️ KINETIC VIOLATION: {unit_id}")
-                    print(f"         → {plausibility['reason'][:100]}...")
-            
-            # Log summary of implausible movements (but don't block the pipeline)
-            if implausible_units:
-                print(f"      ⚠️ {len(implausible_units)} unit(s) failed kinetic check. Skipping their ORBAT update.")
-                # Future: Could trigger AI self-correction loop here
-            
-            # Only update registry for validated units
-            if validated_units:
-                self._update_units_registry(validated_units, event_date, {'lat': final_lat, 'lon': final_lon})
-    
-    # =========================================================================
-    # 👁️ THE VISIONARY — Conditional IMINT Verification (Surgical Activation)
-    # =========================================================================
-    # ACTIVATION GATE: Only fires if the event payload contains media files.
-    # If media_urls is empty/missing, this block is BYPASSED entirely (zero compute).
-    # Pipeline: Soldier → MediaProcessor → [VISIONARY] → TIE Calculation
-    # =========================================================================
-    media_urls_raw = row.get('media_urls') or []
-    if isinstance(media_urls_raw, str):
-        try:
-            media_urls_raw = json.loads(media_urls_raw) if media_urls_raw.strip() else []
-        except (json.JSONDecodeError, ValueError):
-            media_urls_raw = []
-    
-    visionary_out = None
-    if media_urls_raw and isinstance(media_urls_raw, list) and len(media_urls_raw) > 0:
-        # --- MEDIA PROCESSING: Extract Base64 keyframes via MediaProcessor ---
-        # Raw URLs cannot be passed directly to OpenRouter (anti-hotlinking, MP4 format).
-        # MediaProcessor streams via FFmpeg, extracts scene-change keyframes, encodes to Base64.
-        all_frame_dicts = []  # List[dict] with base64_data, delta_score, frame_index, selection_reason
-        if MediaProcessor is not None:
-            media_proc = MediaProcessor()
-            for m_url in media_urls_raw:
-                frames = media_proc.extract_keyframes(str(m_url))
-                all_frame_dicts.extend(frames)
-                if len(all_frame_dicts) >= 4:  # Cap total frames for VLM
-                    all_frame_dicts = all_frame_dicts[:4]
-                    break
-            
-            if all_frame_dicts:
-                print(f"      \U0001f4f8 MediaProcessor: {len(all_frame_dicts)} keyframes extracted from {len(media_urls_raw)} media files.")
-            else:
-                print(f"      \u26a0\ufe0f MediaProcessor: No keyframes extracted (dead links or unsupported format). Visionary bypassed.")
-        else:
-            print("      \u26a0\ufe0f MediaProcessor unavailable (opencv-python-headless not installed). Visionary bypassed.")
-        
-        # --- INVOKE THE VISIONARY (only if we have frames) ---
-        if all_frame_dicts:
-            visionary_out = self._step_visionary(soldier_out, all_frame_dicts)
-        
-        if visionary_out:
-            # A. Override visual_evidence flag for TIE calculation
-            soldier_out['visual_evidence'] = True
-            
-            # B. ABSOLUTE REPLACEMENT of Effect Vector from IMINT
-            #    Ground Truth is ABSOLUTE. IMINT overrides text-based effect_score
-            #    in BOTH directions (up AND down). If text hypes Effect=9 but
-            #    image shows missed shots, Visionary downgrades to Effect=1.
-            imint_damage = visionary_out.get('kinetic_effect', {}).get('damage_level')
-            imint_confidence = visionary_out.get('visual_confirmation', {}).get('confidence_score', 0)
-            
-            if imint_damage and imint_damage in VISIONARY_DAMAGE_TO_EFFECT and imint_confidence >= 0.5:
-                imint_effect = VISIONARY_DAMAGE_TO_EFFECT[imint_damage]
-                current_effect = int(soldier_out.get('titan_assessment', {}).get('effect_score', 1) or 1)
-                
-                # ABSOLUTE REPLACEMENT: IMINT is Ground Truth, it replaces regardless of direction
-                if 'titan_assessment' not in soldier_out:
-                    soldier_out['titan_assessment'] = {}
-                soldier_out['titan_assessment']['effect_score'] = imint_effect
-                soldier_out['titan_assessment']['effect_source'] = 'VISIONARY_IMINT'
-                
-                direction = '\u2b06\ufe0f' if imint_effect > current_effect else '\u2b07\ufe0f' if imint_effect < current_effect else '\u2194\ufe0f'
-                print(f"      \U0001f441\ufe0f IMINT Ground Truth: Effect Vector E {direction} {current_effect} \u2192 {imint_effect} ({imint_damage})")
-            
-            # C. Store Visionary output for downstream consumers
-            soldier_out['visionary_report'] = visionary_out
-            
-            # D. Log verification status
-            v_status = visionary_out.get('visual_confirmation', {}).get('verification_status', 'UNKNOWN')
-            if v_status == 'CONTRADICTED':
-                print("      \u26a0\ufe0f VISIONARY ALERT: Text claims CONTRADICTED by visual evidence!")
-    else:
-        # No media — Visionary bypassed (silent, no log spam for the 99% case)
-        pass
-
-    # 3. Calcolo T.I.E. (Layer 1)
-    titan_data = soldier_out.get('titan_assessment', {})
-    visual_evidence = soldier_out.get('visual_evidence', False)
-
-    tie_result = self._calculate_tie(titan_data, visual_evidence)
-
-    print(f"      🎯 TIE: {tie_result['value']} [{tie_result['status']}] "
-          f"(K:{tie_result['vectors']['k']} T:{tie_result['vectors']['t']} E:{tie_result['vectors']['e']})")
-
-    # Step 3: Calculator (Passiamo la LISTA delle fonti se disponibile, altrimenti stringa singola)
-    sources_for_calc = row.get("sources_list_for_bias") or primary_source
-
-    calc_out = self._step_3_the_calculator(
-        soldier_out, brain_out, sources_for_calc, combined_text)
-
-    # Step 4: Journalist
-    journo_out = self._step_4_the_journalist(
-        combined_text, brain_out, soldier_out)
-
-    # 3. FORMAT FINAL OUTPUT
-    # Unisce tutte le URL trovate
-    all_sources_list = list(set([u for u in urls if u]))
-    aggregated_sources_str = " | ".join(all_sources_list)
-
-    # --- CALCOLO TIPO EVENTO ---
-    computed_event_type = self._classify_event_type(combined_text)
-
-    # --- FUNZIONE HELPER ANTI-SOVRASCRITTURA ---
-    def keep_or_update(key, new_val):
-        current = str(row.get(key, '')).strip()
-        if current and current not in ['0', '0.0', 'None', '']:
-            return row.get(key)
-        return new_val
-
-    # --- CORREZIONE VARIABILI ---
-    # 1. Recuperiamo il tipo dall'AI (soldier_out ha target_category)
-    # Nota: soldier_out viene da Qwen, journo_out da GPT.
-
-    # Usiamo soldier_out per i dati tecnici
-    ai_type = soldier_out.get("target_category", "Unknown")
-
-    # Se Qwen fallisce, fallback alla regex
-    if ai_type == "Unknown" or ai_type not in self.EVENT_TYPES:
-        # Usa combined_text, non raw_text_full
-        ai_type = self._classify_event_type(combined_text)
-
-    # 2. Status Finale
-    final_verif = "Unconfirmed"
-    if event_ctx["status"] == "CONFIRMED_MULTI_SOURCE":
-        final_verif = "Confirmed"
-    elif event_ctx["status"] == "ORIGINAL_FOUND":
-        final_verif = "Verified (Source Linked)"
-    elif event_ctx["status"] == "CORROBORATED":
-        final_verif = "Corroborated"
-
-    # 3. Costruzione output usando i dizionari corretti (journo_out, soldier_out, calc_out)
-    return {
-        # Usa journo_out, fallback al titolo originale
-        "Title": journo_out.get("title_en", title),
-        "Type": ai_type,
-        "Date": row.get("Date"),
-        "Location": toponym_raw or row.get("Location"),
-        # Use verified_coordinates from Geo-Verifier, fallback to row data
-        "Latitude": verified_coords.get('lat') if verified_coords else (
-            soldier_out.get("lat") if soldier_out.get("lat") not in [0, 0.0, None] else row.get("Latitude", 0.0)
-        ),
-        "Longitude": verified_coords.get('lon') if verified_coords else (
-            soldier_out.get("lon") if soldier_out.get("lon") not in [0, 0.0, None] else row.get("Longitude", 0.0)
-        ),
-        "Source": event_ctx.get("best_link") or row.get("Source"),
-        "Archived": "No",
-        "Verification": final_verif,
-        "Description": journo_out.get("description_en", ""),
-        "Notes": f"Strategy: {event_ctx['verification_method']} | Bias: {calc_out['bias_score']}",
-        "Video": "Yes" if soldier_out.get("visual_evidence") else "No",
-        "Intensity": str(calc_out.get("intensity", 0.0)),
-        "Actor": brain_out.get("actor", "Unknown"),  # Preso dal Brain
-        "Bias dominante": calc_out.get("dominant_bias", "Neutral"),
-        "Location Precision": soldier_out.get("location_precision", "UNKNOWN"),
-        "Aggregated Sources": row.get("aggregated_log") or aggregated_sources_str,
-        "Reliability": str(calc_out.get("reliability", 0)),
-        "Bias Score": str(calc_out.get("bias_score", 0))
-    }
-
-    # =========================================================================
-    # 🪖 HELPER: UPDATE UNITS REGISTRY
-    # =========================================================================
-    def _update_units_registry(self, units_list, event_date_str, coords):
-        """Updates the units_registry table with fresh location data."""
-        if not units_list: return
-        
-        try:
-            # We open a transient connection here to allow portability
-            conn = sqlite3.connect(DB_PATH)
-            cursor = conn.cursor()
-            
-            affected = 0
-            for unit in units_list:
-                unit_id = unit.get('unit_id')
-                status = unit.get('status', 'ACTIVE')
-                
-                if not unit_id: continue
-                
-                # Update only if unit exists (Seeder should have populated it)
-                cursor.execute("""
-                    UPDATE units_registry 
-                    SET last_seen_lat = ?, 
-                        last_seen_lon = ?, 
-                        last_seen_date = ?, 
-                        status = ?
-                    WHERE unit_id = ?
-                """, (coords.get('lat'), coords.get('lon'), event_date_str, status, unit_id))
-                
-                affected += cursor.rowcount
-            
-            conn.commit()
-            conn.close()
-            if affected > 0:
-                print(f"      🪖 ORBAT Tracker: Updated positions for {affected} units.")
-                
-        except Exception as e:
-            print(f"      ⚠️ ORBAT Update Error: {e}")
 
 # =============================================================================
 # 🚀 NEW MAIN LOOP: SQLITE ENGINE (Fase 4 Ready)
@@ -3442,61 +2631,509 @@ KNOWN_LOCATIONS = {
 # --- FUNZIONE GEOCODING SICURO ---
 
 
-def safe_geocode(geolocator, query):
-    """
-    1. Cerca nella Whitelist (Hardcoded).
-    2. Se non trova, cerca via API ma SOLO nel rettangolo di guerra.
-    """
+
+def _normalize_geo_cache_key(query):
+    return str(query or "").strip().lower()
+
+
+def _geo_cache_lookup_sync(query):
+    cache_key = _normalize_geo_cache_key(query)
+    if not cache_key:
+        return None
+    conn = sqlite3.connect(DB_PATH, timeout=30)
+    try:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS geo_cache (
+                location_name TEXT PRIMARY KEY,
+                lat REAL,
+                lon REAL,
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        row = conn.execute(
+            "SELECT lat, lon FROM geo_cache WHERE location_name = ?",
+            (cache_key,),
+        ).fetchone()
+        if row:
+            return {"lat": row[0], "lon": row[1]}
+        return None
+    finally:
+        conn.close()
+
+
+def _geo_cache_store_sync(query, lat, lon):
+    cache_key = _normalize_geo_cache_key(query)
+    if not cache_key or lat is None or lon is None:
+        return
+    conn = sqlite3.connect(DB_PATH, timeout=30)
+    try:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS geo_cache (
+                location_name TEXT PRIMARY KEY,
+                lat REAL,
+                lon REAL,
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.execute(
+            """
+            INSERT INTO geo_cache (location_name, lat, lon, updated_at)
+            VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(location_name) DO UPDATE SET
+                lat = excluded.lat,
+                lon = excluded.lon,
+                updated_at = CURRENT_TIMESTAMP
+            """,
+            (cache_key, float(lat), float(lon)),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+async def geo_cache_lookup(query):
+    async with GEO_CACHE_LOCK:
+        return await asyncio.to_thread(_geo_cache_lookup_sync, query)
+
+
+async def geo_cache_store(query, lat, lon):
+    async with GEO_CACHE_LOCK:
+        await asyncio.to_thread(_geo_cache_store_sync, query, lat, lon)
+
+
+async def safe_geocode(query):
     if not query:
         return None, None
 
-    # Normalizza la query (minuscolo e pulizia spazi)
     clean_query = str(query).lower().strip()
+    cached = await geo_cache_lookup(clean_query)
+    if cached:
+        print(f"      [GEO] GeoCache hit: '{query}'")
+        return cached["lat"], cached["lon"]
 
-    # --- STEP 1: CONTROLLO WHITELIST (Hardcoded) ---
-    # Controlla match esatto
     if clean_query in KNOWN_LOCATIONS:
-        print(f"      📍 Whitelist Hit: '{query}' -> Hardcoded.")
-        return KNOWN_LOCATIONS[clean_query]
+        print(f"      [GEO] Whitelist hit: '{query}' -> hardcoded.")
+        lat, lon = KNOWN_LOCATIONS[clean_query]
+        await geo_cache_store(clean_query, lat, lon)
+        return lat, lon
 
-    # --- STEP 2: GEOCODING CON RECINTO (API) ---
-    # Recinto: Ucraina + Russia Occidentale
-    MIN_LAT, MAX_LAT = 44.0, 60.0
-    MIN_LON, MAX_LON = 22.0, 55.0
+    min_lat, max_lat = 44.0, 60.0
+    min_lon, max_lon = 22.0, 55.0
 
     try:
-        # Priorità a UA/RU
-        location = geolocator.geocode(
-            query, country_codes=['ua', 'ru'], timeout=5)
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.get(
+                "https://photon.komoot.io/api/",
+                params={"q": query, "limit": 1},
+            )
+            resp.raise_for_status()
+            data = resp.json()
 
-        # Fallback globale (se il geocoder locale fallisce)
-        if not location:
-            location = geolocator.geocode(query, timeout=5)
-
-        if location:
-            lat, lon = location.latitude, location.longitude
-
-            # CHECK DEL RECINTO
-            if MIN_LAT <= lat <= MAX_LAT and MIN_LON <= lon <= MAX_LON:
+        for feature in data.get("features", []):
+            coords = feature.get("geometry", {}).get("coordinates", [])
+            if len(coords) != 2:
+                continue
+            lon, lat = float(coords[0]), float(coords[1])
+            if min_lat <= lat <= max_lat and min_lon <= lon <= max_lon:
+                await geo_cache_store(clean_query, lat, lon)
                 return lat, lon
-            else:
-                print(
-                    f"      ⚠️ COORDINATE FUORI ZONA SCARTATE: {query} ({lat},{lon})")
-                return None, None
+            print(f"      [GEO] Coordinates outside war-zone fence discarded: {query} ({lat},{lon})")
+            return None, None
 
         return None, None
-
     except Exception as e:
-        print(f"      ❌ Geocoding Error: {e}")
+        print(f"      [GEO] Geocoding error: {e}")
         return None, None
 
 
-def main():
-    print("🤖 STARTING SUPER SQUAD AGENT (SQLite Mode)...")
+def safe_parse_list(val):
+    if not val:
+        return []
+    if isinstance(val, list):
+        return [str(x) for x in val if x]
+    val_str = str(val).strip()
+    if val_str.startswith('[') and val_str.endswith(']'):
+        try:
+            parsed = json.loads(val_str)
+            if isinstance(parsed, list):
+                return [str(x) for x in parsed if x]
+        except Exception:
+            pass
+    if ' ||| ' in val_str:
+        return [x.strip() for x in val_str.split(' ||| ') if x.strip()]
+    if ' | ' in val_str:
+        return [x.strip() for x in val_str.split(' | ') if x.strip()]
+    return [val_str]
 
-    # 1. Connessione al DB
+
+async def titan_sensor_scores(text):
+    try:
+        return await asyncio.to_thread(TitanSensor().analyze_text, text)
+    except Exception as e:
+        print(f"   [WARN] Trident sensor failed: {e}")
+        return {}
+
+
+def _mark_event_status_sync(event_id, status):
+    conn = sqlite3.connect(DB_PATH, timeout=30)
+    try:
+        conn.execute(
+            "UPDATE unique_events SET ai_analysis_status = ? WHERE event_id = ?",
+            (status, event_id),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def _write_final_report_sync(cluster_id, final_report, tie_result, titan_data, calc_result,
+                             soldier_result, visionary_out, journo_result, actual_urls_list,
+                             campaign_id, campaign_match_meta_json, campaign_tagged_at):
+    report_text = json.dumps(final_report, ensure_ascii=False)
+    titan_metrics_json = json.dumps(titan_data, ensure_ascii=False) if titan_data else None
+
+    operational_sector = 'UNKNOWN_SECTOR'
+    persist_lat = None
+    persist_lon = None
+    try:
+        geo_data = (final_report.get('tactics') or {}).get('geo_location', {})
+        explicit = (geo_data.get('explicit') or {}) if isinstance(geo_data, dict) else {}
+        verified = (geo_data.get('verified') or {}) if isinstance(geo_data, dict) else {}
+        inferred = (geo_data.get('inferred') or {}) if isinstance(geo_data, dict) else {}
+
+        def _pick_pair(candidate):
+            if not isinstance(candidate, dict):
+                return None
+            lat_raw = candidate.get('lat')
+            lon_raw = candidate.get('lon')
+            invalid_tokens = {None, "", "0", "0.0", "null", "none", "unknown", "n/a"}
+            if str(lat_raw).strip().lower() in invalid_tokens or str(lon_raw).strip().lower() in invalid_tokens:
+                return None
+            try:
+                lat_f = float(lat_raw)
+                lon_f = float(lon_raw)
+            except (TypeError, ValueError):
+                return None
+            if not (-90.0 <= lat_f <= 90.0 and -180.0 <= lon_f <= 180.0):
+                return None
+            return lat_f, lon_f
+
+        for candidate in (explicit, verified, inferred):
+            pair = _pick_pair(candidate)
+            if pair:
+                persist_lat, persist_lon = pair
+                break
+
+        if sector_geolocator and persist_lat is not None and persist_lon is not None:
+            operational_sector = sector_geolocator.assign_sector(float(persist_lon), float(persist_lat))
+    except Exception:
+        operational_sector = 'UNKNOWN_SECTOR'
+
+    conn = sqlite3.connect(DB_PATH, timeout=30)
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE unique_events
+            SET ai_report_json = ?,
+                ai_analysis_status = 'COMPLETED',
+                tie_score = ?,
+                tie_status = ?,
+                titan_metrics = ?,
+                kinetic_score = ?,
+                target_score = ?,
+                effect_score = ?,
+                reliability = ?,
+                bias_score = ?,
+                ai_summary = ?,
+                has_video = ?,
+                title = ?,
+                description = ?,
+                urls_list = ?,
+                campaign_id = ?,
+                campaign_match_meta = ?,
+                campaign_tagged_at = ?,
+                operational_sector = ?,
+                lat = COALESCE(?, lat),
+                lon = COALESCE(?, lon)
+            WHERE event_id = ?
+            """, (
+                report_text,
+                tie_result['value'],
+                tie_result['status'],
+                titan_metrics_json,
+                titan_data.get('kinetic_score', 0),
+                titan_data.get('target_score', 0),
+                titan_data.get('effect_score', 0),
+                calc_result.get('reliability', 0),
+                calc_result.get('bias_score', 0),
+                final_report.get('ai_summary', ''),
+                1 if (soldier_result.get('visual_evidence') or visionary_out) else 0,
+                journo_result.get('title_en', ''),
+                journo_result.get('description_en', ''),
+                ' | '.join(actual_urls_list) if actual_urls_list else '',
+                campaign_id,
+                campaign_match_meta_json,
+                campaign_tagged_at,
+                operational_sector,
+                persist_lat,
+                persist_lon,
+                cluster_id
+            ))
+        conn.commit()
+    finally:
+        conn.close()
+
+
+async def process_cluster_async(agent, row, campaign_definitions, db_write_lock):
+    cluster_id = row['event_id']
+    try:
+        ref_date = row['last_seen_date']
+        text_content = row['full_text_dossier'] if row.get('full_text_dossier') else ""
+        all_msgs_raw = text_content.split(' ||| ')
+
+        junk_keywords = [
+            "bitcoin", "crypto", "ethereum", "nft ", "casino", "slot ", "betting",
+            "sconto", "promo ", "offert", "liquidazione", "immobiliare", "affitto",
+            "vendesi", "agenzia immobiliare", "kvartira",
+            "oroscopo", "serie a", "champions league", "calciomercato"
+        ]
+        text_lower = text_content.lower()
+        for word in junk_keywords:
+            if word in text_lower:
+                print(f"[SKIP] Evento scartato per keyword spazzatura: '{word}'")
+                async with db_write_lock:
+                    await asyncio.to_thread(_mark_event_status_sync, cluster_id, 'SKIPPED_JUNK')
+                return
+
+        bouncer_result = await agent._step_0_the_bouncer(text_content)
+        if bouncer_result.get('is_relevant') is False:
+            print(f"      [REJECTED] Bouncer: {bouncer_result.get('reason')}")
+            async with db_write_lock:
+                await asyncio.to_thread(_mark_event_status_sync, cluster_id, 'REJECTED')
+            return
+
+        selected_msgs = []
+        current_total_chars = 0
+        seen_hashes = set()
+        for msg in all_msgs_raw:
+            msg = msg.strip()
+            if not msg:
+                continue
+            msg_hash = hash(msg)
+            if msg_hash in seen_hashes:
+                continue
+            seen_hashes.add(msg_hash)
+            if len(msg) > 3000:
+                msg = msg[:3000] + "... [TRUNCATED]"
+            if current_total_chars + len(msg) > 25000:
+                break
+            selected_msgs.append(msg)
+            current_total_chars += len(msg)
+            if len(selected_msgs) >= 12:
+                break
+
+        raw_msgs = selected_msgs
+        print(f"\n[CLUSTER] Processing Cluster ID: {cluster_id}")
+        print(f"   [OPT] {len(all_msgs_raw)} sources -> {len(raw_msgs)} selected (Len: {current_total_chars} chars)")
+        combined_text = "\n".join(raw_msgs)
+        cluster_data = {"reference_timestamp": ref_date, "raw_messages": raw_msgs}
+
+        titan_task = asyncio.create_task(agent._step_titan_classifier(combined_text))
+        soldier_task = asyncio.create_task(agent._step_2_the_soldier(cluster_data))
+        sensor_task = asyncio.create_task(titan_sensor_scores(combined_text))
+        titan_result, soldier_result, sensor_result = await asyncio.gather(
+            titan_task,
+            soldier_task,
+            sensor_task,
+        )
+
+        trident_base_scores = {
+            'kinetic_score': max(1, int(sensor_result.get('k_metric', 0.1) * 10)),
+            'target_score': max(1, int(sensor_result.get('t_metric', 0.1) * 10)),
+            'effect_score': max(1, int(sensor_result.get('e_metric', 0.1) * 10))
+        }
+        trident_classification = titan_result.get('classification', 'UNKNOWN')
+        print(f"   [TITAN] Base: {trident_classification} | K={trident_base_scores['kinetic_score']}, T={trident_base_scores['target_score']}, E={trident_base_scores['effect_score']}")
+
+        if not soldier_result:
+            print("   [WARN] Soldier empty/failed. Escalating to Brain for recovery...")
+            soldier_result = {"status": "FAILED_EXTRACTION"}
+
+        visionary_out = None
+        media_urls_raw = row.get('media_urls')
+        if media_urls_raw:
+            try:
+                if isinstance(media_urls_raw, str):
+                    media_urls_list = json.loads(media_urls_raw) if media_urls_raw.strip() else []
+                elif isinstance(media_urls_raw, list):
+                    media_urls_list = media_urls_raw
+                else:
+                    media_urls_list = []
+            except (json.JSONDecodeError, ValueError):
+                media_urls_list = []
+
+            if media_urls_list:
+                all_frame_dicts = []
+                if MediaProcessor is not None:
+                    try:
+                        media_proc = MediaProcessor()
+                        for m_url in media_urls_list:
+                            frames = await asyncio.to_thread(media_proc.extract_keyframes, str(m_url))
+                            all_frame_dicts.extend(frames)
+                            if len(all_frame_dicts) >= 4:
+                                all_frame_dicts = all_frame_dicts[:4]
+                                break
+                    except Exception as mp_err:
+                        print(f"      [WARN] MediaProcessor error: {mp_err}")
+                if all_frame_dicts:
+                    visionary_out = await agent._step_visionary(soldier_result, all_frame_dicts)
+                if visionary_out:
+                    soldier_result['visual_evidence'] = True
+                    imint_damage = visionary_out.get('kinetic_effect', {}).get('damage_level')
+                    imint_confidence = visionary_out.get('visual_confirmation', {}).get('confidence_score', 0)
+                    if imint_damage and imint_damage in VISIONARY_DAMAGE_TO_EFFECT and imint_confidence >= 0.5:
+                        imint_effect = VISIONARY_DAMAGE_TO_EFFECT[imint_damage]
+                        if 'titan_assessment' not in soldier_result:
+                            soldier_result['titan_assessment'] = {}
+                        soldier_result['titan_assessment']['effect_score'] = imint_effect
+                        soldier_result['titan_assessment']['effect_source'] = 'VISIONARY_IMINT'
+                    soldier_result['visionary_report'] = visionary_out
+
+        titan_data = soldier_result.get('titan_assessment') or {}
+        visual_evidence = soldier_result.get('visual_evidence', False)
+        k_score = titan_data.get('kinetic_score', 0)
+        if not k_score or int(k_score) == 0:
+            titan_data['kinetic_score'] = trident_base_scores.get('kinetic_score', 1)
+            titan_data['target_score'] = trident_base_scores.get('target_score', 1)
+            titan_data['effect_score'] = trident_base_scores.get('effect_score', 1)
+            titan_data['classification'] = trident_classification
+
+        tie_result = agent._calculate_tie(titan_data, visual_evidence)
+        print(f"      [TIE] {tie_result['value']} [{tie_result['status']}]")
+
+        metadata_for_judge = {"Target Date": ref_date, "Soldier_Extraction": soldier_result}
+        brain_review = await agent._step_1_the_brain(combined_text, metadata_for_judge)
+        if not brain_review.get('verification_status', False):
+            print(f"   [REJECTED] Brain invalidated event: {brain_review.get('rejection_reason', 'Unknown')}")
+            async with db_write_lock:
+                await asyncio.to_thread(_mark_event_status_sync, cluster_id, 'REJECTED')
+            return
+        if not isinstance(brain_review.get('verified_data'), dict):
+            async with db_write_lock:
+                await asyncio.to_thread(_mark_event_status_sync, cluster_id, 'REJECTED')
+            return
+
+        raw_units_to_normalize = []
+        for u in soldier_result.get('military_units_detected', []):
+            raw_units_to_normalize.append({"raw_name": u.get('unit_name') or u.get('unit_id'), "faction": u.get('faction', 'UNK')})
+        for u in brain_review.get('verified_units', []):
+            raw_units_to_normalize.append(u)
+        if raw_units_to_normalize:
+            normalized_units = await agent._normalize_units_ai(raw_units_to_normalize, combined_text)
+            final_units = []
+            seen_ids = set()
+            for nu in normalized_units:
+                uid = nu.get('unit_id')
+                if uid:
+                    if uid not in seen_ids:
+                        final_units.append(nu)
+                        seen_ids.add(uid)
+                else:
+                    final_units.append(nu)
+            soldier_result['military_units_detected'] = final_units
+
+        actual_sources_list = safe_parse_list(row.get('sources_list'))
+        actual_urls_list = safe_parse_list(row.get('urls_list'))
+        sources_for_calc = actual_sources_list + actual_urls_list
+        calc_result = agent._step_3_the_calculator(
+            soldier_data=soldier_result if soldier_result.get("status") != "FAILED_EXTRACTION" else {},
+            brain_data=brain_review['verified_data'],
+            source_name=sources_for_calc if sources_for_calc else ["Cluster Aggregated"],
+            text=combined_text
+        )
+        journo_result = await agent._step_4_the_journalist(
+            text="",
+            brain_data=brain_review['verified_data'],
+            soldier_data=soldier_result
+        )
+
+        final_report = {
+            "cluster_id": cluster_id,
+            "timestamp_generated": datetime.now().isoformat(),
+            "status": "VERIFIED",
+            "strategy": brain_review['verified_data'],
+            "tactics": soldier_result,
+            "scores": calc_result,
+            "editorial": journo_result,
+            "tie_score": tie_result['value'],
+            "tie_status": tie_result['status'],
+            "titan_metrics": titan_data,
+            "Aggregated Sources": actual_urls_list,
+            "visionary_report": visionary_out
+        }
+        final_report['ai_summary'] = await _step_5_the_strategist(agent.brain_client, final_report)
+
+        campaign_id = None
+        campaign_match_meta_json = None
+        campaign_tagged_at = None
+        try:
+            target_type_value = ((titan_data or {}).get("target_type_category")
+                or (soldier_result.get("titan_assessment", {}) or {}).get("target_type_category")
+                or (brain_review.get("verified_data", {}) or {}).get("target_type")
+                or "unknown")
+            campaign_event_text = " ".join([str(journo_result.get("title_en", "")), str(journo_result.get("description_en", "")), str(combined_text)])
+            campaign_match = match_event_campaign(campaigns=campaign_definitions, target_type=target_type_value, event_text=campaign_event_text)
+            if campaign_match:
+                campaign_id = campaign_match.get("campaign_id")
+                campaign_tagged_at = datetime.utcnow().isoformat() + "Z"
+                campaign_match_meta_json = json.dumps(campaign_match.get("match_meta", {}), ensure_ascii=False)
+                final_report.setdefault("strategy", {})
+                final_report["strategy"]["campaign"] = {
+                    "campaign_id": campaign_match.get("campaign_id"),
+                    "name": campaign_match.get("name"),
+                    "color": campaign_match.get("color"),
+                    "match_meta": campaign_match.get("match_meta", {}),
+                    "tagged_at": campaign_tagged_at,
+                }
+            else:
+                final_report.setdefault("strategy", {})
+                final_report["strategy"]["campaign"] = None
+        except Exception as campaign_err:
+            print(f"   [WARN] Campaign tagging error: {campaign_err}")
+
+        try:
+            tactics = final_report.get('tactics', {})
+            geo = tactics.get('geo_location', {})
+            if isinstance(geo, dict):
+                if geo.get('explicit') is None:
+                    geo['explicit'] = {}
+                lat = geo['explicit'].get('lat')
+                location_name = geo.get('inferred', {}).get('toponym_raw')
+                if (not lat or lat == 0) and location_name and location_name != "Unknown":
+                    banned_locations = ["Ukraine", "Russia", "Europe", "NATO", "EU", "Border", "Frontline", "Front", "Zone"]
+                    if location_name.strip() not in banned_locations:
+                        new_lat, new_lon = await safe_geocode(location_name)
+                        if new_lat and new_lon:
+                            final_report['tactics']['geo_location']['explicit']['lat'] = new_lat
+                            final_report['tactics']['geo_location']['explicit']['lon'] = new_lon
+        except Exception as e:
+            print(f"   [WARN] Geo-Fixer: {e}")
+
+        print(json.dumps(final_report, indent=2, ensure_ascii=False))
+        async with db_write_lock:
+            await asyncio.to_thread(_write_final_report_sync, cluster_id, final_report, tie_result, titan_data,
+                                    calc_result, soldier_result, visionary_out, journo_result, actual_urls_list,
+                                    campaign_id, campaign_match_meta_json, campaign_tagged_at)
+        print("   [DB] Salvataggio completato (Golden Record Saved).")
+    except Exception as e:
+        print(f"   [ERROR] Error processing cluster {cluster_id}: {e}")
+
+
+async def main():
+    print("[START] STARTING SUPER SQUAD AGENT (SQLite Mode)...")
+
     if not os.path.exists(DB_PATH):
-        print(f"❌ Database non trovato: {DB_PATH}")
+        print(f"[ERROR] Database non trovato: {DB_PATH}")
         print("   Esegui prima 'scripts/refiner.py' per popolare il DB!")
         return
 
@@ -3506,22 +3143,19 @@ def main():
     cursor = conn.cursor()
     ensure_campaign_columns(conn)
 
-    # Inizializza Client OpenAI Standard (per GPT-4o-mini)
-    client_openai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-    # Inizializza Client OpenRouter (per DeepSeek / The Strategist)
-    client_or = OpenAI(
-        base_url="https://openrouter.ai/api/v1",
-        api_key=os.getenv("OPENROUTER_API_KEY"),
-    )
-    # [MODIFICA 1] Migrazione schema minima (WAL + colonne V4.2)
     migrations = [
         "ALTER TABLE events ADD COLUMN ai_report_json TEXT",
         "ALTER TABLE unique_events ADD COLUMN operational_sector TEXT",
         "ALTER TABLE unique_events ADD COLUMN image_phash TEXT",
         "ALTER TABLE unique_events ADD COLUMN source_reputation_score REAL",
         "ALTER TABLE unique_events ADD COLUMN lat REAL",
-        "ALTER TABLE unique_events ADD COLUMN lon REAL"
+        "ALTER TABLE unique_events ADD COLUMN lon REAL",
+        """CREATE TABLE IF NOT EXISTS geo_cache (
+            location_name TEXT PRIMARY KEY,
+            lat REAL,
+            lon REAL,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )"""
     ]
     for ddl in migrations:
         try:
@@ -3535,666 +3169,39 @@ def main():
         cache_path=CAMPAIGN_DEFINITIONS_CACHE_PATH,
         tab_name="campaign_definitions",
     )
-    print(
-        f"🎯 Loaded {len(campaign_definitions)} campaign definitions (sheet/cache)."
-    )
+    print(f"[CAMPAIGNS] Loaded {len(campaign_definitions)} campaign definitions (sheet/cache).")
 
     agent = SuperSquadAgent()
-
-    # 2. Recupero Cluster Pendenti
-    print("🔍 Lettura cluster pendenti da SQLite...")
+    print("[DB] Lettura cluster pendenti da SQLite...")
 
     try:
-        print("   📥 Recupero eventi in attesa (Priorità ai Super-Cluster)...")
-
-        # Questa query usa un CASE statement per dare priorità 0 (massima) agli eventi fusi
         cursor.execute("""
             SELECT * FROM unique_events
             WHERE ai_analysis_status = 'PENDING'
             ORDER BY last_seen_date DESC
             LIMIT 2000
         """)
-
-        clusters_to_process = cursor.fetchall()
-
+        clusters_to_process = [dict(row) for row in cursor.fetchall()]
     except Exception as e:
-        print(f"⚠️ Errore SQL: {e}")
-        return
-
-    if not clusters_to_process:
-        print("✅ Nessun nuovo cluster da processare (Tutto aggiornato).")
+        print(f"[ERROR] Errore SQL: {e}")
         conn.close()
         return
 
-    print(f"🚀 Trovati {len(clusters_to_process)} cluster da analizzare.")
-
-    # 3. Elaborazione Sequenziale (Architecture: Soldier First -> Brain Verify)
-    for row in clusters_to_process:
-        cluster_id = row['event_id']
-        ref_date = row['last_seen_date']
-
-        text_content = row['full_text_dossier'] if row['full_text_dossier'] else ""
-
-        all_msgs_raw = text_content.split(' ||| ')
-
-        # ==============================================================================
-        #  JUNK FILTER: scarta spam e notizie civili irrilevanti
-        # ==============================================================================
-        # Lista di parole che indicano al 100% che NON è un evento di guerra
-        junk_keywords = [
-            # Spam & Crypto
-            "bitcoin", "crypto", "ethereum", "nft ",
-            "casino", "slot ", "betting",
-
-            # Pubblicità
-            # Attenzione agli spazi per evitare falsi positivi
-            "sconto", "promo ", "offert", "liquidazione",
-
-            # Civile / Immobiliare (Il tuo caso specifico)
-            "immobiliare", "affitto", "vendesi", "agenzia immobiliare",
-            "рієлтор",  # 'Realtor' in ucraino
-            "kvartira",  # 'Appartamento' traslitterato spesso usato negli url
-
-            # Intrattenimento
-            "oroscopo", "serie a", "champions league", "calciomercato"
-        ]
-
-        # Convertiamo in minuscolo per il controllo
-        text_lower = text_content.lower()
-
-        is_junk = False
-        for word in junk_keywords:
-            if word in text_lower:
-                print(
-                    f"🗑️ SKIP: Evento scartato per keyword spazzatura: '{word}'")
-                is_junk = True
-                break
-
-        if is_junk:
-            # Marcalo come SKIPPED così non lo ripeschiamo, ma non lo cancelliamo
-            cursor.execute(
-                "UPDATE unique_events SET ai_analysis_status='SKIPPED_JUNK' WHERE event_id=?", (cluster_id,))
-            conn.commit()
-            continue
-        # =========================================================
-        # 🛡️ STEP 0: THE BOUNCER (AI SPAM FILTER - Qwen 32B)
-        # =========================================================
-        # Filtro intelligente per quello che è sfuggito alle keyword
-        bouncer_result = agent._step_0_the_bouncer(text_content)
-
-        if bouncer_result.get('is_relevant') is False:
-            print(
-                f"      🗑️ REJECTED by Bouncer: {bouncer_result.get('reason')}")
-
-            # Salvataggio nel DB come REJECTED
-            cursor.execute(
-                "UPDATE unique_events SET ai_analysis_status = 'REJECTED' WHERE event_id = ?", (cluster_id,))
-            conn.commit()
-
-            continue
-
-        # --- ✂️ HYBRID SMART SLICER (Telegram + GDELT) ---
-        # Ottimizza costi e attenzione: taglia articoli lunghi, rimuove duplicati, limita quantità.
-
-        selected_msgs = []
-        current_total_chars = 0
-
-        # PARAMETRI DI SICUREZZA
-        MAX_ITEMS = 12              # Max numero di fonti (Telegram o Articoli)
-        # Tronca singolo articolo GDELT (prendiamo solo l'inizio)
-        MAX_CHARS_PER_ITEM = 3000
-        MAX_TOTAL_CHARS = 25000     # Tetto massimo totale input (~6000 token)
-
-        seen_hashes = set()  # Per deduplicazione esatta
-
-        for msg in all_msgs_raw:
-            msg = msg.strip()
-            if not msg:
-                continue
-
-            # Deduplicazione (evita di pagare 2 volte per lo stesso testo identico)
-            msg_hash = hash(msg)
-            if msg_hash in seen_hashes:
-                continue
-            seen_hashes.add(msg_hash)
-
-            # Troncamento Intelligente (Per articoli GDELT infiniti)
-            # Se supera il limite, prendiamo solo la testa (dove c'è la notizia)
-            if len(msg) > MAX_CHARS_PER_ITEM:
-                msg = msg[:MAX_CHARS_PER_ITEM] + "... [TRUNCATED]"
-
-            # Controllo Budget Totale (Se il secchio è pieno, ci fermiamo)
-            if current_total_chars + len(msg) > MAX_TOTAL_CHARS:
-                break
-
-            selected_msgs.append(msg)
-            current_total_chars += len(msg)
-
-            # Stop se abbiamo raggiunto il numero massimo di fonti
-            if len(selected_msgs) >= MAX_ITEMS:
-                break
-
-        # Aggiorniamo la variabile per il log
-        raw_msgs = selected_msgs
-
-        print(f"\n⚡ Processing Cluster ID: {cluster_id}")
-        print(
-            f"   📉 Optimization: {len(all_msgs_raw)} sources -> {len(raw_msgs)} selected (Len: {current_total_chars} chars)")
-
-        # Creazione testo unico per l'AI
-        combined_text = "\n".join(raw_msgs)
-
-        # =================================================================
-        # 🔱 TRIDENT PRE-CHECK: Get base scores from fine-tuned model
-        # =================================================================
-        # Trident provides reliable base K/T/E scores
-        # Soldier/Brain can override with evidence, but this is the foundation
-        trident_base_scores = {'kinetic_score': 0, 'target_score': 0, 'effect_score': 0}
-        trident_classification = 'UNKNOWN'
-        
-        try:
-            # Initialize Trident components (lazy init on first use)
-            if not hasattr(agent, '_trident_titan'):
-                agent._trident_titan = TitanIntelligenceNode(TITAN_MODEL_ID)
-                agent._trident_sensor = TitanSensor()
-                print("   🔱 Trident components initialized")
-            
-            # 1. Classification from fine-tuned model
-            titan_result = agent._trident_titan.analyze(combined_text)
-            trident_classification = titan_result.get('classification', 'UNKNOWN')
-            
-            # 2. K/T/E from physics-based sensor (always produces valid scores)
-            sensor_result = agent._trident_sensor.analyze_text(combined_text)
-            
-            # Convert 0.0-1.0 metrics to 0-10 scale
-            trident_base_scores = {
-                'kinetic_score': max(1, int(sensor_result['k_metric'] * 10)),
-                'target_score': max(1, int(sensor_result['t_metric'] * 10)),
-                'effect_score': max(1, int(sensor_result['e_metric'] * 10))
-            }
-            
-            print(f"   🔱 Trident Base: {trident_classification} | K={trident_base_scores['kinetic_score']}, T={trident_base_scores['target_score']}, E={trident_base_scores['effect_score']}")
-            
-        except Exception as e:
-            print(f"   ⚠️ Trident pre-check failed: {e} - continuing with Soldier")
-
-        # --- STEP 1: THE SOLDIER (Extraction) ---
-        cluster_data = {
-            "reference_timestamp": ref_date,
-            "raw_messages": raw_msgs
-        }
-
-        soldier_result = None
-        try:
-            # Usiamo soldier_result coerentemente
-            soldier_result = agent._step_2_the_soldier(cluster_data)
-        except Exception as e:
-            print(f"   ⚠️ Soldier Stumbled: {e}")
-
-        # LOGICA FALLBACK (SENZA CONTINUE):
-        # Se fallisce, creiamo un oggetto vuoto così il codice dopo non si rompe,
-        # ma NON fermiamo il ciclo. Andiamo avanti verso il Brain.
-        if not soldier_result:
-            print("   ⏩ Soldier empty/failed. Escalating to Brain for recovery...")
-            soldier_result = {"status": "FAILED_EXTRACTION"}
-
-        # =================================================================
-        # 👁️ THE VISIONARY — IMINT Verification (Conditional Activation)
-        # =================================================================
-        # ACTIVATION GATE: Fires ONLY if event has media_urls data.
-        # Pipeline: Soldier → MediaProcessor → [VISIONARY] → TIE
-        # =================================================================
-        visionary_out = None
-        media_urls_raw = row['media_urls'] if row['media_urls'] else None
-        
-        if media_urls_raw:
-            # Parse media_urls (stored as JSON string in DB)
-            try:
-                if isinstance(media_urls_raw, str):
-                    media_urls_list = json.loads(media_urls_raw) if media_urls_raw.strip() else []
-                elif isinstance(media_urls_raw, list):
-                    media_urls_list = media_urls_raw
-                else:
-                    media_urls_list = []
-            except (json.JSONDecodeError, ValueError):
-                media_urls_list = []
-            
-            if media_urls_list and len(media_urls_list) > 0:
-                print(f"      👁️ VISIONARY GATE OPEN: {len(media_urls_list)} media file(s) detected.")
-                
-                # --- MEDIA PROCESSING: Extract Base64 keyframes ---
-                all_frame_dicts = []
-                if MediaProcessor is not None:
-                    try:
-                        media_proc = MediaProcessor()
-                        for m_url in media_urls_list:
-                            frames = media_proc.extract_keyframes(str(m_url))
-                            all_frame_dicts.extend(frames)
-                            if len(all_frame_dicts) >= 4:  # Cap total frames for VLM
-                                all_frame_dicts = all_frame_dicts[:4]
-                                break
-                        
-                        if all_frame_dicts:
-                            print(f"      📸 MediaProcessor: {len(all_frame_dicts)} keyframes extracted.")
-                        else:
-                            print("      ⚠️ MediaProcessor: No keyframes extracted (dead links or unsupported format).")
-                    except Exception as mp_err:
-                        print(f"      ⚠️ MediaProcessor error: {mp_err}")
-                else:
-                    print("      ⚠️ MediaProcessor unavailable (opencv-python-headless not installed). Visionary bypassed.")
-                
-                # --- INVOKE THE VISIONARY (only if we have frames) ---
-                if all_frame_dicts:
-                    try:
-                        visionary_out = agent._step_visionary(soldier_result, all_frame_dicts)
-                    except Exception as vis_err:
-                        print(f"      ⚠️ Visionary error: {vis_err}")
-                
-                if visionary_out:
-                    # A. Override visual_evidence flag for TIE calculation
-                    soldier_result['visual_evidence'] = True
-                    
-                    # B. ABSOLUTE REPLACEMENT of Effect Vector from IMINT
-                    imint_damage = visionary_out.get('kinetic_effect', {}).get('damage_level')
-                    imint_confidence = visionary_out.get('visual_confirmation', {}).get('confidence_score', 0)
-                    
-                    if imint_damage and imint_damage in VISIONARY_DAMAGE_TO_EFFECT and imint_confidence >= 0.5:
-                        imint_effect = VISIONARY_DAMAGE_TO_EFFECT[imint_damage]
-                        current_effect = int(soldier_result.get('titan_assessment', {}).get('effect_score', 1) or 1)
-                        
-                        if 'titan_assessment' not in soldier_result:
-                            soldier_result['titan_assessment'] = {}
-                        soldier_result['titan_assessment']['effect_score'] = imint_effect
-                        soldier_result['titan_assessment']['effect_source'] = 'VISIONARY_IMINT'
-                        
-                        direction = '⬆️' if imint_effect > current_effect else '⬇️' if imint_effect < current_effect else '↔️'
-                        print(f"      👁️ IMINT Ground Truth: Effect Vector E {direction} {current_effect} → {imint_effect} ({imint_damage})")
-                    
-                    # C. Store Visionary output for downstream
-                    soldier_result['visionary_report'] = visionary_out
-                    
-                    # D. Log verification status
-                    v_status = visionary_out.get('visual_confirmation', {}).get('verification_status', 'UNKNOWN')
-                    if v_status == 'CONTRADICTED':
-                        print("      ⚠️ VISIONARY ALERT: Text claims CONTRADICTED by visual evidence!")
-                    elif v_status == 'CONFIRMED':
-                        print("      ✅ VISIONARY: Visual evidence CONFIRMS text claims.")
-
-        # =================================================================
-        # 🟢 LAYER 1: T.I.E. CALCULATOR (SAFETY VERSION)
-        # =================================================================
-        # 1. Estrazione sicura (Se soldier_result è il fallback, userà i default)
-        titan_data = soldier_result.get('titan_assessment') or {}
-        visual_evidence = soldier_result.get('visual_evidence', False)
-
-        # --- 🔱 TRIDENT SCORE INTEGRATION ---
-        # Use Trident base scores if Soldier didn't provide valid metrics
-        k_score = titan_data.get('kinetic_score', 0)
-        if not k_score or int(k_score) == 0:
-            print("      🔱 Using Trident base scores (Soldier returned K=0)")
-            # Use pre-computed Trident scores as foundation
-            titan_data['kinetic_score'] = trident_base_scores.get('kinetic_score', 1)
-            titan_data['target_score'] = trident_base_scores.get('target_score', 1)
-            titan_data['effect_score'] = trident_base_scores.get('effect_score', 1)
-            titan_data['classification'] = trident_classification
-            print(f"      ✅ Trident Scores Applied: K={titan_data.get('kinetic_score')}, T={titan_data.get('target_score')}, E={titan_data.get('effect_score')}")
-
-        # 2. Calcolo T.I.E.
-        tie_result = agent._calculate_tie(titan_data, visual_evidence)
-
-        print(f"      🎯 TIE: {tie_result['value']} [{tie_result['status']}]")
-
-        # --- STEP 2: THE BRAIN (Verification & Recovery) ---
-        metadata_for_judge = {
-            "Target Date": ref_date,
-            "Soldier_Extraction": soldier_result
-        }
-
-        try:
-            brain_review = agent._step_1_the_brain(
-                combined_text, metadata_for_judge)
-
-            # IL FILTRO VERO: Se il Brain dice che è spam/irrelevante, buttiamo tutto.
-            if not brain_review.get('verification_status', False):
-                reason = brain_review.get('rejection_reason', 'Unknown')
-                print(f"   ⛔ Brain Invalidated Event: {reason}")
-                # TODO: Segnare come processato (scartato)
-                # cursor.execute("UPDATE events SET processed = -1 WHERE cluster_id = ?", (cluster_id,))
-                # conn.commit()
-                continue
-
-            print(
-                f"   🧠 Brain Verified. Signal: {brain_review['verified_data'].get('implicit_signal')}")
-            if brain_review.get("correction_notes"):
-                print(
-                    f"   🔧 Correction Applied: {brain_review.get('correction_notes')}")
-
-            # --- [NUOVO] AI UNIT NORMALIZATION PIPELINE ---
-            raw_units_to_normalize = []
-            # From Soldier (if any)
-            for u in soldier_result.get('military_units_detected', []):
-                raw_units_to_normalize.append({
-                    "raw_name": u.get('unit_name') or u.get('unit_id'),
-                    "faction": u.get('faction', 'UNK')
-                })
-            # From Brain (the fallback)
-            for u in brain_review.get('verified_units', []):
-                raw_units_to_normalize.append(u)
-                
-            if raw_units_to_normalize:
-                normalized_units = agent._normalize_units_ai(raw_units_to_normalize, combined_text)
-                
-                # Update soldier_result with normalized/de-duplicated list
-                final_units = []
-                seen_ids = set()
-                for nu in normalized_units:
-                    uid = nu.get('unit_id')
-                    if uid:
-                        if uid not in seen_ids:
-                            final_units.append(nu)
-                            seen_ids.add(uid)
-                    else:
-                        # Keep it even if unnormalized if it has a name
-                        final_units.append(nu)
-                
-                soldier_result['military_units_detected'] = final_units
-
-            # Recupere liste fonti dal DB
-            db_urls = row['urls_list']
-            db_sources = row['sources_list']
-            
-            # Parsing sicuro delle liste (potrebbero essere stringhe "foo | bar" o JSON)
-            def safe_parse_list(val):
-                if not val: return []
-                if isinstance(val, list):
-                    # Filter None and empty strings immediately
-                    return [str(x) for x in val if x]
-                
-                # Prova JSON
-                val_str = str(val).strip()
-                if val_str.startswith('[') and val_str.endswith(']'):
-                    try:
-                        parsed = json.loads(val_str)
-                        if isinstance(parsed, list):
-                            return [str(x) for x in parsed if x]
-                    except:
-                        pass
-                
-                # Prova separator
-                if ' ||| ' in val_str: return [x.strip() for x in val_str.split(' ||| ') if x.strip()]
-                if ' | ' in val_str: return [x.strip() for x in val_str.split(' | ') if x.strip()]
-                
-                # Fallback singolo item
-                return [val_str]
-
-            actual_sources_list = safe_parse_list(db_sources)
-            actual_urls_list = safe_parse_list(db_urls)
-            
-            # Uniamo tutto per il Calculator (che vuole nomi di dominio o fonti)
-            sources_for_calc = actual_sources_list + actual_urls_list
-
-            # --- STEP 3: CALCULATOR ---
-            # Usiamo i dati validati. Se il soldato aveva fallito, usiamo soldier_result (che è dummy)
-            # ma il Calculator lavora sul testo, quindi funzionerà comunque per il bias/intensity.
-            calc_result = agent._step_3_the_calculator(
-                soldier_data=soldier_result if soldier_result.get(
-                    "status") != "FAILED_EXTRACTION" else {},
-                brain_data=brain_review['verified_data'],
-                source_name=sources_for_calc if sources_for_calc else ["Cluster Aggregated"],
-                text=combined_text
-            )
-
-            # --- STEP 4: JOURNALIST ---
-            journo_result = agent._step_4_the_journalist(
-                text=combined_text,
-                brain_data=brain_review['verified_data'],
-                soldier_data=soldier_result
-            )
-
-            # --- E. GOLDEN RECORD ---
-            final_report = {
-                "cluster_id": cluster_id,
-                "timestamp_generated": datetime.now().isoformat(),
-                "status": "VERIFIED",
-                # Contiene i dati corretti dal Brain
-                "strategy": brain_review['verified_data'],
-                # Dati grezzi del soldato (potrebbero essere null o errati)
-                "tactics": soldier_result,
-                "scores": calc_result,
-                "editorial": journo_result,
-                "tie_score": tie_result['value'],
-                "tie_status": tie_result['status'],
-                "titan_metrics": titan_data,
-                "Aggregated Sources": actual_urls_list,  # [FIX] Esportazione esplicita per generate_output.py
-                "visionary_report": visionary_out  # 👁️ IMINT verification (None if no media)
-            }
-
-            print("   ✅ Intelligence Extracted & Verified:")
-
-            # ==============================================================================
-            # [NUOVO] STEP 5: THE STRATEGIST (Tactical Insight)
-            # ==============================================================================
-            # 1. Aggiungi 'self.' davanti alla funzione
-            # 2. Usa 'self.client' (o il nome corretto del tuo client) al posto di 'client_or'
-            tactical_insight = _step_5_the_strategist(
-                client_or, final_report)
-
-            # 3. Allinea questo print ESATTAMENTE sotto la riga sopra
-            print("   🧩 Tactical Insight Generated.")
-
-            # 4. Allinea anche questo
-            final_report['ai_summary'] = tactical_insight
-
-            # ==============================================================================
-            # [NUOVO] STRATEGIC CAMPAIGN TAGGING (Agent 7 - Deterministic Rule)
-            # rule: target_type match AND >=1 keyword match
-            # ==============================================================================
-            campaign_id = None
-            campaign_match_meta_json = None
-            campaign_tagged_at = None
-            try:
-                target_type_value = (
-                    (titan_data or {}).get("target_type_category")
-                    or (soldier_result.get("titan_assessment", {}) or {}).get("target_type_category")
-                    or (brain_review.get("verified_data", {}) or {}).get("target_type")
-                    or "unknown"
-                )
-                campaign_event_text = " ".join(
-                    [
-                        str(journo_result.get("title_en", "")),
-                        str(journo_result.get("description_en", "")),
-                        str(combined_text),
-                    ]
-                )
-                campaign_match = match_event_campaign(
-                    campaigns=campaign_definitions,
-                    target_type=target_type_value,
-                    event_text=campaign_event_text,
-                )
-                if campaign_match:
-                    campaign_id = campaign_match.get("campaign_id")
-                    campaign_tagged_at = datetime.utcnow().isoformat() + "Z"
-                    campaign_match_meta_json = json.dumps(
-                        campaign_match.get("match_meta", {}),
-                        ensure_ascii=False,
-                    )
-                    final_report.setdefault("strategy", {})
-                    final_report["strategy"]["campaign"] = {
-                        "campaign_id": campaign_match.get("campaign_id"),
-                        "name": campaign_match.get("name"),
-                        "color": campaign_match.get("color"),
-                        "match_meta": campaign_match.get("match_meta", {}),
-                        "tagged_at": campaign_tagged_at,
-                    }
-                else:
-                    final_report.setdefault("strategy", {})
-                    final_report["strategy"]["campaign"] = None
-            except Exception as campaign_err:
-                print(f"   ⚠️ Campaign tagging error: {campaign_err}")
-
-            # ==================================================================================
-            # GEO-FIXER BLOCK (VERSIONE SICURA CON RECINTO)
-            # ==================================================================================
-            try:
-                # 1. Recupera i dati attuali
-                tactics = final_report.get('tactics', {})
-                geo = tactics.get('geo_location', {})
-
-                # Assicura che 'explicit' esista
-                if geo.get('explicit') is None:
-                    geo['explicit'] = {}
-
-                lat = geo['explicit'].get('lat')
-                location_name = geo.get('inferred', {}).get('toponym_raw')
-
-                # 2. Se mancano coordinate e abbiamo un nome, CERCA!
-                if (not lat or lat == 0) and location_name and location_name != "Unknown":
-
-                    # Lista nera di parole generiche
-                    banned_locations = ["Ukraine", "Russia", "Europe",
-                                        "NATO", "EU", "Border", "Frontline", "Front", "Zone"]
-
-                    if location_name.strip() in banned_locations:
-                        print(
-                            f"      ⚠️ Skipped Geocoding for generic location: '{location_name}'")
-                    else:
-                        print(
-                            f"      🌍 Geocoding forzato per '{location_name}'...")
-
-                        # --- CHIAMATA ALLA FUNZIONE SICURA ---
-                        # Assicurati di aver definito 'geolocator' all'inizio del main
-                        # geolocator = Nominatim(user_agent="trident_tracker")
-                        new_lat, new_lon = safe_geocode(
-                            geolocator, location_name)
-
-                        if new_lat and new_lon:
-                            final_report['tactics']['geo_location']['explicit']['lat'] = new_lat
-                            final_report['tactics']['geo_location']['explicit']['lon'] = new_lon
-                            print(
-                                f"       ✅ Trovato e Inserito (Zona Sicura): {new_lat}, {new_lon}")
-                            import time
-                            time.sleep(1)
-                        else:
-                            print(
-                                "       ⚠️ Luogo non trovato o fuori dalla zona di guerra.")
-
-            except Exception as e:
-                print(f"   ⚠️ Warning Geo-Fixer: {e}")
-            # ==================================================================================
-            # FINE BLOCCO GEO-FIXER
-            # ==================================================================================
-
-            # Commentiamo per pulire il log
-            print(json.dumps(final_report, indent=2, ensure_ascii=False))
-
-            # [MODIFICA 2] SALVATAGGIO PERSISTENTE
-            try:
-                # Serializziamo il dizionario in una stringa JSON
-                report_text = json.dumps(final_report, ensure_ascii=False)
-                
-                # Serializziamo anche le metriche Titan separatamente
-                titan_metrics_json = json.dumps(titan_data, ensure_ascii=False) if titan_data else None
-
-                # Settore operativo deterministico (Point-in-Polygon)
-                operational_sector = 'UNKNOWN_SECTOR'
-                persist_lat = None
-                persist_lon = None
-                try:
-                    geo_data = (final_report.get('tactics') or {}).get('geo_location', {})
-                    explicit = (geo_data.get('explicit') or {}) if isinstance(geo_data, dict) else {}
-                    verified = (geo_data.get('verified') or {}) if isinstance(geo_data, dict) else {}
-                    inferred = (geo_data.get('inferred') or {}) if isinstance(geo_data, dict) else {}
-
-                    def _pick_pair(candidate):
-                        if not isinstance(candidate, dict):
-                            return None
-
-                        lat_raw = candidate.get('lat')
-                        lon_raw = candidate.get('lon')
-                        invalid_tokens = {None, "", "0", "0.0", "null", "none", "unknown", "n/a"}
-                        if str(lat_raw).strip().lower() in invalid_tokens or str(lon_raw).strip().lower() in invalid_tokens:
-                            return None
-                        try:
-                            lat_f = float(lat_raw)
-                            lon_f = float(lon_raw)
-                        except (TypeError, ValueError):
-                            return None
-                        if not (-90.0 <= lat_f <= 90.0 and -180.0 <= lon_f <= 180.0):
-                            return None
-                        return lat_f, lon_f
-
-                    for candidate in (explicit, verified, inferred):
-                        pair = _pick_pair(candidate)
-                        if pair:
-                            persist_lat, persist_lon = pair
-                            break
-
-                    if sector_geolocator and persist_lat is not None and persist_lon is not None:
-                        operational_sector = sector_geolocator.assign_sector(float(persist_lon), float(persist_lat))
-                except Exception:
-                    operational_sector = 'UNKNOWN_SECTOR'
-
-                # Scriviamo nel DB - Salviamo TUTTI i campi in colonne dedicate
-                cursor.execute("""
-                    UPDATE unique_events
-                    SET ai_report_json = ?,
-                        ai_analysis_status = 'COMPLETED',
-                        tie_score = ?,
-                        tie_status = ?,
-                        titan_metrics = ?,
-                        kinetic_score = ?,
-                        target_score = ?,
-                        effect_score = ?,
-                        reliability = ?,
-                        bias_score = ?,
-                        ai_summary = ?,
-                        has_video = ?,
-                        title = ?,
-                        description = ?,
-                        urls_list = ?,
-                        campaign_id = ?,
-                        campaign_match_meta = ?,
-                        campaign_tagged_at = ?,
-                        operational_sector = ?,
-                        lat = COALESCE(?, lat),
-                        lon = COALESCE(?, lon)
-                    WHERE event_id = ?
-                    """, (
-                        report_text,
-                        tie_result['value'],
-                        tie_result['status'],
-                        titan_metrics_json,
-                        titan_data.get('kinetic_score', 0),
-                        titan_data.get('target_score', 0),
-                        titan_data.get('effect_score', 0),
-                        calc_result.get('reliability', 0),
-                        calc_result.get('bias_score', 0),
-                        final_report.get('ai_summary', ''),
-                        1 if (soldier_result.get('visual_evidence') or visionary_out) else 0,
-                        journo_result.get('title_en', ''),
-                        journo_result.get('description_en', ''),
-                        ' | '.join(actual_urls_list) if actual_urls_list else '',
-                        campaign_id,
-                        campaign_match_meta_json,
-                        campaign_tagged_at,
-                        operational_sector,
-                        persist_lat,
-                        persist_lon,
-                        cluster_id
-                    ))
-
-                conn.commit()
-                print("   💾 Salvataggio nel DB completato (Golden Record Saved).")
-
-            except Exception as save_err:
-                print(f"   ❌ ERRORE SALVATAGGIO DB: {save_err}")
-
-        except Exception as e:
-            print(f"   ⚠️ Error processing cluster {cluster_id}: {e}")
-
+    if not clusters_to_process:
+        print("[OK] Nessun nuovo cluster da processare (Tutto aggiornato).")
+        conn.close()
+        return
+
+    print(f"[QUEUE] Trovati {len(clusters_to_process)} cluster da analizzare.")
     conn.close()
-    print("\n🏁 Sessione conclusa.")
+
+    db_write_lock = asyncio.Lock()
+    await asyncio.gather(*[
+        process_cluster_async(agent, row, campaign_definitions, db_write_lock)
+        for row in clusters_to_process
+    ])
+    print("\n[DONE] Sessione conclusa.")
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

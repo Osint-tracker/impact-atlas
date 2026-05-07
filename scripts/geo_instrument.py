@@ -141,25 +141,39 @@ class GeoProbe:
             dict with 'address', 'country_code', 'region', 'country' or None on failure
         """
         import requests
+        import time
+        import random
         
-        try:
-            url = f"https://photon.komoot.io/reverse?lon={lon}&lat={lat}"
-            resp = requests.get(url, timeout=self.timeout)
-            data = resp.json()
-            
-            if data and data.get('features'):
-                props = data['features'][0].get('properties', {})
-                country_code = props.get('countrycode', '').lower()
+        max_attempts = 3
+        base_wait = 2.0
+        
+        for attempt in range(1, max_attempts + 1):
+            try:
+                url = f"https://photon.komoot.io/reverse?lon={lon}&lat={lat}"
+                resp = requests.get(url, timeout=self.timeout)
+                if resp.status_code == 429 or resp.status_code >= 500:
+                    raise requests.exceptions.RequestException(f"HTTP {resp.status_code}")
+                data = resp.json()
                 
-                return {
-                    'address': props.get('name', 'Unknown'),
-                    'country_code': country_code,
-                    'region': props.get('state') or props.get('county') or props.get('city', 'Unknown'),
-                    'country': props.get('country', 'Unknown')
-                }
-        except Exception as e:
-            logger.warning(f"Photon reverse geocoding failed for ({lat}, {lon}): {e}")
-            
+                if data and data.get('features'):
+                    props = data['features'][0].get('properties', {})
+                    country_code = props.get('countrycode', '').lower()
+                    
+                    return {
+                        'address': props.get('name', 'Unknown'),
+                        'country_code': country_code,
+                        'region': props.get('state') or props.get('county') or props.get('city', 'Unknown'),
+                        'country': props.get('country', 'Unknown')
+                    }
+                return None
+            except Exception as e:
+                if attempt == max_attempts:
+                    logger.warning(f"Photon reverse geocoding failed for ({lat}, {lon}) after {max_attempts} attempts: {e}")
+                    return None
+                wait_time = base_wait * (2 ** (attempt - 1)) + random.uniform(0, 1)
+                logger.info(f"[BACKOFF] Photon geocoding error ({e}). Retrying in {wait_time:.1f}s (Attempt {attempt}/{max_attempts})...")
+                time.sleep(wait_time)
+                
         return None
     
     def probe_coordinates(self, lat: float, lon: float) -> dict:
