@@ -44,7 +44,8 @@ load_dotenv(ENV_PATH)
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 # Processing parameters
-EMBEDDING_MODEL = "qwen/qwen3-embedding-8b"
+EMBEDDING_MODEL = "openai/text-embedding-3-large"
+EMBEDDING_DIMENSIONS = 1536
 TEXTS_PER_API_CALL = 50      # Batch 50 texts per API request
 CONCURRENT_REQUESTS = 10     # 10 parallel requests
 DB_BATCH_SIZE = 500          # Fetch 500 from DB at a time
@@ -199,7 +200,8 @@ async def generate_embeddings_async(session, texts, semaphore):
         
         payload = {
             "model": EMBEDDING_MODEL,
-            "input": safe_texts
+            "input": safe_texts,
+            "dimensions": EMBEDDING_DIMENSIONS
         }
         
         try:
@@ -264,15 +266,13 @@ async def main_async(dry_run=False, skip_reset=False, limit=None, lookback_days=
     else:
         print("\n[1/4] Skipping reset (--skip-reset flag)")
     
-    # Step 2: Count unprocessed with sufficient content (within temporal window)
     cursor.execute("""
         SELECT COUNT(*) FROM raw_signals 
         WHERE is_embedded = 0
-          AND LENGTH(text_content) >= ?
           AND date_published >= ?
-    """, (MIN_TEXT_LENGTH, cutoff_date))
+    """, (cutoff_date,))
     total_unprocessed = cursor.fetchone()[0]
-    print(f"\n[2/4] Found {total_unprocessed} unprocessed records (last {effective_lookback} days, content >= {MIN_TEXT_LENGTH} chars).")
+    print(f"\n[2/4] Found {total_unprocessed} unprocessed records (last {effective_lookback} days).")
     
     if total_unprocessed == 0:
         print("Nothing to process!")
@@ -299,13 +299,12 @@ async def main_async(dry_run=False, skip_reset=False, limit=None, lookback_days=
         while processed_so_far < total_unprocessed:
             # Fetch batch from DB (within temporal window)
             cursor.execute("""
-                SELECT event_hash, source_type, text_content, url
+                SELECT event_hash, source_type, text_content, url, media_urls
                 FROM raw_signals 
                 WHERE is_embedded = 0
-                  AND LENGTH(text_content) >= ?
                   AND date_published >= ?
                 LIMIT ?
-            """, (MIN_TEXT_LENGTH, cutoff_date, DB_BATCH_SIZE))
+            """, (cutoff_date, DB_BATCH_SIZE))
             rows = cursor.fetchall()
             
             if not rows:
@@ -314,17 +313,45 @@ async def main_async(dry_run=False, skip_reset=False, limit=None, lookback_days=
             # Filter relevant rows (using new logic)
             relevant = []
             skipped_hashes = []
+            orphan_hashes = []
             
-            for event_hash, source_type, text, url in rows:
-                if is_relevant_loose(text, url, source_type):
+            for event_hash, source_type, text, url, media_urls in rows:
+                clean_text = text.strip() if text else ""
+                
+                # Check for media presence
+                has_media = False
+                if media_urls:
+                    try:
+                        mu = json.loads(media_urls)
+                        if isinstance(mu, list) and len(mu) > 0:
+                            has_media = True
+                    except:
+                        pass
+                
+                # Check URL for media extensions if media_urls is empty
+                if not has_media and url:
+                    media_exts = ['.mp4', '.mov', '.avi', '.jpg', '.jpeg', '.png', '.webp']
+                    if any(ext in url.lower() for ext in media_exts):
+                        has_media = True
+
+                # LOGIC: Media Orphan check
+                if not clean_text and has_media:
+                    orphan_hashes.append(event_hash)
+                elif is_relevant_loose(text, url, source_type):
                     relevant.append((event_hash, text))
                 else:
                     skipped_hashes.append(event_hash)
             
+            # Mark orphans as is_embedded=4
+            for h in orphan_hashes:
+                cursor.execute("UPDATE raw_signals SET is_embedded = 4 WHERE event_hash = ?", (h,))
+            
             # Mark skipped as rejected (is_embedded=2)
             for h in skipped_hashes:
                 cursor.execute("UPDATE raw_signals SET is_embedded = 2 WHERE event_hash = ?", (h,))
+            
             total_skipped += len(skipped_hashes)
+            total_orphans = len(orphan_hashes) # For logging if needed
             
             # Process relevant in API batches
             for i in range(0, len(relevant), TEXTS_PER_API_CALL):
@@ -338,9 +365,9 @@ async def main_async(dry_run=False, skip_reset=False, limit=None, lookback_days=
                     for j, emb in enumerate(embeddings):
                         cursor.execute("""
                             UPDATE raw_signals 
-                            SET embedding_vector = ?, is_embedded = 1, cluster_id = ?
+                            SET embedding_vector = ?, is_embedded = 1
                             WHERE event_hash = ?
-                        """, (json.dumps(emb), str(uuid.uuid4()), chunk_hashes[j]))
+                        """, (json.dumps(emb), chunk_hashes[j]))
                     total_embedded += len(embeddings)
             
             conn.commit()

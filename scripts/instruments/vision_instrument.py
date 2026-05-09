@@ -4,25 +4,29 @@
 # PURPOSE: Bridge between raw Telegram media URLs and The Visionary VLM.
 #   - Evades anti-hotlinking (spoofed User-Agent/Referer via FFmpeg env)
 #   - Streams video directly into RAM (no disk writes)
-#   - Extracts top-3 keyframes via scene-change delta detection
+#   - Extracts keyframes via geometric sampling (10%, 40%, 70%, 90%)
 #   - Compresses and encodes frames to Base64 data URLs
 #
 # HARD CONSTRAINTS:
 #   - ZERO disk I/O (serverless constraint)
 #   - Graceful failure: dead links / 403s return [] silently
-#   - Max 3 keyframes per media file to limit VLM token usage
+#   - Max 4 keyframes per media file to limit VLM token usage
 # =========================================================================
 
 import os
-import base64
+import json
 import logging
-from typing import Dict, List, Tuple
-
+import base64
+import re
+import requests
 import cv2
 import numpy as np
-import requests
+import tempfile
+import aiohttp
+import asyncio
+from typing import List, Dict, Tuple, Optional
 from bs4 import BeautifulSoup
-import re
+from io import BytesIO
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +41,7 @@ class MediaProcessor:
     """
 
     # --- CONFIGURATION ---
-    MAX_KEYFRAMES: int = 3
+    MAX_KEYFRAMES: int = 4
     MAX_EDGE_PX: int = 768          # Longest edge after downscale
     JPEG_QUALITY: int = 80          # JPEG compression quality (0-100)
     MAX_FRAMES_TO_SCAN: int = 300   # Safety cap: stop scanning after N frames (~5 min @ 1fps)
@@ -108,85 +112,30 @@ class MediaProcessor:
 
     def _process_video_stream(self, cap: cv2.VideoCapture, fps: float) -> List[Dict]:
         """
-        Process a video stream: sample at 1 FPS, rank by scene-change delta,
-        return top MAX_KEYFRAMES frames as enriched dicts.
+        Process a video stream using geometric sampling (10%, 40%, 70%, 90%).
         """
-        # Frame sampling interval: 1 frame per second
-        sample_interval = max(1, int(round(fps)))
-
-        prev_gray = None
-        frame_index: int = 0
-        sampled_count: int = 0
-
-        # Priority queue: (delta_score, frame_index, frame_bgr)
-        # We keep track of top-N by delta score
-        top_frames: List[Tuple[float, int, np.ndarray]] = []
-
-        try:
-            while True:
-                ret, frame = cap.read()
-                if not ret:
-                    break
-
-                frame_index += 1
-
-                # Sample at 1 FPS
-                if frame_index % sample_interval != 0:
-                    continue
-
-                sampled_count += 1
-                if sampled_count > self.MAX_FRAMES_TO_SCAN:
-                    break
-
-                # Convert to grayscale for delta calculation
-                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-                if prev_gray is not None:
-                    # Scene-change delta: mean absolute pixel difference
-                    diff = cv2.absdiff(gray, prev_gray)
-                    delta_score = float(np.mean(diff))
-
-                    # Maintain top-N frames
-                    if len(top_frames) < self.MAX_KEYFRAMES:
-                        top_frames.append((delta_score, frame_index, frame.copy()))
-                    else:
-                        # Replace the lowest-scoring frame if this one is better
-                        min_idx = min(range(len(top_frames)), key=lambda i: top_frames[i][0])
-                        if delta_score > top_frames[min_idx][0]:
-                            top_frames[min_idx] = (delta_score, frame_index, frame.copy())
-
-                prev_gray = gray
-
-        finally:
-            cap.release()
-
-        if not top_frames:
-            # Fallback: if no deltas were computed (e.g., 1-frame video),
-            # return empty
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        if total_frames <= 0:
             return []
 
-        # Sort by delta score descending (highest scene change first)
-        top_frames.sort(key=lambda x: x[0], reverse=True)
-
-        # Compress, encode, and build enriched result dicts
-        result: List[Dict] = []
-        for rank, (score, f_idx, frame_bgr) in enumerate(top_frames):
-            b64 = self._compress_and_encode(frame_bgr)
-            if b64:
-                # Determine selection reason label
-                reason = "Max Delta / Scene Change" if rank == 0 else "High Delta / Scene Change"
-                result.append({
+        percentiles = [0.1, 0.4, 0.7, 0.9]
+        target_indices = [int(p * total_frames) for p in percentiles]
+        
+        final_frames = []
+        for idx in target_indices:
+            cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
+            ret, frame = cap.read()
+            if ret:
+                b64 = self._encode_frame_to_base64(frame)
+                final_frames.append({
                     "base64_data": b64,
-                    "delta_score": round(score, 2),
-                    "frame_index": f_idx,
-                    "selection_reason": reason
+                    "delta_score": 0.0,
+                    "frame_index": idx,
+                    "selection_reason": "geometric_sample"
                 })
-
-        logger.info(
-            f"MediaProcessor: Extracted {len(result)} keyframes "
-            f"from {sampled_count} sampled frames."
-        )
-        return result
+        
+        cap.release()
+        return final_frames
 
     def _process_single_image(self, cap: cv2.VideoCapture) -> List[Dict]:
         """Process a single image (or 1-frame stream) and return as enriched dict."""
@@ -277,3 +226,57 @@ class MediaProcessor:
         except Exception as e:
             logger.error(f"MediaProcessor: Error resolving {tme_url}: {e}")
             return None
+
+    async def extract_audio_transcript(self, media_url: str) -> str:
+        """Download video, extract audio, and transcribe via OpenRouter Whisper."""
+        temp_video = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+        temp_audio = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
+        
+        try:
+            # Download video (streaming to file)
+            r = requests.get(media_url, stream=True, timeout=30)
+            if r.status_code != 200:
+                return ""
+            for chunk in r.iter_content(chunk_size=8192):
+                temp_video.write(chunk)
+            temp_video.close()
+
+            # Extract audio using ffmpeg
+            cmd = [
+                "ffmpeg", "-y", "-i", temp_video.name,
+                "-vn", "-acodec", "libmp3lame", "-q:a", "9",
+                "-ar", "16000", "-ac", "1",
+                temp_audio.name
+            ]
+            process = await asyncio.create_subprocess_exec(
+                *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+            )
+            await process.communicate()
+
+            if not os.path.exists(temp_audio.name) or os.path.getsize(temp_audio.name) < 100:
+                return ""
+
+            # Transcribe via OpenRouter
+            openrouter_key = os.getenv("OPENROUTER_API_KEY")
+            if not openrouter_key: return ""
+            
+            async with aiohttp.ClientSession() as session:
+                data = aiohttp.FormData()
+                data.add_field('file', open(temp_audio.name, 'rb'), filename='audio.mp3')
+                data.add_field('model', "openai/whisper-large-v3-turbo")
+
+                async with session.post("https://openrouter.ai/api/v1/audio/transcriptions", 
+                                       data=data, 
+                                       headers={"Authorization": f"Bearer {openrouter_key}"}) as resp:
+                    if resp.status == 200:
+                        res_data = await resp.json()
+                        return res_data.get('text', "")
+                    else:
+                        logger.error(f"MediaProcessor: OpenRouter Whisper error: {resp.status}")
+        except Exception as e:
+            logger.error(f"MediaProcessor: Transcription error: {e}")
+        finally:
+            if os.path.exists(temp_video.name): os.remove(temp_video.name)
+            if os.path.exists(temp_audio.name): os.remove(temp_audio.name)
+        
+        return ""

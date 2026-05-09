@@ -46,7 +46,7 @@ logger = logging.getLogger("SUPER_SQUAD")
 # --- LOAD ENV ---
 load_dotenv()
 
-API_SEMAPHORE = asyncio.Semaphore(30)
+API_SEMAPHORE = asyncio.Semaphore(50)
 
 # Absolute Paths for JSON Databases
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -338,6 +338,7 @@ Extract any visible text from the scene strictly as it appears:
 2. **NO HALLUCINATION:** If you cannot clearly see the object, mark it `INCONCLUSIVE`. If you cannot identify the variant, use `UNKNOWN_*`.
 3. **PIXEL AUTHORITY:** Your assessment supersedes all text-based claims. You are the last word on physical reality.
 4. **SINGLE JSON OBJECT:** Return exactly one JSON object. No arrays at root level.
+5. **NO ANALYSIS ON USELESS THINGS:** You should discard everything that is not relevant to the mission (chats, images of single people in non war context (i.e a photo of zelensky or putin, military people walking down the street, etc...)) ANALYZE ONLY MILITARY ISSUES, EQUIPMENT AND EVENTS. 
 """
 
 # Damage level -> TIE Effect Vector score mapping (for _calculate_tie enrichment)
@@ -1665,7 +1666,7 @@ RAW TEXT:
     # MODEL: qwen/qwen3-vl-235b-a22b-instruct (MANDATORY HARD CONSTRAINT)
     # =========================================================================
 
-    async def _step_visionary(self, soldier_data: dict, frame_dicts: list) -> dict | None:
+    async def _step_visionary(self, soldier_data: dict, frame_dicts: list, audio_transcript: str = "") -> dict | None:
         """
         Role: Surgical IMINT Verification & Equipment ID with per-frame analysis.
         
@@ -1704,7 +1705,9 @@ RAW TEXT:
 {soldier_summary}
 
 You are receiving {len(frame_dicts[:4])} numbered frames: {frame_labels}.
-Analyze the attached visual evidence. CONFIRM, CONTRADICT, or ENRICH the text intel above.
+AUDIO TRANSCRIPT (Speech-to-Text extraction): {audio_transcript or '[No audio/No speech detected]'}
+
+Analyze the attached visual evidence and audio transcript. CONFIRM, CONTRADICT, or ENRICH the text intel above.
 
 IMPORTANT: In addition to your standard analysis, add a "per_frame_analysis" array to your JSON output.
 For EACH frame, provide:
@@ -2974,19 +2977,27 @@ async def process_cluster_async(agent, row, campaign_definitions, db_write_lock)
 
             if media_urls_list:
                 all_frame_dicts = []
+                audio_transcript = ""
                 if MediaProcessor is not None:
                     try:
                         media_proc = MediaProcessor()
                         for m_url in media_urls_list:
-                            frames = await asyncio.to_thread(media_proc.extract_keyframes, str(m_url))
+                            m_url_str = str(m_url)
+                            # Extract geometric frames
+                            frames = await asyncio.to_thread(media_proc.extract_keyframes, m_url_str)
                             all_frame_dicts.extend(frames)
+                            
+                            # [NEW] Extract audio transcript (Whisper)
+                            if not audio_transcript:
+                                audio_transcript = await media_proc.extract_audio_transcript(m_url_str)
+                                
                             if len(all_frame_dicts) >= 4:
                                 all_frame_dicts = all_frame_dicts[:4]
                                 break
                     except Exception as mp_err:
                         print(f"      [WARN] MediaProcessor error: {mp_err}")
                 if all_frame_dicts:
-                    visionary_out = await agent._step_visionary(soldier_result, all_frame_dicts)
+                    visionary_out = await agent._step_visionary(soldier_result, all_frame_dicts, audio_transcript)
                 if visionary_out:
                     soldier_result['visual_evidence'] = True
                     imint_damage = visionary_out.get('kinetic_effect', {}).get('damage_level')
