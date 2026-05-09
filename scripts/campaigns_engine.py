@@ -327,7 +327,7 @@ def _maybe_generate_llm_brief(
             "Focus on operational implication, not narrative storytelling."
         )
         response = client.chat.completions.create(
-            model="deepseek/deepseek-chat",
+            model="deepseek/deepseek-v4-flash",
             messages=[
                 {"role": "system", "content": "You are The Strategist, a strict military analyst."},
                 {"role": "user", "content": prompt},

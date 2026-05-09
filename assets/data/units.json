@@ -486,13 +486,13 @@
     "echelon_symbol": "XX",
     "sub_branch": "Motorised Rifle Troops",
     "superior": "1st",
-    "engagement_count": 2,
-    "last_active": "2026-04-15 15:28:10",
+    "engagement_count": 3,
+    "last_active": "2026-05-09T08:11:14",
     "primary_tactic": "KINETIC_MILITARY_STRIKE",
     "avg_tie": {
-      "kinetic": 7.5,
+      "kinetic": 7.67,
       "target": 8.0,
-      "effect": 4.0
+      "effect": 5.33
     },
     "assets_detected": [
       "Su-30"
@@ -503,7 +503,7 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       0,
       0,
@@ -529,9 +529,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-15",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:11:14",
+        "title": "Ukrainian Forces Target Electrical Substations in Crimea",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.688,
+        "lon": 33.166,
+        "url": "https://t.me/MAKS23_NAFO/98775",
+        "event_id": "61bbb0c0-1b09-45df-a15f-8c9d29a37cd9"
+      },
       {
         "date": "2026-04-15 15:28:10",
         "title": "Russian Air Force Launches Missiles from Caspian Sea",
@@ -10716,13 +10725,13 @@
     "echelon_symbol": "XX",
     "sub_branch": "Motorised Rifle Troops",
     "superior": "1st",
-    "engagement_count": 2,
-    "last_active": "2026-04-15 15:28:10",
+    "engagement_count": 3,
+    "last_active": "2026-05-09T08:11:14",
     "primary_tactic": "KINETIC_MILITARY_STRIKE",
     "avg_tie": {
-      "kinetic": 7.5,
+      "kinetic": 7.67,
       "target": 8.0,
-      "effect": 4.0
+      "effect": 5.33
     },
     "assets_detected": [
       "Su-30"
@@ -10733,7 +10742,7 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       0,
       0,
@@ -10759,9 +10768,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-15",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:11:14",
+        "title": "Ukrainian Forces Target Electrical Substations in Crimea",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.688,
+        "lon": 33.166,
+        "url": "https://t.me/MAKS23_NAFO/98775",
+        "event_id": "61bbb0c0-1b09-45df-a15f-8c9d29a37cd9"
+      },
       {
         "date": "2026-04-15 15:28:10",
         "title": "Russian Air Force Launches Missiles from Caspian Sea",
@@ -11326,13 +11344,13 @@
     "echelon_symbol": "XX",
     "sub_branch": "Motorised Rifle Troops",
     "superior": "1st",
-    "engagement_count": 2,
-    "last_active": "2026-04-15 15:28:10",
+    "engagement_count": 3,
+    "last_active": "2026-05-09T08:11:14",
     "primary_tactic": "KINETIC_MILITARY_STRIKE",
     "avg_tie": {
-      "kinetic": 7.5,
+      "kinetic": 7.67,
       "target": 8.0,
-      "effect": 4.0
+      "effect": 5.33
     },
     "assets_detected": [
       "Su-30"
@@ -11343,7 +11361,7 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       0,
       0,
@@ -11369,9 +11387,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-15",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:11:14",
+        "title": "Ukrainian Forces Target Electrical Substations in Crimea",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.688,
+        "lon": 33.166,
+        "url": "https://t.me/MAKS23_NAFO/98775",
+        "event_id": "61bbb0c0-1b09-45df-a15f-8c9d29a37cd9"
+      },
       {
         "date": "2026-04-15 15:28:10",
         "title": "Russian Air Force Launches Missiles from Caspian Sea",
@@ -11879,13 +11906,13 @@
     "echelon_symbol": "XX",
     "sub_branch": "Motorised Rifle Troops",
     "superior": "1st",
-    "engagement_count": 2,
-    "last_active": "2026-04-15 15:28:10",
+    "engagement_count": 3,
+    "last_active": "2026-05-09T08:11:14",
     "primary_tactic": "KINETIC_MILITARY_STRIKE",
     "avg_tie": {
-      "kinetic": 7.5,
+      "kinetic": 7.67,
       "target": 8.0,
-      "effect": 4.0
+      "effect": 5.33
     },
     "assets_detected": [
       "Su-30"
@@ -11896,7 +11923,7 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       0,
       0,
@@ -11922,9 +11949,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-15",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:11:14",
+        "title": "Ukrainian Forces Target Electrical Substations in Crimea",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.688,
+        "lon": 33.166,
+        "url": "https://t.me/MAKS23_NAFO/98775",
+        "event_id": "61bbb0c0-1b09-45df-a15f-8c9d29a37cd9"
+      },
       {
         "date": "2026-04-15 15:28:10",
         "title": "Russian Air Force Launches Missiles from Caspian Sea",
@@ -13269,13 +13305,13 @@
     "echelon_symbol": "XX",
     "sub_branch": "Motorised Rifle Troops",
     "superior": "1st",
-    "engagement_count": 2,
-    "last_active": "2026-04-15 15:28:10",
+    "engagement_count": 3,
+    "last_active": "2026-05-09T08:11:14",
     "primary_tactic": "KINETIC_MILITARY_STRIKE",
     "avg_tie": {
-      "kinetic": 7.5,
+      "kinetic": 7.67,
       "target": 8.0,
-      "effect": 4.0
+      "effect": 5.33
     },
     "assets_detected": [
       "Su-30"
@@ -13286,7 +13322,7 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       0,
       0,
@@ -13312,9 +13348,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-15",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:11:14",
+        "title": "Ukrainian Forces Target Electrical Substations in Crimea",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.688,
+        "lon": 33.166,
+        "url": "https://t.me/MAKS23_NAFO/98775",
+        "event_id": "61bbb0c0-1b09-45df-a15f-8c9d29a37cd9"
+      },
       {
         "date": "2026-04-15 15:28:10",
         "title": "Russian Air Force Launches Missiles from Caspian Sea",
@@ -13530,13 +13575,13 @@
     "echelon_symbol": "XX",
     "sub_branch": "Motorised Rifle Troops",
     "superior": "1st",
-    "engagement_count": 2,
-    "last_active": "2026-04-15 15:28:10",
+    "engagement_count": 3,
+    "last_active": "2026-05-09T08:11:14",
     "primary_tactic": "KINETIC_MILITARY_STRIKE",
     "avg_tie": {
-      "kinetic": 7.5,
+      "kinetic": 7.67,
       "target": 8.0,
-      "effect": 4.0
+      "effect": 5.33
     },
     "assets_detected": [
       "Su-30"
@@ -13547,7 +13592,7 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       0,
       0,
@@ -13573,9 +13618,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-15",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:11:14",
+        "title": "Ukrainian Forces Target Electrical Substations in Crimea",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.688,
+        "lon": 33.166,
+        "url": "https://t.me/MAKS23_NAFO/98775",
+        "event_id": "61bbb0c0-1b09-45df-a15f-8c9d29a37cd9"
+      },
       {
         "date": "2026-04-15 15:28:10",
         "title": "Russian Air Force Launches Missiles from Caspian Sea",
@@ -13753,13 +13807,13 @@
     "echelon_symbol": "XX",
     "sub_branch": "Motorised Rifle Troops",
     "superior": "1st",
-    "engagement_count": 2,
-    "last_active": "2026-04-15 15:28:10",
+    "engagement_count": 3,
+    "last_active": "2026-05-09T08:11:14",
     "primary_tactic": "KINETIC_MILITARY_STRIKE",
     "avg_tie": {
-      "kinetic": 7.5,
+      "kinetic": 7.67,
       "target": 8.0,
-      "effect": 4.0
+      "effect": 5.33
     },
     "assets_detected": [
       "Su-30"
@@ -13770,7 +13824,7 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       0,
       0,
@@ -13796,9 +13850,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-15",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:11:14",
+        "title": "Ukrainian Forces Target Electrical Substations in Crimea",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.688,
+        "lon": 33.166,
+        "url": "https://t.me/MAKS23_NAFO/98775",
+        "event_id": "61bbb0c0-1b09-45df-a15f-8c9d29a37cd9"
+      },
       {
         "date": "2026-04-15 15:28:10",
         "title": "Russian Air Force Launches Missiles from Caspian Sea",
@@ -14098,13 +14161,13 @@
     "echelon_symbol": "XX",
     "sub_branch": "Motorised Rifle Troops",
     "superior": "1st",
-    "engagement_count": 2,
-    "last_active": "2026-04-15 15:28:10",
+    "engagement_count": 3,
+    "last_active": "2026-05-09T08:11:14",
     "primary_tactic": "KINETIC_MILITARY_STRIKE",
     "avg_tie": {
-      "kinetic": 7.5,
+      "kinetic": 7.67,
       "target": 8.0,
-      "effect": 4.0
+      "effect": 5.33
     },
     "assets_detected": [
       "Su-30"
@@ -14115,7 +14178,7 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       0,
       0,
@@ -14141,9 +14204,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-15",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:11:14",
+        "title": "Ukrainian Forces Target Electrical Substations in Crimea",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.688,
+        "lon": 33.166,
+        "url": "https://t.me/MAKS23_NAFO/98775",
+        "event_id": "61bbb0c0-1b09-45df-a15f-8c9d29a37cd9"
+      },
       {
         "date": "2026-04-15 15:28:10",
         "title": "Russian Air Force Launches Missiles from Caspian Sea",
@@ -51688,13 +51760,13 @@
     "echelon_symbol": "XX",
     "sub_branch": "Motorised Rifle Troops",
     "superior": "1st",
-    "engagement_count": 2,
-    "last_active": "2026-04-15 15:28:10",
+    "engagement_count": 3,
+    "last_active": "2026-05-09T08:11:14",
     "primary_tactic": "KINETIC_MILITARY_STRIKE",
     "avg_tie": {
-      "kinetic": 7.5,
+      "kinetic": 7.67,
       "target": 8.0,
-      "effect": 4.0
+      "effect": 5.33
     },
     "assets_detected": [
       "Su-30"
@@ -51705,7 +51777,7 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       0,
       0,
@@ -51731,9 +51803,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-15",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:11:14",
+        "title": "Ukrainian Forces Target Electrical Substations in Crimea",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.688,
+        "lon": 33.166,
+        "url": "https://t.me/MAKS23_NAFO/98775",
+        "event_id": "61bbb0c0-1b09-45df-a15f-8c9d29a37cd9"
+      },
       {
         "date": "2026-04-15 15:28:10",
         "title": "Russian Air Force Launches Missiles from Caspian Sea",
@@ -60909,13 +60990,13 @@
     "echelon_symbol": "XX",
     "sub_branch": "Motorised Rifle Troops",
     "superior": "1st",
-    "engagement_count": 2,
-    "last_active": "2026-04-15 15:28:10",
+    "engagement_count": 3,
+    "last_active": "2026-05-09T08:11:14",
     "primary_tactic": "KINETIC_MILITARY_STRIKE",
     "avg_tie": {
-      "kinetic": 7.5,
+      "kinetic": 7.67,
       "target": 8.0,
-      "effect": 4.0
+      "effect": 5.33
     },
     "assets_detected": [
       "Su-30"
@@ -60926,7 +61007,7 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       0,
       0,
@@ -60952,9 +61033,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-15",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:11:14",
+        "title": "Ukrainian Forces Target Electrical Substations in Crimea",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.688,
+        "lon": 33.166,
+        "url": "https://t.me/MAKS23_NAFO/98775",
+        "event_id": "61bbb0c0-1b09-45df-a15f-8c9d29a37cd9"
+      },
       {
         "date": "2026-04-15 15:28:10",
         "title": "Russian Air Force Launches Missiles from Caspian Sea",
@@ -63812,13 +63902,13 @@
     "echelon_symbol": "XX",
     "sub_branch": "Motorised Rifle Troops",
     "superior": "1st",
-    "engagement_count": 2,
-    "last_active": "2026-04-15 15:28:10",
+    "engagement_count": 3,
+    "last_active": "2026-05-09T08:11:14",
     "primary_tactic": "KINETIC_MILITARY_STRIKE",
     "avg_tie": {
-      "kinetic": 7.5,
+      "kinetic": 7.67,
       "target": 8.0,
-      "effect": 4.0
+      "effect": 5.33
     },
     "assets_detected": [
       "Su-30"
@@ -63829,7 +63919,7 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       0,
       0,
@@ -63855,9 +63945,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-15",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:11:14",
+        "title": "Ukrainian Forces Target Electrical Substations in Crimea",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.688,
+        "lon": 33.166,
+        "url": "https://t.me/MAKS23_NAFO/98775",
+        "event_id": "61bbb0c0-1b09-45df-a15f-8c9d29a37cd9"
+      },
       {
         "date": "2026-04-15 15:28:10",
         "title": "Russian Air Force Launches Missiles from Caspian Sea",
@@ -63993,13 +64092,13 @@
     "echelon_symbol": "XX",
     "sub_branch": "Motorised Rifle Troops",
     "superior": "1st",
-    "engagement_count": 2,
-    "last_active": "2026-04-15 15:28:10",
+    "engagement_count": 3,
+    "last_active": "2026-05-09T08:11:14",
     "primary_tactic": "KINETIC_MILITARY_STRIKE",
     "avg_tie": {
-      "kinetic": 7.5,
+      "kinetic": 7.67,
       "target": 8.0,
-      "effect": 4.0
+      "effect": 5.33
     },
     "assets_detected": [
       "Su-30"
@@ -64010,7 +64109,7 @@
       0,
       0,
       0,
-      0,
+      1,
       0,
       0,
       0,
@@ -64036,9 +64135,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-15",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:11:14",
+        "title": "Ukrainian Forces Target Electrical Substations in Crimea",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.688,
+        "lon": 33.166,
+        "url": "https://t.me/MAKS23_NAFO/98775",
+        "event_id": "61bbb0c0-1b09-45df-a15f-8c9d29a37cd9"
+      },
       {
         "date": "2026-04-15 15:28:10",
         "title": "Russian Air Force Launches Missiles from Caspian Sea",

@@ -35,7 +35,8 @@ graph LR
     Input[📡 Raw SIGINT/OSINT] --> Bouncer[👮 Bouncer]
     Bouncer -->|Cleaned| Brain[🧠 Brain]
     Brain --> Soldier[🪖 Soldier]
-    Soldier --> Titan[🤖 Titan]
+    Soldier --> Visionary[👁️ Visionary 2.0]
+    Visionary --> Titan[🤖 Titan]
     Titan --> Calculator[Hz Calculator]
     Calculator --> Journalist[📰 Journalist]
     Journalist --> Strategist[♟️ Strategist]
@@ -46,6 +47,7 @@ graph LR
     style Bouncer fill:#1e293b,stroke:#333,color:#fff
     style Brain fill:#1e293b,stroke:#333,color:#fff
     style Soldier fill:#1e293b,stroke:#333,color:#fff
+    style Visionary fill:#f59e0b,stroke:#333,color:#000
     style Titan fill:#b91c1c,stroke:#333,color:#fff
     style Calculator fill:#1e293b,stroke:#333,color:#fff
     style Journalist fill:#1e293b,stroke:#333,color:#fff
@@ -56,11 +58,11 @@ graph LR
 
 ## 🛠️ Capabilities
 
-### ⚡ Kinetic Analysis
 | Vector | Description | Status |
 |:---|:---|:---|
 | **Targeting** | Automatic identification of HVT (High Value Targets) vs. Civilian objects. | ✅ Active |
-| **Ballistics** | Weapon system identification (S-300, Himars, Shahed) via text signatures. | ✅ Active |
+| **Multimodal Intel** | **Visionary 2.0**: Neural fusion of Video (Geometric Sampling), Audio (Whisper STT), and Text. | ✅ Active |
+| **Ballistics** | Weapon system identification (S-300, Himars, Shahed) via multi-modal signatures. | ✅ Active |
 | **Damage** | **T.I.E. Scoring** (Target-Kinetic-Effect) to assess strike effectiveness (1-100). | ✅ Active |
 | **Reliability & Bias** | Source grading (0-100 scale) and political bias detection. | ✅ Active |
 
@@ -87,8 +89,12 @@ graph LR
 ## 🚀 Deployment
 
 ### Prerequisites
-- **Python 3.12+**
-- **API Access**: OpenRouter (DeepSeek V3.2/Qwen), OpenAI (GPT-4o), Photon Geocoder
+- **Python 3.13+**
+- **Core Models**:
+  - **Embedding**: `openai/text-embedding-3-large` (1536-dim)
+  - **Vision/Multimodal**: `qwen/qwen3-vl-235b-a22b-instruct`
+  - **Audio/STT**: `openai/whisper-large-v3-turbo`
+- **Inference**: OpenRouter API
 
 ### Protocol: Initiation
 ```bash

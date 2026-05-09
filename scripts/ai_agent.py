@@ -47,6 +47,7 @@ logger = logging.getLogger("SUPER_SQUAD")
 load_dotenv()
 
 API_SEMAPHORE = asyncio.Semaphore(50)
+GEO_CACHE_LOCK = asyncio.Lock()
 
 # Absolute Paths for JSON Databases
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -1687,27 +1688,24 @@ RAW TEXT:
         if not frame_dicts:
             return None
         
-        print("   \U0001f441\ufe0f Step V: The Visionary (IMINT) analyzing visual evidence...")
-        print(f"      \U0001f4f8 Enriched frames to analyze: {len(frame_dicts)}")
-        
-        # Build text context from Soldier's extraction
-        soldier_summary = json.dumps(soldier_data, indent=2, default=str)[:8000]
-        
-        # Build frame label list for per-frame analysis instruction
-        frame_labels = ", ".join([f"Frame {i+1}" for i in range(len(frame_dicts[:4]))])
+        # Build text context from Soldier's extraction (The Dossier)
+        dossier_context = json.dumps(soldier_data, indent=2, default=str)[:8000]
         
         # Construct multimodal message content (text + Base64 images)
         # Format: array of content items per OpenRouter VLM spec
         content_items = [
             {
                 "type": "text",
-                "text": f"""SOLDIER TEXT INTEL (Cross-reference this against the images):
-{soldier_summary}
+                "text": f"""You are the agent **The Visionary**. You are analyzing the 4 key frames (10%, 40%, 70%, 90%) of a video related to a specific tactical event.
 
-You are receiving {len(frame_dicts[:4])} numbered frames: {frame_labels}.
-AUDIO TRANSCRIPT (Speech-to-Text extraction): {audio_transcript or '[No audio/No speech detected]'}
+TEXTUAL DOSSIER CONTEXT:
+{dossier_context}
 
-Analyze the attached visual evidence and audio transcript. CONFIRM, CONTRADICT, or ENRICH the text intel above.
+AUDIO TRANSCRIPTION:
+{audio_transcript or 'No audio detected'}
+
+MISSION: Cross-reference visual data with audio and textual context. Confirm or refute the dossier's claims and issue your objective IMINT assessment on weapons, vehicles, and battle damage (BDA).
+SCRIVI TUTTO IN INGLESE, NO ITALIANO.
 
 IMPORTANT: In addition to your standard analysis, add a "per_frame_analysis" array to your JSON output.
 For EACH frame, provide:
@@ -2443,97 +2441,91 @@ OR
             print(f"   ❌ Journalist Critical Error: {e}")
             return self._get_error_journalist_response()
 
-# =========================================================================
-# 🏰 STEP 5: THE STRATEGIST (DeepSeek-V3 via OpenRouter)
-# =========================================================================
 
 
-async def _step_5_the_strategist(client_or, final_report):
-    """
-    THE STRATEGIST (DeepSeek-V4 via OpenRouter)
-    Generates high-level strategic insight in EN and IT.
-    """
-    print("   ♟️  Step 5: The Strategist is assessing impact (Dual Lang)...")
+    # =========================================================================
+    # ♟️ STEP 5: THE STRATEGIST (Strategic Assessment)
+    # =========================================================================
 
-    # 1. Prepare Data
-    editorial = final_report.get('editorial', {})
-    metrics = final_report.get('titan_metrics', {})
-    strategy = final_report.get('strategy', {})
-    
-    # [FIX] Recuperiamo i dati tattici dal Soldier (poiché titan_analysis è stato rimosso)
-    tactics = final_report.get('tactics', {})
-    
-    # Tactical Dossier ARRICCHITO
-    dossier = f"""
-    EVENT: {editorial.get('title_en')}
-    CONTEXT: {editorial.get('description_en')}
-    
-    === TACTICAL CLASSIFICATION ===
-    CATEGORY: {tactics.get('target_category', 'UNKNOWN')}
-    REASONING: {tactics.get('target_status', 'N/A')}
-    
-    T.I.E. METRICS (0-10):
-    - KINETIC (Violence/Intensity): {metrics.get('kinetic_score')}
-    - TARGET (Strategic Value): {metrics.get('target_score')}
-    - EFFECT (Success/Damage): {metrics.get('effect_score')}
-    """
+    async def _step_5_the_strategist(self, client_or, final_report):
+        """
+        THE STRATEGIST (DeepSeek-V4 via OpenRouter)
+        Generates high-level strategic insight.
+        """
+        print("   ♟️  Step 5: The Strategist is assessing impact (Dual Lang)...")
 
-    # 2. The Prompt (English for better reasoning)
-    system_prompt = """
-    You are a Senior Intelligence Analyst for a conflict monitor.
-    Your task: Generate a "Strategic Assessment" for the provided event.
-
-    CRITICAL RULES:
-    1. NO SUMMARIES. Do not repeat what happened. Focus strictly on "So What?".
-    2. ANALYZE CONSEQUENCES. Explain the operational or strategic implication.
-    3. USE METRICS. Use the T.I.E. scores to guide your assessment.
-    4. GLOBAL CONTEXT. Mention how this fits into the broader war.
-    5. BREVITY. Maximum 3 sentences. Tone: Cold, Professional, Direct.
-
-    OUTPUT FORMAT (Strictly follow this):
-    <Insight in English>
-    """
-
-    try:
-        async with API_SEMAPHORE:
-            response = await self._call_llm_with_backoff(client_or, 
-                model="deepseek/deepseek-v4-flash",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": dossier}
-                ],
-                temperature=0.0,
-                stream=True
-            )
-
-        full_content = ""
-        full_reasoning = []
+        # 1. Prepare Data
+        editorial = final_report.get('editorial', {})
+        metrics = final_report.get('titan_metrics', {})
         
-        async for chunk in response:
-            delta = chunk.choices[0].delta if chunk.choices else None
-            if delta:
-                if getattr(delta, "content", None):
-                    full_content += delta.content
-                
-                reasoning_piece = getattr(delta, "reasoning", None)
-                if not reasoning_piece and hasattr(delta, "model_extra") and delta.model_extra:
-                    reasoning_piece = delta.model_extra.get("reasoning")
-                if reasoning_piece:
-                    full_reasoning.append(reasoning_piece)
+        # Tactical Dossier
+        dossier = f"""
+        EVENT: {editorial.get('title_en')}
+        CONTEXT: {editorial.get('description_en')}
+        
+        === TACTICAL METRICS ===
+        CATEGORY: {metrics.get('target_type_category', 'UNKNOWN')}
+        KINETIC: {metrics.get('kinetic_score', 0)}
+        TARGET: {metrics.get('target_score', 0)}
+        EFFECT: {metrics.get('effect_score', 0)}
+        """
 
-        assistant_message = {
-            "role": "assistant",
-            "content": full_content,
-            "reasoning_details": "".join(full_reasoning)
-        }
+        # 2. The Prompt (English for better reasoning)
+        system_prompt = """
+        You are a Senior Intelligence Analyst for a conflict monitor.
+        Your task: Generate a "Strategic Assessment" for the provided event.
 
-        insight_raw = full_content.strip()
-        print(f"      🧠 Strategist Output:\n{insight_raw}")
-        return insight_raw
+        CRITICAL RULES:
+        1. NO SUMMARIES. Do not repeat what happened. Focus strictly on "So What?".
+        2. ANALYZE CONSEQUENCES. Explain the operational or strategic implication.
+        3. USE METRICS. Use the T.I.E. scores to guide your assessment.
+        4. GLOBAL CONTEXT. Mention how this fits into the broader war.
+        5. BREVITY. Maximum 3 sentences. Tone: Cold, Professional, Direct.
 
-    except Exception as e:
-        print(f"      ⚠️ Strategist Error: {e}")
-        return "Analysis unavailable."
+        OUTPUT FORMAT (Strictly follow this):
+        <Insight in English>
+        """
+
+        try:
+            async with API_SEMAPHORE:
+                response = await self._call_llm_with_backoff(client_or, 
+                    model="deepseek/deepseek-v4-flash",
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": dossier}
+                    ],
+                    temperature=0.0,
+                    stream=True
+                )
+
+            full_content = ""
+            full_reasoning = []
+            
+            async for chunk in response:
+                delta = chunk.choices[0].delta if chunk.choices else None
+                if delta:
+                    if getattr(delta, "content", None):
+                        full_content += delta.content
+                    
+                    reasoning_piece = getattr(delta, "reasoning", None)
+                    if not reasoning_piece and hasattr(delta, "model_extra") and delta.model_extra:
+                        reasoning_piece = delta.model_extra.get("reasoning")
+                    if reasoning_piece:
+                        full_reasoning.append(reasoning_piece)
+
+            assistant_message = {
+                "role": "assistant",
+                "content": full_content,
+                "reasoning_details": "".join(full_reasoning)
+            }
+
+            insight_raw = full_content.strip()
+            print(f"      🧠 Strategist Output:\n{insight_raw}")
+            return insight_raw
+
+        except Exception as e:
+            print(f"      ⚠️ Strategist Error: {e}")
+            return "Analysis unavailable."
 
     # =========================================================================
     # 🔄 MAIN PROCESS FLOW
@@ -3082,7 +3074,7 @@ async def process_cluster_async(agent, row, campaign_definitions, db_write_lock)
             "Aggregated Sources": actual_urls_list,
             "visionary_report": visionary_out
         }
-        final_report['ai_summary'] = await _step_5_the_strategist(agent.brain_client, final_report)
+        final_report['ai_summary'] = await agent._step_5_the_strategist(agent.brain_client, final_report)
 
         campaign_id = None
         campaign_match_meta_json = None
@@ -3207,10 +3199,31 @@ async def main():
     conn.close()
 
     db_write_lock = asyncio.Lock()
-    await asyncio.gather(*[
-        process_cluster_async(agent, row, campaign_definitions, db_write_lock)
-        for row in clusters_to_process
-    ])
+    
+    # --- SEQUENTIAL BATCH PROCESSING (Chunks of 50) ---
+    # This prevents the terminal from being flooded with 2000+ bouncer messages at once.
+    batch_size = 50
+    total_events = len(clusters_to_process)
+    
+    for i in range(0, total_events, batch_size):
+        batch = clusters_to_process[i:i + batch_size]
+        current_batch_num = (i // batch_size) + 1
+        total_batches = math.ceil(total_events / batch_size)
+        
+        print(f"\n" + "█"*80)
+        print(f"📦 BATCH {current_batch_num}/{total_batches} | Processing {len(batch)} events concurrently")
+        print("█"*80 + "\n")
+        
+        await asyncio.gather(*[
+            process_cluster_async(agent, row, campaign_definitions, db_write_lock)
+            for row in batch
+        ])
+        
+        print(f"\n✅ BATCH {current_batch_num}/{total_batches} COMPLETED.")
+        if i + batch_size < total_events:
+            print(f"⏳ Waiting 2 seconds before next batch to stabilize output...")
+            await asyncio.sleep(2)
+
     print("\n[DONE] Sessione conclusa.")
 
 

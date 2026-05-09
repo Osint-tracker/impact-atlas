@@ -71,6 +71,8 @@ class EventBuilder:
                 if norm > 0: vec /= norm
                 dt = pd.to_datetime(d, errors='coerce')
                 if pd.isna(dt): continue
+                if dt.tzinfo is not None:
+                    dt = dt.tz_localize(None)
                 records.append({'hash': h, 'date': dt, 'vec': vec})
             except:
                 continue

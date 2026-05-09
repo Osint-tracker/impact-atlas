@@ -75,12 +75,12 @@ async def get_embedding(text: str, session: aiohttp.ClientSession) -> Optional[L
         return data['data'][0]['embedding']
     return None
 
-async def analyze_multimodal(frames_b64: List[str], audio_transcript: str, session: aiohttp.ClientSession) -> Optional[str]:
+async def analyze_multimodal(frames_b64: List[str], audio_transcript: str, source_name: str, date_published: str, session: aiohttp.ClientSession) -> Optional[str]:
     """Generate tactical description using Qwen-VL via OpenRouter."""
     headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"}
     
     content = [
-        {"type": "text", "text": f"TACTICAL INTELLIGENCE MISSION:\nAnalyze these frames and audio transcript to generate a clinical, technical description of the event. Focus on equipment, units, and kinetic activity.\n\nAUDIO TRANSCRIPT: {audio_transcript or '[No Audio]'}"}
+        {"type": "text", "text": f"TACTICAL INTELLIGENCE MISSION:\nAnalyze these frames and audio transcript to generate a clinical, technical description of the event. Focus on equipment, units, and kinetic activity.\n\nSHADOW CONTEXT:\n- Source: {source_name}\n- Date: {date_published}\n\nAUDIO TRANSCRIPT: {audio_transcript or '[No Audio]'}"}
     ]
     
     for f in frames_b64:
@@ -171,7 +171,7 @@ async def transcribe_audio(url: str, session: aiohttp.ClientSession) -> str:
 
 async def process_record(record, session: aiohttp.ClientSession, conn: sqlite3.Connection):
     async with API_SEMAPHORE:
-        event_hash, url, media_urls = record
+        event_hash, url, media_urls, source_name, date_published = record
         media_url = url
         if media_urls:
             try:
@@ -184,7 +184,7 @@ async def process_record(record, session: aiohttp.ClientSession, conn: sqlite3.C
         if not frames: return
 
         transcript = await transcribe_audio(media_url, session)
-        analysis = await analyze_multimodal(frames, transcript, session)
+        analysis = await analyze_multimodal(frames, transcript, source_name, date_published, session)
         if not analysis: return
 
         vector = await get_embedding(analysis, session)
@@ -205,7 +205,7 @@ async def main():
     conn.execute("PRAGMA journal_mode=WAL;")
     cursor = conn.cursor()
     
-    cursor.execute("SELECT event_hash, url, media_urls FROM raw_signals WHERE is_embedded = 4")
+    cursor.execute("SELECT event_hash, url, media_urls, source_name, date_published FROM raw_signals WHERE is_embedded = 4")
     records = cursor.fetchall()
     print(f"Found {len(records)} records for rescue. Using Concurrency: 50")
 

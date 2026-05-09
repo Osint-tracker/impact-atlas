@@ -1,8 +1,8 @@
 # MASTER TECHNICAL SPECIFICATION DOCUMENT (TSD)
 
 **Project:** OSINT Military Intelligence Tracker & Analysis Platform  
-**Version:** 5.0.0 (Consolidated Master)  
-**Date:** May 02, 2026  
+**Version:** 6.0.0 (Neural Fusion V2)  
+**Date:** May 09, 2026  
 **Status:** Operational / Field-Proven  
 **Maintainer:** Senior AI Architect & Technical Product Manager
 
@@ -176,13 +176,14 @@ database:
 llm_inference:
   value:
     providers:
-      - OpenRouter
-      - OpenAI
+      - OpenRouter (Primary)
+      - OpenAI (Legacy/Backfill)
     models:
       orchestration: DeepSeek V4 Flash
       extraction: Qwen 3.5 Flash
-      vision: Qwen-VL
-      fusion: MiniMax M2.5
+      vision: qwen/qwen3-vl-235b-a22b-instruct
+      audio_stt: openai/whisper-large-v3-turbo
+      embedding: openai/text-embedding-3-large (1536-dim)
   constraint: HARD_CONSTRAINT
 
 fine_tuning:
@@ -283,10 +284,12 @@ agent_3:
   failure_mode: ABORT_IF_NO_VALID_DATE
 
 agent_3.5:
-  name: The Visionary
-  role: IMINT Verification & Equipment ID
-  purpose: Visual validation of claims. Cross-references extraction against image/video evidence.
-  model: Qwen-VL (via OpenRouter)
+  name: The Visionary 2.0
+  role: Multimodal IMINT/SIGINT Hybrid
+  purpose: Neural fusion of visual (Video/Image) and auditory (Whisper STT) evidence. Cross-references extraction against pixel/sound ground truth.
+  model: qwen/qwen3-vl-235b-a22b-instruct
+  sampling_logic: Geometric Sampling (4 frames at 10%, 40%, 70%, 90%)
+  audio_integration: Whisper STT (openai/whisper-large-v3-turbo)
   temperature: 0.0
   activation_trigger: Conditional — media_urls present
   pipeline_position: After The Soldier, Before The Titan
@@ -358,7 +361,13 @@ rule_4:
 
 **PURPOSE:**  
 ```yaml
-value: Entity resolution, event deduplication, and propaganda filtering
+value: Exception handling, secondary deduplication, and garbage collection
+```
+
+**STATUS:**
+```yaml
+role: Secondary Layer (Legacy Engine)
+relegated_by: Greedy Vector Matcher (Event Builder V2)
 ```
 
 **CORE_QUESTION:**  
@@ -383,10 +392,13 @@ stage_2_temporal_filter:
   constraint: HARD_CONSTRAINT
 
 stage_3_vector_filter:
-  name: Semantic Similarity
+  name: Semantic Similarity (Primary)
   value:
-    model: text-embedding-3-small
-    threshold: 0.45
+    logic: Greedy Vector Matcher (within event_builder.py)
+    model: openai/text-embedding-3-large
+    dimensions: 1536
+    threshold: 0.85
+    temporal_window: 48 hours
   constraint: HARD_CONSTRAINT
 
 stage_4_geo_spatial_filter:
@@ -673,6 +685,35 @@ stage_2:
     - Filter by UA/RU side
   output: assets/data/orbat_full.json
   frequency: Daily
+
+---
+
+### COMPONENT_13: VISION_RESCUE_ENGINE
+
+**PURPOSE:**
+```yaml
+value: Neural recovery of "Media Orphans" (is_embedded = 4)
+```
+
+**PROCESS_FLOW:**
+```yaml
+step_1_interception:
+  trigger: "is_embedded = 4 detected in raw_signals"
+  description: Intercepts records with valid media URLs but zero textual intelligence.
+step_2_geometric_sampling:
+  logic: OpenCV/FFmpeg extraction
+  percentiles: [10%, 40%, 70%, 90%]
+  rationale: Capture beginning, middle, and end of tactical events.
+step_3_audio_rescue:
+  logic: FFmpeg stream extraction to MP3
+  transcription_model: openai/whisper-large-v3-turbo
+step_4_multimodal_synthesis:
+  model: qwen/qwen3-vl-235b-a22b-instruct
+  context_injection: "Shadow Context" (Source + Date)
+  output: Technical BDA description
+step_5_reintegration:
+  action: "text_content updated -> embedding_vector generated -> is_embedded = 1"
+```
 ```
 
 ---
@@ -769,6 +810,35 @@ columns:
   fusion_checked_at: { type: TEXT, description: Last Smart Fusion run timestamp }
   campaign_id: { type: TEXT, description: Linked strategic campaign ID }
   campaign_match_meta: { type: TEXT, description: AI reasoning for campaign link }
+
+---
+
+### SCHEMA_3: DATABASE_TABLE_RAW_SIGNALS
+
+**PURPOSE:**  
+```yaml
+value: Ingestion buffer for raw multi-source signals
+```
+
+**TABLE_DEFINITION:**
+```yaml
+table_name: raw_signals (war_tracker_v2/data/raw_events.db)
+
+columns:
+  event_hash: { type: TEXT, constraint: PRIMARY KEY }
+  url: { type: TEXT, description: Source URL }
+  media_urls: { type: TEXT, description: JSON array of media links }
+  source_name: { type: TEXT, description: Domain or channel name }
+  date_published: { type: TEXT, description: ISO timestamp }
+  text_content: { type: TEXT, description: Raw text or Rescued tactical description }
+  embedding_vector: { type: TEXT, description: 1536-dim vector (Neural Fusion V2) }
+  is_embedded: 
+    type: INTEGER
+    enum: 
+      - 0: PENDING
+      - 1: COMPLETED
+      - 4: MEDIA_ORPHAN (Requires Vision Rescue)
+```
 ```
 
 **DATABASE_CONFIGURATION:**
@@ -1282,6 +1352,10 @@ invariant_4:
 invariant_5:
   value: Every feature must respect Slate & Amber palette
   constraint: HARD_CONSTRAINT
+
+invariant_6:
+  value: "No media shall be discarded due to lack of text; all media orphans must pass through the Vision Rescue pipeline."
+  constraint: HARD_CONSTRAINT
 ```
 
 ---
@@ -1290,7 +1364,7 @@ invariant_5:
 ```yaml
 constraint_1:
   category: RUNTIME
-  value: Python >= 3.12 required
+  value: Python >= 3.13 required
 
 constraint_2:
   category: DATABASE

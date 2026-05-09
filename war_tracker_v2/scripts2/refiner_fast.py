@@ -17,7 +17,8 @@ import json
 import asyncio
 import aiohttp
 import time
-from datetime import datetime
+import random
+from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
 from tqdm import tqdm
 import uuid
@@ -172,7 +173,6 @@ def dry_run_comparison(conn):
     print(f"    Reject: {new_reject} ({new_reject/len(rows)*100:.1f}%)")
     
     print(f"\n  DELTA (Rescued by new filter): {delta_rescued}")
-    
     if delta_rescued == 0:
         print("\n  ⚠️ WARNING: Delta is 0. Either:")
         print("     - All GDELT already passed old filter (unlikely)")
@@ -184,8 +184,11 @@ def dry_run_comparison(conn):
     return delta_rescued
 
 
-async def generate_embeddings_async(session, texts, semaphore):
-    """Generate embeddings for a batch of texts."""
+async def generate_embeddings_async(session, texts, semaphore, attempt=1):
+    """Generate embeddings for a batch of texts with exponential backoff."""
+    max_attempts = 5
+    base_delay = 2.0
+
     async with semaphore:
         headers = {
             "Authorization": f"Bearer {OPENROUTER_API_KEY}",
@@ -194,8 +197,6 @@ async def generate_embeddings_async(session, texts, semaphore):
             "X-Title": "Impact Atlas Refiner"
         }
         
-        # Puoi alzare o rimuovere il limite dei 6000 caratteri dato che Qwen3 8B 
-        # ha una context window molto più ampia di text-embedding-3-small
         safe_texts = [str(t).replace("\n", " ") for t in texts]
         
         payload = {
@@ -213,17 +214,36 @@ async def generate_embeddings_async(session, texts, semaphore):
             ) as response:
                 if response.status == 200:
                     data = await response.json()
-                    return [item["embedding"] for item in data["data"]]
-                elif response.status == 429:
-                    # Rate limited - wait and retry
-                    await asyncio.sleep(5)
-                    return await generate_embeddings_async(session, texts, semaphore)
+                    if "data" in data:
+                        return [item["embedding"] for item in data["data"]]
+                    else:
+                        # Sometimes OpenRouter returns 200 but with an error body
+                        print(f"   [WARN] API returned 200 but missing 'data' key: {str(data)[:200]}")
+                        if attempt < max_attempts:
+                            wait_time = base_delay * (2 ** (attempt - 1)) + random.uniform(0, 1)
+                            await asyncio.sleep(wait_time)
+                            return await generate_embeddings_async(session, texts, semaphore, attempt + 1)
+                        return None
+                
+                elif response.status in [429, 500, 502, 503, 504]:
+                    if attempt < max_attempts:
+                        wait_time = base_delay * (2 ** (attempt - 1)) + random.uniform(0, 1)
+                        # print(f"   [RETRY] Embedding API {response.status}. Attempt {attempt}/{max_attempts}. Wait {wait_time:.1f}s")
+                        await asyncio.sleep(wait_time)
+                        return await generate_embeddings_async(session, texts, semaphore, attempt + 1)
+                    else:
+                        print(f"   [ERROR] Max retries reached for status {response.status}")
+                        return None
                 else:
-                    error = await response.text()
-                    print(f"API Error {response.status}: {error[:200]}")
+                    error_text = await response.text()
+                    print(f"   [ERROR] API Permanent Error {response.status}: {error_text[:200]}")
                     return None
         except Exception as e:
-            print(f"Request failed: {e}")
+            if attempt < max_attempts:
+                wait_time = base_delay * (2 ** (attempt - 1)) + random.uniform(0, 1)
+                await asyncio.sleep(wait_time)
+                return await generate_embeddings_async(session, texts, semaphore, attempt + 1)
+            print(f"   [ERROR] Request failed after {max_attempts} attempts: {e}")
             return None
 
 
@@ -233,7 +253,7 @@ async def main_async(dry_run=False, skip_reset=False, limit=None, lookback_days=
     print("=" * 60)
 
     effective_lookback = lookback_days if lookback_days is not None else LOOKBACK_DAYS
-    cutoff_date = (datetime.utcnow() - __import__('datetime').timedelta(days=effective_lookback)).isoformat()
+    cutoff_date = (datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=effective_lookback)).isoformat()
     print(f"🗓️  Temporal filter: last {effective_lookback} days (cutoff: {cutoff_date[:10]})")
     
     if not OPENROUTER_API_KEY:

@@ -229,40 +229,59 @@ class MediaProcessor:
 
     async def extract_audio_transcript(self, media_url: str) -> str:
         """Download video, extract audio, and transcribe via OpenRouter Whisper."""
-        temp_video = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
-        temp_audio = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
+        import uuid
+        import shutil
+        
+        # Create unique paths in the system temp directory
+        temp_dir = tempfile.gettempdir()
+        v_name = f"vid_{uuid.uuid4().hex}.mp4"
+        a_name = f"aud_{uuid.uuid4().hex}.mp3"
+        v_path = os.path.join(temp_dir, v_name)
+        a_path = os.path.join(temp_dir, a_name)
         
         try:
             # Download video (streaming to file)
             r = requests.get(media_url, stream=True, timeout=30)
             if r.status_code != 200:
                 return ""
-            for chunk in r.iter_content(chunk_size=8192):
-                temp_video.write(chunk)
-            temp_video.close()
+                
+            with open(v_path, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=8192):
+                    f.write(chunk)
 
             # Extract audio using ffmpeg
             cmd = [
-                "ffmpeg", "-y", "-i", temp_video.name,
+                "ffmpeg", "-y", "-i", v_path,
                 "-vn", "-acodec", "libmp3lame", "-q:a", "9",
                 "-ar", "16000", "-ac", "1",
-                temp_audio.name
+                a_path
             ]
+            
+            # Run ffmpeg and wait for completion
             process = await asyncio.create_subprocess_exec(
                 *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
             )
-            await process.communicate()
+            stdout, stderr = await process.communicate()
 
-            if not os.path.exists(temp_audio.name) or os.path.getsize(temp_audio.name) < 100:
+            if process.returncode != 0:
+                logger.error(f"MediaProcessor: FFmpeg error: {stderr.decode()}")
                 return ""
+
+            if not os.path.exists(a_path) or os.path.getsize(a_path) < 100:
+                return ""
+
+            # Read audio into memory to release the file handle immediately
+            with open(a_path, 'rb') as f:
+                audio_data = f.read()
 
             # Transcribe via OpenRouter
             openrouter_key = os.getenv("OPENROUTER_API_KEY")
-            if not openrouter_key: return ""
+            if not openrouter_key: 
+                return ""
             
             async with aiohttp.ClientSession() as session:
                 data = aiohttp.FormData()
-                data.add_field('file', open(temp_audio.name, 'rb'), filename='audio.mp3')
+                data.add_field('file', audio_data, filename='audio.mp3')
                 data.add_field('model', "openai/whisper-large-v3-turbo")
 
                 async with session.post("https://openrouter.ai/api/v1/audio/transcriptions", 
@@ -273,10 +292,16 @@ class MediaProcessor:
                         return res_data.get('text', "")
                     else:
                         logger.error(f"MediaProcessor: OpenRouter Whisper error: {resp.status}")
+                        
         except Exception as e:
             logger.error(f"MediaProcessor: Transcription error: {e}")
         finally:
-            if os.path.exists(temp_video.name): os.remove(temp_video.name)
-            if os.path.exists(temp_audio.name): os.remove(temp_audio.name)
+            # Cleanup: ensure files are deleted even if errors occurred
+            for p in [v_path, a_path]:
+                if os.path.exists(p):
+                    try:
+                        os.remove(p)
+                    except Exception as cleanup_err:
+                        logger.warning(f"MediaProcessor: Cleanup failed for {p}: {cleanup_err}")
         
         return ""
