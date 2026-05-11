@@ -581,13 +581,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -596,11 +596,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -625,11 +620,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -665,15 +674,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -904,13 +904,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-05-04 14:20:26",
+    "engagement_count": 4,
+    "last_active": "2026-05-10T15:56:00",
     "primary_tactic": "LOGISTICS_NON_KINETIC",
     "avg_tie": {
-      "kinetic": 1.5,
-      "target": 2.0,
-      "effect": 2.0
+      "kinetic": 1.75,
+      "target": 2.5,
+      "effect": 2.75
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -937,17 +937,35 @@
       0,
       0,
       0,
+      2,
       0,
       0,
       0,
+      1,
       0,
-      0,
-      0,
-      2
+      1
     ],
-    "engagement_trend_anchor": "2026-05-04",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-10",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-10T15:56:00",
+        "title": "Russian Forces Advanced near Holubivka and Dibrova",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.736375,
+        "lon": 37.8261852,
+        "url": "https://t.me/DeepStateUA/23489",
+        "event_id": "e327c0ad-1d3d-4d2b-baf9-044ed4ab3ed0"
+      },
+      {
+        "date": "2026-05-08T19:45:28",
+        "title": "Russian Forces Advanced near Novooleksandrivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.3428019,
+        "lon": 37.0954227,
+        "url": "https://t.me/DeepStateUA/23488",
+        "event_id": "dbfe5676-240d-4851-a679-9691761c1909"
+      },
       {
         "date": "2026-05-04 14:20:26",
         "title": "Ukrainian Forces Strengthen Defense near Transnistria",
@@ -1177,13 +1195,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-05-04 14:20:26",
+    "engagement_count": 4,
+    "last_active": "2026-05-10T15:56:00",
     "primary_tactic": "LOGISTICS_NON_KINETIC",
     "avg_tie": {
-      "kinetic": 1.5,
-      "target": 2.0,
-      "effect": 2.0
+      "kinetic": 1.75,
+      "target": 2.5,
+      "effect": 2.75
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -1210,17 +1228,35 @@
       0,
       0,
       0,
+      2,
       0,
       0,
       0,
+      1,
       0,
-      0,
-      0,
-      2
+      1
     ],
-    "engagement_trend_anchor": "2026-05-04",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-10",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-10T15:56:00",
+        "title": "Russian Forces Advanced near Holubivka and Dibrova",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.736375,
+        "lon": 37.8261852,
+        "url": "https://t.me/DeepStateUA/23489",
+        "event_id": "e327c0ad-1d3d-4d2b-baf9-044ed4ab3ed0"
+      },
+      {
+        "date": "2026-05-08T19:45:28",
+        "title": "Russian Forces Advanced near Novooleksandrivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.3428019,
+        "lon": 37.0954227,
+        "url": "https://t.me/DeepStateUA/23488",
+        "event_id": "dbfe5676-240d-4851-a679-9691761c1909"
+      },
       {
         "date": "2026-05-04 14:20:26",
         "title": "Ukrainian Forces Strengthen Defense near Transnistria",
@@ -1939,12 +1975,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -1980,9 +2016,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -2465,13 +2510,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-05-04 14:20:26",
+    "engagement_count": 4,
+    "last_active": "2026-05-10T15:56:00",
     "primary_tactic": "LOGISTICS_NON_KINETIC",
     "avg_tie": {
-      "kinetic": 1.5,
-      "target": 2.0,
-      "effect": 2.0
+      "kinetic": 1.75,
+      "target": 2.5,
+      "effect": 2.75
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -2498,17 +2543,35 @@
       0,
       0,
       0,
+      2,
       0,
       0,
       0,
+      1,
       0,
-      0,
-      0,
-      2
+      1
     ],
-    "engagement_trend_anchor": "2026-05-04",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-10",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-10T15:56:00",
+        "title": "Russian Forces Advanced near Holubivka and Dibrova",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.736375,
+        "lon": 37.8261852,
+        "url": "https://t.me/DeepStateUA/23489",
+        "event_id": "e327c0ad-1d3d-4d2b-baf9-044ed4ab3ed0"
+      },
+      {
+        "date": "2026-05-08T19:45:28",
+        "title": "Russian Forces Advanced near Novooleksandrivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.3428019,
+        "lon": 37.0954227,
+        "url": "https://t.me/DeepStateUA/23488",
+        "event_id": "dbfe5676-240d-4851-a679-9691761c1909"
+      },
       {
         "date": "2026-05-04 14:20:26",
         "title": "Ukrainian Forces Strengthen Defense near Transnistria",
@@ -3367,13 +3430,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -3382,11 +3445,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -3411,11 +3469,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -3451,15 +3523,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -3479,13 +3542,17 @@
     "garrison": null,
     "district": null,
     "branch": null,
-    "engagement_count": 0,
+    "engagement_count": 1,
+    "last_active": "2026-05-09T05:40:34",
+    "primary_tactic": "INFRASTRUCTURE",
     "avg_tie": {
-      "kinetic": 0,
-      "target": 0,
-      "effect": 0
+      "kinetic": 3.0,
+      "target": 2.0,
+      "effect": 1.0
     },
-    "assets_detected": [],
+    "assets_detected": [
+      "Eurofighter Typhoon"
+    ],
     "engagement_trend_30d": [
       0,
       0,
@@ -3516,10 +3583,21 @@
       0,
       0,
       0,
-      0
+      1
     ],
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
-    "recent_engagements": []
+    "recent_engagements": [
+      {
+        "date": "2026-05-09T05:40:34",
+        "title": "Ukrainian Drone Incursion Damages Infrastructure in Rezekne",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.114,
+        "lon": 31.561999999999998,
+        "url": "https://t.me/astrapress/112121",
+        "event_id": "2b5ffd44-b899-4734-accd-04a5b071d03f"
+      }
+    ]
   },
   {
     "unit_id": "UA_21ST_SEPARATE_BN",
@@ -3656,13 +3734,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -3671,11 +3749,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -3700,11 +3773,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -3740,15 +3827,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -4007,13 +4085,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -4022,11 +4100,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -4051,11 +4124,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -4091,15 +4178,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -4260,12 +4338,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -4301,9 +4379,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -5554,12 +5641,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -5595,9 +5682,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -6157,13 +6253,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -6172,11 +6268,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -6201,11 +6292,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -6241,15 +6346,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -7153,11 +7249,13 @@
     "echelon_symbol": "XX",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 0,
+    "engagement_count": 2,
+    "last_active": "2026-05-08T17:27:01",
+    "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 0,
-      "target": 0,
-      "effect": 0
+      "kinetic": 5.0,
+      "target": 6.0,
+      "effect": 1.0
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -7190,10 +7288,30 @@
       0,
       0,
       0,
-      0
+      2
     ],
+    "engagement_trend_anchor": "2026-05-08",
     "engagement_freq_label": "Low",
-    "recent_engagements": []
+    "recent_engagements": [
+      {
+        "date": "2026-05-08T17:27:01",
+        "title": "Ukrainian Forces Conduct Drone Strike on Russian 70th GRAU Arsenal in Kedrovka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.99,
+        "lon": 31.663999999999998,
+        "url": "https://t.me/noel_reports/46114",
+        "event_id": "5898ecdc-adef-497f-88bd-6293558dc5e6"
+      },
+      {
+        "date": "2026-05-08T16:59:14",
+        "title": "Ukrainian Drones Strike Russian Logistics Depot near Yekaterinburg",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.004,
+        "lon": 32.528,
+        "url": "https://t.me/exilenova_plus/20364",
+        "event_id": "40a4872f-9113-43e2-8221-1677bc1b3936"
+      }
+    ]
   },
   {
     "unit_id": "RU_1486TH_LENINGRAD_RGT",
@@ -9783,12 +9901,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -9824,9 +9942,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -10109,12 +10236,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -10150,9 +10277,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -14783,12 +14919,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -14824,9 +14960,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -15895,12 +16040,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -15936,9 +16081,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -16475,13 +16629,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -16490,11 +16644,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -16519,11 +16668,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -16559,15 +16722,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -17458,13 +17612,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -17473,11 +17627,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -17502,11 +17651,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -17542,15 +17705,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -18496,13 +18650,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -18511,11 +18665,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -18540,11 +18689,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -18580,15 +18743,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -21278,13 +21432,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -21293,11 +21447,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -21322,11 +21471,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -21362,15 +21525,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -22040,13 +22194,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -22055,11 +22209,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -22084,11 +22233,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -22124,15 +22287,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -23161,13 +23315,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-05-04 14:20:26",
+    "engagement_count": 4,
+    "last_active": "2026-05-10T15:56:00",
     "primary_tactic": "LOGISTICS_NON_KINETIC",
     "avg_tie": {
-      "kinetic": 1.5,
-      "target": 2.0,
-      "effect": 2.0
+      "kinetic": 1.75,
+      "target": 2.5,
+      "effect": 2.75
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -23194,17 +23348,35 @@
       0,
       0,
       0,
+      2,
       0,
       0,
       0,
+      1,
       0,
-      0,
-      0,
-      2
+      1
     ],
-    "engagement_trend_anchor": "2026-05-04",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-10",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-10T15:56:00",
+        "title": "Russian Forces Advanced near Holubivka and Dibrova",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.736375,
+        "lon": 37.8261852,
+        "url": "https://t.me/DeepStateUA/23489",
+        "event_id": "e327c0ad-1d3d-4d2b-baf9-044ed4ab3ed0"
+      },
+      {
+        "date": "2026-05-08T19:45:28",
+        "title": "Russian Forces Advanced near Novooleksandrivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.3428019,
+        "lon": 37.0954227,
+        "url": "https://t.me/DeepStateUA/23488",
+        "event_id": "dbfe5676-240d-4851-a679-9691761c1909"
+      },
       {
         "date": "2026-05-04 14:20:26",
         "title": "Ukrainian Forces Strengthen Defense near Transnistria",
@@ -24261,12 +24433,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -24302,9 +24474,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -28347,11 +28528,13 @@
     "echelon_symbol": "XX",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 0,
+    "engagement_count": 2,
+    "last_active": "2026-05-08T17:27:01",
+    "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 0,
-      "target": 0,
-      "effect": 0
+      "kinetic": 5.0,
+      "target": 6.0,
+      "effect": 1.0
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -28384,10 +28567,30 @@
       0,
       0,
       0,
-      0
+      2
     ],
+    "engagement_trend_anchor": "2026-05-08",
     "engagement_freq_label": "Low",
-    "recent_engagements": []
+    "recent_engagements": [
+      {
+        "date": "2026-05-08T17:27:01",
+        "title": "Ukrainian Forces Conduct Drone Strike on Russian 70th GRAU Arsenal in Kedrovka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.99,
+        "lon": 31.663999999999998,
+        "url": "https://t.me/noel_reports/46114",
+        "event_id": "5898ecdc-adef-497f-88bd-6293558dc5e6"
+      },
+      {
+        "date": "2026-05-08T16:59:14",
+        "title": "Ukrainian Drones Strike Russian Logistics Depot near Yekaterinburg",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.004,
+        "lon": 32.528,
+        "url": "https://t.me/exilenova_plus/20364",
+        "event_id": "40a4872f-9113-43e2-8221-1677bc1b3936"
+      }
+    ]
   },
   {
     "unit_id": "RU_15TH_SPETSNAZ_RGT",
@@ -30182,13 +30385,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -30197,11 +30400,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -30226,11 +30424,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -30266,15 +30478,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -30792,12 +30995,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -30833,9 +31036,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -31439,12 +31651,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -31480,9 +31692,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -31875,13 +32096,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -31890,11 +32111,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -31919,11 +32135,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -31959,15 +32189,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -33119,12 +33340,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -33160,9 +33381,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -35180,13 +35410,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -35195,11 +35425,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -35224,11 +35449,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -35264,15 +35503,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -40219,13 +40449,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -40234,11 +40464,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -40263,11 +40488,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -40303,15 +40542,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -42596,13 +42826,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -42611,11 +42841,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -42640,11 +42865,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -42680,15 +42919,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -42712,12 +42942,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -42753,9 +42983,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -47413,12 +47652,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -47454,9 +47693,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -48220,12 +48468,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -48261,9 +48509,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -49027,13 +49284,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -49042,11 +49299,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -49071,11 +49323,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -49111,15 +49377,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -49404,13 +49661,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -49419,11 +49676,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -49448,11 +49700,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -49488,15 +49754,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -51099,13 +51356,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -51114,11 +51371,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -51143,11 +51395,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -51183,15 +51449,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -55677,13 +55934,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -55692,11 +55949,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -55721,11 +55973,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -55761,15 +56027,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -55926,13 +56183,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -55941,11 +56198,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -55970,11 +56222,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -56010,15 +56276,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -57046,13 +57303,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -57061,11 +57318,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -57090,11 +57342,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -57130,15 +57396,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -58287,13 +58544,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-05-04 14:20:26",
+    "engagement_count": 4,
+    "last_active": "2026-05-10T15:56:00",
     "primary_tactic": "LOGISTICS_NON_KINETIC",
     "avg_tie": {
-      "kinetic": 1.5,
-      "target": 2.0,
-      "effect": 2.0
+      "kinetic": 1.75,
+      "target": 2.5,
+      "effect": 2.75
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -58320,17 +58577,35 @@
       0,
       0,
       0,
+      2,
       0,
       0,
       0,
+      1,
       0,
-      0,
-      0,
-      2
+      1
     ],
-    "engagement_trend_anchor": "2026-05-04",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-10",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-10T15:56:00",
+        "title": "Russian Forces Advanced near Holubivka and Dibrova",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.736375,
+        "lon": 37.8261852,
+        "url": "https://t.me/DeepStateUA/23489",
+        "event_id": "e327c0ad-1d3d-4d2b-baf9-044ed4ab3ed0"
+      },
+      {
+        "date": "2026-05-08T19:45:28",
+        "title": "Russian Forces Advanced near Novooleksandrivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.3428019,
+        "lon": 37.0954227,
+        "url": "https://t.me/DeepStateUA/23488",
+        "event_id": "dbfe5676-240d-4851-a679-9691761c1909"
+      },
       {
         "date": "2026-05-04 14:20:26",
         "title": "Ukrainian Forces Strengthen Defense near Transnistria",
@@ -58570,13 +58845,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-05-04 14:20:26",
+    "engagement_count": 4,
+    "last_active": "2026-05-10T15:56:00",
     "primary_tactic": "LOGISTICS_NON_KINETIC",
     "avg_tie": {
-      "kinetic": 1.5,
-      "target": 2.0,
-      "effect": 2.0
+      "kinetic": 1.75,
+      "target": 2.5,
+      "effect": 2.75
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -58603,17 +58878,35 @@
       0,
       0,
       0,
+      2,
       0,
       0,
       0,
+      1,
       0,
-      0,
-      0,
-      2
+      1
     ],
-    "engagement_trend_anchor": "2026-05-04",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-10",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-10T15:56:00",
+        "title": "Russian Forces Advanced near Holubivka and Dibrova",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.736375,
+        "lon": 37.8261852,
+        "url": "https://t.me/DeepStateUA/23489",
+        "event_id": "e327c0ad-1d3d-4d2b-baf9-044ed4ab3ed0"
+      },
+      {
+        "date": "2026-05-08T19:45:28",
+        "title": "Russian Forces Advanced near Novooleksandrivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.3428019,
+        "lon": 37.0954227,
+        "url": "https://t.me/DeepStateUA/23488",
+        "event_id": "dbfe5676-240d-4851-a679-9691761c1909"
+      },
       {
         "date": "2026-05-04 14:20:26",
         "title": "Ukrainian Forces Strengthen Defense near Transnistria",
@@ -59099,13 +59392,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -59114,11 +59407,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -59143,11 +59431,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -59183,15 +59485,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -59743,13 +60036,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -59758,11 +60051,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -59787,11 +60075,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -59827,15 +60129,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -65286,13 +65579,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -65301,11 +65594,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -65330,11 +65618,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -65370,15 +65672,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -67336,13 +67629,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -67351,11 +67644,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -67380,11 +67668,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -67420,15 +67722,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -69541,13 +69834,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -69556,11 +69849,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -69585,11 +69873,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -69625,15 +69927,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -70153,12 +70446,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -70194,9 +70487,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -70376,13 +70678,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -70391,11 +70693,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -70420,11 +70717,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -70460,15 +70771,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ]
   },
@@ -70879,13 +71181,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -70894,11 +71196,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -70923,11 +71220,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -70963,15 +71274,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ],
     "casualty_count": 43,
@@ -70997,12 +71299,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -71038,9 +71340,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -71138,13 +71449,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -71153,11 +71464,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -71182,11 +71488,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -71222,15 +71542,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ],
     "casualty_count": 26,
@@ -72871,13 +73182,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -72886,11 +73197,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -72915,11 +73221,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -72955,15 +73275,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ],
     "casualty_count": 29,
@@ -73435,13 +73746,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-05-04 14:20:26",
+    "engagement_count": 4,
+    "last_active": "2026-05-10T15:56:00",
     "primary_tactic": "LOGISTICS_NON_KINETIC",
     "avg_tie": {
-      "kinetic": 1.5,
-      "target": 2.0,
-      "effect": 2.0
+      "kinetic": 1.75,
+      "target": 2.5,
+      "effect": 2.75
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -73468,17 +73779,35 @@
       0,
       0,
       0,
+      2,
       0,
       0,
       0,
+      1,
       0,
-      0,
-      0,
-      2
+      1
     ],
-    "engagement_trend_anchor": "2026-05-04",
-    "engagement_freq_label": "Low",
+    "engagement_trend_anchor": "2026-05-10",
+    "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-10T15:56:00",
+        "title": "Russian Forces Advanced near Holubivka and Dibrova",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.736375,
+        "lon": 37.8261852,
+        "url": "https://t.me/DeepStateUA/23489",
+        "event_id": "e327c0ad-1d3d-4d2b-baf9-044ed4ab3ed0"
+      },
+      {
+        "date": "2026-05-08T19:45:28",
+        "title": "Russian Forces Advanced near Novooleksandrivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 48.3428019,
+        "lon": 37.0954227,
+        "url": "https://t.me/DeepStateUA/23488",
+        "event_id": "dbfe5676-240d-4851-a679-9691761c1909"
+      },
       {
         "date": "2026-05-04 14:20:26",
         "title": "Ukrainian Forces Strengthen Defense near Transnistria",
@@ -73521,12 +73850,12 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 1,
-    "last_active": "2026-01-12 19:07:29",
+    "engagement_count": 2,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "CIVILIAN_FACILITY",
     "avg_tie": {
-      "kinetic": 1.0,
-      "target": 7.0,
+      "kinetic": 2.0,
+      "target": 5.0,
       "effect": 5.0
     },
     "assets_detected": [],
@@ -73562,9 +73891,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-01-12",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-01-12 19:07:29",
         "title": "Ukrainian Forces Take Control of Kupyansk City Council Building",
@@ -73598,13 +73936,13 @@
     "echelon_symbol": "II",
     "sub_branch": null,
     "superior": "1st \"Ivan Bohun\"",
-    "engagement_count": 13,
-    "last_active": "2026-05-04 12:56:36",
+    "engagement_count": 14,
+    "last_active": "2026-05-09T08:01:01",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.15,
-      "target": 3.92,
-      "effect": 5.08
+      "kinetic": 3.14,
+      "target": 3.86,
+      "effect": 5.07
     },
     "assets_detected": [
       "Buk surface",
@@ -73613,11 +73951,6 @@
       "M142"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -73642,11 +73975,25 @@
       0,
       2,
       0,
+      1,
+      0,
+      0,
+      0,
+      0,
       1
     ],
-    "engagement_trend_anchor": "2026-05-04",
+    "engagement_trend_anchor": "2026-05-09",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-09T08:01:01",
+        "title": "Ukrainian Forces Clear Positions in Vovchansk Direction",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.238,
+        "lon": 32.147999999999996,
+        "url": "https://t.me/ButusovPlus/29243",
+        "event_id": "82217f65-63e6-43d6-9e8a-f9870b61eff0"
+      },
       {
         "date": "2026-05-04 12:56:36",
         "title": "Ukrainian Forces Repel Russian Assault near Lyman",
@@ -73682,15 +74029,6 @@
         "lon": 37.927535,
         "url": "https://t.me/ukrliberation/19550",
         "event_id": "333f900d-b2d2-473f-810e-ae63f5dd0263"
-      },
-      {
-        "date": "2026-04-13 20:11:41",
-        "title": "Psychological Operation Attempt by Russian Forces against Ukrainian 3rd Army Corps",
-        "location": "UNKNOWN_SECTOR",
-        "lat": 49.638,
-        "lon": 32.702,
-        "url": "https://t.me/ukrliberation/19540",
-        "event_id": "ebb79452-ed09-47a4-94be-f04277e5fc14"
       }
     ],
     "casualty_count": 12,

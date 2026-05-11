@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-09T15:23:27.956224+00:00",
+  "generated_at": "2026-05-11T20:00:41.534969+00:00",
   "weekly_window_days": 7,
   "sparkline_window_days": 30,
   "campaigns": [
@@ -8,14 +8,12 @@
       "name": "Refineries And Oil Hubs",
       "color": "#f59e0b",
       "status": "LIVE",
-      "total_events": 52,
+      "total_events": 55,
       "last_event_date": "2026-05-09T05:37:16+00:00",
-      "sum_vec_e": 326.0,
-      "weekly_tie_cumulative": 339.0,
+      "sum_vec_e": 345.0,
+      "weekly_tie_cumulative": 244.0,
       "sparkline_daily_vec_e": {
         "dates": [
-          "2026-04-10",
-          "2026-04-11",
           "2026-04-12",
           "2026-04-13",
           "2026-04-14",
@@ -43,11 +41,11 @@
           "2026-05-06",
           "2026-05-07",
           "2026-05-08",
-          "2026-05-09"
+          "2026-05-09",
+          "2026-05-10",
+          "2026-05-11"
         ],
         "values": [
-          9.0,
-          0.0,
           0.0,
           6.0,
           15.0,
@@ -74,25 +72,25 @@
           5.0,
           0.0,
           0.0,
+          19.0,
+          1.0,
           0.0,
-          1.0
+          0.0
         ]
       },
-      "brief_text": "Campaign is live with 52 tagged events, indicating sustained operational tempo. Weekly cumulative TIE of 339.0 exceeds cumulative effect vector of 326.0, suggesting diminishing returns or increased adversary resilience. Prioritize target revalidation and adjust strike sequencing to close the effectiveness gap."
+      "brief_text": "**Strategic Brief: Refineries and Oil Hubs (LIVE)**  \nCurrent operational tempo is high with 55 tagged events, sustaining a weekly cumulative T"
     },
     {
       "campaign_id": "energy_grid_degradation",
       "name": "Energy Grid Degradation",
       "color": "#eab308",
       "status": "LIVE",
-      "total_events": 25,
-      "last_event_date": "2026-05-09T08:11:14+00:00",
-      "sum_vec_e": 152.0,
-      "weekly_tie_cumulative": 223.0,
+      "total_events": 26,
+      "last_event_date": "2026-05-09T16:03:54+00:00",
+      "sum_vec_e": 153.0,
+      "weekly_tie_cumulative": 114.0,
       "sparkline_daily_vec_e": {
         "dates": [
-          "2026-04-10",
-          "2026-04-11",
           "2026-04-12",
           "2026-04-13",
           "2026-04-14",
@@ -120,11 +118,11 @@
           "2026-05-06",
           "2026-05-07",
           "2026-05-08",
-          "2026-05-09"
+          "2026-05-09",
+          "2026-05-10",
+          "2026-05-11"
         ],
         "values": [
-          5.0,
-          0.0,
           0.0,
           14.0,
           33.0,
@@ -152,10 +150,12 @@
           0.0,
           0.0,
           0.0,
-          8.0
+          9.0,
+          0.0,
+          0.0
         ]
       },
-      "brief_text": "Campaign LIVE: 25 tagged events indicate active, distributed attacks. Weekly TIE of 223.0 confirms sustained operational tempo; cumulative effect vector of 152.0 shows measurable degradation of grid stability. Immediate priority: shift from detection to active counter-deployment to prevent cascading failure."
+      "brief_text": "**Operational Implication:** Current weekly TIE of 114.0 indicates sustained, high-intensity degradation pressure, with 26 events confirming active adversary targeting. Cumulative effect vector of 153.0 suggests systemic damage accumulation approaching critical failure thresholds. Immediate reinforcement of priority nodes and deployment of counter-degradation assets are required to prevent cascading grid collapse within the next operational cycle."
     },
     {
       "campaign_id": "air_defense_suppression",
@@ -165,11 +165,9 @@
       "total_events": 42,
       "last_event_date": "2026-05-04T12:07:21+00:00",
       "sum_vec_e": 271.0,
-      "weekly_tie_cumulative": 193.0,
+      "weekly_tie_cumulative": 0,
       "sparkline_daily_vec_e": {
         "dates": [
-          "2026-04-10",
-          "2026-04-11",
           "2026-04-12",
           "2026-04-13",
           "2026-04-14",
@@ -197,11 +195,11 @@
           "2026-05-06",
           "2026-05-07",
           "2026-05-08",
-          "2026-05-09"
+          "2026-05-09",
+          "2026-05-10",
+          "2026-05-11"
         ],
         "values": [
-          0.0,
-          0.0,
           0.0,
           0.0,
           6.0,
@@ -229,24 +227,24 @@
           0.0,
           0.0,
           0.0,
+          0.0,
+          0.0,
           0.0
         ]
       },
-      "brief_text": "SEAD campaign LIVE: 42 tagged events indicate sustained engagement tempo. Weekly TIE of 193.0 suggests effective suppression but requires monitoring for degradation. Cumulative Effect vector 271.0 confirms significant enemy air defense degradation; prioritize follow-on strikes to exploit weakened sectors."
+      "brief_text": "Current suppression operations have generated 42 events but zero weekly cumulative TIE, indicating no successful neutralizations. Cumulative effect vector of 271.0 suggests ongoing pressure but lack of decisive impact. Immediate reassessment of targeting priorities and engagement protocols is required to convert suppression into effective kills."
     },
     {
       "campaign_id": "missile_and_strike_complex",
       "name": "Missile And Strike Complex",
       "color": "#f97316",
       "status": "LIVE",
-      "total_events": 13,
-      "last_event_date": "2026-05-02T17:44:02+00:00",
-      "sum_vec_e": 62.0,
-      "weekly_tie_cumulative": 118.0,
+      "total_events": 14,
+      "last_event_date": "2026-05-10T08:51:04+00:00",
+      "sum_vec_e": 63.0,
+      "weekly_tie_cumulative": 0.0,
       "sparkline_daily_vec_e": {
         "dates": [
-          "2026-04-10",
-          "2026-04-11",
           "2026-04-12",
           "2026-04-13",
           "2026-04-14",
@@ -274,11 +272,11 @@
           "2026-05-06",
           "2026-05-07",
           "2026-05-08",
-          "2026-05-09"
+          "2026-05-09",
+          "2026-05-10",
+          "2026-05-11"
         ],
         "values": [
-          0.0,
-          0.0,
           0.0,
           0.0,
           0.0,
@@ -306,24 +304,24 @@
           0.0,
           0.0,
           0.0,
+          0.0,
+          1.0,
           0.0
         ]
       },
-      "brief_text": "Campaign LIVE with 13 tagged events and a weekly TIE of 118.0 indicates sustained high-tempo operations. Cumulative Effect vector at 62.0 suggests moderate but consolidating strategic impact, requiring immediate resource reallocation to exploit emerging vulnerabilities. Prioritize strike sequencing to compress decision cycles and accelerate effect vector growth toward threshold objectives."
+      "brief_text": "Despite 14 tagged events, the weekly cumulative TIE of 0.0 indicates no effective interdiction this period, demanding immediate tactical reassessment. The cumulative effect vector of 63.0 suggests prior strikes achieved significant degradation, but current operations are failing to sustain pressure. Priority: restore targeting accuracy and strike tempo to convert events into measurable TIE gains."
     },
     {
       "campaign_id": "logistics_network_attrition",
       "name": "Logistics Network Attrition",
       "color": "#fb7185",
       "status": "LIVE",
-      "total_events": 27,
-      "last_event_date": "2026-05-04T14:31:00+00:00",
-      "sum_vec_e": 149.0,
-      "weekly_tie_cumulative": 322.0,
+      "total_events": 28,
+      "last_event_date": "2026-05-08T17:27:01+00:00",
+      "sum_vec_e": 150.0,
+      "weekly_tie_cumulative": 18.0,
       "sparkline_daily_vec_e": {
         "dates": [
-          "2026-04-10",
-          "2026-04-11",
           "2026-04-12",
           "2026-04-13",
           "2026-04-14",
@@ -351,11 +349,11 @@
           "2026-05-06",
           "2026-05-07",
           "2026-05-08",
-          "2026-05-09"
+          "2026-05-09",
+          "2026-05-10",
+          "2026-05-11"
         ],
         "values": [
-          0.0,
-          0.0,
           0.0,
           0.0,
           38.0,
@@ -382,25 +380,25 @@
           0.0,
           0.0,
           0.0,
+          1.0,
+          0.0,
           0.0,
           0.0
         ]
       },
-      "brief_text": "Logistics Network Attrition campaign is LIVE with 27 events; weekly TIE of 322.0 indicates sustained pressure on supply lines. Cumulative Effect vector at 149.0 confirms measurable degradation of enemy logistics capacity. Immediate priority: maintain tempo to force adversary into operational paralysis within two weeks."
+      "brief_text": "Logistics Network Attrition campaign remains active with 28 tagged events. Weekly cumulative TIE of 18.0 indicates sustained interdiction tempo, while cumulative effect vector of 150.0 reflects substantial degradation of enemy supply capacity. Continued operations are warranted to maintain pressure and prevent recovery."
     },
     {
       "campaign_id": "command_and_control_disruption",
       "name": "Command And Control Disruption",
       "color": "#38bdf8",
       "status": "LIVE",
-      "total_events": 7,
-      "last_event_date": "2026-05-02T14:20:03+00:00",
-      "sum_vec_e": 54.0,
-      "weekly_tie_cumulative": 0,
+      "total_events": 8,
+      "last_event_date": "2026-05-08T17:30:59+00:00",
+      "sum_vec_e": 61.0,
+      "weekly_tie_cumulative": 67.0,
       "sparkline_daily_vec_e": {
         "dates": [
-          "2026-04-10",
-          "2026-04-11",
           "2026-04-12",
           "2026-04-13",
           "2026-04-14",
@@ -428,11 +426,11 @@
           "2026-05-06",
           "2026-05-07",
           "2026-05-08",
-          "2026-05-09"
+          "2026-05-09",
+          "2026-05-10",
+          "2026-05-11"
         ],
         "values": [
-          0.0,
-          0.0,
           0.0,
           0.0,
           7.0,
@@ -459,25 +457,25 @@
           0.0,
           0.0,
           0.0,
+          7.0,
+          0.0,
           0.0,
           0.0
         ]
       },
-      "brief_text": "Command And Control Disruption: LIVE posture with 7 tagged events. Weekly T.I.E. cumulative is 0.0 and cumulative E-vector impact is 54.0."
+      "brief_text": "Campaign LIVE: 8 tagged events indicate active targeting of adversary C2 nodes. Weekly TIE of 67.0 and cumulative effect vector of 61.0 suggest sustained degradation, but effect vector lagging TIE implies diminishing returns or hardening. Immediate priority: shift targeting to reserve or relay nodes to prevent recovery and maintain operational tempo."
     },
     {
       "campaign_id": "naval_pressure_campaign",
       "name": "Naval Pressure Campaign",
       "color": "#06b6d4",
       "status": "LIVE",
-      "total_events": 12,
-      "last_event_date": "2026-05-05T13:51:05+00:00",
-      "sum_vec_e": 65.0,
-      "weekly_tie_cumulative": 242.0,
+      "total_events": 16,
+      "last_event_date": "2026-05-09T05:40:34+00:00",
+      "sum_vec_e": 75.0,
+      "weekly_tie_cumulative": 311.0,
       "sparkline_daily_vec_e": {
         "dates": [
-          "2026-04-10",
-          "2026-04-11",
           "2026-04-12",
           "2026-04-13",
           "2026-04-14",
@@ -505,11 +503,11 @@
           "2026-05-06",
           "2026-05-07",
           "2026-05-08",
-          "2026-05-09"
+          "2026-05-09",
+          "2026-05-10",
+          "2026-05-11"
         ],
         "values": [
-          0.0,
-          0.0,
           0.0,
           0.0,
           19.0,
@@ -536,11 +534,13 @@
           16.0,
           0.0,
           0.0,
+          3.0,
+          7.0,
           0.0,
           0.0
         ]
       },
-      "brief_text": "Naval Pressure Campaign: LIVE posture with 12 tagged events. Weekly T.I.E. cumulative is 242.0 and cumulative E-vector impact is 65.0."
+      "brief_text": "Naval Pressure Campaign: LIVE posture with 16 tagged events. Weekly T.I.E. cumulative is 311.0 and cumulative E-vector impact is 75.0."
     },
     {
       "campaign_id": "aerospace_asset_attrition",
@@ -550,11 +550,9 @@
       "total_events": 7,
       "last_event_date": "2026-05-02T19:31:10+00:00",
       "sum_vec_e": 43.0,
-      "weekly_tie_cumulative": 156.0,
+      "weekly_tie_cumulative": 0,
       "sparkline_daily_vec_e": {
         "dates": [
-          "2026-04-10",
-          "2026-04-11",
           "2026-04-12",
           "2026-04-13",
           "2026-04-14",
@@ -582,11 +580,11 @@
           "2026-05-06",
           "2026-05-07",
           "2026-05-08",
-          "2026-05-09"
+          "2026-05-09",
+          "2026-05-10",
+          "2026-05-11"
         ],
         "values": [
-          0.0,
-          0.0,
           0.0,
           0.0,
           8.0,
@@ -614,10 +612,12 @@
           0.0,
           0.0,
           0.0,
+          0.0,
+          0.0,
           0.0
         ]
       },
-      "brief_text": "Campaign LIVE: 7 tagged events indicate active enemy engagement. Weekly TIE of 156.0 and cumulative effect vector of 43.0 suggest sustained attrition outpacing replacement capacity. Immediate priority: assess logistics pipeline and adjust sortie rates to prevent critical asset depletion."
+      "brief_text": "Aerospace Asset Attrition: LIVE posture with 7 tagged events. Weekly T.I.E. cumulative is 0.0 and cumulative E-vector impact is 43.0."
     },
     {
       "campaign_id": "uav_ecosystem",
@@ -627,11 +627,9 @@
       "total_events": 26,
       "last_event_date": "2026-05-04T15:21:40+00:00",
       "sum_vec_e": 95.0,
-      "weekly_tie_cumulative": 152.0,
+      "weekly_tie_cumulative": 0,
       "sparkline_daily_vec_e": {
         "dates": [
-          "2026-04-10",
-          "2026-04-11",
           "2026-04-12",
           "2026-04-13",
           "2026-04-14",
@@ -659,11 +657,11 @@
           "2026-05-06",
           "2026-05-07",
           "2026-05-08",
-          "2026-05-09"
+          "2026-05-09",
+          "2026-05-10",
+          "2026-05-11"
         ],
         "values": [
-          0.0,
-          0.0,
           0.0,
           6.0,
           34.0,
@@ -691,24 +689,24 @@
           0.0,
           0.0,
           0.0,
+          0.0,
+          0.0,
           0.0
         ]
       },
-      "brief_text": "UAV Ecosystem: LIVE posture with 26 tagged events. Weekly T.I.E. cumulative is 152.0 and cumulative E-vector impact is 95.0."
+      "brief_text": "UAV Ecosystem campaign is LIVE with 26 tagged events but zero weekly cumulative TIE, indicating no tactical impact from current operations. Cumulative Effect vector at 95.0 suggests sustained strategic pressure, yet the absence of TIE demands immediate reassessment of target engagement or sensor-to-shooter latency. Recommend shifting from broad coverage to precision strikes to convert effect into measurable adversary attrition."
     },
     {
       "campaign_id": "civilian_pressure_ops",
       "name": "Civilian Pressure Ops",
       "color": "#94a3b8",
       "status": "LIVE",
-      "total_events": 58,
-      "last_event_date": "2026-05-09T09:45:41+00:00",
-      "sum_vec_e": 327.0,
-      "weekly_tie_cumulative": 417.0,
+      "total_events": 66,
+      "last_event_date": "2026-05-10T08:03:40+00:00",
+      "sum_vec_e": 381.0,
+      "weekly_tie_cumulative": 111.0,
       "sparkline_daily_vec_e": {
         "dates": [
-          "2026-04-10",
-          "2026-04-11",
           "2026-04-12",
           "2026-04-13",
           "2026-04-14",
@@ -736,11 +734,11 @@
           "2026-05-06",
           "2026-05-07",
           "2026-05-08",
-          "2026-05-09"
+          "2026-05-09",
+          "2026-05-10",
+          "2026-05-11"
         ],
         "values": [
-          9.0,
-          0.0,
           0.0,
           13.0,
           22.0,
@@ -767,11 +765,13 @@
           6.0,
           0.0,
           0.0,
-          0.0,
-          14.0
+          18.0,
+          40.0,
+          10.0,
+          0.0
         ]
       },
-      "brief_text": "Civilian Pressure Ops: LIVE posture with 58 tagged events. Weekly T.I.E. cumulative is 417.0 and cumulative E-vector impact is 327.0."
+      "brief_text": "**Operational Implication:** With 66 tagged events and a weekly TIE of 111.0, current pressure ops are generating consistent but moderate per-event yield. The cumulative effect vector of 381.0 indicates sustained attrition, yet the ratio suggests diminishing marginal returns per engagement. Recommend reassessing target selection and pacing to avoid over-saturation and maintain coercive leverage."
     }
   ]
 }

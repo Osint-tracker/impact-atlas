@@ -31,9 +31,10 @@ from layer1_sensor import TitanSensor  # Trident: Physics-based scorer
 import sys
 
 try:
-    from scripts2.geolocator_agent import geolocator as sector_geolocator
+    from scripts2.geolocator_agent import geolocator as sector_geolocator, gazetteer
 except Exception:
     sector_geolocator = None
+    gazetteer = None
 
 # Windows Unicode Fix
 sys.stdout.reconfigure(encoding='utf-8')
@@ -142,11 +143,12 @@ You will receive a "Cluster Object" containing:
 
 1.  **GEOLOCATION PROTOCOL (CRITICAL - READ CAREFULLY):**
     * **EXPLICIT COORDS:** ONLY if the text contains numerical coordinates (e.g., "48.123, 37.456"), extract them into `geo_location.explicit`.
-    * **INFERRED:** If no numbers are present, extract the Toponym (City/Village) and the specific landmark (e.g., "School No.3", "Industrial Zone") into `geo_location.inferred`.
+    * **INFERRED:** If no numbers are present, extract the Toponym (City/Village) AND the surrounding Oblast/Region based on the context into `geo_location.inferred`.
+    * **REGIONAL CONTEXT (MANDATORY):** You MUST logically deduce and include the surrounding Oblast/Region (e.g., "Donetsk Oblast", "Kyiv Oblast") to disambiguate homonyms.
     * **NEVER HALLUCINATE:** Do not convert a city name into coordinates yourself. If no coordinates are written in text, `geo_location.explicit` must be `null`.
     * **SINGLE IMPACT POINT:** You must identify the ONE main location where the event physically happened.
-    * **SINGLE LOCATION RULE:** If multiple locations are mentioned, choose the MOST SPECIFIC ONE where the kinetic event happened. Do NOT output a list like "Kyiv, Lviv, Odessa". Output ONLY "Kyiv".
-    * **SPECIFICITY:** If text says "Explosion in Odesa", output "Odesa". If it says "Odesa region", output "Odesa region".
+    * **SINGLE LOCATION RULE:** If multiple locations are mentioned, choose the MOST SPECIFIC ONE where the kinetic event happened. Do NOT output a list like "Kyiv, Lviv, Odessa". Output ONLY the primary toponym and its region.
+    * **SPECIFICITY:** If text says "Explosion in Odesa", output "Odesa" for toponym and "Odesa Oblast" for region.
 
 2.  **TIME RECONSTRUCTION:**
     * Analyze time references relative to `reference_timestamp`.
@@ -224,7 +226,11 @@ Return ONLY valid JSON:
   "timing": { "estimated_event_timestamp": "ISO_STRING | null" },
   "geo_location": {
     "explicit": { "lat": null, "lon": null },
-    "inferred": { "toponym_raw": "SINGLE_CITY_NAME", "spatial_relation": "string" }
+    "inferred": { 
+        "toponym_raw": "SINGLE_CITY_NAME", 
+        "region": "OBLAST_OR_REGION", 
+        "spatial_relation": "string" 
+    }
   },
   "titan_assessment": {
      "kinetic_score": INTEGER (1-10),
@@ -314,7 +320,7 @@ Extract any visible text from the scene strictly as it appears:
 {
   "visual_confirmation": {
     "verification_status": "CONFIRMED | CONTRADICTED | ENRICHED | INCONCLUSIVE",
-    "visual_summary": "Brief, clinical description of the scene (e.g., 'Burning wreckage of tracked vehicle in tree line, turret displaced 15m from hull').",
+    "visual_summary": "Brief, clinical description of the scene.",
     "text_claims_checked": "The specific Soldier claim being verified.",
     "confidence_score": 0.0
   },
@@ -328,18 +334,22 @@ Extract any visible text from the scene strictly as it appears:
   ],
   "kinetic_effect": {
     "damage_level": "NONE | SUPERFICIAL | MOBILITY_KILL | CATASTROPHIC_DESTRUCTION",
-    "evidence_description": "What visual indicators led to this assessment (e.g., 'turret separation, active fire, ammunition detonation')."
+    "evidence_description": "Visual indicators."
   },
-  "geo_clues": ["Visible text 1", "Visible text 2"]
+  "geo_clues": ["Visible text 1", "Visible text 2"],
+  "is_tactical_imint": boolean
 }
 ```
 
 ## RULES (NON-NEGOTIABLE)
-1. **NO CHATTER:** Output ONLY valid JSON. No conversational text. No markdown fences.
-2. **NO HALLUCINATION:** If you cannot clearly see the object, mark it `INCONCLUSIVE`. If you cannot identify the variant, use `UNKNOWN_*`.
-3. **PIXEL AUTHORITY:** Your assessment supersedes all text-based claims. You are the last word on physical reality.
-4. **SINGLE JSON OBJECT:** Return exactly one JSON object. No arrays at root level.
-5. **NO ANALYSIS ON USELESS THINGS:** You should discard everything that is not relevant to the mission (chats, images of single people in non war context (i.e a photo of zelensky or putin, military people walking down the street, etc...)) ANALYZE ONLY MILITARY ISSUES, EQUIPMENT AND EVENTS. 
+1. **TACTICAL FILTER (HARD CONSTRAINT):** You are an IMINT agent, not a general analyst.
+   - **IF** the image is a map, a chart, an infographic, a talking head, or a general non-tactical photo.
+   - **THEN** set `"is_tactical_imint": false` and leave all other fields empty/null.
+   - **ONLY** set `"is_tactical_imint": true` if you see military equipment, combat zones, wreckage, or battlefield events.
+2. **NO CHATTER:** Output ONLY valid JSON.
+3. **NO HALLUCINATION:** If unsure, mark `INCONCLUSIVE`.
+4. **PIXEL AUTHORITY:** Your assessment supersedes all text claims.
+5. **SINGLE JSON OBJECT:** Return exactly one JSON object.
 """
 
 # Damage level -> TIE Effect Vector score mapping (for _calculate_tie enrichment)
@@ -1750,8 +1760,14 @@ Output ONLY valid JSON per your instructions."""
                 print("   \u26a0\ufe0f Visionary JSON parse failed. Attempting repair...")
                 parsed = await self._repair_json_with_ai(raw_response, "Visionary output malformed")
             
+
             if parsed:
-                # Log key findings
+                # 0. TACTICAL FILTER PATCH: Discard non-military IMINT (maps, charts, talking heads)
+                if not parsed.get('is_tactical_imint', True):
+                    print("      ⚖️ Visionary Filter: Non-tactical media detected (map/chart/other). Discarding IMINT report.")
+                    return None
+
+                # 1. Log key findings
                 v_status = parsed.get('visual_confirmation', {}).get('verification_status', 'UNKNOWN')
                 v_conf = parsed.get('visual_confirmation', {}).get('confidence_score', 0)
                 v_damage = parsed.get('kinetic_effect', {}).get('damage_level', 'UNKNOWN')
@@ -2696,49 +2712,48 @@ async def geo_cache_store(query, lat, lon):
         await asyncio.to_thread(_geo_cache_store_sync, query, lat, lon)
 
 
-async def safe_geocode(query):
+async def safe_geocode(query, region=""):
+    """
+    Geocoding wrapper that uses the new GazetteerCache (SQLite) 
+    before falling back to external APIs.
+    """
     if not query:
         return None, None
 
+    if gazetteer:
+        try:
+            lat, lon, canonical = await gazetteer.get_coordinates(query, region)
+            if lat and lon:
+                print(f"      [GEO] Gazetteer hit: '{query}' -> ({lat}, {lon}) [{canonical}]")
+                return lat, lon
+        except Exception as e:
+            print(f"      [GEO] Gazetteer error: {e}")
+
+    # Fallback to old simple cache/photon logic if gazetteer fails or is missing
     clean_query = str(query).lower().strip()
     cached = await geo_cache_lookup(clean_query)
     if cached:
-        print(f"      [GEO] GeoCache hit: '{query}'")
         return cached["lat"], cached["lon"]
 
-    if clean_query in KNOWN_LOCATIONS:
-        print(f"      [GEO] Whitelist hit: '{query}' -> hardcoded.")
-        lat, lon = KNOWN_LOCATIONS[clean_query]
-        await geo_cache_store(clean_query, lat, lon)
-        return lat, lon
-
-    min_lat, max_lat = 44.0, 60.0
-    min_lon, max_lon = 22.0, 55.0
-
+    # ... remaining legacy photon logic ...
     try:
         async with httpx.AsyncClient(timeout=10) as client:
             resp = await client.get(
                 "https://photon.komoot.io/api/",
-                params={"q": query, "limit": 1},
+                params={"q": f"{query}, {region}, Ukraine", "limit": 1},
             )
             resp.raise_for_status()
             data = resp.json()
 
         for feature in data.get("features", []):
             coords = feature.get("geometry", {}).get("coordinates", [])
-            if len(coords) != 2:
-                continue
-            lon, lat = float(coords[0]), float(coords[1])
-            if min_lat <= lat <= max_lat and min_lon <= lon <= max_lon:
+            if len(coords) == 2:
+                lon, lat = float(coords[0]), float(coords[1])
                 await geo_cache_store(clean_query, lat, lon)
                 return lat, lon
-            print(f"      [GEO] Coordinates outside war-zone fence discarded: {query} ({lat},{lon})")
-            return None, None
-
-        return None, None
-    except Exception as e:
-        print(f"      [GEO] Geocoding error: {e}")
-        return None, None
+    except: pass
+    
+    return None, None
 
 
 def safe_parse_list(val):
@@ -3112,10 +3127,11 @@ async def process_cluster_async(agent, row, campaign_definitions, db_write_lock)
                     geo['explicit'] = {}
                 lat = geo['explicit'].get('lat')
                 location_name = geo.get('inferred', {}).get('toponym_raw')
+                region_name = geo.get('inferred', {}).get('region')
                 if (not lat or lat == 0) and location_name and location_name != "Unknown":
                     banned_locations = ["Ukraine", "Russia", "Europe", "NATO", "EU", "Border", "Frontline", "Front", "Zone"]
                     if location_name.strip() not in banned_locations:
-                        new_lat, new_lon = await safe_geocode(location_name)
+                        new_lat, new_lon = await safe_geocode(location_name, region_name)
                         if new_lat and new_lon:
                             final_report['tactics']['geo_location']['explicit']['lat'] = new_lat
                             final_report['tactics']['geo_location']['explicit']['lon'] = new_lon

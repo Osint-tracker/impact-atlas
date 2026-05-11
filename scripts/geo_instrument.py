@@ -339,6 +339,9 @@ class GeoProbe:
         Returns:
             str: Formatted prompt for the retry call
         """
+        if not extracted_data:
+            extracted_data = {}
+            
         geo_data = extracted_data.get('geo_location') or {}
         explicit = geo_data.get('explicit') or {}
         inferred = geo_data.get('inferred') or {}
