@@ -1,6 +1,7 @@
 ID,Date,Title,Lat,Lon,TIE,K,T,E,Reliability,Bias,HasVideo,Sources
 fus_332428_1768864389,2026-01-23,Ukrainian Forces Conduct Operations in Lipetsk and,45.7684014,39.0261044,100.0,6.0,8.0,7.0,60,3.8,0,1
 fus_332462_1768864389,2026-01-23,Ukrainian President Warns of Potential Russian Str,50.3984937,30.8816326,99.0,8.0,8.0,7.0,57,3.0,0,2
+fus_333259_1768864392,2026-01-23,Unknown Forces Target Attack on Donetsk Airport,47.9212914,37.7809825,26.0,5.0,5.0,4.0,50,-3.2,1,1
 fus_418394_1768864393,2026-01-24,Russian Forces Conduct Strikes in Odesa Region,46.4843023,30.7322878,82.0,6.0,8.0,5.0,77,-4.9,0,1
 fus_418441_1768864394,2026-01-23,Russian Forces Intensify Strikes in Odesa Region,46.4843023,30.7322878,66.0,6.0,8.0,5.0,76,-4.8,0,1
 fus_462186_1768864395,2026-01-23,Russian Forces Conduct Strikes in Sumy Region,50.4500336,30.5241361,100.0,7.0,8.0,6.0,60,-1.2,0,1
@@ -1416,39 +1417,155 @@ fed1d472-463b-4900-b893-5ad9ab8e8a37,2026-05-04 08:14:25,Russian Soldier Recorde
 1819cf72-7adc-4023-817a-c280fde61395,2026-05-05 13:51:05,Ukrainian Special Operations Unit Attacks Russian ,44.7705724,34.2293563,100.0,7.0,8.0,8.0,62,2.8,0,1
 22a2740a-867b-45fb-a2a3-353f60e8f3f8,2026-05-05 13:40:14,Ukrainian Forces Target Russian Naval Assets in Cr,45.2835044,34.2008188,100.0,8.0,7.0,8.0,50,2.0,0,1
 338eb5f5-ab6a-4459-bd65-d308bc7a6d5c,2026-05-05 12:34:49,NATO Exercises Conducted near Russian Borders,49.778,31.701999999999998,0.0,1.0,1.0,1.0,62,-3.2,1,1
+35f9ee20-bf01-40d1-979e-e0605920319f,2026-05-05 13:09:11,Ukrainian Artillery Conducts Counter-Battery Fire ,50.439123,30.5532387,38.0,4.0,5.0,7.0,50,2.0,0,1
 61a9f86c-e035-4fec-9794-ada5c61469c7,2026-05-05 13:56:53,Ukrainian Drone Attack on Russian City,56.1399598,47.2480999,10.0,5.0,2.0,6.0,50,-2.0,0,1
 af6237ac-40ae-4cdd-a31e-49a950375185,2026-05-05 12:24:48,Unknown Source Reports Smoke near Gelendzhik,44.5609447,38.0766832,26.0,4.0,4.0,5.0,45,-1.5,1,1
 bbd7ed78-dbac-466e-8c4e-0f86139ee404,2026-05-05 13:45:21,Russian Forces Conduct Missile Strikes in Zaporizh,47.8507859,35.1182867,29.0,8.0,3.0,9.0,70,0.0,1,1
 f95a7c98-9ddf-45b8-9639-3bac31a9e365,2026-05-05 12:21:00,Russian Forces Conduct Strikes in Brovary Area,50.5111168,30.7900482,5.0,3.0,2.0,4.0,50,0.0,0,1
-0e327b9f-6ea0-4aff-8283-07c1948bf3e2,2026-05-09T09:45:41,Russian FPV Drone Strikes in Kamyshan Area,48.98,32.816,5.0,3.0,2.0,4.0,70,2.0,1,1
-1ae9e9a4-689e-4094-8c7e-34e2bf530cda,2026-05-09T05:26:18,"Russian Forces Conduct Strikes in Zaporizhzhia, Dn",49.426,32.744,19.0,8.0,2.0,9.0,90,1.2,1,1
-2b5ffd44-b899-4734-accd-04a5b071d03f,2026-05-09T05:40:34,Ukrainian Drone Incursion Damages Infrastructure i,50.114,31.561999999999998,1.0,3.0,2.0,1.0,70,1.2,1,1
+00f479fa-6d03-4bc9-a100-255715ff5971,2026-05-08T19:04:19,Ukrainian Forces Destroy Russian Field Ammunition ,49.6878135,37.6400663,36.0,7.0,4.0,8.0,50,0.0,0,1
+014bcb9f-affc-4ac9-a425-5d85f99d2b21,2026-05-08T17:59:46,Ukrainian Drone Attack Repelled over Moscow Oblast,47.9951418,37.8049803,0.0,8.0,8.0,1.0,60,-2.0,0,1
+052662c4-28f8-40d1-9c8c-233dae0bae9e,2026-05-09T08:11:10,Ukrainian Drone Strikes Target Russian Logistics L,47.0957648,37.5499621,14.0,3.0,4.0,3.0,92,1.6,1,1
+0a9b704f-529a-48ca-9ed3-27ecf1173ba4,2026-05-08T18:11:10,Russian Forces Concentrate Personnel near Pokrovsk,48.2771086,37.1772482,6.0,3.0,3.0,3.0,50,0.0,0,1
+0e327b9f-6ea0-4aff-8283-07c1948bf3e2,2026-05-09T09:45:41,Russian FPV Drone Strikes in Kamyshan Area,50.439123,30.5532387,5.0,3.0,2.0,4.0,70,2.0,1,1
+0f997f9c-511a-4159-a64a-caabe66a37c4,2026-05-08T17:13:01,Ukrainian Forces Engage Russian Forces near Kamens,47.8507859,35.1182867,7.0,4.0,3.0,3.0,72,-2.4,0,1
+185eda25-24aa-4c4b-9ff1-079ab62cda8f,2026-05-08T21:25:55,Warning of Incoming UAV Swarm Detected in Unspecif,-33.8493232,150.9148045,0.0,8.0,1.0,1.0,50,0.0,0,1
+1ae9e9a4-689e-4094-8c7e-34e2bf530cda,2026-05-09T05:26:18,"Russian Forces Conduct Strikes in Zaporizhzhia, Dn",47.8507859,35.1182867,19.0,8.0,2.0,9.0,90,1.2,1,1
+1bcd0631-a252-407b-9361-ac1a38adcace,2026-05-09T04:28:50,Russian Forces Conduct Artillery and Drone Strikes,47.5692061,34.3917272,9.0,5.0,2.0,7.0,50,1.2,0,1
+1d6a9c03-f0a0-4eeb-b0e3-157e1e2b04c9,2026-05-08T11:17:47,Ukrainian Forces Strike Infrastructure in Rostov-o,47.2178353,39.7034002,100.0,8.0,8.0,6.0,62,-2.4,0,1
+22f083c7-66c4-4a43-8715-fd20c7e0c67e,2026-05-08T19:55:10,Ukrainian Forces Conduct Mass Drone Attack in Occu,48.0089299,37.8003465,0.0,5.0,5.0,1.0,70,1.2,0,1
+2597d0c2-bceb-467f-a8b2-227b0ed2cef2,2026-05-08T11:50:29,Ukrainian Forces Destroy Armored Vehicles near Kos,48.5348985,37.6923755,47.0,5.0,5.0,8.0,62,4.8,0,1
+27fb6168-5b53-45d2-92a3-4f80c6b57a84,2026-05-09T05:04:52,Ukrainian Forces Conduct Reconnaissance Raid on Ru,47.8507859,35.1182867,6.0,1.0,3.0,4.0,70,0.8,1,1
+29321aff-0457-4998-8320-6634003599f3,2026-05-08T12:37:23,Ukrainian Forces Conduct UAV Strike in Moscow Regi,50.1980908,28.3731035,54.0,3.0,7.0,5.0,50,1.2,0,1
+2b5ffd44-b899-4734-accd-04a5b071d03f,2026-05-09T05:40:34,Ukrainian Drone Incursion Damages Infrastructure i,56.5301621,27.3310821,1.0,3.0,2.0,1.0,70,1.2,1,1
+2d07a1a9-6bfa-4790-b61e-950b15a38077,2026-05-08T15:32:28,EU Announces Increased Military Funding for Moldov,47.0219201,28.8107164,0.0,1.0,1.0,1.0,50,-1.2,0,1
+2e9eec69-d15c-4881-9354-8260bb68128b,2026-05-09T08:36:46,Ukrainian Forces Conduct Drone Strike on Russian M,50.439123,30.5532387,24.0,3.0,4.0,7.0,50,0.8,0,1
+2ea426ac-d9ca-4619-ac7a-fe9c400b13af,2026-05-08T21:02:51,Ukrainian Forces Disrupted Air Traffic Control in ,47.2178353,39.7034002,100.0,8.0,8.0,8.0,72,-3.2,0,1
+30329127-5ae3-4270-ac30-08a4d5c501f8,2026-05-09T08:16:44,Latvian Armed Forces Report Airspace Threat near R,50.439123,30.5532387,0.0,1.0,3.0,1.0,50,1.2,0,1
+33de61a2-4945-4342-a6c3-f6c163c49fe4,2026-05-09T06:45:42,Russian Drone Strike on Civilian Vehicle in Polohy,50.439123,30.5532387,8.0,3.0,2.0,7.0,50,2.0,0,1
+34ad96bf-3edb-4c8c-90a9-d8a5de28b754,2026-05-09T11:23:01,Ukrainian Forces Strike Oil Depot in Rezekne,50.439123,30.5532387,24.0,3.0,4.0,7.0,62,-3.2,0,1
+39604505-b134-4c87-82b7-523a8c17e70f,2026-05-08T11:22:15,Ukrainian Forces Strike Ammunition Depot near Bere,48.7561028,38.251866,28.0,3.0,4.0,8.0,70,1.2,0,1
 39cff211-8494-4c52-9303-1804adcc3654,2026-05-09T05:57:25,Civilian Facility Damaged in Border Region,49.498,33.118,0.0,1.0,1.0,1.0,50,2.0,1,1
-40a4872f-9113-43e2-8221-1677bc1b3936,2026-05-08T16:59:14,Ukrainian Drones Strike Russian Logistics Depot ne,49.004,32.528,4.0,3.0,4.0,1.0,70,2.0,1,1
-5095ef37-331f-4d33-9254-38d627b4e6ee,2026-05-09T05:37:16,Russian Drones Strike Oil Depot in Rezekne,49.712,31.778,14.0,3.0,9.0,1.0,90,1.2,1,1
-5898ecdc-adef-497f-88bd-6293558dc5e6,2026-05-08T17:27:01,Ukrainian Forces Conduct Drone Strike on Russian 7,49.99,31.663999999999998,18.0,7.0,8.0,1.0,90,1.2,1,1
-5a521b4e-fed2-4aed-b87f-dd7e1ee8d267,2026-05-08T11:28:18,Ukrainian Forces Strike on Oil-Processing Infrastr,49.08,33.03,100.0,7.0,9.0,9.0,90,1.2,1,1
-61bbb0c0-1b09-45df-a15f-8c9d29a37cd9,2026-05-09T08:11:14,Ukrainian Forces Target Electrical Substations in ,49.688,33.166,100.0,8.0,8.0,8.0,70,0.0,1,1
+3a41062c-5178-47d0-a38c-fe2e68ff6459,2026-05-08T13:13:48,Ukrainian Forces Intercept Drone over Zaporizhzhia,47.8507859,35.1182867,39.0,3.0,5.0,7.0,70,2.0,1,1
+3d10fb73-652a-4972-b631-365b3adc8715,2026-05-08T17:21:13,Ukrainian Forces Conduct Drone Strike on Rostov-on,47.2178353,39.7034002,88.0,4.0,8.0,6.0,50,0.0,0,1
+3e7bb658-ca39-4f0b-81a6-b28a98010bd1,2026-05-08T15:44:32,Russian Forces Activate Offensive Actions near Pok,48.2771086,37.1772482,16.0,4.0,5.0,3.0,50,2.0,0,1
+40a4872f-9113-43e2-8221-1677bc1b3936,2026-05-08T16:59:14,Ukrainian Drones Strike Russian Logistics Depot ne,58.1707921,59.3573027,4.0,3.0,4.0,1.0,70,2.0,1,1
+47a2559f-679c-47df-9a31-82b60dd9ae8c,2026-05-08T16:29:16,Ukrainian Forces Launch Drone Swarm towards Russia,55.1644986,61.3953597,35.0,8.0,4.0,6.0,50,0.0,0,1
+49bf08df-88a6-41e5-a1f4-bd40e3f02933,2026-05-08T16:07:58,Ukrainian Forces Strike Russian Artillery on Easte,48.1462,37.30258,30.0,3.0,5.0,6.0,50,0.0,0,1
+4fb8122a-3a82-45e2-b3d0-355830c619f5,2026-05-08T20:02:11,Ukrainian Forces Strike Naval Base in Kaspiysk,42.8921817,47.6372105,34.0,4.0,5.0,5.0,50,1.2,0,1
+5095ef37-331f-4d33-9254-38d627b4e6ee,2026-05-09T05:37:16,Russian Drones Strike Oil Depot in Rezekne,50.439123,30.5532387,14.0,3.0,9.0,1.0,90,1.2,1,1
+547bd00d-a1ed-4a89-9960-fc3acbc4416d,2026-05-08T13:30:26,Ukrainian Forces Conduct Attacks on Civilian Popul,50.7080119,37.5837615,5.0,4.0,2.0,4.0,50,-0.8,0,1
+568675a4-d1bb-4d51-b100-9fe10bf4b12d,2026-05-08T18:34:50,Ukrainian Forces Strike Rostov Air Traffic Control,47.2178353,39.7034002,100.0,7.0,8.0,6.0,50,0.0,0,1
+574146cf-fdc0-43c9-a955-0352f310a097,2026-05-09T05:58:02,Ukrainian Assault Groups Repelled in Shostka Distr,51.9046918,33.7202369,17.0,4.0,3.0,7.0,62,-4.0,0,1
+5898ecdc-adef-497f-88bd-6293558dc5e6,2026-05-08T17:27:01,Ukrainian Forces Conduct Drone Strike on Russian 7,58.1707921,59.3573027,18.0,7.0,8.0,1.0,90,1.2,1,1
+58b82b06-b0bf-4203-ba49-d6901df92bff,2026-05-09T08:59:55,Ukrainian FPV Drone Engages Russian Mercenary Pers,48.2771086,37.1772482,8.0,3.0,3.0,4.0,50,1.2,0,1
+5a0655bc-e150-4b57-b2d7-0418c2f08df8,2026-05-08T18:02:23,Ukrainian Forces Conduct UAV Attack Across Multipl,45.6856952,33.9329411,0.0,8.0,8.0,1.0,50,2.0,0,1
+5a521b4e-fed2-4aed-b87f-dd7e1ee8d267,2026-05-08T11:28:18,Ukrainian Forces Strike on Oil-Processing Infrastr,58.5951603,56.3159546,100.0,7.0,9.0,9.0,90,1.2,1,1
+5b71dd6c-c731-4ca6-a862-271a2ec8384e,2026-05-08T20:12:05,Russian Anti-Drone System Intercepts UAV near Kurs,48.3037289,38.0702425,0.0,3.0,5.0,1.0,50,-0.8,0,1
+5d56ddf6-e174-4d81-a61b-b7c7bb89cb59,2026-05-08T17:29:12,Espionage Attempt Detected at Andøya Spaceport,69.0995473,15.7592847,0.0,1.0,8.0,1.0,50,0.0,0,1
+5ec78435-c7a3-45c7-9a26-6bc64205238e,2026-05-09T10:40:27,Ukrainian Forces Reported Ceasefire Violations and,46.6619584,32.5917273,38.0,7.0,5.0,6.0,50,-2.0,0,1
+61bbb0c0-1b09-45df-a15f-8c9d29a37cd9,2026-05-09T08:11:14,Ukrainian Forces Target Electrical Substations in ,45.2835044,34.2008188,100.0,8.0,8.0,8.0,70,0.0,1,1
+61c7fab5-2aa4-4339-abf4-d2aa2bc556b1,2026-05-08T16:20:34,Ukrainian Forces Maintain Presence in Kursk Region,48.3037289,38.0702425,0.0,1.0,1.0,1.0,50,0.0,0,1
+63de84d9-feae-4731-980b-7624524827d7,2026-05-08T16:07:58,Ukrainian Forces Conduct HIMARS Strike on Rostov-o,47.2178353,39.7034002,53.0,6.0,7.0,4.0,50,0.0,0,1
+654f6838-cb8c-44b1-9230-b6c36bdd81e1,2026-05-08T21:01:06,Bilateral Ceasefire Announced between Ukraine and ,46.7814521,33.3467561,0.0,1.0,1.0,1.0,50,0.0,0,1
+670f3897-60bf-4f4a-a4cb-9991512998ab,2026-05-09T11:41:42,Russian Forces Strike Odessa Port,46.4843023,30.7322878,66.0,6.0,8.0,5.0,50,0.0,0,1
+6a936025-4b96-4106-a1de-d8bee9fd8dad,2026-05-08T21:09:32,Ukrainian Forces Conduct Aerial Incursion into Bry,47.098195,37.6663399,0.0,4.0,2.0,1.0,50,-1.2,0,1
 6b3282b4-b2f9-4695-b268-e15d3d5f2ae1,2026-05-08T14:03:39,Russian Armed Forces Advance near Petropavlivka,48.3521424,37.2210789,11.0,3.0,3.0,5.0,50,0.0,0,1
-82217f65-63e6-43d6-9e8a-f9870b61eff0,2026-05-09T08:01:01,Ukrainian Forces Clear Positions in Vovchansk Dire,49.238,32.147999999999996,12.0,3.0,3.0,5.0,70,3.2,1,1
-84fe7fff-9ac9-4f96-a884-4a6e20214c5c,2026-05-09T07:12:55,Russian Forces Conduct Artillery and Drone Strikes,48.866,31.201999999999998,14.0,6.0,2.0,9.0,70,0.0,1,1
-a3c88a5d-137f-4a48-aefa-d20c4ab5d94e,2026-05-08T13:03:56,Russian Forces Blockade and Target Civilian Areas ,49.06,31.535999999999998,11.0,3.0,2.0,9.0,70,3.2,1,1
-bd0643c8-84d6-4d95-829a-b505e6ca1149,2026-05-09T08:19:00,Russian Drone Strike in Chernihiv Region,49.23,31.242,1.0,3.0,2.0,1.0,70,0.8,1,1
+6b8ce6ea-677c-4971-a5db-67f746b44079,2026-05-09T09:46:46,Ukrainian Forces Engage Russian Infantry in Lyman ,50.439123,30.5532387,15.0,3.0,3.0,7.0,50,1.2,0,1
+6cdb2b8e-af89-455c-b421-21ec27f459f7,2026-05-08T17:20:00,Ukrainian Forces Strike Rostov Air Control Facilit,47.2178353,39.7034002,100.0,7.0,8.0,8.0,50,-0.8,0,1
+6d5157f6-0f37-4864-a5c0-da6bcc6b0a3c,2026-05-09T11:08:54,Ukrainian Forces Engage Russian Forces during Mosc,55.7548368,37.6160495,34.0,4.0,4.0,7.0,50,1.2,0,1
+72a9458e-faf2-47ab-a68e-20d01baaf9c0,2026-05-08T12:27:07,Ukrainian Forces Conduct Drone Strike on Rostov-on,47.2178353,39.7034002,26.0,3.0,4.0,6.0,50,0.0,0,1
+7c87298a-ec55-498b-a7d5-6b0fa2b6981c,2026-05-08T13:11:06,Russian Drone Raids Target Residential Area in Khe,46.5421715,33.4079326,8.0,4.0,2.0,5.0,70,0.0,1,1
+7e1dc4a9-9e96-49d6-83e9-7770558a9bc4,2026-05-08T21:05:10,Ceasefire Declared between Ukraine and Russia,46.7814521,33.3467561,0.0,1.0,1.0,1.0,70,1.2,0,1
+80c1d552-4a1d-40eb-b599-a674c41888d1,2026-05-08T13:48:09,Ukrainian UAV Forces Conduct Deep Strikes on Russi,47.1844174,37.5137287,100.0,7.0,9.0,7.0,50,2.0,0,1
+82217f65-63e6-43d6-9e8a-f9870b61eff0,2026-05-09T08:01:01,Ukrainian Forces Clear Positions in Vovchansk Dire,50.2928843,36.9370028,12.0,3.0,3.0,5.0,70,3.2,1,1
+8228753d-e29e-4883-bed8-0d8565bb0d50,2026-05-08T11:43:33,"Ukrainian Forces Strike Refinery in Perm, Russia",58.5951603,56.3159546,99.0,6.0,9.0,5.0,50,2.8,0,1
+84913c5e-3829-4cb6-80d4-169debd4e575,2026-05-08T13:31:52,Ukrainian Forces Drone Strike on FSB Facility in Z,45.3800544,32.8940043,47.0,3.0,7.0,4.0,70,1.2,1,1
+84a4a6b6-732a-4581-a96f-77ff0fcb1b37,2026-05-08T12:35:37,Ukrainian Forces Intercept Drones Over Moscow,47.9951418,37.8049803,0.0,5.0,10.0,1.0,50,0.0,0,1
+84b9c0f5-4aa0-48a4-aff8-e534b2b7deb5,2026-05-09T10:56:12,Russian Forces Expand Air Defense Ring around Mosc,47.9951418,37.8049803,7.0,1.0,8.0,1.0,70,0.0,1,1
+84fe7fff-9ac9-4f96-a884-4a6e20214c5c,2026-05-09T07:12:55,Russian Forces Conduct Artillery and Drone Strikes,48.5019178,35.1861692,14.0,6.0,2.0,9.0,70,0.0,1,1
+85bba16d-db41-465d-a6e8-46afab856001,2026-05-09T09:58:56,Russian Tank Division Engaged in Hryshyne,48.3293763,37.0798002,5.0,2.0,3.0,3.0,50,1.2,0,1
+894186f7-b1a8-4bf7-abb3-393b3467dd69,2026-05-08T15:55:18,Ukrainian Forces Conduct Strikes on Russian Milita,48.2919572,38.0819245,100.0,7.0,9.0,6.0,50,2.8,0,1
+897a318e-f449-4888-bb80-ee7ffb8123ac,2026-05-08T19:10:41,Ukrainian Aviation Conducts Precision Strikes on R,50.247,36.93775,9.0,7.0,3.0,3.0,70,2.0,1,1
+8baffe78-74c2-4295-8cbd-19d8578f4424,2026-05-08T16:45:52,Russian Forces Advance in Kryva Luka,48.8734701,37.9035405,18.0,5.0,3.0,7.0,50,0.0,0,1
+8cfa6878-1ada-4ee6-a92d-c33d8d90b030,2026-05-09T05:07:43,Ukrainian Forces Conduct Drone Strike in Borschevo,49.656826,22.833769,5.0,3.0,2.0,4.0,50,0.0,0,1
+8f08dc6d-6e20-4c34-990e-3dd20d270eab,2026-05-09T10:33:23,Ukrainian Forces Conduct Shelling and Drone Strike,48.5153766,34.6129512,9.0,4.0,3.0,4.0,50,-2.0,0,1
+8fb498dc-ea2f-46ec-b385-936eba86c260,2026-05-09T06:01:58,Russian Air Strikes Target Civilians in Dobropilli,48.4683035,37.0903243,13.0,7.0,2.0,7.0,60,2.0,0,1
+91aebbe2-74c3-4f6b-a3c9-2d8d674fc79b,2026-05-08T12:14:38,Ukrainian Forces Conduct Drone Strikes in Rostov R,47.283455,39.501518,14.0,4.0,3.0,6.0,50,-1.2,0,1
+9713f37f-20fa-4108-85b1-a7d45fdf912d,2026-05-08T17:35:57,Ukrainian Forces Conduct Strikes on Rostov Oblast,51.960522,33.74485,0.0,6.0,8.0,1.0,50,-4.1,0,1
+99af3eab-d760-4ebd-8955-cf994cef729f,2026-05-09T08:11:42,Ukrainian Forces Conduct UAV Strike on NTC Radar F,50.439123,30.5532387,100.0,3.0,8.0,7.0,80,0.0,1,2
+a06c6411-c53c-440b-9209-c65473ab738b,2026-05-08T12:55:49,Ukrainian Forces Conduct Drone Interception over M,47.9951418,37.8049803,0.0,8.0,3.0,1.0,50,0.0,0,1
+a0f328ca-d560-4a4f-8c0a-be57bbcffae0,2026-05-08T16:09:22,Russian Forces Advance near Slavyansk,48.8734701,37.9035405,17.0,4.0,3.0,7.0,72,-3.2,0,1
+a2808219-adf3-456a-aea6-cea2a1795f8d,2026-05-09T07:42:30,North Korean Military Personnel Parade in Moscow,55.7548368,37.6160495,0.0,1.0,1.0,1.0,50,0.0,0,1
+a2912889-bf82-4eba-a24f-2a1200027994,2026-05-09T07:01:01,Ukrainian Forces Conduct Drone Strikes in Perm and,58.5951603,56.3159546,29.0,8.0,3.0,8.0,50,-1.2,0,1
+a2ce4a8f-b721-4ab5-a434-3e54886aa652,2026-05-08T17:34:04,Ukrainian Forces Strike Aviation Center in Rostov,51.960522,33.74485,82.0,6.0,8.0,5.0,70,1.2,0,1
+a3348bd5-a638-4a5e-8153-c32028e0fa3e,2026-05-08T13:05:47,Russian Drone Unit Engages Ukrainian Infantry in F,-33.8493232,150.9148045,15.0,3.0,3.0,7.0,50,1.2,0,1
+a3c88a5d-137f-4a48-aefa-d20c4ab5d94e,2026-05-08T13:03:56,Russian Forces Blockade and Target Civilian Areas ,46.6260908,32.7220187,11.0,3.0,2.0,9.0,70,3.2,1,1
+aafcb014-47ec-466f-8e19-64eb1e9f9b1b,2026-05-08T11:09:37,Ukrainian Forces Strike Russian Logistics near Mar,47.0957648,37.5499621,22.0,3.0,4.0,5.0,50,-1.2,0,1
+aba517e0-7d02-4867-8983-03b5c16478d8,2026-05-09T07:40:02,Russian Drone Strike on Civilian Vehicle in Polohy,47.4240821,36.4483018,5.0,3.0,2.0,5.0,50,0.0,0,1
+ac9c64ed-dc15-400c-9762-78ee242a1fdd,2026-05-08T17:24:54,Ukrainian Forces Strike Russian Arsenal in Kedrovk,50.9972745,28.7081744,100.0,7.0,9.0,7.0,70,2.0,0,1
+adef05e6-d910-49df-ae1d-87506ffd93ce,2026-05-09T07:47:19,Military Parade Showcasing UAV Capabilities in Mos,47.9951418,37.8049803,0.0,1.0,1.0,1.0,50,0.0,0,1
+ae3b6995-2ae9-4dcc-9cfd-26e16c528297,2026-05-08T12:06:09,Ukrainian Maritime Drone Recovered near Lefkas,38.0857643,23.5559619,0.0,1.0,4.0,1.0,50,-2.0,0,1
+afdf57c3-d5e8-4cc7-862d-87d23bfd2fb7,2026-05-08T12:15:53,Unknown Forces Conduct Drone Strikes in Kherson Di,46.5421715,33.4079326,5.0,3.0,2.0,4.0,70,0.0,1,1
+b02bb936-e085-4f47-bbde-2c74095accc2,2026-05-08T14:16:01,Ukrainian Forces Conduct Strike on Russian Air Def,49.2724587,38.9150477,89.0,8.0,6.0,8.0,50,2.8,0,1
+b09864eb-6bdb-4e0d-8130-5ab7f403601b,2026-05-08T12:24:56,Ukrainian Forces Strike Energy Infrastructure in P,58.5951603,56.3159546,100.0,7.0,9.0,6.0,50,2.0,0,1
+b8f8ac70-d6ef-49c1-8217-d52b89164a49,2026-05-08T11:41:11,Ukrainian UAV Strike Damages Logistics Center in R,47.2178353,39.7034002,26.0,3.0,4.0,6.0,50,0.0,0,1
+bd0643c8-84d6-4d95-829a-b505e6ca1149,2026-05-09T08:19:00,Russian Drone Strike in Chernihiv Region,51.4896123,31.3031463,1.0,3.0,2.0,1.0,70,0.8,1,1
+bd85b8d4-0da2-40f8-b1ae-8edda26f53c4,2026-05-08T11:41:12,Ukrainian Forces Conduct Drone Strike near FSB HQ ,44.7481001,33.8818443,65.0,4.0,7.0,5.0,70,0.8,1,1
 c068f6cd-8f6d-4406-9e77-3f8c86d179b4,2026-05-08T17:04:06,Russian Forces Occupy Sopych and Assault Bachevsk ,51.874537,34.322388,8.0,3.0,3.0,4.0,50,2.0,0,1
-c10d8411-02df-4f03-86cc-e050478f43c8,2026-05-08T18:35:43,Russian Artillery Shelling Damages Civilian Transp,48.68,31.432,13.0,5.0,2.0,9.0,90,1.2,1,1
-c9d2cf36-b16e-40a4-9f3d-c21b7bbdffbb,2026-05-08T17:10:50,Ukrainian Forces Conduct Drone Strike on Military ,49.23,32.606,9.0,3.0,4.0,2.0,70,0.0,1,1
-cb507119-9bb7-4241-9594-03b97c7cdc54,2026-05-08T16:20:15,Ukrainian Forces Strike Oil Depot in Tuapse,48.598,32.598,100.0,7.0,9.0,9.0,70,0.0,1,1
-ce5151d2-5b70-45fb-92bf-e3b4d4fafb02,2026-05-09T05:13:22,Russian Artillery and Drone Strikes on Dnipropetro,49.974,32.936,16.0,5.0,2.0,9.0,70,0.0,1,1
+c10d8411-02df-4f03-86cc-e050478f43c8,2026-05-08T18:35:43,Russian Artillery Shelling Damages Civilian Transp,46.5421715,33.4079326,13.0,5.0,2.0,9.0,90,1.2,1,1
+c12a775d-efa1-4d42-a563-ad7aeffacb68,2026-05-08T13:36:15,Ukrainian Air Strike on Russian UAV Personnel in O,46.6260908,32.7220187,0.0,5.0,3.0,1.0,50,2.0,0,1
+c6bd4b71-96b1-494a-a5a2-fa5aa50a8293,2026-05-08T19:57:45,Ukrainian Forces Conduct Drone Strikes in Donetsk ,47.9212914,37.7809825,10.0,3.0,4.0,3.0,62,2.8,0,1
+c93e3d98-8439-4645-9de0-54ca1283ba64,2026-05-09T08:46:27,Ukrainian Forces Strike Fuel Tanks at Perm LPDS,50.439123,30.5532387,100.0,7.0,9.0,8.0,70,1.2,1,1
+c9d2cf36-b16e-40a4-9f3d-c21b7bbdffbb,2026-05-08T17:10:50,Ukrainian Forces Conduct Drone Strike on Military ,58.1707921,59.3573027,9.0,3.0,4.0,2.0,70,0.0,1,1
+ca495792-1a4e-4c38-a03e-1bf91e44776c,2026-05-08T15:55:08,Ukrainian Forces Strike Electrical Goods Site in R,47.2178353,39.7034002,100.0,6.0,8.0,7.0,90,2.0,1,1
+cb507119-9bb7-4241-9594-03b97c7cdc54,2026-05-08T16:20:15,Ukrainian Forces Strike Oil Depot in Tuapse,44.0984747,39.0718875,100.0,7.0,9.0,9.0,70,0.0,1,1
+ce5151d2-5b70-45fb-92bf-e3b4d4fafb02,2026-05-09T05:13:22,Russian Artillery and Drone Strikes on Dnipropetro,47.6490555,34.649194,16.0,5.0,2.0,9.0,70,0.0,1,1
+ce586151-d215-420b-ad3a-85d2e9651eb3,2026-05-08T16:58:40,Ukrainian Forces Strike Russian Industrial Targets,58.1707921,59.3573027,100.0,7.0,9.0,7.0,50,2.0,0,1
+cf6e33dd-8417-406f-b7d3-2230b79faf80,2026-05-08T10:55:45,Russian Forces Conduct Drone Strikes near Krasnoar,48.3028051,37.0974288,11.0,3.0,3.0,5.0,50,-2.0,0,1
+d6b04de4-5c58-4bc8-886c-66043934ef10,2026-05-09T11:50:31,Ukrainian Forces Conduct Rocket Strike on Industri,50.439123,30.5532387,100.0,6.0,9.0,6.0,80,0.0,1,1
+d72dd29a-917a-4223-8caa-477f3b771eb6,2026-05-09T11:27:01,Ukrainian Forces Conduct Drone Strike on Russian M,48.5675612,39.2963953,50.0,3.0,5.0,8.0,50,2.0,0,1
+d77e0408-2ab1-411f-b6d5-04d8089b9521,2026-05-08T16:07:10,Russian Army Activates Offensive Actions near Pokr,48.2771086,37.1772482,5.0,2.0,3.0,3.0,50,0.0,0,1
 d7f4b21c-0dac-4a64-a665-021f5f48049d,2026-05-09T05:23:11,Russian Forces Launch Missile and Drone Strikes Ac,49.862,32.81,94.0,8.0,7.0,6.0,70,2.5,1,1
 dbfe5676-240d-4851-a679-9691761c1909,2026-05-08T19:45:28,Russian Forces Advanced near Novooleksandrivka,48.3428019,37.0954227,8.0,3.0,3.0,4.0,82,1.6,0,1
-e938eaf9-f1a9-449d-9af1-d87931b502b3,2026-05-09T11:53:31,Ukrainian Forces Conduct Drone Strike on Civilian ,48.854,32.446,5.0,3.0,2.0,4.0,70,0.0,1,1
+ddcc62b1-0902-4b7c-892b-ac7267846eca,2026-05-09T06:32:01,Russian Forces Advance near Novoaieksandrovka,47.9212914,37.7809825,7.0,3.0,3.0,3.0,85,-3.6,1,1
+de277bfd-6cb9-4538-820c-3db3b187377c,2026-05-09T09:03:09,Ukrainian Forces Engage Russian Infantry near Lyma,50.439123,30.5532387,19.0,3.0,3.0,8.0,80,2.0,1,2
+e6cd3b5d-9c8a-4e45-92da-3ca51a355084,2026-05-09T11:40:47,Ukrainian Forces Neutralize Adversary Forces in Kh,50.0041922,36.2363879,15.0,3.0,3.0,7.0,50,0.0,0,1
+e87d490c-7906-4034-b9dc-8079a7353567,2026-05-08T14:22:01,Ukrainian Forces Exfiltrate Personnel from Kharkiv,49.8299582,36.3788957,1.0,1.0,1.0,4.0,50,2.0,0,1
+e91b5010-e258-4eea-8a73-cdfbbf6fbc1f,2026-05-08T12:10:26,Ukrainian Forces Conduct Precision Strike on Russi,50.439123,30.5532387,43.0,6.0,5.0,7.0,50,1.2,0,1
+e938eaf9-f1a9-449d-9af1-d87931b502b3,2026-05-09T11:53:31,Ukrainian Forces Conduct Drone Strike on Civilian ,50.439123,30.5532387,5.0,3.0,2.0,4.0,70,0.0,1,1
+e9929d39-fac2-4961-ba43-bb4eb06f9a97,2026-05-09T11:07:26,Ukrainian Forces Conduct Missile Strikes in Border,50.439123,30.5532387,0.0,7.0,8.0,1.0,60,-2.8,0,1
+ec702021-cd18-464c-8fb0-7cc0e024ea86,2026-05-08T19:47:01,Ukrainian Forces Strike Rostov Air Traffic Control,51.960522,33.74485,79.0,6.0,7.0,6.0,62,-3.2,0,1
+ed6207d2-7be7-4c65-ad50-c2c450672998,2026-05-08T16:04:16,Ukrainian Forces Struck Russian Strategic Refinery,48.2919572,38.0819245,100.0,7.0,9.0,6.0,70,1.2,1,1
+ee9f8cbf-5681-4961-9fdc-00e0503183fb,2026-05-08T15:52:11,Ukrainian Forces Strike Russian Artillery in Unspe,-33.8493232,150.9148045,35.0,3.0,5.0,7.0,70,1.4,0,2
+eee09246-d3fe-4fb9-87e4-70d903651fbb,2026-05-09T11:05:25,Russian Forces Conduct Strikes near Bessalovka,50.525761,36.302185,8.0,3.0,3.0,4.0,50,-2.0,0,1
+f04a1bcf-6d83-4efe-aecd-33862387ea58,2026-05-08T12:03:47,Ukrainian UAVs Conduct Raids on Moscow Airports,47.9951418,37.8049803,82.0,6.0,8.0,5.0,50,2.0,0,1
+f08a04aa-90ac-4d9e-8a5a-54093b5ad71f,2026-05-09T11:47:59,Russian Forces Missile Strike on Energy Facility i,49.8607809,33.7498787,100.0,7.0,9.0,7.0,50,0.7,0,1
+f0ae6f9b-7d49-4a14-bdfd-972f37cf3ab8,2026-05-08T11:33:02,Drone Intrusion Disrupts Operations at Moscow Airp,47.9951418,37.8049803,17.0,3.0,4.0,4.0,70,1.2,0,1
 f39d0fad-b2a4-4f66-bb7b-ad6e568afb33,2026-05-08T17:30:59,Russian Forces Destroy Ukrainian-Mined Bridge in U,50.391436,36.054736,67.0,3.0,7.0,7.0,70,0.0,1,1
-f6dc30d6-0cbf-4ec4-9d83-91bc267e5ca0,2026-05-09T05:10:45,Russian Forces Strike Civilian Infrastructure in D,49.55,33.188,19.0,8.0,2.0,9.0,82,4.4,1,1
+f4fcbd2f-fb54-402c-9fa6-e68339dcf3f9,2026-05-08T17:33:09,Ukrainian Forces Engaged Russian Forces in Air Def,50.439123,30.5532387,0.0,5.0,5.0,1.0,50,0.0,0,1
+f6dc30d6-0cbf-4ec4-9d83-91bc267e5ca0,2026-05-09T05:10:45,Russian Forces Strike Civilian Infrastructure in D,48.5019178,35.1861692,19.0,8.0,2.0,9.0,82,4.4,1,1
+f967fdae-79fb-4f71-bc11-f0da899bdc3a,2026-05-08T15:58:15,Ukrainian Forces Struck Russian Strategic Targets ,48.2919572,38.0819245,100.0,7.0,9.0,7.0,70,3.2,0,1
 fcb0e931-ba9f-4807-b137-9ea413e74c60,2026-05-09T11:51:10,Russian Forces Ceasefire Violation in Yegorivka,49.178,32.806,0.0,1.0,1.0,1.0,50,3.2,1,1
 ff110192-62e9-41ae-8c18-f9510bb63237,2026-05-08T12:36:51,Sweden Delivers Airfield Maintenance Equipment to ,48.626,32.2,7.0,1.0,8.0,1.0,70,2.0,1,1
+4349c458-d3c1-4f7c-bf58-276acd1e60d6,2026-05-09T12:45:00+00:00,Ukrainian Forces Accused of Violating Truce in Cri,45.2835044,34.2008188,0.0,1.0,2.0,1.0,40,0.0,0,1
+7ef44ad6-8e3b-46d6-a829-d9f33e3da05d,2026-05-09T12:45:00+00:00,Deployment of Air Defense Ring Observed around Mos,55.7548368,37.6160495,0.0,1.0,8.0,1.0,40,-0.8,0,1
+bda15145-b25b-4333-ac74-19f1a7e29a7b,2026-05-09T12:45:00+00:00,Ukrainian Forces Resume Hostilities Against Russia,50.439123,30.5532387,0.0,1.0,1.0,1.0,40,0.0,0,1
+d0a86e00-4814-4e95-a263-95ba82c3dd8d,2026-05-09T12:45:00+00:00,Russian Drone Strike Damages Civilian Infrastructu,47.8507859,35.1182867,4.0,3.0,2.0,4.0,40,0.0,0,1
+06b69c3f-e375-4189-9094-c95e08248ec4,2026-05-09T18:34:40,Ukrainian UAV Unit Conducts Reconnaissance near Ho,48.3058686,38.0027664,0.0,1.0,2.0,1.0,70,0.0,1,1
+0a4e2d98-2d4e-4695-96f5-8d1e9d858a7d,2026-05-09T19:39:40,Ukrainian Artillery Launches Detected near Sumy,50.7696518,34.3289305,0.0,5.0,3.0,1.0,50,0.0,0,1
 4673c8fc-2419-46dd-881b-5483f8071642,2026-05-09T19:53:08,Russian Forces Strike Civilian Facility in Kharkiv,48.55,31.97,5.0,4.0,2.0,4.0,70,0.0,1,1
 842205dd-9843-46f4-94dc-238f4a446a2c,2026-05-10T08:03:40,Russian Drone Strike on Emergency Workers in Dnipr,50.118,31.942,1.0,3.0,2.0,1.0,70,0.0,1,1
 87b7149d-72ef-4c94-896c-cfc320488a49,2026-05-10T08:51:04,Germany Seeks Tomahawk Missiles from US,48.852,31.854,0.0,1.0,1.0,1.0,70,0.0,1,1
 937e36df-ec91-4b28-9784-d029de38f2c5,2026-05-10T07:32:59,Russian Drone Strike on Residential Building in Kh,50.458,31.259999999999998,11.0,3.0,2.0,9.0,70,4.0,1,1
 e327c0ad-1d3d-4d2b-baf9-044ed4ab3ed0,2026-05-10T15:56:00,Russian Forces Advanced near Holubivka and Dibrova,48.736375,37.8261852,4.0,1.0,3.0,3.0,72,2.0,0,1
 e795d8fc-3f7e-4126-9219-c4f232314de6,2026-05-09T16:03:54,Ukrainian Forces Strike Electrical Substations in ,48.918,32.38,14.0,6.0,8.0,1.0,70,2.0,1,1
+1633f9ab-b828-4bf9-a5e2-57c256adefd1,2026-05-11T04:27:32,Russian Forces Conduct Strikes in Zaporizhzhia Reg,49.452,32.54,15.0,8.0,2.0,9.0,82,1.2,1,1
+22dc810c-beb3-45fb-a954-f1245c0e479a,2026-05-11T07:19:58,"Russian Forces Advanced near Zakintno, Donetsk Obl",48.8711677,37.964716,6.0,3.0,3.0,3.0,82,0.8,0,1
+233f83be-3bad-40fb-96cf-b6c70e8d97c7,2026-05-11T12:52:45,Russian Drone Strike on Civilian Facility in Khers,49.398,32.474,1.0,3.0,2.0,1.0,70,2.0,1,1
+5c4b1c42-d26c-4253-931e-389c60bff1df,2026-05-10T19:06:48,Ukrainian Forces Strikes on Energy Infrastructure ,49.554,31.958,91.0,7.0,9.0,4.0,90,-0.8,1,1
+5fc99821-ceba-4aa3-a900-3aac69140f99,2026-05-11T10:09:32,Russian Black Sea Fleet Initiates Installation of ,50.372,32.548,3.0,1.0,5.0,1.0,90,1.2,1,1
+6ea37752-d067-41b0-8f01-fe5373ed1d81,2026-05-11T07:25:24,Russian Forces Installing Anti-Drone Grilles on Pa,50.252,31.674,3.0,1.0,5.0,1.0,82,1.6,1,1
+9ee27ae6-5880-4fae-a6fd-3c8d5dff36cf,2026-05-10T17:40:01,Drone Strikes Target Civilian Infrastructure in Be,50.274,32.172,11.0,3.0,2.0,9.0,70,0.0,1,1
+ad38f53b-fcab-4110-a894-6a786e03b19c,2026-05-11T08:21:01,Russian Artillery Shelling in Kharkiv,48.562,32.178,12.0,4.0,2.0,9.0,70,0.0,1,1
+c423da2b-decc-4d90-b759-5d86e32f2247,2026-05-11T09:45:09,Russian Drone Swarm Strikes Kharkiv Residential Ar,50.232,32.714,19.0,8.0,2.0,9.0,70,1.2,1,1
+edab9cdd-b903-4cf8-a640-26ac3af29ecc,2026-05-10T19:25:29,Russian Air Defense Deployment near Kerch Bridge,49.43,32.658,7.0,3.0,6.0,1.0,70,0.8,1,1

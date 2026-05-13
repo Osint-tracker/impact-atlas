@@ -34,7 +34,8 @@ class GazetteerCache:
 
     def _init_db(self):
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = sqlite3.connect(self.db_path, timeout=60.0)
+            conn.execute("PRAGMA journal_mode=WAL;")
             cursor = conn.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS locations_registry (
@@ -94,7 +95,8 @@ class GazetteerCache:
             return None
 
     def _check_cache_sync(self, location: str, region: str):
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=60.0)
+        conn.execute("PRAGMA journal_mode=WAL;")
         cursor = conn.cursor()
         
         # We search inside the JSON aliases array
@@ -112,7 +114,8 @@ class GazetteerCache:
         except: pass
 
     def _increment_hit_sync(self, canonical: str, region: str):
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=60.0)
+        conn.execute("PRAGMA journal_mode=WAL;")
         conn.execute("UPDATE locations_registry SET hit_count = hit_count + 1 WHERE canonical_name = ? AND LOWER(region) = ?", 
                     (canonical, region))
         conn.commit()
@@ -157,7 +160,8 @@ class GazetteerCache:
             logger.error(f"Gazetteer: Store entry error: {e}")
 
     def _store_entry_sync(self, canonical: str, region: str, aliases: list, lat: float, lon: float):
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=60.0)
+        conn.execute("PRAGMA journal_mode=WAL;")
         try:
             conn.execute("""
                 INSERT OR IGNORE INTO locations_registry 
@@ -202,7 +206,7 @@ class GeolocatorAgent:
                 logger.warning("Sectors file missing: %s", SECTORS_PATH)
 
             if os.path.exists(BORDERS_PATH):
-                with open(BORDERS_PATH, 'r', encoding='utf-8') as f:
+                with open(BORDERS_PATH, 'r', encoding='utf-8-sig') as f:
                     data = json.load(f)
                     for feature in data.get('features', []):
                         if not feature.get('geometry'):
