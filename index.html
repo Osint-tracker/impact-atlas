@@ -5796,12 +5796,13 @@
           function buildEquipmentGroups(events) {
             var groups = {};
             events.forEach(function (ev) {
+              // 1. Standard target_type grouping (existing logic)
               var label = ev.target_type && String(ev.target_type).toUpperCase() !== 'UNKNOWN'
                 ? String(ev.target_type)
                 : (ev.classification || ev.category || 'Unclassified Target');
               var key = label.toLowerCase();
               if (!groups[key]) {
-                groups[key] = { asset: label, qty: 0, effectSum: 0, tieMax: 0, imintCount: 0, latest: null, eventId: null, frameIndex: 0 };
+                groups[key] = { asset: label, qty: 0, effectSum: 0, tieMax: 0, imintCount: 0, latest: null, eventId: null, frameIndex: 0, faction: '' };
               }
               var group = groups[key];
               var effect = getNumeric(ev.vec_e) || 0;
@@ -5819,6 +5820,33 @@
                   group.frameIndex = 0;
                 }
               }
+
+              // 2. AI-extracted destroyed_assets from campaign_match_meta (Brain pipeline)
+              var matchMeta = ev.campaign_match_meta;
+              if (matchMeta && typeof matchMeta === 'string') {
+                try { matchMeta = JSON.parse(matchMeta); } catch (e) { matchMeta = null; }
+              }
+              var assets = (matchMeta && Array.isArray(matchMeta.destroyed_assets)) ? matchMeta.destroyed_assets : [];
+              assets.forEach(function (a) {
+                if (!a || !a.asset) return;
+                var assetKey = String(a.asset).toLowerCase();
+                var factionTag = a.faction && a.faction !== 'UNK' ? ' (' + a.faction + ')' : '';
+                var displayKey = assetKey + factionTag.toLowerCase();
+                if (!groups[displayKey]) {
+                  groups[displayKey] = { asset: String(a.asset) + factionTag, qty: 0, effectSum: 0, tieMax: tie, imintCount: 0, latest: null, eventId: null, frameIndex: 0, faction: a.faction || '' };
+                }
+                var assetGroup = groups[displayKey];
+                assetGroup.qty += (parseInt(a.count, 10) || 1);
+                assetGroup.effectSum += effect;
+                assetGroup.tieMax = Math.max(assetGroup.tieMax, tie);
+                if (!assetGroup.latest || (date && date > assetGroup.latest)) assetGroup.latest = date;
+                if (!assetGroup.state_override) assetGroup.state_override = a.state || null;
+                if (frames.length && !assetGroup.eventId) {
+                  assetGroup.imintCount += 1;
+                  assetGroup.eventId = getEventId(ev);
+                  assetGroup.frameIndex = 0;
+                }
+              });
             });
             return Object.keys(groups).map(function (key) {
               var group = groups[key];
@@ -5827,7 +5855,7 @@
                 icon: iconForGroup(group.asset),
                 asset: group.asset,
                 qty: group.qty,
-                state: deriveDamageState(avgEffect, group.tieMax),
+                state: group.state_override || deriveDamageState(avgEffect, group.tieMax),
                 maxTie: group.tieMax,
                 latest: group.latest ? formatDossierDate(group.latest) : '--',
                 imint: group.imintCount > 0,

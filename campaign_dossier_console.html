@@ -744,10 +744,32 @@
           g.qty += 1; g.e += numeric(ev.vec_e) || 0; g.tie = Math.max(g.tie, numeric(ev.tie_total) || 0);
           if (!g.latest || (d && d > g.latest)) g.latest = d;
           if (f.length) { g.imintCount += 1; if (!g.eventId) g.eventId = ev.event_id; eventCache[ev.event_id] = ev; }
+
+          // AI-extracted destroyed_assets from campaign_match_meta (Brain pipeline)
+          var matchMeta = ev.campaign_match_meta;
+          if (matchMeta && typeof matchMeta === 'string') {
+            try { matchMeta = JSON.parse(matchMeta); } catch (e) { matchMeta = null; }
+          }
+          var assets = (matchMeta && Array.isArray(matchMeta.destroyed_assets)) ? matchMeta.destroyed_assets : [];
+          assets.forEach(function (a) {
+            if (!a || !a.asset) return;
+            var assetKey = String(a.asset).toLowerCase();
+            var factionTag = a.faction && a.faction !== 'UNK' ? ' (' + a.faction + ')' : '';
+            var displayKey = assetKey + factionTag.toLowerCase();
+            if (!groups[displayKey]) groups[displayKey] = { asset: String(a.asset) + factionTag, qty: 0, e: 0, tie: g.tie, imintCount: 0, eventId: '', latest: null, stateOverride: null };
+            var ag = groups[displayKey];
+            ag.qty += (parseInt(a.count, 10) || 1);
+            ag.e += numeric(ev.vec_e) || 0;
+            ag.tie = Math.max(ag.tie, numeric(ev.tie_total) || 0);
+            if (!ag.latest || (d && d > ag.latest)) ag.latest = d;
+            if (!ag.stateOverride) ag.stateOverride = a.state || null;
+            if (f.length && !ag.eventId) { ag.imintCount += 1; ag.eventId = ev.event_id; eventCache[ev.event_id] = ev; }
+          });
         });
         return Object.keys(groups).map(function (key) {
           var g = groups[key], avgE = g.qty ? g.e / g.qty : 0;
-          return { icon: 'fa-crosshairs', asset: g.asset, qty: g.qty, state: avgE >= 8 || g.tie >= 80 ? 'Severe' : avgE >= 5 || g.tie >= 40 ? 'Degraded' : avgE >= 2 ? 'Observed' : 'Low effect', latest: shortDate(g.latest), imint: g.imintCount > 0, imintCount: g.imintCount, eventId: g.eventId, maxTie: g.tie };
+          var state = g.stateOverride || (avgE >= 8 || g.tie >= 80 ? 'Severe' : avgE >= 5 || g.tie >= 40 ? 'Degraded' : avgE >= 2 ? 'Observed' : 'Low effect');
+          return { icon: 'fa-crosshairs', asset: g.asset, qty: g.qty, state: state, latest: shortDate(g.latest), imint: g.imintCount > 0, imintCount: g.imintCount, eventId: g.eventId, maxTie: g.tie };
         }).sort(function (a, b) { return b.maxTie - a.maxTie; }).slice(0, 24);
       }
       function buildDossier(report, events) {

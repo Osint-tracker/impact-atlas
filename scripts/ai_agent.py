@@ -117,6 +117,10 @@ DAMAGE_MODIFIERS = {
     "NONE": 0.0,      # NESSUN DANNO
     "UNKNOWN": 0.5    # INCERTO: Dimezza (Meglio sottostimare che allarmare)
 }
+
+# Campaign catalog text — built once in main() from campaign_definitions, injected into Brain prompt
+CAMPAIGN_CATALOG_TEXT = ""
+
 # --- SYSTEM PROMPTS ---
 
 SOLDIER_SYSTEM_PROMPT = """
@@ -1067,7 +1071,7 @@ class SuperSquadAgent:
 
             async with API_SEMAPHORE:
                 response = await self._call_llm_with_backoff(self.router_client, 
-                model="deepseek/deepseek-v4-flash:free",
+                model="deepseek/deepseek-v4-flash",
                 messages=[
                     {"role": "system", "content": "Output valid JSON only."},
                     {"role": "user", "content": prompt}
@@ -1166,6 +1170,9 @@ OUTPUT FORMAT:
         """
         print("   Step 1: The Brain (DeepSeek V3) analyzing strategy...")
 
+        # Inject cached campaign catalog into prompt (built once at startup)
+        campaign_catalog = globals().get("CAMPAIGN_CATALOG_TEXT", "No campaigns loaded.")
+
         brain_prompt = f"""
 ### SYSTEM INSTRUCTIONS: INTELLIGENCE JUDGE & CORRECTOR
 
@@ -1245,6 +1252,23 @@ RAW TEXT:
     - If the raw text mentions specific military units (e.g. "214th Assault Battalion", "82nd Airborne", "Kraken") that were NOT properly captured by The Soldier, YOU MUST extract them.
     - Output them as an array of objects containing `raw_name` and `faction` (UKR/RUS/UNK).
 
+**PROTOCOL 6: CAMPAIGN INTELLIGENCE EXTRACTION (MANDATORY)**
+    You MUST classify this event into one of the active strategic campaigns listed below.
+    ONLY use these exact campaign_ids. Do NOT invent new campaign identifiers.
+
+{campaign_catalog}
+
+    Campaign Assignment Rules:
+    1. Choose the SINGLE best-fit campaign_id based on STRATEGIC INTENT, not keyword coincidence.
+    2. If no campaign fits or the event is non-kinetic noise, set campaign_id to null.
+    3. confidence must be 0.0-1.0. Only campaign_ids with confidence >= 0.70 are accepted.
+    4. destroyed_assets: ONLY assets EXPLICITLY mentioned as destroyed/damaged/captured in the raw text.
+       - NEVER infer equipment type from unit names alone.
+       - faction MUST have textual evidence (context, markings, unit attribution). If unknown -> "UNK".
+       - count defaults to 1 unless the text explicitly states a different number.
+       - state must be one of: DESTROYED, DAMAGED, CAPTURED, ABANDONED.
+    5. If no assets are explicitly mentioned, return an empty destroyed_assets array.
+
 **OUTPUT SCHEMA (JSON ONLY)**
 {{
     "verification_status": boolean,
@@ -1264,13 +1288,21 @@ RAW TEXT:
         "strategic_value_assessment": "string",
         "event_category": "string",
         "implicit_signal": "Tactical summary",
-        "corrected_coordinates": {{ "lat": float, "lon": float }} // Only if you found better ones
+        "corrected_coordinates": {{ "lat": float, "lon": float }},
+        "verified_campaign": {{
+            "campaign_id": "string (exact ID from campaign list) or null",
+            "confidence": float (0.0-1.0),
+            "reasoning": "string (max 80 words, strategic justification)",
+            "destroyed_assets": [
+                {{ "asset": "string", "faction": "RU | UA | UNK", "count": int, "state": "DESTROYED | DAMAGED | CAPTURED | ABANDONED" }}
+            ]
+        }}
     }}
 }}
 """
 
         try:
-            # USIAMO IL MODELLO REASONER (V4 FLASH)
+            # Brain Reasoner (DeepSeek V4 Flash)
             async with API_SEMAPHORE:
                 response = await self._call_llm_with_backoff(self.brain_client, 
                 model="deepseek/deepseek-v4-flash",
@@ -1557,7 +1589,7 @@ RAW TEXT:
                 # LLM Call
                 async with API_SEMAPHORE:
                     response = await self._call_llm_with_backoff(self.openrouter_client, 
-                    model="deepseek/deepseek-v4-flash:free",
+                    model="deepseek/deepseek-v4-flash",
                     messages=[
                         {"role": "system", "content": SOLDIER_SYSTEM_PROMPT},
                         {"role": "user", "content": current_user_content}
@@ -3091,30 +3123,80 @@ async def process_cluster_async(agent, row, campaign_definitions, db_write_lock)
         }
         final_report['ai_summary'] = await agent._step_5_the_strategist(agent.brain_client, final_report)
 
+        # --- CAMPAIGN TAGGING (AI-First + Keyword Fallback) ---
         campaign_id = None
         campaign_match_meta_json = None
         campaign_tagged_at = None
         try:
-            target_type_value = ((titan_data or {}).get("target_type_category")
-                or (soldier_result.get("titan_assessment", {}) or {}).get("target_type_category")
-                or (brain_review.get("verified_data", {}) or {}).get("target_type")
-                or "unknown")
-            campaign_event_text = " ".join([str(journo_result.get("title_en", "")), str(journo_result.get("description_en", "")), str(combined_text)])
-            campaign_match = match_event_campaign(campaigns=campaign_definitions, target_type=target_type_value, event_text=campaign_event_text)
-            if campaign_match:
-                campaign_id = campaign_match.get("campaign_id")
+            valid_campaign_ids = {c["campaign_id"] for c in campaign_definitions}
+
+            # 1. AI-First: Use The Brain's verified_campaign extraction
+            brain_campaign = (brain_review.get("verified_data") or {}).get("verified_campaign") or {}
+            ai_campaign_id = brain_campaign.get("campaign_id")
+            ai_confidence = 0.0
+            try:
+                ai_confidence = float(brain_campaign.get("confidence", 0))
+            except (TypeError, ValueError):
+                ai_confidence = 0.0
+
+            if (ai_campaign_id
+                    and str(ai_campaign_id).strip().lower() not in ("", "null", "none")
+                    and str(ai_campaign_id).strip().lower() in valid_campaign_ids
+                    and ai_confidence >= 0.70):
+                campaign_id = str(ai_campaign_id).strip().lower()
                 campaign_tagged_at = datetime.utcnow().isoformat() + "Z"
-                campaign_match_meta_json = json.dumps(campaign_match.get("match_meta", {}), ensure_ascii=False)
-                final_report.setdefault("strategy", {})
+                campaign_match_meta_json = json.dumps({
+                    "pipeline": "brain_inline_v1",
+                    "campaign_id": campaign_id,
+                    "confidence": ai_confidence,
+                    "reasoning": str(brain_campaign.get("reasoning", "")).strip(),
+                    "destroyed_assets": brain_campaign.get("destroyed_assets") or [],
+                    "tagged_at": campaign_tagged_at,
+                }, ensure_ascii=False)
+                print(f"      [CAMPAIGN] AI assigned -> {campaign_id} (conf={ai_confidence:.2f})")
+            else:
+                # 2. Keyword Fallback: existing match_event_campaign
+                if ai_campaign_id:
+                    print(f"      [CAMPAIGN] AI suggested '{ai_campaign_id}' but rejected (conf={ai_confidence:.2f}, valid={str(ai_campaign_id).strip().lower() in valid_campaign_ids})")
+                target_type_value = (
+                    (titan_data or {}).get("target_type_category")
+                    or (soldier_result.get("titan_assessment", {}) or {}).get("target_type_category")
+                    or (brain_review.get("verified_data", {}) or {}).get("target_type")
+                    or "unknown"
+                )
+                campaign_event_text = " ".join([
+                    str(journo_result.get("title_en", "")),
+                    str(journo_result.get("description_en", "")),
+                    str(combined_text),
+                ])
+                campaign_match = match_event_campaign(
+                    campaigns=campaign_definitions,
+                    target_type=target_type_value,
+                    event_text=campaign_event_text,
+                )
+                if campaign_match:
+                    campaign_id = campaign_match.get("campaign_id")
+                    campaign_tagged_at = datetime.utcnow().isoformat() + "Z"
+                    campaign_match_meta_json = json.dumps({
+                        "pipeline": "keyword_fallback_v1",
+                        **campaign_match.get("match_meta", {}),
+                        "destroyed_assets": [],
+                        "tagged_at": campaign_tagged_at,
+                    }, ensure_ascii=False)
+                    print(f"      [CAMPAIGN] Keyword fallback -> {campaign_id}")
+
+            # Write campaign data into final_report for downstream consumers
+            final_report.setdefault("strategy", {})
+            if campaign_id:
+                campaign_def = next((c for c in campaign_definitions if c["campaign_id"] == campaign_id), None)
                 final_report["strategy"]["campaign"] = {
-                    "campaign_id": campaign_match.get("campaign_id"),
-                    "name": campaign_match.get("name"),
-                    "color": campaign_match.get("color"),
-                    "match_meta": campaign_match.get("match_meta", {}),
+                    "campaign_id": campaign_id,
+                    "name": campaign_def.get("name") if campaign_def else campaign_id,
+                    "color": campaign_def.get("color") if campaign_def else "#f59e0b",
+                    "match_meta": json.loads(campaign_match_meta_json) if campaign_match_meta_json else {},
                     "tagged_at": campaign_tagged_at,
                 }
             else:
-                final_report.setdefault("strategy", {})
                 final_report["strategy"]["campaign"] = None
         except Exception as campaign_err:
             print(f"   [WARN] Campaign tagging error: {campaign_err}")
@@ -3190,8 +3272,21 @@ async def main():
     )
     print(f"[CAMPAIGNS] Loaded {len(campaign_definitions)} campaign definitions (sheet/cache).")
 
+    # Build compact campaign catalog for Brain prompt injection (token-efficient)
+    catalog_lines = ["ACTIVE STRATEGIC CAMPAIGNS (use ONLY these exact IDs):"]
+    for cdef in campaign_definitions:
+        kw_sample = ", ".join((cdef.get("keywords") or [])[:6])
+        catalog_lines.append(
+            f"- {cdef['campaign_id']}: {cdef.get('name', '')} (keywords: {kw_sample})"
+        )
+    campaign_catalog_text = "\n".join(catalog_lines)
+    # Store globally so process_cluster_async can access it
+    global CAMPAIGN_CATALOG_TEXT
+    CAMPAIGN_CATALOG_TEXT = campaign_catalog_text
+    print(f"[CAMPAIGNS] Campaign catalog built ({len(campaign_catalog_text)} chars, ~{len(campaign_catalog_text)//4} tokens).")
+
     agent = SuperSquadAgent()
-    print("[DB] Lettura cluster pendenti da SQLite...")
+    print("[DB] Reading pending clusters from SQLite...")
 
     try:
         cursor.execute("""
