@@ -1789,9 +1789,18 @@ Output ONLY valid JSON per your instructions."""
             parsed = self._clean_and_parse_json(raw_response)
             
             if not parsed:
-                print("   \u26a0\ufe0f Visionary JSON parse failed. Attempting repair...")
+                print("   ⚠️ Visionary JSON parse failed. Attempting repair...")
                 parsed = await self._repair_json_with_ai(raw_response, "Visionary output malformed")
-            
+
+            # Post-process: Map LLM analysis back to Base64 frames
+            if parsed:
+                llm_frames = parsed.get("analyzed_frames") or parsed.get("per_frame_analysis") or []
+                if llm_frames:
+                    for i, af in enumerate(llm_frames):
+                        if i < len(frame_dicts):
+                            af["base64_data"] = frame_dicts[i].get("base64_data")
+                    parsed["analyzed_frames"] = llm_frames
+                    if "per_frame_analysis" in parsed: del parsed["per_frame_analysis"]
 
             if parsed:
                 # 0. TACTICAL FILTER PATCH: Discard non-military IMINT (maps, charts, talking heads)

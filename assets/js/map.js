@@ -1244,6 +1244,12 @@
       const sparkId = 'scSpark_' + idx;
       const statusClass = item.status === 'LIVE' ? 'live' : 'standby';
       const isActive = activeId && item.campaign_id === activeId;
+      const assessment = (window.strategicAssessments || {})[item.campaign_id] || {};
+      const aiInsight = assessment.situational_overview ? 
+        `<div class="sc-ai-insight" style="margin-bottom:12px; background:rgba(245,158,11,0.05); border-left:2px solid var(--amber-500); padding:8px; font-size:0.75rem; color:#cbd5e1; font-style:italic; line-height:1.4;">
+            <span style="color:var(--amber-500); font-weight:700; font-family:var(--font-mono); font-size:0.6rem; display:block; margin-bottom:4px;">[ STRATEGIC INTEL ]</span> ${assessment.situational_overview}
+         </div>` : '';
+
       return `
         <article class="sc-card ${isActive ? 'active' : ''}" data-campaign-id="${item.campaign_id}">
           <div class="sc-row" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')" style="cursor:pointer;">
@@ -1258,6 +1264,7 @@
           </div>
           <div class="sc-sparkline-wrap" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')"><canvas id="${sparkId}" height="42"></canvas></div>
           <div class="sc-brief" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')">${escapeSc(item.brief_text)}</div>
+          ${aiInsight}
           <div class="sc-actions" style="margin-top:auto; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">
             <button class="sc-dossier-btn" 
                     onclick="event.stopPropagation(); openCampaignDossier('${item.campaign_id}')" 
@@ -1273,6 +1280,12 @@
       const sparkId = 'scSidebarSpark_' + idx;
       const statusClass = item.status === 'LIVE' ? 'live' : 'standby';
       const isActive = activeId && item.campaign_id === activeId;
+      const assessment = (window.strategicAssessments || {})[item.campaign_id] || {};
+      const aiInsight = assessment.situational_overview ? 
+        `<div class="sc-ai-insight" style="margin-bottom:12px; background:rgba(245,158,11,0.05); border-left:2px solid var(--amber-500); padding:8px; font-size:0.75rem; color:#cbd5e1; font-style:italic; line-height:1.4;">
+            <span style="color:var(--amber-500); font-weight:700; font-family:var(--font-mono); font-size:0.6rem; display:block; margin-bottom:4px;">[ STRATEGIC INTEL ]</span> ${assessment.situational_overview}
+         </div>` : '';
+
       return `
         <article class="sc-card ${isActive ? 'active' : ''}" data-campaign-id="${item.campaign_id}">
           <div class="sc-row" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')" style="cursor:pointer;">
@@ -1287,6 +1300,7 @@
           </div>
           <div class="sc-sparkline-wrap" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')"><canvas id="${sparkId}" height="42"></canvas></div>
           <div class="sc-brief" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')">${escapeSc(item.brief_text)}</div>
+          ${aiInsight}
           <div class="sc-actions" style="margin-top:auto; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">
             <button class="sc-dossier-btn" 
                     onclick="event.stopPropagation(); openCampaignDossier('${item.campaign_id}')" 
@@ -1374,17 +1388,13 @@
 
   function loadStrategicCampaignData() {
     return Promise.all([
-      fetch('assets/data/campaign_reports.json')
-        .then(function (r) { return r.ok ? r.json() : { campaigns: [] }; })
-        .catch(function () { return { campaigns: [] }; }),
-      fetch('assets/data/campaign_definitions.json')
-        .then(function (r) { return r.ok ? r.json() : { campaigns: [] }; })
-        .catch(function () { return { campaigns: [] }; })
-    ]).then(function (result) {
-      const reportsPayload = result[0] || {};
-      const defsPayload = result[1] || {};
-      strategicCampaignReports = Array.isArray(reportsPayload.campaigns) ? reportsPayload.campaigns : [];
-      strategicCampaignDefinitions = Array.isArray(defsPayload.campaigns) ? defsPayload.campaigns : [];
+      fetch('assets/data/campaign_reports.json').then(r => r.ok ? r.json() : { campaigns: [] }),
+      fetch('assets/data/campaign_definitions.json').then(r => r.ok ? r.json() : { campaigns: [] }),
+      fetch('assets/data/strategic_assessments.json').then(r => r.ok ? r.json() : { assessments: {} }).catch(() => ({ assessments: {} }))
+    ]).then(result => {
+      strategicCampaignReports = result[0].campaigns || [];
+      strategicCampaignDefinitions = result[1].campaigns || [];
+      window.strategicAssessments = result[2].assessments || {};
       
       // Update window references for dossier modal
       window.strategicCampaignReports = strategicCampaignReports;
@@ -4291,7 +4301,44 @@
           videoContainer.style.display = 'none';
           if (telegramUrls.length > 0) {
             let tgUrl = telegramUrls[0].trim();
-            let embedUrl = tgUrl;
+            const assessment = (window.strategicAssessments || {})[item.campaign_id] || {};
+          const aiInsight = assessment.situational_overview ? 
+            `<div class="sc-ai-insight" style="margin-bottom:12px; background:rgba(245,158,11,0.05); border-left:2px solid var(--amber-500); padding:8px; font-size:0.75rem; color:#cbd5e1; font-style:italic; line-height:1.4;">
+                <span style="color:var(--amber-500); font-weight:700; font-family:var(--font-mono); font-size:0.6rem; display:block; margin-bottom:4px;">[ STRATEGIC INTEL ]</span> ${assessment.situational_overview}
+             </div>` : '';
+
+          card.innerHTML = `
+                <div class="sc-header">
+                    <span class="sc-status ${item.status === 'LIVE' ? 'status-live' : 'status-standby'}">${item.status}</span>
+                    <span class="sc-id">${item.campaign_id.toUpperCase()}</span>
+                </div>
+                <h3 class="sc-title" style="color: ${item.color}">${item.name}</h3>
+                <div class="sc-brief">${item.brief_text || 'No strategic brief available.'}</div>
+                
+                ${aiInsight}
+
+                <div class="sc-stats-row">
+                    <div class="sc-stat">
+                        <span class="sc-stat-label">EVENTS</span>
+                        <span class="sc-stat-value">${item.total_events}</span>
+                    </div>
+                    <div class="sc-stat">
+                        <span class="sc-stat-label">IMPACT (E)</span>
+                        <span class="sc-stat-value">${item.sum_vec_e}</span>
+                    </div>
+                </div>
+                
+                <div class="sc-sparkline-wrap">
+                    <canvas id="${chartId}"></canvas>
+                </div>
+
+                <div class="sc-actions" style="display: flex; gap: 8px; flex-direction: column;">
+                    <button class="sc-btn sc-btn-primary" style="width: 100%;" 
+                            onclick="event.stopPropagation(); openCampaignDossier('${item.campaign_id}')">
+                        <i class="fa-solid fa-folder-open" style="margin-right:8px;"></i>OPEN CAMPAIGN DOSSIER
+                    </button>
+                </div>
+            `;  let embedUrl = tgUrl;
             if (!embedUrl.includes('?embed=')) {
               embedUrl = embedUrl.split('?')[0] + '?embed=1&dark=1';
             } else if (!embedUrl.includes('dark=')) {

@@ -1109,6 +1109,7 @@
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 3;
+      line-clamp: 3;
       -webkit-box-orient: vertical;
       position: relative;
       z-index: 1;
@@ -1641,6 +1642,7 @@
     .ud-stat-value .ud-expandable-content {
       display: -webkit-box;
       -webkit-line-clamp: 1;
+      line-clamp: 1;
       -webkit-box-orient: vertical;
       overflow: hidden;
       word-break: break-word;
@@ -1650,6 +1652,7 @@
     .ud-stat-value.ud-stat-expandable.is-expanded .ud-expandable-content {
       display: block;
       -webkit-line-clamp: unset;
+      line-clamp: unset;
       overflow: visible;
       white-space: normal;
     }
@@ -4658,7 +4661,7 @@
       </div>
 
             <!-- IMINT LIGHTBOX -->
-      <div id="imintLightbox" class="imint-lightbox" style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.95); z-index:9000; flex-direction:column; align-items:center; justify-content:center;">
+      <div id="imintLightbox" class="imint-lightbox" style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.95); z-index:10000; flex-direction:column; align-items:center; justify-content:center;">
         <span style="position:absolute; top:20px; right:30px; font-size:2rem; color:#94a3b8; cursor:pointer; z-index:10001;" 
               onclick="document.getElementById('imintLightbox').style.display='none'">&times;</span>
         
@@ -5054,7 +5057,7 @@
 
       <script src="assets/js/charts.js?v=2.2"></script>
 
-      <script src="assets/js/map.js?v=3.6"></script>
+      <script src="assets/js/map.js?v=3.7"></script>
       <script src="assets/js/orbat_tracker.js?v=2.2"></script>
       <script src="assets/js/unit_dossier.js?v=2"></script>
 
@@ -5828,7 +5831,7 @@
                 : (ev.classification || ev.category || 'Unclassified Target');
               var key = label.toLowerCase();
               if (!groups[key]) {
-                groups[key] = { asset: label, qty: 0, effectSum: 0, tieMax: 0, imintCount: 0, latest: null, eventId: null, frameIndex: 0, faction: '' };
+                groups[key] = { asset: label, qty: 0, effectSum: 0, tieMax: 0, imintCount: 0, latest: null, eventId: null, groupKey: key, faction: '' };
               }
               var group = groups[key];
               var effect = getNumeric(ev.vec_e) || 0;
@@ -5839,12 +5842,12 @@
               group.effectSum += effect;
               group.tieMax = Math.max(group.tieMax, tie);
               if (!group.latest || (date && date > group.latest)) group.latest = date;
+              
               if (frames.length) {
-                group.imintCount += 1;
-                if (!group.eventId) {
-                  group.eventId = getEventId(ev);
-                  group.frameIndex = 0;
-                }
+                if (!window._campaignDossierGroupFrames) window._campaignDossierGroupFrames = {};
+                if (!window._campaignDossierGroupFrames[key]) window._campaignDossierGroupFrames[key] = [];
+                window._campaignDossierGroupFrames[key] = window._campaignDossierGroupFrames[key].concat(frames);
+                group.imintCount = window._campaignDossierGroupFrames[key].length;
               }
 
               // 2. AI-extracted destroyed_assets from campaign_match_meta (Brain pipeline)
@@ -5959,6 +5962,7 @@
             var archiveEvents = filterCampaignEvents(await getCampaignArchiveEvents(), id);
             var events = sortEventsDesc(mergeUniqueEvents(archiveEvents, loadedEvents));
             window._campaignDossierEventCache = window._campaignDossierEventCache || {};
+            window._campaignDossierGroupFrames = {};
             events.forEach(function (ev) { window._campaignDossierEventCache[getEventId(ev)] = ev; });
 
             var title = String((campaign && campaign.name) || (events[0] && events[0].campaign_name) || id.replace(/_/g, ' ')).toUpperCase();
@@ -6040,8 +6044,8 @@
               return '<div class="bar-row"><span class="label">' + escapeHtml(item.label) + '</span><div class="track"><div class="fill' + critical + '" style="width: ' + item.value + '%"></div></div><span class="value">' + item.value + '%</span></div>';
             }).join('');
             var equipmentRows = dossier.equipment.length ? dossier.equipment.map(function (row) {
-              var badge = row.imint
-                ? '<button class="badge-imint" type="button" data-event-id="' + escapeHtml(row.eventId) + '" data-frame-index="' + escapeHtml(row.frameIndex || 0) + '"><i class="fa-solid fa-eye"></i> [ IMINT ' + escapeHtml(row.imintCount) + ' ]</button>'
+              var badge = row.imintCount > 0
+                ? '<button class="badge-imint" type="button" onclick="openCampaignGroupImint(\'' + escapeHtml(row.groupKey) + '\')"><i class="fa-solid fa-eye"></i> [ IMINT ' + escapeHtml(row.imintCount) + ' ]</button>'
                 : '<span class="source-badge" aria-disabled="true">[ NO IMINT ]</span>';
               return '<div><i class="fa-solid ' + escapeHtml(row.icon) + '"></i></div><div>' + escapeHtml(row.asset) + '</div><div>' + row.qty + '</div><div>' + escapeHtml(row.state) + '</div><div>' + escapeHtml(row.latest) + '</div><div>' + badge + '</div>';
             }).join('') : '<div style="grid-column:1/-1;"><span class="empty-state">NO REAL TARGET GROUPS AVAILABLE FOR THIS CAMPAIGN.</span></div>';
@@ -6092,11 +6096,34 @@
             var overlay = q('campaignDossierOverlay');
             if (!overlay) return;
             renderConsoleLoading(campaignId);
+            
+            // Default to overview, but user can switch to intel
             switchTab('overview');
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
+
             try {
-              renderCampaignConsole(await buildCampaignDossierData(campaignId));
+              const [dossierData, assessmentsData] = await Promise.all([
+                buildCampaignDossierData(campaignId),
+                fetch('assets/data/strategic_assessments.json?v=' + Date.now()).then(r => r.json()).catch(() => ({ assessments: {} }))
+              ]);
+
+              renderCampaignConsole(dossierData);
+
+              // Populate AI Intel Section
+              const assessment = assessmentsData.assessments[campaignId];
+              if (assessment) {
+                q('ai-situational-overview').innerText = assessment.situational_overview || 'No assessment available.';
+                q('ai-tactical-focus').innerText = assessment.tactical_focus || '...';
+                q('ai-operational-trend').innerText = assessment.operational_trend || '...';
+                q('ai-strategic-outlook').innerText = assessment.strategic_outlook || '...';
+              } else {
+                q('ai-situational-overview').innerText = 'No AI assessment found for this campaign.';
+                q('ai-tactical-focus').innerText = '---';
+                q('ai-operational-trend').innerText = '---';
+                q('ai-strategic-outlook').innerText = '---';
+              }
+
             } catch (err) {
               renderCampaignConsole({
                 campaignCode: '[ DATA-ERROR ]',
@@ -6119,14 +6146,20 @@
             }
           }
 
+          window.openCampaignGroupImint = function (groupKey) {
+            var frames = (window._campaignDossierGroupFrames || {})[groupKey];
+            if (frames && frames.length && window.openImintLightbox) {
+              window.openImintLightbox(frames, 0);
+              return;
+            }
+          }
+
           function openCampaignImint(eventId, frameIndex) {
             var cache = window._campaignDossierEventCache || {};
             var ev = cache[String(eventId || '')];
             var frames = ev ? getVisualFrames(ev) : [];
-            var frame = frames[parseInt(frameIndex || 0, 10)] || frames[0];
-            if (frame && frame.base64_data && q('imintLightbox') && q('imintLightboxImg')) {
-              q('imintLightboxImg').src = frame.base64_data;
-              q('imintLightbox').style.display = 'flex';
+            if (frames.length > 0 && window.openImintLightbox) {
+              window.openImintLightbox(frames, parseInt(frameIndex || 0, 10));
               return;
             }
             if (ev && window.openIntelDossier) window.openIntelDossier(ev);
@@ -6199,9 +6232,38 @@
             <button class="nav-tab" type="button" data-tab="sources" title="SIGINT and sources" aria-label="SIGINT and sources">
               <i class="fa-solid fa-database"></i>
             </button>
+            <button class="nav-tab" type="button" data-tab="intel" title="AI Strategic Assessment" aria-label="AI Strategic Assessment" style="color:var(--amber-500);">
+              <i class="fa-solid fa-brain"></i>
+            </button>
           </nav>
 
           <main class="campaign-main-pane">
+            <section class="console-section" data-section="intel">
+              <h2 class="section-title">AI STRATEGIC ASSESSMENT <span style="font-size:0.6rem; opacity:0.5; margin-left:10px;">DEEPSEEK V4 FLASH</span></h2>
+              <div id="cdAiAssessmentContent" class="ai-intel-container" style="display:flex; flex-direction:column; gap:20px; padding:10px;">
+                <div class="intel-block situational-overview" style="background:rgba(245, 158, 11, 0.05); border-left:3px solid var(--amber-500); padding:15px; border-radius:0 4px 4px 0;">
+                  <h3 style="font-family:var(--font-mono); font-size:0.7rem; color:var(--amber-500); margin-bottom:10px; letter-spacing:1px;">[ SITUATIONAL OVERVIEW ]</h3>
+                  <div class="intel-text" id="ai-situational-overview" style="font-size:0.85rem; line-height:1.6; color:#cbd5e1;">Loading tactical intelligence...</div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                  <div class="intel-block tactical-focus" style="background:rgba(15, 23, 42, 0.4); border:1px solid #1e293b; padding:15px; border-radius:4px;">
+                    <h3 style="font-family:var(--font-mono); font-size:0.7rem; color:#94a3b8; margin-bottom:10px;">[ TACTICAL FOCUS ]</h3>
+                    <div class="intel-text" id="ai-tactical-focus" style="font-size:0.8rem; line-height:1.5; color:#94a3b8;">...</div>
+                  </div>
+                  <div class="intel-block operational-trend" style="background:rgba(15, 23, 42, 0.4); border:1px solid #1e293b; padding:15px; border-radius:4px;">
+                    <h3 style="font-family:var(--font-mono); font-size:0.7rem; color:#94a3b8; margin-bottom:10px;">[ OPERATIONAL TREND ]</h3>
+                    <div class="intel-text" id="ai-operational-trend" style="font-size:0.8rem; line-height:1.5; color:#94a3b8;">...</div>
+                  </div>
+                </div>
+
+                <div class="intel-block strategic-outlook" style="background:rgba(30, 41, 59, 0.3); border:1px dashed #334155; padding:15px; border-radius:4px;">
+                  <h3 style="font-family:var(--font-mono); font-size:0.7rem; color:#64748b; margin-bottom:10px;">[ STRATEGIC OUTLOOK 72-96H ]</h3>
+                  <div class="intel-text" id="ai-strategic-outlook" style="font-size:0.8rem; line-height:1.5; color:#64748b; font-style:italic;">...</div>
+                </div>
+              </div>
+            </section>
+
             <section class="console-section active" data-section="overview">
               <h2 class="section-title">EXECUTIVE SUMMARY</h2>
               <ul class="summary-list" id="cdExecutiveSummary"></ul>
