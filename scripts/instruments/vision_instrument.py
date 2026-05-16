@@ -27,7 +27,11 @@ import asyncio
 from typing import List, Dict, Tuple, Optional
 from bs4 import BeautifulSoup
 from io import BytesIO
+import random
+import time
+import threading
 
+_TME_SEMAPHORE = threading.Semaphore(2)  # Limit concurrent t.me HTTP requests
 logger = logging.getLogger(__name__)
 
 
@@ -194,15 +198,43 @@ class MediaProcessor:
         """
         Resolves a public t.me post URL to its direct CDN video/image link.
         Uses the ?embed=1 endpoint to scrape the direct src without login.
+        Protected by Semaphore and Jitter to prevent rate limiting.
         """
         embed_url = tme_url + "?embed=1"
+        
+        UAS = [
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0",
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+        ]
+        
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "User-Agent": random.choice(UAS),
             "Referer": "https://t.me/"
         }
         
+        # Implement robust retry strategy with backoff to bypass Telegram rate limiting
+        from requests.adapters import HTTPAdapter
+        from urllib3.util.retry import Retry
+        
+        session = requests.Session()
+        retry = Retry(
+            total=3,
+            backoff_factor=1.5,
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=["GET"]
+        )
+        adapter = HTTPAdapter(max_retries=retry)
+        session.mount("http://", adapter)
+        session.mount("https://", adapter)
+        
         try:
-            r = requests.get(embed_url, headers=headers, timeout=10)
+            with _TME_SEMAPHORE:
+                # Jitter to mimic human behavior
+                time.sleep(random.uniform(0.5, 1.5))
+                r = session.get(embed_url, headers=headers, timeout=15)
+
             if r.status_code != 200:
                 return None
                 
@@ -226,75 +258,88 @@ class MediaProcessor:
         except Exception as e:
             logger.error(f"MediaProcessor: Error resolving {tme_url}: {e}")
             return None
+        finally:
+            session.close()
 
     async def extract_audio_transcript(self, media_url: str) -> str:
-        """Download video, extract audio, and transcribe via OpenRouter Whisper."""
+        """Download video, extract audio, and transcribe via OpenRouter openai/whisper-large-v3-turbo."""
+        if media_url.startswith("https://t.me/"):
+            resolved_url = await asyncio.to_thread(self._resolve_telegram_url, media_url)
+            if not resolved_url:
+                logger.warning(f"MediaProcessor: Failed to resolve Telegram CDN for audio {media_url}")
+                return ""
+            media_url = resolved_url
+
         import uuid
-        import shutil
+        import base64
+        import subprocess
         
-        # Create unique paths in the system temp directory
         temp_dir = tempfile.gettempdir()
         v_name = f"vid_{uuid.uuid4().hex}.mp4"
-        a_name = f"aud_{uuid.uuid4().hex}.mp3"
+        a_name = f"aud_{uuid.uuid4().hex}.wav"
         v_path = os.path.join(temp_dir, v_name)
         a_path = os.path.join(temp_dir, a_name)
         
         try:
-            # Download video (streaming to file)
-            r = requests.get(media_url, stream=True, timeout=30)
-            if r.status_code != 200:
-                return ""
-                
-            with open(v_path, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=8192):
-                    f.write(chunk)
+            async with aiohttp.ClientSession() as session:
+                async with session.get(media_url, timeout=45) as r:
+                    if r.status != 200:
+                        return ""
+                    with open(v_path, 'wb') as f:
+                        async for chunk in r.content.iter_chunked(8192):
+                            f.write(chunk)
 
-            # Extract audio using ffmpeg
+            # Extract audio using ffmpeg to WAV
             cmd = [
                 "ffmpeg", "-y", "-i", v_path,
-                "-vn", "-acodec", "libmp3lame", "-q:a", "9",
-                "-ar", "16000", "-ac", "1",
+                "-vn", "-acodec", "pcm_s16le", "-ar", "16000", "-ac", "1",
                 a_path
             ]
+            await asyncio.to_thread(subprocess.run, cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             
-            # Run ffmpeg and wait for completion
-            process = await asyncio.create_subprocess_exec(
-                *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-            )
-            stdout, stderr = await process.communicate()
-
-            if process.returncode != 0:
-                logger.error(f"MediaProcessor: FFmpeg error: {stderr.decode()}")
+            if not os.path.exists(a_path):
                 return ""
 
-            if not os.path.exists(a_path) or os.path.getsize(a_path) < 100:
-                return ""
+            # Base64 encode the audio file
+            with open(a_path, "rb") as audio_file:
+                audio_b64 = base64.b64encode(audio_file.read()).decode('utf-8')
 
-            # Read audio into memory to release the file handle immediately
-            with open(a_path, 'rb') as f:
-                audio_data = f.read()
-
-            # Transcribe via OpenRouter
-            openrouter_key = os.getenv("OPENROUTER_API_KEY")
-            if not openrouter_key: 
-                return ""
+            # Send to OpenRouter with openai/whisper-large-v3-turbo
+            payload = {
+                "model": "openai/whisper-large-v3-turbo",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": "Please transcribe this audio file. The language is likely Russian or Ukrainian."},
+                            {"type": "input_audio", "input_audio": {"data": audio_b64, "format": "wav"}}
+                        ]
+                    }
+                ],
+                "stream": False
+            }
+            
+            headers = {
+                "Authorization": f"Bearer {os.environ.get('OPENROUTER_API_KEY')}",
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://impact-atlas.io",
+                "X-Title": "Impact Atlas"
+            }
             
             async with aiohttp.ClientSession() as session:
-                data = aiohttp.FormData()
-                data.add_field('file', audio_data, filename='audio.mp3')
-                data.add_field('model', "openai/whisper-large-v3-turbo")
-
-                async with session.post("https://openrouter.ai/api/v1/audio/transcriptions", 
-                                       data=data, 
-                                       headers={"Authorization": f"Bearer {openrouter_key}"}) as resp:
+                async with session.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload, timeout=60) as resp:
                     if resp.status == 200:
-                        res_data = await resp.json()
-                        return res_data.get('text', "")
+                        data = await resp.json()
+                        content = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+                        return content.strip()
                     else:
-                        logger.error(f"MediaProcessor: OpenRouter Whisper error: {resp.status}")
+                        err_text = await resp.text()
+                        logger.error(f"MediaProcessor: OpenRouter audio API error {resp.status}: {err_text}")
+                        return ""
                         
         except Exception as e:
-            logger.error(f"MediaProcessor: Transcription error: {e}")
+            logger.error(f"MediaProcessor: Audio extraction error: {e}")
+            return ""
         finally:
             # Cleanup: ensure files are deleted even if errors occurred
             for p in [v_path, a_path]:

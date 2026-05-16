@@ -1241,22 +1241,22 @@
       const statusClass = item.status === 'LIVE' ? 'live' : 'standby';
       const isActive = activeId && item.campaign_id === activeId;
       return `
-        <article class=\"sc-card ${isActive ? 'active' : ''}\" data-campaign-id=\"${item.campaign_id}\" style=\"border-left:3px solid ${item.color};\">
-          <div class=\"sc-row\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\">
-            <div class=\"sc-name\">${escapeSc(item.name)}</div>
-            <span class=\"sc-badge ${statusClass}\">${escapeSc(item.status)}</span>
+        <article class="sc-card ${isActive ? 'active' : ''}" data-campaign-id="${item.campaign_id}" style="border-left:3px solid ${item.color};">
+          <div class="sc-row" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')" style="cursor:pointer;">
+            <div class="sc-name">${escapeSc(item.name)}</div>
+            <span class="sc-badge ${statusClass}">${escapeSc(item.status)}</span>
           </div>
-          <div class=\"sc-row\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\">
+          <div class="sc-row" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')" style="cursor:pointer;">
             <div>
-              <div class=\"sc-metric\">${item.sum_vec_e.toFixed(1)}</div>
-              <div class=\"sc-metric-label\">Cumulative E-Vector</div>
+              <div class="sc-metric">${item.sum_vec_e.toFixed(1)}</div>
+              <div class="sc-metric-label">Cumulative E-Vector</div>
             </div>
           </div>
-          <div class=\"sc-sparkline-wrap\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\"><canvas id=\"${sparkId}\" height=\"42\"></canvas></div>
-          <div class=\"sc-brief\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\">${escapeSc(item.brief_text)}</div>
-          <div style=\"padding:6px 10px 8px 10px; border-top:1px solid #1e293b; display:flex; justify-content:flex-end;\">
-            <button class=\"sc-dossier-btn\" onclick=\"event.stopPropagation();openCampaignDossier('${item.campaign_id}')\" style=\"background:transparent; border:1px solid #334155; color:#94a3b8; padding:4px 10px; border-radius:2px; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.55rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; display:flex; align-items:center; gap:4px; transition:all 0.2s;\" onmouseover=\"this.style.borderColor='#f59e0b';this.style.color='#fbbf24'\" onmouseout=\"this.style.borderColor='#334155';this.style.color='#94a3b8'\">
-              <i class=\"fa-solid fa-file-lines\"></i> Dossier
+          <div class="sc-sparkline-wrap" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')" style="cursor:pointer;"><canvas id="${sparkId}" height="42"></canvas></div>
+          <div class="sc-brief" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')" style="cursor:pointer;">${escapeSc(item.brief_text)}</div>
+          <div style="padding:6px 10px 8px 10px; border-top:1px solid #1e293b; display:flex; justify-content:flex-end;">
+            <button class="sc-dossier-btn" onclick="event.stopPropagation();openCampaignDossier('${item.campaign_id}')" style="background:transparent; border:1px solid #334155; color:#94a3b8; padding:4px 10px; border-radius:2px; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.55rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; display:flex; align-items:center; gap:4px; transition:all 0.2s;" onmouseover="this.style.borderColor='#f59e0b';this.style.color='#fbbf24'" onmouseout="this.style.borderColor='#334155';this.style.color='#94a3b8'">
+              <i class="fa-solid fa-file-lines"></i> Dossier
             </button>
           </div>
         </article>`;
@@ -1266,22 +1266,22 @@
       const statusClass = item.status === 'LIVE' ? 'live' : 'standby';
       const isActive = activeId && item.campaign_id === activeId;
       return `
-        <article class=\"sc-card ${isActive ? 'active' : ''}\" data-campaign-id=\"${item.campaign_id}\" style=\"border-left:3px solid ${item.color};\">
-          <div class=\"sc-row\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\">
-            <div class=\"sc-name\">${escapeSc(item.name)}</div>
-            <span class=\"sc-badge ${statusClass}\">${escapeSc(item.status)}</span>
+        <article class="sc-card ${isActive ? 'active' : ''}" data-campaign-id="${item.campaign_id}" style="border-left:3px solid ${item.color};">
+          <div class="sc-row" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')" style="cursor:pointer;">
+            <div class="sc-name">${escapeSc(item.name)}</div>
+            <span class="sc-badge ${statusClass}">${escapeSc(item.status)}</span>
           </div>
-          <div class=\"sc-row\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\">
+          <div class="sc-row" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')" style="cursor:pointer;">
             <div>
-              <div class=\"sc-metric\">${item.sum_vec_e.toFixed(1)}</div>
-              <div class=\"sc-metric-label\">Cumulative E-Vector</div>
+              <div class="sc-metric">${item.sum_vec_e.toFixed(1)}</div>
+              <div class="sc-metric-label">Cumulative E-Vector</div>
             </div>
           </div>
-          <div class=\"sc-sparkline-wrap\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\"><canvas id=\"${sparkId}\" height=\"42\"></canvas></div>
-          <div class=\"sc-brief\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\">${escapeSc(item.brief_text)}</div>
-          <div style=\"padding:6px 10px 8px 10px; border-top:1px solid #1e293b; display:flex; justify-content:flex-end;\">
-            <button class=\"sc-dossier-btn\" onclick=\"event.stopPropagation();openCampaignDossier('${item.campaign_id}')\" style=\"background:transparent; border:1px solid #334155; color:#94a3b8; padding:4px 10px; border-radius:2px; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.55rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; display:flex; align-items:center; gap:4px; transition:all 0.2s;\" onmouseover=\"this.style.borderColor='#f59e0b';this.style.color='#fbbf24'\" onmouseout=\"this.style.borderColor='#334155';this.style.color='#94a3b8'\">
-              <i class=\"fa-solid fa-file-lines\"></i> Dossier
+          <div class="sc-sparkline-wrap" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')" style="cursor:pointer;"><canvas id="${sparkId}" height="42"></canvas></div>
+          <div class="sc-brief" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')" style="cursor:pointer;">${escapeSc(item.brief_text)}</div>
+          <div style="padding:6px 10px 8px 10px; border-top:1px solid #1e293b; display:flex; justify-content:flex-end;">
+            <button class="sc-dossier-btn" onclick="event.stopPropagation();openCampaignDossier('${item.campaign_id}')" style="background:transparent; border:1px solid #334155; color:#94a3b8; padding:4px 10px; border-radius:2px; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.55rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; display:flex; align-items:center; gap:4px; transition:all 0.2s;" onmouseover="this.style.borderColor='#f59e0b';this.style.color='#fbbf24'" onmouseout="this.style.borderColor='#334155';this.style.color='#94a3b8'">
+              <i class="fa-solid fa-file-lines"></i> Dossier
             </button>
           </div>
         </article>`;
