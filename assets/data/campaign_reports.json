@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-16T19:21:35.876049+00:00",
+  "generated_at": "2026-05-16T19:29:18.468558+00:00",
   "weekly_window_days": 7,
   "sparkline_window_days": 30,
   "campaigns": [
@@ -78,7 +78,7 @@
           10.0
         ]
       },
-      "brief_text": "Campaign is live with 78 events and a weekly TIE of 855.0, indicating sustained high-tempo operations. Cumulative effect vector of 490.0 suggests moderate but consolidating degradation of enemy fuel logistics. Priority is to maintain pressure on remaining hubs to force a systemic collapse in adversary mobility."
+      "brief_text": "Campaign dashboard confirms active degradation of 78 enemy fuel nodes, with a weekly cumulative TIE of 855.0 indicating sustained interdiction tempo. The cumulative effect vector of 490.0 suggests measurable reduction in adversary logistics throughput, likely constraining operational mobility within 72 hours. Recommend maintaining current strike cadence to collapse refinery regeneration cycles before enemy adapts countermeasures."
     },
     {
       "campaign_id": "energy_grid_degradation",
@@ -232,7 +232,7 @@
           1.0
         ]
       },
-      "brief_text": "Campaign is live with 47 tagged events, but weekly TIE of 0.0 indicates zero effective suppression this period. Cumulative Effect vector of 289.0 reflects prior gains now at risk of erosion. Immediate corrective action required to restore suppression tempo and prevent adversary recovery."
+      "brief_text": "Air Defense Suppression: LIVE posture with 47 tagged events. Weekly T.I.E. cumulative is 0.0 and cumulative E-vector impact is 289.0."
     },
     {
       "campaign_id": "missile_and_strike_complex",
@@ -309,7 +309,7 @@
           4.0
         ]
       },
-      "brief_text": "Campaign Missile And Strike Complex is live with 24 tagged events, sustaining a weekly cumulative TIE of 291.0—indicating high operational tempo. Cumulative effect vector at 100.0 confirms full degradation of target capabilities. Maintain current targeting cadence to ensure no reconstitution of adversary strike capacity."
+      "brief_text": "Campaign LIVE with 24 tagged events and a weekly TIE of 291.0 indicates sustained, high-tempo strike operations. The cumulative effect vector at 100.0 confirms full strategic objective attainment, suggesting no residual adversary capability. Immediate priority is to transition from active suppression to battle damage assessment and re-targeting for follow-on strikes."
     },
     {
       "campaign_id": "logistics_network_attrition",
@@ -463,7 +463,7 @@
           0.0
         ]
       },
-      "brief_text": "Command And Control Disruption: LIVE posture with 12 tagged events. Weekly T.I.E. cumulative is 146.0 and cumulative E-vector impact is 87.0."
+      "brief_text": "Campaign is live with 12 tagged events; weekly TIE of 146.0 indicates sustained pressure on adversary decision cycles. Cumulative effect vector at 87.0 suggests degradation of C2 coherence is approaching a critical threshold. Recommend prioritizing follow-on strikes to exploit emerging seams before adversary adapts."
     },
     {
       "campaign_id": "naval_pressure_campaign",
@@ -540,7 +540,7 @@
           0.0
         ]
       },
-      "brief_text": "Naval Pressure Campaign is live with 31 tagged events. Weekly cumulative TIE of 142.0 aligns closely with cumulative effect vector of 140.0, indicating high operational fidelity. The marginal 2.0 gap suggests no significant degradation; maintain current targeting tempo."
+      "brief_text": "Naval Pressure Campaign: LIVE posture with 31 tagged events. Weekly T.I.E. cumulative is 142.0 and cumulative E-vector impact is 140.0."
     },
     {
       "campaign_id": "aerospace_asset_attrition",
@@ -617,7 +617,7 @@
           0.0
         ]
       },
-      "brief_text": "**Operational implication:** The 10 tagged events and weekly TIE of 7.0 indicate sustained, high-tempo attrition against aerospace assets, exceeding replacement capacity. Cumulative effect vector of 55.0 confirms critical degradation of combat capability, likely forcing mission curtailment or withdrawal. Immediate reinforcement and defensive counter-air operations are required to prevent systemic collapse."
+      "brief_text": "Aerospace Asset Attrition: LIVE posture with 10 tagged events. Weekly T.I.E. cumulative is 7.0 and cumulative E-vector impact is 55.0."
     },
     {
       "campaign_id": "uav_ecosystem",
@@ -694,7 +694,7 @@
           19.0
         ]
       },
-      "brief_text": "Campaign UAV Ecosystem is live with 38 tagged events. Weekly cumulative TIE of 172.0 against a cumulative effect vector of 152.0 reveals an 11.6% operational efficiency gap. Immediate analysis of event-to-effect conversion is required to optimize resource allocation and close the shortfall."
+      "brief_text": "UAV Ecosystem: LIVE posture with 38 tagged events. Weekly T.I.E. cumulative is 172.0 and cumulative E-vector impact is 152.0."
     },
     {
       "campaign_id": "civilian_pressure_ops",
@@ -771,7 +771,7 @@
           32.0
         ]
       },
-      "brief_text": "Civilian Pressure Ops is LIVE with 130 tagged events and a weekly TIE of 590.0, indicating sustained operational tempo. The cumulative Effect vector of 729.0 suggests strategic impact is accruing but requires correlation with adversary decision-making thresholds. Recommend immediate assessment of event-to-effect conversion efficiency to avoid diminishing returns."
+      "brief_text": "Civilian Pressure Ops: LIVE posture with 130 tagged events. Weekly T.I.E. cumulative is 590.0 and cumulative E-vector impact is 729.0."
     }
   ]
 }

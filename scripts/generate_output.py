@@ -488,9 +488,11 @@ def export_units(unit_stats=None, orbat_data=None):
 
 def main():
     print("[DB] Connecting to database...")
+    
     if not os.path.exists(DB_PATH):
         print(f"[ERR] Database not found: {DB_PATH}")
         return
+    
     conn = sqlite3.connect(DB_PATH)
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.row_factory = sqlite3.Row
@@ -498,37 +500,102 @@ def main():
     ensure_campaign_columns(conn)
     ensure_sources_reputation_schema(conn)
     apply_reputation_decay(conn)
+    
+    # Load ORBAT Data
     orbat_data = load_orbat_data()
-    campaign_definitions = load_campaign_definitions(sheet_url=os.getenv('SHEET_CSV_URL', ''), cache_path=CAMPAIGN_DEFINITIONS_CACHE_PATH, tab_name='campaign_definitions')
+    print(f"[INFO] Loaded {len(orbat_data)} ORBAT units for enrichment.")
+    sys.stdout.flush()
+
+    campaign_definitions = load_campaign_definitions(
+        sheet_url=os.getenv('SHEET_CSV_URL', ''),
+        cache_path=CAMPAIGN_DEFINITIONS_CACHE_PATH,
+        tab_name='campaign_definitions',
+    )
     campaign_index = {c.get('campaign_id'): c for c in campaign_definitions}
-    cursor.execute("SELECT * FROM unique_events WHERE ai_analysis_status = 'COMPLETED'")
+    print(f"[INFO] Loaded {len(campaign_definitions)} campaign definitions.")
+    sys.stdout.flush()
+    
+    # Query ALL columns directly
+    cursor.execute("""
+        SELECT 
+            event_id,
+            last_seen_date,
+            title,
+            description,
+            tie_score,
+            tie_status,
+            kinetic_score,
+            target_score,
+            effect_score,
+            reliability,
+            bias_score,
+            ai_summary,
+            has_video,
+            urls_list,
+            sources_list,
+            ai_report_json,
+            operational_sector,
+            image_phash,
+            source_reputation_score,
+            ai_analysis_status,
+            campaign_id,
+            campaign_match_meta,
+            campaign_tagged_at
+        FROM unique_events 
+        WHERE ai_analysis_status = 'COMPLETED'
+    """)
+    
     rows = cursor.fetchall()
+    
+    # Pre-build lookup: event_id → actual Telegram deep links from raw_signals
     tg_deeplinks = {}
     try:
-        cursor.execute("SELECT cluster_id, url FROM raw_signals WHERE url LIKE '%t.me/%/%' AND cluster_id IS NOT NULL")
+        cursor.execute("""
+            SELECT cluster_id, url 
+            FROM raw_signals 
+            WHERE url LIKE '%t.me/%/%' AND cluster_id IS NOT NULL
+        """)
         for sig in cursor.fetchall():
             cid, url = sig['cluster_id'], sig['url']
+            if not cid or not url: continue
             try:
                 channel = url.split('t.me/')[1].split('/')[0]
                 if cid not in tg_deeplinks: tg_deeplinks[cid] = {}
                 tg_deeplinks[cid][channel] = url
             except: continue
-    except: pass
+        print(f"[INFO] Built Telegram deep-link lookup: {len(tg_deeplinks)} events")
+    except Exception as e:
+        print(f"[WARN] Could not build deep-link lookup: {e}")
+    
+    print(f"[INFO] Found {len(rows)} completed events")
+    
+    # 3. AI Triage Accumulator
     unit_stats_acc = {}
+    
     geojson_features = []
     csv_rows = []
     export_now = _dt.datetime.now(_dt.timezone.utc)
     generated_at = export_now.isoformat(timespec='seconds').replace('+00:00', 'Z')
     opsec_withheld_count = 0
     csv_headers = ["ID", "Date", "Title", "Lat", "Lon", "TIE", "K", "T", "E", "Reliability", "Bias", "HasVideo", "Sources"]
+    
     for db_row in rows:
         try:
             row = dict(db_row)
-            ai_data = json.loads(row['ai_report_json']) if row.get('ai_report_json') else {}
+            ai_data = {}
+
             event_id = row['event_id']
-            date = row.get('last_seen_date') or (ai_data.get('timestamp_generated') or '')[:10] or 'Unknown'
-            title = row.get('title') or ai_data.get('editorial', {}).get('title_en', '')
-            description = row.get('description') or ai_data.get('editorial', {}).get('description_en', '')
+            date = row['last_seen_date']
+            if not date or str(date).lower() in ['none', 'nat', 'null', '']:
+                if row.get('ai_report_json'):
+                    try:
+                        ai_data = json.loads(row['ai_report_json'])
+                        date = (ai_data.get('timestamp_generated') or '')[:10]
+                    except: pass
+                if not date: date = 'Unknown'
+            
+            title = row.get('title') or ''
+            description = row.get('description') or ''
             tie_score = float(row.get('tie_score') or 0)
             k_score = float(row.get('kinetic_score') or 0)
             t_score = float(row.get('target_score') or 0)
@@ -537,53 +604,159 @@ def main():
             bias_score = float(row.get('bias_score') or 0)
             ai_summary = row.get('ai_summary') or ''
             has_video = bool(row.get('has_video'))
-            structured_sources = parse_sources_to_list(row.get('urls_list') or '')
+            
+            # Source aggregation
+            all_url_strs = []
+            if row.get('urls_list'): all_url_strs.append(row['urls_list'])
+            if row.get('sources_list'): all_url_strs.append(row['sources_list'])
+            
+            combined_sources = []
+            for src_str in all_url_strs:
+                combined_sources.extend(parse_sources_to_list(src_str))
+            
+            # Deduplicate sources
+            seen = {}
+            structured_sources = []
+            for s in combined_sources:
+                key = s['name'].lower()
+                if key not in seen:
+                    seen[key] = s
+                    structured_sources.append(s)
+                else:
+                    existing = seen[key]
+                    if (existing['url'] == '#' or 't.me/' in existing['url'] and not '/' in existing['url'].split('t.me/')[-1]) and s['url'] != '#':
+                        existing['url'] = s['url']
+            
+            # Inject deep links
+            event_deeplinks = tg_deeplinks.get(event_id, {})
+            if event_deeplinks:
+                for s in structured_sources:
+                    url = s.get('url', '')
+                    if 't.me/' in url:
+                        channel = url.split('t.me/')[1].split('/')[0]
+                        if channel in event_deeplinks and (not '/' in url.split('t.me/' + channel)[-1]):
+                            s['url'] = event_deeplinks[channel]
+
+            # Coordinate & Metadata Recovery
             lat, lon = None, None
-            if ai_data:
-                geo = ai_data.get('tactics', {}).get('geo_location', {}).get('explicit', {})
-                lat, lon = geo.get('lat'), geo.get('lon')
-                if not lat:
-                    inf = ai_data.get('tactics', {}).get('geo_location', {}).get('inferred', {})
-                    lat, lon = inf.get('lat'), inf.get('lon')
+            if row.get('ai_report_json'):
+                try:
+                    if not ai_data: ai_data = json.loads(row['ai_report_json'])
+                    tactics = ai_data.get('tactics') or {}
+                    geo = (tactics.get('geo_location') or {}).get('explicit') or {}
+                    lat, lon = geo.get('lat'), geo.get('lon')
+                    if not lat or not lon:
+                        inferred = (tactics.get('geo_location') or {}).get('inferred') or {}
+                        lat, lon = inferred.get('lat'), inferred.get('lon')
+                    
+                    # Robust Title/Description Fallbacks
+                    if not title: title = (ai_data.get('editorial') or {}).get('title_en', '')
+                    if not description: description = (ai_data.get('editorial') or {}).get('description_en', '')
+                    if not description: description = (tactics.get('event_analysis') or {}).get('summary_en', '')
+                    if not description: description = (ai_data.get('strategy') or {}).get('strategic_value_assessment', '')
+                    if not description and ai_summary:
+                        description = ai_summary.split('[IT]')[0].replace('[EN]', '').strip()[:300]
+                except: pass
+            
+            # IMINT Analysis Recovery
             visual_analysis = []
-            v_status = ""
+            v_status = ''
             if ai_data:
-                vis = ai_data.get('tactics', {}).get('visionary_report', {})
-                if isinstance(vis, dict):
-                    frames = vis.get('analyzed_frames') or vis.get('per_frame_analysis') or []
-                    v_status = vis.get('visual_confirmation', {}).get('verification_status', '')
-                    for af in frames:
-                        if isinstance(af, dict):
-                            visual_analysis.append({'frame_id': af.get('frame_id', 0), 'confidence': af.get('confidence', 0), 'explanation': af.get('explanation', ''), 'base64_data': af.get('base64_data', ''), 'verification_status': v_status})
-            if not _should_publish_event(date, '', '', title, description, export_now):
+                visionary_report = (ai_data.get('tactics') or {}).get('visionary_report') or {}
+                if isinstance(visionary_report, dict):
+                    analyzed_frames = visionary_report.get('analyzed_frames') or visionary_report.get('per_frame_analysis') or []
+                    v_status = (visionary_report.get('visual_confirmation') or {}).get('verification_status', '')
+                    for af in analyzed_frames:
+                        if not isinstance(af, dict): continue
+                        visual_analysis.append({
+                            "frame_id": af.get('frame_id', 0),
+                            "confidence": af.get('confidence', 0),
+                            "selection_reason": af.get('selection_reason', ''),
+                            "explanation": af.get('explanation', ''),
+                            "base64_data": af.get('base64_data', ''),
+                            "verification_status": v_status
+                        })
+            
+            # Reputation & Styles
+            source_domains = domains_from_structured_sources(structured_sources)
+            classification = extract_classification(ai_data)
+            faction = extract_faction(ai_data, f"{title} {description}")
+            category_hint = ai_data.get('classification') or ''
+            
+            if not _should_publish_event(date, classification, category_hint, title, description, export_now):
                 opsec_withheld_count += 1
                 continue
-            if not lat or not lon:
-                if visual_analysis: lat, lon = 48.5, 31.2
+
+            # Geo Jitter Fallback for IMINT-only events
+            if not lat or not lon or float(lat) == 0 or float(lon) == 0:
+                if visual_analysis:
+                    import hashlib
+                    h1 = int(hashlib.md5(event_id.encode('utf-8')).hexdigest()[:8], 16)
+                    h2 = int(hashlib.md5(event_id.encode('utf-8')[::-1]).hexdigest()[:8], 16)
+                    lat = 48.3 + (h1 % 1000) / 400.0  # Jitter around Central Ukraine
+                    lon = 31.1 + (h2 % 1000) / 400.0
                 else: continue
-            source_reputation_score = 50
+
+            # Final marker styles
             radius, color = get_marker_style(tie_score, e_score)
-            enriched_units = enrich_units(ai_data.get('tactics', {}).get('military_units_detected', []), orbat_data)
+            raw_units = (ai_data.get('tactics') or {}).get('military_units_detected', []) if ai_data else []
+            enriched_units = enrich_units(raw_units, orbat_data)
+            
             campaign_id = (row.get('campaign_id') or '').strip().lower() or None
             campaign_info = campaign_index.get(campaign_id) if campaign_id else None
-            feature = {'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': [float(lon), float(lat)]}, 'properties': {
-                'id': event_id, 'title': title, 'description': description, 'date': date, 'tie_total': tie_score, 'vec_k': k_score, 'vec_t': t_score, 'vec_e': e_score,
-                'reliability': reliability, 'bias_score': bias_score, 'ai_reasoning': ai_summary, 'has_video': has_video, 'sources_list': json.dumps(structured_sources),
-                'image_phash': row.get('image_phash') or '', 'units': json.dumps(enriched_units), 'visual_analysis': json.dumps(visual_analysis) if visual_analysis else '',
-                'marker_radius': radius, 'marker_color': color, 'operational_sector': row.get('operational_sector', 'UNKNOWN'),
-                'campaign_id': campaign_id, 'campaign_name': campaign_info.get('name') if campaign_info else None, 'campaign_color': campaign_info.get('color') if campaign_info else None
-            }}
+            
+            feature = {
+                "type": "Feature",
+                "geometry": {"type": "Point", "coordinates": [float(lon), float(lat)]},
+                "properties": {
+                    "id": event_id, "title": title, "description": description, "date": date, "timestamp": _date_to_epoch_ms(date),
+                    "tie_total": round(tie_score, 1), "vec_k": k_score, "vec_t": t_score, "vec_e": e_score,
+                    "reliability": reliability, "bias_score": bias_score, "classification": classification,
+                    "target_type": ai_data.get('target_type', 'UNKNOWN'), "faction": faction,
+                    "ai_reasoning": ai_summary, "has_video": has_video, "sources_list": json.dumps(structured_sources),
+                    "source_reputation_score": row.get('source_reputation_score', 50), 
+                    "image_phash": row.get("image_phash") or "", "units": json.dumps(enriched_units),
+                    "visual_analysis": json.dumps(visual_analysis) if visual_analysis else "",
+                    "marker_radius": radius, "marker_color": color, 
+                    "operational_sector": row.get('operational_sector', 'UNKNOWN_SECTOR'),
+                    "campaign_id": campaign_id, 
+                    "campaign_name": campaign_info.get('name') if campaign_info else None,
+                    "campaign_color": campaign_info.get('color') if campaign_info else None
+                }
+            }
             geojson_features.append(sanitize_public_feature(feature))
-            csv_rows.append({'ID': event_id, 'Date': date, 'Title': title[:50], 'Lat': lat, 'Lon': lon, 'TIE': tie_score, 'K': k_score, 'T': t_score, 'E': e_score, 'Reliability': reliability, 'Bias': bias_score, 'HasVideo': 1 if has_video else 0, 'Sources': len(structured_sources)})
+            
+            # Unit stats update
+            first_url = structured_sources[0].get('url', '') if structured_sources else ''
+            detected_assets_raw = (ai_data.get('tactics') or {}).get('visionary_report', {}).get('detected_assets', []) if ai_data else []
+            for u in enriched_units:
+                update_unit_stats(unit_stats_acc, u, {
+                    "date": date, "event_id": event_id, "tie_score": tie_score, "kinetic_score": k_score, "target_score": t_score, "effect_score": e_score,
+                    "classification": classification, "title": title, "description": description, "location": row.get('operational_sector', ''),
+                    "lat": lat, "lon": lon, "url": first_url, "detected_assets": detected_assets_raw
+                })
+            
+            csv_rows.append({"ID": event_id, "Date": date, "Title": title[:50], "Lat": lat, "Lon": lon, "TIE": round(tie_score, 1), "K": k_score, "T": t_score, "E": e_score, "Reliability": reliability, "Bias": bias_score, "HasVideo": 1 if has_video else 0, "Sources": len(structured_sources)})
         except Exception as e:
-            print(f'Error processing {row.get("event_id")}: {e}')
+            print(f"Error processing {row.get('event_id', 'UNKNOWN')}: {e}")
             continue
+    
     conn.close()
+    
+    # Save outputs
     os.makedirs(os.path.dirname(GEOJSON_PATH), exist_ok=True)
-    with open(GEOJSON_PATH, 'w', encoding='utf-8') as f: json.dump(build_public_payload(geojson_features, generated_at, opsec_withheld_count), f, indent=2, ensure_ascii=False)
+    with open(GEOJSON_PATH, 'w', encoding='utf-8') as f:
+        json.dump(build_public_payload(geojson_features, generated_at, opsec_withheld_count), f, indent=2, ensure_ascii=False)
+    
     build_campaigns_geo(geojson_features, campaign_definitions, CAMPAIGNS_GEO_PATH)
     build_campaign_reports(geojson_features, campaign_definitions, CAMPAIGN_REPORTS_PATH, 30, 7)
     generate_strategic_trends(geojson_features)
+    
+    with open(CSV_PATH, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=csv_headers)
+        writer.writeheader()
+        writer.writerows(csv_rows)
+    
     export_units(unit_stats_acc, orbat_data)
     export_equipment_losses()
     print('Export complete.')
@@ -620,3 +793,4 @@ def generate_strategic_trends(features):
 
 if __name__ == "__main__":
     main()
+
