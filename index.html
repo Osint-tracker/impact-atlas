@@ -999,33 +999,32 @@
     .sc-cards {
       flex: 1;
       overflow-y: auto;
-      padding: 10px;
+      padding: 8px;
       display: grid;
       grid-template-columns: 1fr;
-      gap: 10px;
+      gap: 8px;
     }
 
     .sc-card {
       border: 1px solid #334155;
       background: rgba(15, 23, 42, 0.84);
-      border-radius: 8px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      border-radius: 2px;
+      padding: 8px;
+      display: grid;
+      grid-template-rows: auto auto 58px auto auto;
+      gap: 7px;
       cursor: pointer;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      overflow: hidden;
     }
 
     .sc-card:hover {
       border-color: rgba(245, 158, 11, 0.55);
-      box-shadow: 0 8px 22px rgba(2, 6, 23, 0.45);
-      transform: translateY(-1px);
+      background: rgba(15, 23, 42, 0.96);
     }
 
     .sc-card.active {
       border-color: rgba(245, 158, 11, 0.95);
-      box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.4);
     }
 
     .sc-row {
@@ -1037,19 +1036,23 @@
 
     .sc-name {
       font-family: var(--font-sans);
-      font-size: 0.85rem;
+      font-size: 0.78rem;
       color: #f8fafc;
       font-weight: 600;
       line-height: 1.2;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .sc-badge {
       font-family: var(--font-mono);
       font-size: 0.52rem;
       padding: 2px 6px;
-      border-radius: 999px;
+      border-radius: 2px;
       border: 1px solid #334155;
       color: #cbd5e1;
+      flex: 0 0 auto;
     }
 
     .sc-badge.live {
@@ -1064,9 +1067,10 @@
 
     .sc-metric {
       font-family: var(--font-mono);
-      font-size: 1.05rem;
+      font-size: 0.98rem;
       color: #f59e0b;
       font-weight: 700;
+      line-height: 1;
     }
 
     .sc-metric-label {
@@ -1078,22 +1082,37 @@
     }
 
     .sc-sparkline-wrap {
-      height: 54px;
+      height: 58px;
       border: 1px solid rgba(51, 65, 85, 0.8);
-      border-radius: 6px;
-      padding: 4px 6px;
+      border-radius: 2px;
+      padding: 4px;
       background: rgba(2, 6, 23, 0.35);
+      overflow: hidden;
+      position: relative;
+      min-width: 0;
+    }
+
+    .sc-sparkline-wrap canvas {
+      display: block;
+      width: 100% !important;
+      height: 48px !important;
     }
 
     .sc-brief {
       font-family: var(--font-mono);
-      font-size: 0.59rem;
-      line-height: 1.45;
+      font-size: 0.58rem;
+      line-height: 1.35;
       color: #cbd5e1;
       border-top: 1px dashed #334155;
-      padding-top: 8px;
-      max-height: 86px;
-      overflow-y: auto;
+      padding: 7px 0 0;
+      max-height: 48px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      position: relative;
+      z-index: 1;
+      background: rgba(15, 23, 42, 0.84);
     }
 
     .sc-empty {
@@ -1103,7 +1122,7 @@
       text-align: center;
       padding: 18px 8px;
       border: 1px dashed #334155;
-      border-radius: 8px;
+      border-radius: 2px;
     }
 
     /* Scrollbar */
@@ -1931,6 +1950,26 @@
       gap: 12px;
     }
 
+    .bda-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 1px;
+      border: 1px solid var(--border-main);
+      background: var(--border-main);
+    }
+
+    .bda-kpi {
+      background: var(--bg-base);
+      padding: 6px 8px;
+      min-width: 0;
+    }
+
+    .bda-kpi .metric-value {
+      color: var(--text-primary);
+      font-size: 15px;
+      margin-top: 3px;
+    }
+
     .degradation-panel {
       border: 1px solid var(--border-main);
       flex: 1 1 44%;
@@ -1969,7 +2008,7 @@
 
     .graveyard-grid {
       display: grid;
-      grid-template-columns: 34px minmax(150px, 1fr) 56px 124px 104px;
+      grid-template-columns: 34px minmax(180px, 1fr) 48px 92px 116px 112px;
       border-top: 1px solid var(--border-main);
       border-left: 1px solid var(--border-main);
       margin-top: 10px;
@@ -1983,6 +2022,8 @@
       display: flex;
       align-items: center;
       color: var(--text-primary);
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     .graveyard-grid .grid-head {
@@ -2002,6 +2043,29 @@
       align-items: center;
       gap: 4px;
       padding: 2px 5px;
+    }
+
+    button.badge-imint {
+      cursor: pointer;
+    }
+
+    button.badge-imint:hover {
+      background: rgba(245, 158, 11, 0.2);
+    }
+
+    .badge-imint[disabled],
+    .source-badge[aria-disabled="true"] {
+      cursor: default;
+      opacity: 0.65;
+    }
+
+    .empty-state {
+      border: 1px dashed var(--border-main);
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      padding: 10px;
+      margin-top: 8px;
     }
 
     .feed-list {
@@ -2136,7 +2200,7 @@
     .ring-score {
       position: absolute;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 24px;
+      font-size: 18px;
       font-variant-numeric: tabular-nums;
       color: var(--text-primary);
     }
@@ -5503,60 +5567,6 @@
         // ==========================================
 
         document.addEventListener('DOMContentLoaded', function () {
-          var mockDossier = {
-            campaignCode: '[ OD-SC-04 ]',
-            title: 'SUPPLY CHAIN DISRUPTION',
-            classification: 'SECRET // OSINT ONLY',
-            activeSince: '2026-04-18',
-            region: 'Crimea - Zaporizhzhia Logistics Arc',
-            assignedUnits: 'OSINT Cell Vostok, IMINT Desk 12, SIGINT Relay 4',
-            cumulativeE: 246.0,
-            opTempo: 'HIGH',
-            tie: { kinetic: 8.7, target: 7.9, effect: 9.1 },
-            summary: [
-              'Sustained strikes against rail transfer nodes and fuel depots are degrading adversary ground-line throughput across the southern axis.',
-              'Verified imagery indicates repeated damage to switching yards, rolling stock, and mobile repair assets near Dzhankoi and Melitopol.',
-              'Source confidence remains high after cross-corroboration between commercial SAR, local HUMINT reports, and geolocated social video.'
-            ],
-            degradation: [
-              { label: 'LOGISTICS NODES', value: 80 },
-              { label: 'RAIL CAPACITY', value: 72 },
-              { label: 'FUEL DISTRIBUTION', value: 64 },
-              { label: 'REPAIR CADENCE', value: 100 }
-            ],
-            equipment: [
-              { icon: 'fa-train', asset: 'Rail switching assembly - Dzhankoi north yard', qty: 3, state: 'Destroyed', imint: true },
-              { icon: 'fa-truck', asset: 'Ural-4320 logistics trucks', qty: 11, state: 'Burned out', imint: true },
-              { icon: 'fa-gas-pump', asset: 'Forward fuel bladder farm', qty: 6, state: 'Ruptured', imint: true },
-              { icon: 'fa-wrench', asset: 'Mobile track repair kits', qty: 4, state: 'Abandoned', imint: false },
-              { icon: 'fa-tower-broadcast', asset: 'Rail dispatch relay mast', qty: 1, state: 'Offline', imint: true }
-            ],
-            feed: [
-              { stamp: '2026-05-06 14:30Z', event: 'Dzhankoi Rail Node Hit', tie: 85.0 },
-              { stamp: '2026-05-06 17:10Z', event: 'Secondary fuel ignition observed', tie: 79.5 },
-              { stamp: '2026-05-07 04:20Z', event: 'Repair convoy rerouted through Armyansk', tie: 61.0 },
-              { stamp: '2026-05-08 21:45Z', event: 'Melitopol depot thermal anomaly', tie: 88.0 },
-              { stamp: '2026-05-09 08:05Z', event: 'Rolling stock backlog at Simferopol yard', tie: 73.0 },
-              { stamp: '2026-05-10 19:30Z', event: 'Bridge approach traffic halted', tie: 67.5 }
-            ],
-            sources: [
-              { stamp: '2026-05-06T14:42Z', id: 'SAR-COM-7721', type: 'SAR', reliability: 92, bias: 'LOW', corroboration: '3/3' },
-              { stamp: '2026-05-06T15:18Z', id: 'SOCVID-118A', type: 'GEOLOC', reliability: 84, bias: 'MED', corroboration: '2/3' },
-              { stamp: '2026-05-06T18:50Z', id: 'IMINT-MAX-44', type: 'IMINT', reliability: 96, bias: 'LOW', corroboration: '3/3' },
-              { stamp: '2026-05-07T06:12Z', id: 'SIG-RAIL-09', type: 'SIGINT', reliability: 78, bias: 'LOW', corroboration: '2/3' },
-              { stamp: '2026-05-08T22:30Z', id: 'THERM-221C', type: 'IR', reliability: 89, bias: 'LOW', corroboration: '3/3' },
-              { stamp: '2026-05-10T20:16Z', id: 'HUM-LOG-31', type: 'HUMINT', reliability: 68, bias: 'MED', corroboration: '1/3' }
-            ]
-          };
-
-          window._campaignDossierUnitsMap = {
-            refineries_and_oil_hubs: ['152nd Logistics Brigade', 'Railway Oil Terminal Unit', 'Forward Fuel Depot Station 7'],
-            energy_grid_degradation: ['Grid Monitoring Detachment', 'Substation Defense Unit', 'Critical Infrastructure Recovery Team'],
-            air_defense_suppression: ['S-400 SAM Battery Site Alpha', '96L6E Radar Platoon', 'EW/Radar Suppression Squadron'],
-            logistics: ['25th Supply Transport Battalion', 'Bryansk Railway Logistics Hub', 'Forward Ammunition Depot'],
-            default: ['Supply Transport Unit Unidentified', 'Armored Battalion Unknown', 'Logistics Rail Node']
-          };
-
           function q(id) {
             return document.getElementById(id);
           }
@@ -5570,45 +5580,90 @@
               .replace(/'/g, '&#39;');
           }
 
-          function cloneMock() {
-            return JSON.parse(JSON.stringify(mockDossier));
+          function normalizeCampaignKey(value) {
+            return String(value || '').toLowerCase().trim();
+          }
+
+          function parseJsonArray(value) {
+            if (Array.isArray(value)) return value;
+            if (!value || typeof value !== 'string') return [];
+            try {
+              var parsed = JSON.parse(value);
+              return Array.isArray(parsed) ? parsed : [];
+            } catch (err) {
+              return [];
+            }
+          }
+
+          function getEventId(ev) {
+            return String(ev.event_id || ev.id || ev.cluster_id || ev.title || Math.random()).trim();
+          }
+
+          function getNumeric(value) {
+            var num = parseFloat(value);
+            return Number.isFinite(num) ? num : null;
+          }
+
+          function parseEventDateValue(value) {
+            if (value == null || value === '') return null;
+            if (typeof value === 'number' || /^\d+$/.test(String(value))) {
+              var numeric = Number(value);
+              if (!Number.isFinite(numeric) || numeric <= 0) return null;
+              if (numeric < 100000000000) numeric *= 1000;
+              var byNumber = new Date(numeric);
+              return byNumber.getFullYear() >= 2000 ? byNumber : null;
+            }
+            var raw = String(value).trim();
+            var dmy = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+            if (dmy) {
+              var year = Number(dmy[3]);
+              if (year < 100) year += 2000;
+              var byDmy = new Date(Date.UTC(year, Number(dmy[2]) - 1, Number(dmy[1]), Number(dmy[4] || 0), Number(dmy[5] || 0), Number(dmy[6] || 0)));
+              return byDmy.getFullYear() >= 2000 ? byDmy : null;
+            }
+            var normalized = raw.indexOf('T') === -1 && raw.indexOf(' ') > -1 ? raw.replace(' ', 'T') : raw;
+            var byString = new Date(normalized);
+            return !isNaN(byString.getTime()) && byString.getFullYear() >= 2000 ? byString : null;
+          }
+
+          function getEventDate(ev) {
+            return parseEventDateValue(ev.timestamp) || parseEventDateValue(ev.date) || parseEventDateValue(ev.event_date) || parseEventDateValue(ev.created_at);
           }
 
           function formatDossierDate(dateStr) {
-            if (!dateStr) return '--';
-            var d = new Date(dateStr);
-            if (isNaN(d.getTime())) return String(dateStr).substring(0, 10);
+            var d = dateStr instanceof Date ? dateStr : getEventDate({ date: dateStr });
+            if (!d) return '--';
             return d.toISOString().substring(0, 10);
           }
 
           function formatDossierStamp(ev) {
-            var raw = ev.timestamp || ev.date || ev.event_date || ev.created_at;
-            var d = raw ? new Date(parseInt(raw, 10) || raw) : null;
-            if (!d || isNaN(d.getTime())) return '2026-05-06 14:30Z';
+            var d = getEventDate(ev);
+            if (!d) return 'UNKNOWN-TIME';
             return d.toISOString().substring(0, 16).replace('T', ' ') + 'Z';
           }
 
-          function computeConsoleTieScores(campaign) {
-            var weekly = parseFloat(campaign.weekly_tie_cumulative || campaign.avg_tie || 0);
-            var totalEvents = parseInt(campaign.total_events || campaign.event_count || 0, 10);
-            var effect = parseFloat(campaign.sum_vec_e || campaign.avg_effect || 0);
-            return {
-              kinetic: Math.min(10, Math.max(0.5, Math.round((weekly / 60) * 100) / 10)),
-              target: Math.min(10, Math.max(0.5, Math.round((totalEvents / 40) * 100) / 10)),
-              effect: Math.min(10, Math.max(0.5, Math.round((effect / 30) * 100) / 10))
-            };
+          function averageMetric(events, field) {
+            var values = events.map(function (ev) { return getNumeric(ev[field]); }).filter(function (v) { return v !== null; });
+            if (!values.length) return 0;
+            return values.reduce(function (sum, value) { return sum + value; }, 0) / values.length;
+          }
+
+          function clampPercent(value) {
+            return Math.max(0, Math.min(100, Math.round(value)));
+          }
+
+          function scoreToRing(value) {
+            return Math.max(0, Math.min(10, Math.round((parseFloat(value) || 0) * 10) / 10));
           }
 
           function findConsoleCampaign(campaignId) {
-            var cid = String(campaignId || '').toLowerCase().trim();
+            var cid = normalizeCampaignKey(campaignId);
             var reports = window.strategicCampaignReports || [];
             var defs = window.strategicCampaignDefinitions || [];
             var i;
-            for (i = 0; i < reports.length; i++) {
-              if (String(reports[i].campaign_id || '').toLowerCase().trim() === cid) return reports[i];
-            }
+            for (i = 0; i < reports.length; i++) if (normalizeCampaignKey(reports[i].campaign_id) === cid) return reports[i];
             for (i = 0; i < defs.length; i++) {
-              if (String(defs[i].campaign_id || '').toLowerCase().trim() === cid) {
+              if (normalizeCampaignKey(defs[i].campaign_id) === cid) {
                 return {
                   campaign_id: defs[i].campaign_id,
                   name: defs[i].name,
@@ -5623,6 +5678,17 @@
             return null;
           }
 
+          function normalizeArchiveEvent(feature) {
+            var props = feature && feature.properties ? feature.properties : (feature || {});
+            var normalized = Object.assign({}, props);
+            if (feature && feature.geometry && Array.isArray(feature.geometry.coordinates)) {
+              normalized.lon = feature.geometry.coordinates[0];
+              normalized.lat = feature.geometry.coordinates[1];
+            }
+            normalized.event_id = normalized.event_id || normalized.cluster_id || normalized.id;
+            return normalized;
+          }
+
           function getLoadedEventsSafe() {
             try {
               return typeof getLoadedEvents === 'function' ? getLoadedEvents() : [];
@@ -5631,56 +5697,258 @@
             }
           }
 
-          function getConsoleCampaignFeed(campaignId) {
-            var events = getLoadedEventsSafe();
-            var cid = String(campaignId || '').toLowerCase().trim();
-            var matched = events.filter(function (ev) {
-              return String(ev.campaign_id || ev.campaign || '').toLowerCase().trim() === cid;
+          var campaignArchivePromise = null;
+          function getCampaignArchiveEvents() {
+            if (campaignArchivePromise) return campaignArchivePromise;
+            campaignArchivePromise = fetch('assets/data/events.geojson')
+              .then(function (response) { return response.ok ? response.json() : { features: [] }; })
+              .then(function (payload) {
+                var features = Array.isArray(payload.features) ? payload.features : [];
+                return features.map(normalizeArchiveEvent);
+              })
+              .catch(function () { return []; });
+            return campaignArchivePromise;
+          }
+
+          function mergeUniqueEvents(primary, secondary) {
+            var seen = {};
+            var merged = [];
+            (primary || []).concat(secondary || []).forEach(function (ev) {
+              var id = getEventId(ev);
+              if (seen[id]) return;
+              seen[id] = true;
+              merged.push(ev);
             });
-            matched.sort(function (a, b) {
-              return (parseInt(b.timestamp || 0, 10) || 0) - (parseInt(a.timestamp || 0, 10) || 0);
+            return merged;
+          }
+
+          function filterCampaignEvents(events, campaignId) {
+            var cid = normalizeCampaignKey(campaignId);
+            return (events || []).filter(function (ev) {
+              return normalizeCampaignKey(ev.campaign_id || ev.campaign) === cid;
             });
-            return matched.slice(0, 8).map(function (ev) {
-              var rawTie = parseFloat(ev.tie_total || ev.tie || ev.score || 0);
-              var tie = rawTie <= 10 ? rawTie * 10 : rawTie;
+          }
+
+          function sortEventsDesc(events) {
+            return events.slice().sort(function (a, b) {
+              var da = getEventDate(a);
+              var db = getEventDate(b);
+              return (db ? db.getTime() : 0) - (da ? da.getTime() : 0);
+            });
+          }
+
+          function getVisualFrames(ev) {
+            return parseJsonArray(ev.visual_analysis).filter(function (frame) {
+              return frame && frame.base64_data;
+            });
+          }
+
+          function getUnitNames(events) {
+            var counts = {};
+            events.forEach(function (ev) {
+              parseJsonArray(ev.units).forEach(function (unit) {
+                var name = unit && (unit.unit_name || unit.name);
+                if (!name) return;
+                name = String(name).trim();
+                if (!name || name.length > 64) return;
+                counts[name] = (counts[name] || 0) + 1;
+              });
+            });
+            return Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; }).slice(0, 4);
+          }
+
+          function getDominantValue(events, fields, fallback) {
+            var counts = {};
+            events.forEach(function (ev) {
+              fields.some(function (field) {
+                var value = ev[field];
+                if (!value || String(value).toUpperCase() === 'UNKNOWN') return false;
+                value = String(value).trim();
+                counts[value] = (counts[value] || 0) + 1;
+                return true;
+              });
+            });
+            var keys = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; });
+            return keys[0] || fallback || '--';
+          }
+
+          function getEventTitle(ev) {
+            return ev.title || ev.location || ev.event_title || ev.description || 'Unspecified campaign event';
+          }
+
+          function deriveDamageState(avgEffect, maxTie) {
+            if (avgEffect >= 8 || maxTie >= 80) return 'Severe';
+            if (avgEffect >= 5 || maxTie >= 40) return 'Degraded';
+            if (avgEffect >= 2 || maxTie >= 15) return 'Observed';
+            return 'Low effect';
+          }
+
+          function iconForGroup(label) {
+            var text = String(label || '').toLowerCase();
+            if (text.indexOf('air') > -1 || text.indexOf('uav') > -1 || text.indexOf('drone') > -1) return 'fa-satellite-dish';
+            if (text.indexOf('rail') > -1 || text.indexOf('logistic') > -1) return 'fa-train';
+            if (text.indexOf('energy') > -1 || text.indexOf('grid') > -1 || text.indexOf('electric') > -1) return 'fa-bolt';
+            if (text.indexOf('oil') > -1 || text.indexOf('fuel') > -1 || text.indexOf('refiner') > -1) return 'fa-gas-pump';
+            if (text.indexOf('naval') > -1 || text.indexOf('ship') > -1) return 'fa-ship';
+            return 'fa-crosshairs';
+          }
+
+          function buildEquipmentGroups(events) {
+            var groups = {};
+            events.forEach(function (ev) {
+              var label = ev.target_type && String(ev.target_type).toUpperCase() !== 'UNKNOWN'
+                ? String(ev.target_type)
+                : (ev.classification || ev.category || 'Unclassified Target');
+              var key = label.toLowerCase();
+              if (!groups[key]) {
+                groups[key] = { asset: label, qty: 0, effectSum: 0, tieMax: 0, imintCount: 0, latest: null, eventId: null, frameIndex: 0 };
+              }
+              var group = groups[key];
+              var effect = getNumeric(ev.vec_e) || 0;
+              var tie = getNumeric(ev.tie_total) || 0;
+              var date = getEventDate(ev);
+              var frames = getVisualFrames(ev);
+              group.qty += 1;
+              group.effectSum += effect;
+              group.tieMax = Math.max(group.tieMax, tie);
+              if (!group.latest || (date && date > group.latest)) group.latest = date;
+              if (frames.length) {
+                group.imintCount += 1;
+                if (!group.eventId) {
+                  group.eventId = getEventId(ev);
+                  group.frameIndex = 0;
+                }
+              }
+            });
+            return Object.keys(groups).map(function (key) {
+              var group = groups[key];
+              var avgEffect = group.qty ? group.effectSum / group.qty : 0;
+              return {
+                icon: iconForGroup(group.asset),
+                asset: group.asset,
+                qty: group.qty,
+                state: deriveDamageState(avgEffect, group.tieMax),
+                maxTie: group.tieMax,
+                latest: group.latest ? formatDossierDate(group.latest) : '--',
+                imint: group.imintCount > 0,
+                eventId: group.eventId,
+                frameIndex: group.frameIndex,
+                imintCount: group.imintCount
+              };
+            }).sort(function (a, b) { return b.maxTie - a.maxTie; }).slice(0, 24);
+          }
+
+          function buildSourceRows(events) {
+            var groups = {};
+            events.forEach(function (ev) {
+              var sources = parseJsonArray(ev.sources_list);
+              if (!sources.length && ev.source) sources = [{ name: ev.source }];
+              sources.forEach(function (src) {
+                var name = String((src && (src.name || src.source || src.url)) || 'UNSPECIFIED').trim();
+                var id = name || 'UNSPECIFIED';
+                if (!groups[id]) groups[id] = { id: id, type: 'OSINT', relSum: 0, relCount: 0, biasSum: 0, biasCount: 0, count: 0, latest: null };
+                var group = groups[id];
+                var url = String((src && src.url) || '').toLowerCase();
+                if (url.indexOf('t.me') > -1 || id.toLowerCase().indexOf('telegram') > -1) group.type = 'TELEGRAM';
+                else if (url.indexOf('twitter') > -1 || url.indexOf('x.com') > -1) group.type = 'SOCIAL';
+                else if (ev.visual_analysis && getVisualFrames(ev).length) group.type = 'IMINT';
+                var rel = getNumeric(ev.reliability);
+                if (rel === null) rel = getNumeric(ev.source_reputation_score);
+                var bias = getNumeric(ev.bias_score);
+                var date = getEventDate(ev);
+                if (rel !== null) { group.relSum += rel; group.relCount += 1; }
+                if (bias !== null) { group.biasSum += bias; group.biasCount += 1; }
+                group.count += 1;
+                if (!group.latest || (date && date > group.latest)) group.latest = date;
+              });
+            });
+            var total = Math.max(1, events.length);
+            return Object.keys(groups).map(function (key) {
+              var group = groups[key];
+              return {
+                stamp: group.latest ? formatDossierStamp({ timestamp: group.latest.getTime() }) : 'UNKNOWN-TIME',
+                id: group.id,
+                type: group.type,
+                reliability: clampPercent(group.relCount ? group.relSum / group.relCount : 0),
+                bias: group.biasCount ? (group.biasSum / group.biasCount).toFixed(1) : '--',
+                corroboration: group.count + '/' + total
+              };
+            }).sort(function (a, b) { return b.reliability - a.reliability; }).slice(0, 60);
+          }
+
+          function buildTacticalFeed(events) {
+            return sortEventsDesc(events).slice(0, 40).map(function (ev) {
+              var tie = getNumeric(ev.tie_total || ev.tie || ev.score) || 0;
               return {
                 stamp: formatDossierStamp(ev),
-                event: ev.location || ev.title || ev.event_title || 'Unspecified campaign event',
-                tie: isNaN(tie) ? 0 : tie
+                event: getEventTitle(ev),
+                tie: tie
               };
             });
           }
 
-          function getConsoleCampaignUnits(campaignId) {
-            var map = window._campaignDossierUnitsMap || {};
-            return map[campaignId] || map.default || [];
+          function buildDossierSummary(title, report, events, cumulativeE, weeklyTie, avgRel, imintCount) {
+            var total = parseInt((report && report.total_events) || events.length || 0, 10);
+            var latest = sortEventsDesc(events)[0];
+            var latestText = latest ? formatDossierStamp(latest) : 'UNKNOWN-TIME';
+            return [
+              'Campaign "' + title + '" is tracking ' + total + ' real events from the local OSINT archive.',
+              'Cumulative E-vector is ' + cumulativeE.toFixed(1) + ' with weekly T.I.E. pressure at ' + weeklyTie.toFixed(1) + '.',
+              'Latest campaign event: ' + latestText + '; source reliability average: ' + Math.round(avgRel) + '; IMINT-backed events: ' + imintCount + '.'
+            ];
           }
 
-          function dossierFromCampaign(campaignId) {
+          async function buildCampaignDossierData(campaignId) {
             var campaign = findConsoleCampaign(campaignId);
-            if (!campaign) return cloneMock();
-            var dossier = cloneMock();
-            var id = campaign.campaign_id || campaignId || 'OD-SC-04';
-            var weekly = parseFloat(campaign.weekly_tie_cumulative || 0);
-            var total = parseInt(campaign.total_events || 0, 10);
-            var effect = parseFloat(campaign.sum_vec_e || dossier.cumulativeE);
-            var units = getConsoleCampaignUnits(id);
-            var feed = getConsoleCampaignFeed(id);
-            dossier.campaignCode = '[ ' + String(id).toUpperCase().replace(/_/g, '-').substring(0, 18) + ' ]';
-            dossier.title = String(campaign.name || 'SUPPLY CHAIN DISRUPTION').toUpperCase();
-            dossier.activeSince = formatDossierDate(campaign.last_event_date || campaign.last_seen);
-            dossier.region = campaign.region || campaign.sector || dossier.region;
-            dossier.assignedUnits = units.length ? units.join(', ') : dossier.assignedUnits;
-            dossier.cumulativeE = isNaN(effect) ? dossier.cumulativeE : effect;
-            dossier.opTempo = weekly > 80 ? 'HIGH' : weekly > 30 ? 'MED' : 'LOW';
-            dossier.tie = computeConsoleTieScores(campaign);
-            dossier.summary = [
-              'Campaign "' + dossier.title + '" is tracking ' + (total || 0) + ' confirmed events across assigned OSINT feeds.',
-              'Cumulative E-vector is ' + dossier.cumulativeE.toFixed(1) + ' with weekly T.I.E. pressure at ' + weekly.toFixed(1) + '.',
-              'Recommended posture: maintain collection on primary nodes and prioritize fresh IMINT for damage-state verification.'
-            ];
-            if (feed.length) dossier.feed = feed;
-            return dossier;
+            var id = (campaign && campaign.campaign_id) || campaignId || 'unknown_campaign';
+            var loadedEvents = filterCampaignEvents(getLoadedEventsSafe(), id);
+            var archiveEvents = filterCampaignEvents(await getCampaignArchiveEvents(), id);
+            var events = sortEventsDesc(mergeUniqueEvents(archiveEvents, loadedEvents));
+            window._campaignDossierEventCache = window._campaignDossierEventCache || {};
+            events.forEach(function (ev) { window._campaignDossierEventCache[getEventId(ev)] = ev; });
+
+            var title = String((campaign && campaign.name) || (events[0] && events[0].campaign_name) || id.replace(/_/g, ' ')).toUpperCase();
+            var cumulativeE = getNumeric(campaign && campaign.sum_vec_e);
+            if (cumulativeE === null) cumulativeE = events.reduce(function (sum, ev) { return sum + (getNumeric(ev.vec_e) || 0); }, 0);
+            var weekly = getNumeric(campaign && campaign.weekly_tie_cumulative) || 0;
+            var avgK = averageMetric(events, 'vec_k');
+            var avgT = averageMetric(events, 'vec_t');
+            var avgE = averageMetric(events, 'vec_e');
+            var avgRel = averageMetric(events, 'reliability') || averageMetric(events, 'source_reputation_score');
+            var imintCount = events.filter(function (ev) { return getVisualFrames(ev).length > 0; }).length;
+            var validDates = events.map(getEventDate).filter(Boolean).sort(function (a, b) { return a - b; });
+            var units = getUnitNames(events);
+
+            return {
+              campaignCode: '[ ' + String(id).toUpperCase().replace(/_/g, '-').substring(0, 18) + ' ]',
+              title: title,
+              classification: 'SECRET // OSINT ONLY',
+              activeSince: validDates.length ? formatDossierDate(validDates[0]) : formatDossierDate(campaign && (campaign.last_event_date || campaign.last_seen)),
+              region: (campaign && (campaign.region || campaign.sector)) || getDominantValue(events, ['operational_sector', 'region', 'campaign_name'], '--'),
+              assignedUnits: units.length ? units.join(', ') : 'NO UNIT ATTRIBUTION IN CURRENT DATA',
+              cumulativeE: cumulativeE || 0,
+              opTempo: weekly > 80 ? 'HIGH' : weekly > 30 ? 'MED' : 'LOW',
+              tie: { kinetic: scoreToRing(avgK), target: scoreToRing(avgT), effect: scoreToRing(avgE) },
+              summary: buildDossierSummary(title, campaign, events, cumulativeE || 0, weekly, avgRel, imintCount),
+              kpis: [
+                { label: 'EVENTS', value: String(parseInt((campaign && campaign.total_events) || events.length || 0, 10)) },
+                { label: 'AVG K/T/E', value: avgK.toFixed(1) + '/' + avgT.toFixed(1) + '/' + avgE.toFixed(1) },
+                { label: 'AVG REL', value: Math.round(avgRel || 0).toString() },
+                { label: 'IMINT EVENTS', value: String(imintCount) },
+                { label: 'LAST SEEN', value: validDates.length ? formatDossierDate(validDates[validDates.length - 1]) : '--' }
+              ],
+              degradation: [
+                { label: 'KINETIC PRESSURE', value: clampPercent(avgK * 10) },
+                { label: 'TARGET VALUE', value: clampPercent(avgT * 10) },
+                { label: 'EFFECT IMPACT', value: clampPercent(avgE * 10) },
+                { label: 'SOURCE RELIABILITY', value: clampPercent(avgRel || 0) },
+                { label: 'IMINT COVERAGE', value: clampPercent(events.length ? (imintCount / events.length) * 100 : 0) }
+              ],
+              equipment: buildEquipmentGroups(events),
+              feed: buildTacticalFeed(events),
+              sources: buildSourceRows(events),
+              eventCount: events.length
+            };
           }
 
           function setConsoleRing(ringId, textId, score) {
@@ -5708,23 +5976,51 @@
             q('cdExecutiveSummary').innerHTML = dossier.summary.map(function (item) {
               return '<li>' + escapeHtml(item) + '</li>';
             }).join('');
+            if (q('cdBdaKpis')) {
+              q('cdBdaKpis').innerHTML = (dossier.kpis || []).map(function (item) {
+                return '<div class="bda-kpi"><div class="metric-label">' + escapeHtml(item.label) + '</div><div class="metric-value">' + escapeHtml(item.value) + '</div></div>';
+              }).join('');
+            }
             q('cdDegradationBars').innerHTML = dossier.degradation.map(function (item) {
               var critical = item.value >= 100 ? ' critical' : '';
               return '<div class="bar-row"><span class="label">' + escapeHtml(item.label) + '</span><div class="track"><div class="fill' + critical + '" style="width: ' + item.value + '%"></div></div><span class="value">' + item.value + '%</span></div>';
             }).join('');
-            q('cdEquipmentGrid').innerHTML = '<div class="grid-head">TYPE</div><div class="grid-head">ASSET NAME</div><div class="grid-head">QTY</div><div class="grid-head">DAMAGE STATE</div><div class="grid-head">VERIFY</div>' + dossier.equipment.map(function (row) {
-              var badge = row.imint ? '<span class="badge-imint"><i class="fa-solid fa-eye"></i> [ IMINT ]</span>' : '<span class="source-badge">[ PENDING ]</span>';
-              return '<div><i class="fa-solid ' + escapeHtml(row.icon) + '"></i></div><div>' + escapeHtml(row.asset) + '</div><div>' + row.qty + '</div><div>' + escapeHtml(row.state) + '</div><div>' + badge + '</div>';
-            }).join('');
-            q('cdTacticalFeed').innerHTML = dossier.feed.map(function (row) {
+            var equipmentRows = dossier.equipment.length ? dossier.equipment.map(function (row) {
+              var badge = row.imint
+                ? '<button class="badge-imint" type="button" data-event-id="' + escapeHtml(row.eventId) + '" data-frame-index="' + escapeHtml(row.frameIndex || 0) + '"><i class="fa-solid fa-eye"></i> [ IMINT ' + escapeHtml(row.imintCount) + ' ]</button>'
+                : '<span class="source-badge" aria-disabled="true">[ NO IMINT ]</span>';
+              return '<div><i class="fa-solid ' + escapeHtml(row.icon) + '"></i></div><div>' + escapeHtml(row.asset) + '</div><div>' + row.qty + '</div><div>' + escapeHtml(row.state) + '</div><div>' + escapeHtml(row.latest) + '</div><div>' + badge + '</div>';
+            }).join('') : '<div style="grid-column:1/-1;"><span class="empty-state">NO REAL TARGET GROUPS AVAILABLE FOR THIS CAMPAIGN.</span></div>';
+            q('cdEquipmentGrid').innerHTML = '<div class="grid-head">TYPE</div><div class="grid-head">TARGET / ASSET GROUP</div><div class="grid-head">QTY</div><div class="grid-head">STATE</div><div class="grid-head">LAST SEEN</div><div class="grid-head">VERIFY</div>' + equipmentRows;
+            q('cdTacticalFeed').innerHTML = dossier.feed.length ? dossier.feed.map(function (row) {
               return '<div class="event-row">[' + escapeHtml(row.stamp) + '] | ' + escapeHtml(row.event) + ' | TIE: ' + Number(row.tie).toFixed(1) + '</div>';
-            }).join('');
-            q('cdSourcesBody').innerHTML = dossier.sources.map(function (row) {
+            }).join('') : '<div class="empty-state">NO REAL TACTICAL EVENTS AVAILABLE FOR THIS CAMPAIGN.</div>';
+            q('cdSourcesBody').innerHTML = dossier.sources.length ? dossier.sources.map(function (row) {
               return '<tr><td>' + escapeHtml(row.stamp) + '</td><td>' + escapeHtml(row.id) + '</td><td>' + escapeHtml(row.type) + '</td><td><div class="reliability-cell"><div class="reliability-track"><div class="reliability-fill" style="width:' + row.reliability + '%"></div></div><span>' + row.reliability + '</span></div></td><td>' + escapeHtml(row.bias) + '</td><td>' + escapeHtml(row.corroboration) + '</td></tr>';
-            }).join('');
+            }).join('') : '<tr><td colspan="6">NO REAL SOURCE RECORDS AVAILABLE FOR THIS CAMPAIGN.</td></tr>';
             setConsoleRing('cdKineticRing', 'cdKineticText', dossier.tie.kinetic);
             setConsoleRing('cdTargetRing', 'cdTargetText', dossier.tie.target);
             setConsoleRing('cdEffectRing', 'cdEffectText', dossier.tie.effect);
+          }
+
+          function renderConsoleLoading(campaignId) {
+            renderCampaignConsole({
+              campaignCode: '[ ' + String(campaignId || 'LOADING').toUpperCase().replace(/_/g, '-').substring(0, 18) + ' ]',
+              title: 'LOADING REAL CAMPAIGN DATA',
+              classification: 'SECRET // OSINT ONLY',
+              activeSince: '--',
+              region: '--',
+              assignedUnits: '--',
+              cumulativeE: 0,
+              opTempo: 'SYNC',
+              tie: { kinetic: 0, target: 0, effect: 0 },
+              summary: ['Loading campaign reports and event archive. No mock data is rendered in dashboard mode.'],
+              kpis: [],
+              degradation: [],
+              equipment: [],
+              feed: [],
+              sources: []
+            });
           }
 
           function switchTab(tabId) {
@@ -5738,13 +6034,48 @@
             });
           }
 
-          function openConsoleCampaignDossier(campaignId) {
+          async function openConsoleCampaignDossier(campaignId) {
             var overlay = q('campaignDossierOverlay');
             if (!overlay) return;
-            renderCampaignConsole(dossierFromCampaign(campaignId));
+            renderConsoleLoading(campaignId);
             switchTab('overview');
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
+            try {
+              renderCampaignConsole(await buildCampaignDossierData(campaignId));
+            } catch (err) {
+              renderCampaignConsole({
+                campaignCode: '[ DATA-ERROR ]',
+                title: 'REAL DATA LOAD FAILED',
+                classification: 'SECRET // OSINT ONLY',
+                activeSince: '--',
+                region: '--',
+                assignedUnits: '--',
+                cumulativeE: 0,
+                opTempo: 'LOW',
+                tie: { kinetic: 0, target: 0, effect: 0 },
+                summary: ['Unable to load local campaign data. No synthetic fallback was used.'],
+                kpis: [],
+                degradation: [],
+                equipment: [],
+                feed: [],
+                sources: []
+              });
+              console.warn('Campaign dossier data load failed:', err);
+            }
+          }
+
+          function openCampaignImint(eventId, frameIndex) {
+            var cache = window._campaignDossierEventCache || {};
+            var ev = cache[String(eventId || '')];
+            var frames = ev ? getVisualFrames(ev) : [];
+            var frame = frames[parseInt(frameIndex || 0, 10)] || frames[0];
+            if (frame && frame.base64_data && q('imintLightbox') && q('imintLightboxImg')) {
+              q('imintLightboxImg').src = frame.base64_data;
+              q('imintLightbox').style.display = 'flex';
+              return;
+            }
+            if (ev && window.openIntelDossier) window.openIntelDossier(ev);
           }
 
           function closeConsoleCampaignDossier(event) {
@@ -5765,12 +6096,20 @@
           if (overlay) overlay.addEventListener('click', closeConsoleCampaignDossier);
           var closeBtn = q('campaignConsoleClose');
           if (closeBtn) closeBtn.addEventListener('click', closeConsoleCampaignDossier);
+          document.addEventListener('click', function (event) {
+            var badge = event.target.closest('#campaign-console button.badge-imint');
+            if (!badge) return;
+            event.preventDefault();
+            event.stopPropagation();
+            openCampaignImint(badge.getAttribute('data-event-id'), badge.getAttribute('data-frame-index'));
+          });
 
           window.switchTab = switchTab;
           window.openCampaignDossier = openConsoleCampaignDossier;
           window.closeCampaignDossier = closeConsoleCampaignDossier;
+          window.openCampaignImint = openCampaignImint;
 
-          renderCampaignConsole(cloneMock());
+          renderConsoleLoading('NO-CAMPAIGN');
           switchTab('overview');
           if (overlay && overlay.getAttribute('data-standalone') === 'true') {
             overlay.classList.add('active');
@@ -5787,7 +6126,7 @@
           <header class="campaign-topbar">
             <div class="campaign-title-strip">
               <span class="campaign-code" id="cdCampaignCode">[ OD-SC-04 ]</span>
-              <span class="campaign-title" id="cdTitle">SUPPLY CHAIN DISRUPTION</span>
+              <span class="campaign-title" id="cdTitle">NO CAMPAIGN LOADED</span>
               <span class="classification-badge" id="cdClassification">SECRET // OSINT ONLY</span>
             </div>
             <button class="console-close" id="campaignConsoleClose" type="button">[X] CLOSE / SWITCH VIEW</button>
@@ -5829,12 +6168,13 @@
             </section>
 
             <section class="console-section bda-layout" data-section="bda">
+              <div class="bda-kpi-grid" id="cdBdaKpis"></div>
               <div class="degradation-panel">
                 <h2 class="section-title">MACRO-DEGRADATION</h2>
                 <div id="cdDegradationBars"></div>
               </div>
               <div class="graveyard-panel">
-                <h2 class="section-title">EQUIPMENT GRAVEYARD</h2>
+                <h2 class="section-title">TARGET / EQUIPMENT GROUPS</h2>
                 <div class="graveyard-grid" id="cdEquipmentGrid"></div>
               </div>
             </section>

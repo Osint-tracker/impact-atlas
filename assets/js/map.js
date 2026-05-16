@@ -1203,6 +1203,14 @@
   function renderStrategicCampaignCards() {
     const container = document.getElementById('strategicCampaignCards');
     const sidebarContainer = document.getElementById('sidebarCampaignCards');
+    const escapeSc = function (value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    };
 
     const items = (strategicCampaignReports || []).map(function (item) {
       const campaignId = normalizeCampaignId(item.campaign_id);
@@ -1235,8 +1243,8 @@
       return `
         <article class=\"sc-card ${isActive ? 'active' : ''}\" data-campaign-id=\"${item.campaign_id}\" style=\"border-left:3px solid ${item.color};\">
           <div class=\"sc-row\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\">
-            <div class=\"sc-name\">${item.name}</div>
-            <span class=\"sc-badge ${statusClass}\">${item.status}</span>
+            <div class=\"sc-name\">${escapeSc(item.name)}</div>
+            <span class=\"sc-badge ${statusClass}\">${escapeSc(item.status)}</span>
           </div>
           <div class=\"sc-row\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\">
             <div>
@@ -1245,9 +1253,9 @@
             </div>
           </div>
           <div class=\"sc-sparkline-wrap\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\"><canvas id=\"${sparkId}\" height=\"42\"></canvas></div>
-          <div class=\"sc-brief\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\">${item.brief_text}</div>
+          <div class=\"sc-brief\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\">${escapeSc(item.brief_text)}</div>
           <div style=\"padding:6px 10px 8px 10px; border-top:1px solid #1e293b; display:flex; justify-content:flex-end;\">
-            <button class=\"sc-dossier-btn\" onclick=\"event.stopPropagation();openCampaignDossier('${item.campaign_id}')\" style=\"background:transparent; border:1px solid #334155; color:#94a3b8; padding:4px 10px; border-radius:4px; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.55rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; display:flex; align-items:center; gap:4px; transition:all 0.2s;\" onmouseover=\"this.style.borderColor='#f59e0b';this.style.color='#fbbf24'\" onmouseout=\"this.style.borderColor='#334155';this.style.color='#94a3b8'\">
+            <button class=\"sc-dossier-btn\" onclick=\"event.stopPropagation();openCampaignDossier('${item.campaign_id}')\" style=\"background:transparent; border:1px solid #334155; color:#94a3b8; padding:4px 10px; border-radius:2px; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.55rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; display:flex; align-items:center; gap:4px; transition:all 0.2s;\" onmouseover=\"this.style.borderColor='#f59e0b';this.style.color='#fbbf24'\" onmouseout=\"this.style.borderColor='#334155';this.style.color='#94a3b8'\">
               <i class=\"fa-solid fa-file-lines\"></i> Dossier
             </button>
           </div>
@@ -1260,8 +1268,8 @@
       return `
         <article class=\"sc-card ${isActive ? 'active' : ''}\" data-campaign-id=\"${item.campaign_id}\" style=\"border-left:3px solid ${item.color};\">
           <div class=\"sc-row\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\">
-            <div class=\"sc-name\">${item.name}</div>
-            <span class=\"sc-badge ${statusClass}\">${item.status}</span>
+            <div class=\"sc-name\">${escapeSc(item.name)}</div>
+            <span class=\"sc-badge ${statusClass}\">${escapeSc(item.status)}</span>
           </div>
           <div class=\"sc-row\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\">
             <div>
@@ -1270,9 +1278,9 @@
             </div>
           </div>
           <div class=\"sc-sparkline-wrap\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\"><canvas id=\"${sparkId}\" height=\"42\"></canvas></div>
-          <div class=\"sc-brief\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\">${item.brief_text}</div>
+          <div class=\"sc-brief\" onclick=\"toggleStrategicCampaignSelection('${item.campaign_id}')\" style=\"cursor:pointer;\">${escapeSc(item.brief_text)}</div>
           <div style=\"padding:6px 10px 8px 10px; border-top:1px solid #1e293b; display:flex; justify-content:flex-end;\">
-            <button class=\"sc-dossier-btn\" onclick=\"event.stopPropagation();openCampaignDossier('${item.campaign_id}')\" style=\"background:transparent; border:1px solid #334155; color:#94a3b8; padding:4px 10px; border-radius:4px; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.55rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; display:flex; align-items:center; gap:4px; transition:all 0.2s;\" onmouseover=\"this.style.borderColor='#f59e0b';this.style.color='#fbbf24'\" onmouseout=\"this.style.borderColor='#334155';this.style.color='#94a3b8'\">
+            <button class=\"sc-dossier-btn\" onclick=\"event.stopPropagation();openCampaignDossier('${item.campaign_id}')\" style=\"background:transparent; border:1px solid #334155; color:#94a3b8; padding:4px 10px; border-radius:2px; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.55rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; display:flex; align-items:center; gap:4px; transition:all 0.2s;\" onmouseover=\"this.style.borderColor='#f59e0b';this.style.color='#fbbf24'\" onmouseout=\"this.style.borderColor='#334155';this.style.color='#94a3b8'\">
               <i class=\"fa-solid fa-file-lines\"></i> Dossier
             </button>
           </div>
@@ -1300,17 +1308,20 @@
           datasets: [{
             data: values,
             borderColor: item.color,
-            backgroundColor: item.color + '33',
+            backgroundColor: 'transparent',
             pointRadius: 0,
-            borderWidth: 1.5,
-            fill: true,
-            tension: 0.3
+            borderWidth: 1.4,
+            fill: false,
+            tension: 0.22,
+            clip: 4
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          layout: { padding: { top: 4, right: 2, bottom: 4, left: 2 } },
+          elements: { line: { capBezierPoints: true } },
           scales: { x: { display: false }, y: { display: false } }
         }
       });
@@ -1329,17 +1340,20 @@
           datasets: [{
             data: values,
             borderColor: item.color,
-            backgroundColor: item.color + '33',
+            backgroundColor: 'transparent',
             pointRadius: 0,
-            borderWidth: 1.5,
-            fill: true,
-            tension: 0.3
+            borderWidth: 1.4,
+            fill: false,
+            tension: 0.22,
+            clip: 4
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          layout: { padding: { top: 4, right: 2, bottom: 4, left: 2 } },
+          elements: { line: { capBezierPoints: true } },
           scales: { x: { display: false }, y: { display: false } }
         }
       });
