@@ -4657,14 +4657,40 @@
         </div>
       </div>
 
-      <!-- IMINT LIGHTBOX -->
-      <div id="imintLightbox" class="imint-lightbox" onclick="this.style.display='none'" style="display:none;">
-        <span
-          style="position:absolute; top:20px; right:30px; font-size:2rem; color:#f8fafc; cursor:pointer; z-index:10;"
-          onclick="document.getElementById('imintLightbox').style.display='none'">&times;</span>
-        <img id="imintLightboxImg" src="" alt="IMINT Frame"
-          style="max-width:92vw; max-height:90vh; border-radius:8px; box-shadow:0 25px 60px rgba(0,0,0,0.7);"
-          onclick="event.stopPropagation()">
+            <!-- IMINT LIGHTBOX -->
+      <div id="imintLightbox" class="imint-lightbox" style="display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.95); z-index:9000; flex-direction:column; align-items:center; justify-content:center;">
+        <span style="position:absolute; top:20px; right:30px; font-size:2rem; color:#94a3b8; cursor:pointer; z-index:10001;" 
+              onclick="document.getElementById('imintLightbox').style.display='none'">&times;</span>
+        
+        <div class="imint-lightbox-container" style="display:flex; flex-direction:column; max-width:95vw; max-height:95vh; position:relative;" onclick="event.stopPropagation()">
+          <div style="position:relative; display:flex; align-items:center; justify-content:center;">
+            <!-- Prev Button -->
+            <button id="imintPrevBtn" onclick="changeImintFrame(-1)" 
+                    style="position:absolute; left:-60px; background:rgba(30,41,59,0.5); border:1px solid #334155; color:#f8fafc; padding:15px 10px; cursor:pointer; border-radius:4px; transition:all 0.2s;">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            
+            <img id="imintLightboxImg" src="" alt="IMINT Frame" 
+                 style="max-width:80vw; max-height:70vh; border:1px solid #334155; border-radius:4px; box-shadow:0 25px 60px rgba(0,0,0,0.8);">
+            
+            <!-- Next Button -->
+            <button id="imintNextBtn" onclick="changeImintFrame(1)" 
+                    style="position:absolute; right:-60px; background:rgba(30,41,59,0.5); border:1px solid #334155; color:#f8fafc; padding:15px 10px; cursor:pointer; border-radius:4px; transition:all 0.2s;">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+
+          <!-- Description Panel -->
+          <div id="imintLightboxMeta" style="margin-top:20px; background:#0f172a; border:1px solid #334155; padding:15px; border-radius:4px; width:100%; max-width:80vw;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #1e293b; padding-bottom:8px;">
+              <div id="imintLightboxTitle" style="font-family:var(--font-mono); font-size:0.75rem; color:var(--amber-500); text-transform:uppercase; font-weight:700;">FRAME ANALYSIS</div>
+              <div id="imintLightboxCounter" style="font-family:var(--font-mono); font-size:0.65rem; color:#64748b;">1 / 1</div>
+            </div>
+            <div id="imintLightboxDesc" style="font-family:var(--font-sans); font-size:0.85rem; color:#cbd5e1; line-height:1.5; max-height:15vh; overflow-y:auto;">
+              No analysis available.
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- PLAYFRA MAP MODAL (IFRAME) -->
@@ -5028,7 +5054,7 @@
 
       <script src="assets/js/charts.js?v=2.2"></script>
 
-      <script src="assets/js/map.js?v=3.5"></script>
+      <script src="assets/js/map.js?v=3.6"></script>
       <script src="assets/js/orbat_tracker.js?v=2.2"></script>
       <script src="assets/js/unit_dossier.js?v=2"></script>
 

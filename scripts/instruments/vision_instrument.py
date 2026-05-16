@@ -130,13 +130,14 @@ class MediaProcessor:
             cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
             ret, frame = cap.read()
             if ret:
-                b64 = self._encode_frame_to_base64(frame)
-                final_frames.append({
-                    "base64_data": b64,
-                    "delta_score": 0.0,
-                    "frame_index": idx,
-                    "selection_reason": "geometric_sample"
-                })
+                b64 = self._compress_and_encode(frame)
+                if b64:
+                    final_frames.append({
+                        "base64_data": b64,
+                        "delta_score": 0.0,
+                        "frame_index": idx,
+                        "selection_reason": "geometric_sample"
+                    })
         
         cap.release()
         return final_frames

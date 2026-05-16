@@ -32,6 +32,10 @@
   const strategicSparklineCharts = {};
   const strategicCanvasRenderer = L.canvas();
 
+  // IMINT Lightbox State
+  let currentImintFrames = [];
+  let currentImintIndex = 0;
+
   window.allEventsData = [];
   window.globalEvents = [];
   window.currentFilteredEvents = [];
@@ -4065,6 +4069,7 @@
       }
 
       if (frames && frames.length > 0) {
+        window.currentEventImintFrames = frames; // Store for lightbox access
         imintFeed.style.display = 'block';
         imintCount.innerText = frames.length + ' FRAMES';
 
@@ -4082,11 +4087,17 @@
 
           return `
             <div class="${cardClass}">
-              <img class="imint-thumb"
-                   src="${f.base64_data || ''}"
-                   alt="Frame ${f.frame_id || idx + 1}"
-                   onclick="document.getElementById('imintLightboxImg').src=this.src; document.getElementById('imintLightbox').style.display='flex';"
-                   onerror="this.style.display='none'">
+              <div class="imint-thumb-wrap" style="position:relative; width:100%; height:120px; background:#020617; border-radius:3px; overflow:hidden; cursor:pointer;"
+                   onclick="window.openImintLightbox(window.currentEventImintFrames, ${idx})">
+                ${f.base64_data ? `
+                  <img class="imint-thumb" src="${f.base64_data}" alt="Frame ${f.frame_id || idx + 1}" style="width:100%; height:100%; object-fit:cover;">
+                ` : `
+                  <div style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#334155;">
+                    <i class="fa-solid fa-image-slash" style="font-size:1.5rem; margin-bottom:8px;"></i>
+                    <span style="font-size:0.55rem; font-family:var(--font-mono); text-transform:uppercase;">Media Offline</span>
+                  </div>
+                `}
+              </div>
               <div class="imint-meta-row">
                 <span class="imint-confidence-badge">${conf}%</span>
                 <span class="imint-selection-tag" title="${f.selection_reason || ''}">${f.selection_reason || 'Keyframe'}</span>
@@ -4813,6 +4824,49 @@
   // ============================================
   // 12. APPLICATION START (Sequential Execution)
   // ============================================
+
+  // ============================================
+  // 11.5 IMINT LIGHTBOX CONTROLLER
+  // ============================================
+  window.openImintLightbox = function (frames, index) {
+    if (!frames || !frames.length) return;
+    currentImintFrames = frames;
+    currentImintIndex = index;
+
+    const modal = document.getElementById('imintLightbox');
+    if (!modal) return;
+
+    modal.style.display = 'flex';
+    updateLightboxFrame();
+  };
+
+  window.changeImintFrame = function (delta) {
+    if (!currentImintFrames.length) return;
+    currentImintIndex = (currentImintIndex + delta + currentImintFrames.length) % currentImintFrames.length;
+    updateLightboxFrame();
+  };
+
+  function updateLightboxFrame() {
+    const frame = currentImintFrames[currentImintIndex];
+    if (!frame) return;
+
+    const img = document.getElementById('imintLightboxImg');
+    const desc = document.getElementById('imintLightboxDesc');
+    const counter = document.getElementById('imintLightboxCounter');
+    const prevBtn = document.getElementById('imintPrevBtn');
+    const nextBtn = document.getElementById('imintNextBtn');
+
+    if (img) img.src = frame.base64_data || '';
+    if (desc) desc.innerText = frame.explanation || 'No analysis available for this frame.';
+    if (counter) counter.innerText = `${currentImintIndex + 1} / ${currentImintFrames.length}`;
+    
+    // Hide nav if only one frame
+    if (prevBtn && nextBtn) {
+      const showNav = currentImintFrames.length > 1;
+      prevBtn.style.display = showNav ? 'block' : 'none';
+      nextBtn.style.display = showNav ? 'block' : 'none';
+    }
+  }
 
   // Wait for DOM before initializing
   function startApp() {
