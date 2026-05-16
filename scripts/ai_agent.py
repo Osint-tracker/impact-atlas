@@ -1067,7 +1067,7 @@ class SuperSquadAgent:
 
             async with API_SEMAPHORE:
                 response = await self._call_llm_with_backoff(self.router_client, 
-                model="qwen/qwen3.5-flash-02-23",
+                model="deepseek/deepseek-v4-flash:free",
                 messages=[
                     {"role": "system", "content": "Output valid JSON only."},
                     {"role": "user", "content": prompt}
@@ -1557,7 +1557,7 @@ RAW TEXT:
                 # LLM Call
                 async with API_SEMAPHORE:
                     response = await self._call_llm_with_backoff(self.openrouter_client, 
-                    model="qwen/qwen3.5-flash-02-23",
+                    model="deepseek/deepseek-v4-flash:free",
                     messages=[
                         {"role": "system", "content": SOLDIER_SYSTEM_PROMPT},
                         {"role": "user", "content": current_user_content}

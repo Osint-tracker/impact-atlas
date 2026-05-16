@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Impact Atlas | Strategic Campaign Dossier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-base: #0f172a;
+      --bg-panel: #1e293b;
+      --border-main: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-amber: #f59e0b;
+      --tie-red: #ef4444;
+      --tie-yellow: #eab308;
+      --tie-blue: #3b82f6;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #020617;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .campaign-dossier-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 9998;
+    }
+
+    .campaign-dossier-overlay.active {
+      display: block;
+    }
+
+    #campaign-console {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 75vw;
+      height: 80vh;
+      min-width: 760px;
+      background: var(--bg-base);
+      border: 1px solid var(--accent-amber);
+      color: var(--text-primary);
+      display: grid;
+      grid-template-columns: 60px 1fr 280px;
+      grid-template-rows: 40px 1fr;
+      z-index: 9999;
+      overflow: hidden;
+      border-radius: 0;
+    }
+
+    #campaign-console,
+    #campaign-console * {
+      box-sizing: border-box;
+    }
+
+    #campaign-console ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    #campaign-console ::-webkit-scrollbar-track {
+      background: var(--bg-base);
+    }
+
+    #campaign-console ::-webkit-scrollbar-thumb {
+      background: var(--border-main);
+      border-radius: 2px;
+    }
+
+    .campaign-topbar {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      border-bottom: 1px solid var(--border-main);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      min-width: 0;
+    }
+
+    .campaign-title-strip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .campaign-code {
+      color: var(--accent-amber);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .campaign-title {
+      color: var(--text-primary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .classification-badge,
+    .source-badge,
+    .badge-imint {
+      border: 1px solid var(--border-main);
+      border-radius: 2px;
+      padding: 2px 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-secondary);
+      background: var(--bg-base);
+      white-space: nowrap;
+    }
+
+    .classification-badge {
+      color: var(--accent-amber);
+    }
+
+    .console-close {
+      border: 0;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      cursor: pointer;
+      padding: 4px;
+      text-transform: uppercase;
+    }
+
+    .console-close:hover {
+      color: var(--accent-amber);
+    }
+
+    .campaign-nav-rail {
+      grid-column: 1;
+      grid-row: 2;
+      border-right: 1px solid var(--border-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 16px;
+      gap: 24px;
+      background: var(--bg-base);
+    }
+
+    .nav-tab {
+      width: 60px;
+      height: 28px;
+      border: 0;
+      border-left: 2px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 0;
+      font-size: 14px;
+    }
+
+    .nav-tab:hover,
+    .nav-tab.active {
+      color: var(--accent-amber);
+    }
+
+    .nav-tab.active {
+      border-left-color: var(--accent-amber);
+    }
+
+    .campaign-main-pane {
+      grid-column: 2;
+      grid-row: 2;
+      overflow-y: auto;
+      position: relative;
+      padding: 12px;
+      background: var(--bg-base);
+    }
+
+    .console-section {
+      display: none;
+      min-height: 100%;
+    }
+
+    .console-section.active {
+      display: block;
+    }
+
+    .section-title,
+    .block-title,
+    .metric-label,
+    .label {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    .section-title {
+      color: var(--accent-amber);
+      border-bottom: 1px solid var(--border-main);
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+    .summary-list {
+      margin: 0;
+      padding-left: 16px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .summary-list li {
+      margin: 0 0 8px;
+    }
+
+    .metadata-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      margin-top: 12px;
+      background: var(--border-main);
+      border: 1px solid var(--border-main);
+    }
+
+    .meta-cell,
+    .degradation-panel,
+    .graveyard-panel {
+      background: var(--bg-base);
+      padding: 8px;
+    }
+
+    .metric-value,
+    .meta-value,
+    .bar-row,
+    .event-row,
+    .source-table td,
+    .graveyard-grid {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .meta-value {
+      color: var(--text-primary);
+      margin-top: 4px;
+    }
+
+    .bda-layout {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 520px;
+      gap: 12px;
+    }
+
+    .degradation-panel {
+      border: 1px solid var(--border-main);
+      flex: 1 1 44%;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 150px 1fr 44px;
+      gap: 8px;
+      align-items: center;
+      margin-top: 10px;
+      color: var(--text-primary);
+    }
+
+    .track {
+      height: 12px;
+      border: 1px solid var(--border-main);
+      background: var(--bg-panel);
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      background: var(--accent-amber);
+    }
+
+    .fill.critical {
+      background: var(--tie-red);
+    }
+
+    .graveyard-panel {
+      border: 1px solid var(--border-main);
+      flex: 1 1 56%;
+      overflow-y: auto;
+    }
+
+    .graveyard-grid {
+      display: grid;
+      grid-template-columns: 34px minmax(150px, 1fr) 56px 124px 104px;
+      border-top: 1px solid var(--border-main);
+      border-left: 1px solid var(--border-main);
+      margin-top: 10px;
+    }
+
+    .graveyard-grid > div {
+      border-right: 1px solid var(--border-main);
+      border-bottom: 1px solid var(--border-main);
+      padding: 6px 8px;
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+      color: var(--text-primary);
+    }
+
+    .graveyard-grid .grid-head {
+      color: var(--text-secondary);
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: var(--bg-panel);
+    }
+
+    .badge-imint {
+      color: var(--accent-amber);
+      border-color: var(--accent-amber);
+      background: rgba(245, 158, 11, 0.12);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 5px;
+    }
+
+    .feed-list {
+      overflow-y: auto;
+      max-height: calc(80vh - 92px);
+      padding-right: 6px;
+    }
+
+    .event-row {
+      border-left: 2px solid var(--border-main);
+      padding-left: 12px;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+      line-height: 1.45;
+    }
+
+    .event-row:hover {
+      border-left-color: var(--accent-amber);
+      background: var(--bg-panel);
+    }
+
+    .source-table-wrap {
+      overflow-y: auto;
+      max-height: calc(80vh - 92px);
+      border: 1px solid var(--border-main);
+    }
+
+    .source-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .source-table th {
+      position: sticky;
+      top: 0;
+      background: var(--bg-base);
+      border-bottom: 1px solid var(--border-main);
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      color: var(--text-secondary);
+      text-align: left;
+      padding: 4px 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      z-index: 1;
+    }
+
+    .source-table td {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-bottom: 1px solid var(--border-main);
+      color: var(--text-primary);
+    }
+
+    .source-table tr:hover td {
+      background: var(--bg-panel);
+    }
+
+    .reliability-cell {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .reliability-track {
+      width: 50px;
+      height: 6px;
+      border: 1px solid var(--border-main);
+      background: var(--bg-base);
+    }
+
+    .reliability-fill {
+      height: 100%;
+      background: var(--accent-amber);
+    }
+
+    .campaign-telemetry-rail {
+      grid-column: 3;
+      grid-row: 2;
+      border-left: 1px solid var(--border-main);
+      background: var(--bg-panel);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      overflow-y: auto;
+    }
+
+    .tie-ring-stack {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .tie-ring {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ring-frame {
+      width: 72px;
+      height: 72px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ring-svg {
+      width: 72px;
+      height: 72px;
+      transform: rotate(-90deg);
+    }
+
+    .ring-track,
+    .ring-progress {
+      fill: none;
+      stroke-width: 7;
+    }
+
+    .ring-track {
+      stroke: var(--border-main);
+    }
+
+    .ring-progress {
+      stroke-linecap: round;
+    }
+
+    .ring-score {
+      position: absolute;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 24px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-primary);
+    }
+
+    .ring-caption {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .telemetry-block {
+      border: 1px solid var(--border-main);
+      padding: 8px;
+      background: var(--bg-base);
+    }
+
+    .evector-value {
+      color: var(--accent-amber);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-variant-numeric: tabular-nums;
+      margin-top: 6px;
+    }
+
+    .tempo-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .blink-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--tie-red);
+      border-radius: 2px;
+      animation: dossierBlink 1s steps(2, start) infinite;
+    }
+
+    @keyframes dossierBlink {
+      50% { opacity: 0.2; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="campaignDossierOverlay" class="campaign-dossier-overlay" data-standalone="true">
+    <div id="campaign-console" role="dialog" aria-modal="true" aria-label="Strategic Campaign Dossier">
+      <header class="campaign-topbar">
+        <div class="campaign-title-strip">
+          <span class="campaign-code" id="cdCampaignCode">[ OD-SC-04 ]</span>
+          <span class="campaign-title" id="cdTitle">SUPPLY CHAIN DISRUPTION</span>
+          <span class="classification-badge" id="cdClassification">SECRET // OSINT ONLY</span>
+        </div>
+        <button class="console-close" id="campaignConsoleClose" type="button">[X] CLOSE / SWITCH VIEW</button>
+      </header>
+
+      <nav class="campaign-nav-rail" aria-label="Campaign dossier views">
+        <button class="nav-tab active" type="button" data-tab="overview" title="Overview" aria-label="Overview"><i class="fa-solid fa-crosshairs"></i></button>
+        <button class="nav-tab" type="button" data-tab="bda" title="B.D.A. and targets" aria-label="B.D.A. and targets"><i class="fa-solid fa-chart-gantt"></i></button>
+        <button class="nav-tab" type="button" data-tab="feed" title="Tactical feed" aria-label="Tactical feed"><i class="fa-solid fa-satellite-dish"></i></button>
+        <button class="nav-tab" type="button" data-tab="sources" title="SIGINT and sources" aria-label="SIGINT and sources"><i class="fa-solid fa-database"></i></button>
+      </nav>
+
+      <main class="campaign-main-pane">
+        <section class="console-section active" data-section="overview">
+          <h2 class="section-title">EXECUTIVE SUMMARY</h2>
+          <ul class="summary-list" id="cdExecutiveSummary"></ul>
+          <div class="metadata-grid">
+            <div class="meta-cell"><div class="metric-label">ACTIVE SINCE</div><div class="meta-value" id="cdActiveSince">--</div></div>
+            <div class="meta-cell"><div class="metric-label">REGION</div><div class="meta-value" id="cdRegion">--</div></div>
+            <div class="meta-cell"><div class="metric-label">ASSIGNED UNITS</div><div class="meta-value" id="cdAssignedUnits">--</div></div>
+          </div>
+        </section>
+
+        <section class="console-section bda-layout" data-section="bda">
+          <div class="degradation-panel">
+            <h2 class="section-title">MACRO-DEGRADATION</h2>
+            <div id="cdDegradationBars"></div>
+          </div>
+          <div class="graveyard-panel">
+            <h2 class="section-title">EQUIPMENT GRAVEYARD</h2>
+            <div class="graveyard-grid" id="cdEquipmentGrid"></div>
+          </div>
+        </section>
+
+        <section class="console-section" data-section="feed">
+          <h2 class="section-title">TACTICAL FEED</h2>
+          <div class="feed-list" id="cdTacticalFeed"></div>
+        </section>
+
+        <section class="console-section" data-section="sources">
+          <h2 class="section-title">SIGINT &amp; SOURCES</h2>
+          <div class="source-table-wrap">
+            <table class="source-table">
+              <thead><tr><th>T-STAMP</th><th>SOURCE ID</th><th>TYPE</th><th>RELIABILITY</th><th>BIAS</th><th>CORROB.</th></tr></thead>
+              <tbody id="cdSourcesBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <aside class="campaign-telemetry-rail">
+        <div>
+          <h2 class="section-title">T.I.E. VECTOR</h2>
+          <div class="tie-ring-stack">
+            <div class="tie-ring"><div class="ring-frame"><svg class="ring-svg" viewBox="0 0 80 80"><circle class="ring-track" cx="40" cy="40" r="30"></circle><circle class="ring-progress" id="cdKineticRing" cx="40" cy="40" r="30" style="stroke: var(--tie-red);"></circle></svg><span class="ring-score" id="cdKineticText">--</span></div><span class="ring-caption">KINETIC</span></div>
+            <div class="tie-ring"><div class="ring-frame"><svg class="ring-svg" viewBox="0 0 80 80"><circle class="ring-track" cx="40" cy="40" r="30"></circle><circle class="ring-progress" id="cdTargetRing" cx="40" cy="40" r="30" style="stroke: var(--tie-yellow);"></circle></svg><span class="ring-score" id="cdTargetText">--</span></div><span class="ring-caption">TARGET</span></div>
+            <div class="tie-ring"><div class="ring-frame"><svg class="ring-svg" viewBox="0 0 80 80"><circle class="ring-track" cx="40" cy="40" r="30"></circle><circle class="ring-progress" id="cdEffectRing" cx="40" cy="40" r="30" style="stroke: var(--tie-blue);"></circle></svg><span class="ring-score" id="cdEffectText">--</span></div><span class="ring-caption">EFFECT</span></div>
+          </div>
+        </div>
+        <div class="telemetry-block">
+          <div class="metric-label">CUMULATIVE E-VECTOR</div>
+          <div class="evector-value" id="cdEVector">246.0</div>
+          <div class="tempo-line"><span class="blink-dot"></span><span>OP TEMPO: <span id="cdOpTempo">HIGH</span></span></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var dossier = {
+        campaignCode: '[ OD-SC-04 ]',
+        title: 'SUPPLY CHAIN DISRUPTION',
+        classification: 'SECRET // OSINT ONLY',
+        activeSince: '2026-04-18',
+        region: 'Crimea - Zaporizhzhia Logistics Arc',
+        assignedUnits: 'OSINT Cell Vostok, IMINT Desk 12, SIGINT Relay 4',
+        cumulativeE: 246.0,
+        opTempo: 'HIGH',
+        tie: { kinetic: 8.7, target: 7.9, effect: 9.1 },
+        summary: [
+          'Sustained strikes against rail transfer nodes and fuel depots are degrading adversary ground-line throughput across the southern axis.',
+          'Verified imagery indicates repeated damage to switching yards, rolling stock, and mobile repair assets near Dzhankoi and Melitopol.',
+          'Source confidence remains high after cross-corroboration between commercial SAR, local HUMINT reports, and geolocated social video.'
+        ],
+        degradation: [
+          { label: 'LOGISTICS NODES', value: 80 },
+          { label: 'RAIL CAPACITY', value: 72 },
+          { label: 'FUEL DISTRIBUTION', value: 64 },
+          { label: 'REPAIR CADENCE', value: 100 }
+        ],
+        equipment: [
+          { icon: 'fa-train', asset: 'Rail switching assembly - Dzhankoi north yard', qty: 3, state: 'Destroyed', imint: true },
+          { icon: 'fa-truck', asset: 'Ural-4320 logistics trucks', qty: 11, state: 'Burned out', imint: true },
+          { icon: 'fa-gas-pump', asset: 'Forward fuel bladder farm', qty: 6, state: 'Ruptured', imint: true },
+          { icon: 'fa-wrench', asset: 'Mobile track repair kits', qty: 4, state: 'Abandoned', imint: false },
+          { icon: 'fa-tower-broadcast', asset: 'Rail dispatch relay mast', qty: 1, state: 'Offline', imint: true }
+        ],
+        feed: [
+          { stamp: '2026-05-06 14:30Z', event: 'Dzhankoi Rail Node Hit', tie: 85.0 },
+          { stamp: '2026-05-06 17:10Z', event: 'Secondary fuel ignition observed', tie: 79.5 },
+          { stamp: '2026-05-07 04:20Z', event: 'Repair convoy rerouted through Armyansk', tie: 61.0 },
+          { stamp: '2026-05-08 21:45Z', event: 'Melitopol depot thermal anomaly', tie: 88.0 },
+          { stamp: '2026-05-09 08:05Z', event: 'Rolling stock backlog at Simferopol yard', tie: 73.0 },
+          { stamp: '2026-05-10 19:30Z', event: 'Bridge approach traffic halted', tie: 67.5 }
+        ],
+        sources: [
+          { stamp: '2026-05-06T14:42Z', id: 'SAR-COM-7721', type: 'SAR', reliability: 92, bias: 'LOW', corroboration: '3/3' },
+          { stamp: '2026-05-06T15:18Z', id: 'SOCVID-118A', type: 'GEOLOC', reliability: 84, bias: 'MED', corroboration: '2/3' },
+          { stamp: '2026-05-06T18:50Z', id: 'IMINT-MAX-44', type: 'IMINT', reliability: 96, bias: 'LOW', corroboration: '3/3' },
+          { stamp: '2026-05-07T06:12Z', id: 'SIG-RAIL-09', type: 'SIGINT', reliability: 78, bias: 'LOW', corroboration: '2/3' },
+          { stamp: '2026-05-08T22:30Z', id: 'THERM-221C', type: 'IR', reliability: 89, bias: 'LOW', corroboration: '3/3' },
+          { stamp: '2026-05-10T20:16Z', id: 'HUM-LOG-31', type: 'HUMINT', reliability: 68, bias: 'MED', corroboration: '1/3' }
+        ]
+      };
+
+      function q(id) { return document.getElementById(id); }
+      function escapeHtml(value) {
+        return String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      }
+      function setRing(ringId, textId, score) {
+        var ring = q(ringId);
+        var radius = parseFloat(ring.getAttribute('r'));
+        var circumference = 2 * Math.PI * radius;
+        var normalized = Math.max(0, Math.min(10, score)) / 10;
+        ring.style.strokeDasharray = circumference.toFixed(2);
+        ring.style.strokeDashoffset = ((1 - normalized) * circumference).toFixed(2);
+        q(textId).textContent = score.toFixed(1);
+      }
+      function renderDossier() {
+        q('cdCampaignCode').textContent = dossier.campaignCode;
+        q('cdTitle').textContent = dossier.title;
+        q('cdClassification').textContent = dossier.classification;
+        q('cdActiveSince').textContent = dossier.activeSince;
+        q('cdRegion').textContent = dossier.region;
+        q('cdAssignedUnits').textContent = dossier.assignedUnits;
+        q('cdEVector').textContent = dossier.cumulativeE.toFixed(1);
+        q('cdOpTempo').textContent = dossier.opTempo;
+        q('cdExecutiveSummary').innerHTML = dossier.summary.map(function (item) { return '<li>' + escapeHtml(item) + '</li>'; }).join('');
+        q('cdDegradationBars').innerHTML = dossier.degradation.map(function (item) {
+          return '<div class="bar-row"><span class="label">' + escapeHtml(item.label) + '</span><div class="track"><div class="fill' + (item.value >= 100 ? ' critical' : '') + '" style="width: ' + item.value + '%"></div></div><span class="value">' + item.value + '%</span></div>';
+        }).join('');
+        q('cdEquipmentGrid').innerHTML = '<div class="grid-head">TYPE</div><div class="grid-head">ASSET NAME</div><div class="grid-head">QTY</div><div class="grid-head">DAMAGE STATE</div><div class="grid-head">VERIFY</div>' + dossier.equipment.map(function (row) {
+          var badge = row.imint ? '<span class="badge-imint"><i class="fa-solid fa-eye"></i> [ IMINT ]</span>' : '<span class="source-badge">[ PENDING ]</span>';
+          return '<div><i class="fa-solid ' + row.icon + '"></i></div><div>' + escapeHtml(row.asset) + '</div><div>' + row.qty + '</div><div>' + escapeHtml(row.state) + '</div><div>' + badge + '</div>';
+        }).join('');
+        q('cdTacticalFeed').innerHTML = dossier.feed.map(function (row) { return '<div class="event-row">[' + row.stamp + '] | ' + escapeHtml(row.event) + ' | TIE: ' + row.tie.toFixed(1) + '</div>'; }).join('');
+        q('cdSourcesBody').innerHTML = dossier.sources.map(function (row) {
+          return '<tr><td>' + row.stamp + '</td><td>' + row.id + '</td><td>' + row.type + '</td><td><div class="reliability-cell"><div class="reliability-track"><div class="reliability-fill" style="width:' + row.reliability + '%"></div></div><span>' + row.reliability + '</span></div></td><td>' + row.bias + '</td><td>' + row.corroboration + '</td></tr>';
+        }).join('');
+        setRing('cdKineticRing', 'cdKineticText', dossier.tie.kinetic);
+        setRing('cdTargetRing', 'cdTargetText', dossier.tie.target);
+        setRing('cdEffectRing', 'cdEffectText', dossier.tie.effect);
+      }
+      function switchTab(tabId) {
+        document.querySelectorAll('.nav-tab').forEach(function (tab) {
+          tab.classList.toggle('active', tab.getAttribute('data-tab') === tabId);
+        });
+        document.querySelectorAll('.console-section').forEach(function (section) {
+          var active = section.getAttribute('data-section') === tabId;
+          section.classList.toggle('active', active);
+          section.style.display = active ? (section.classList.contains('bda-layout') ? 'flex' : 'block') : 'none';
+        });
+      }
+      window.switchTab = switchTab;
+      document.querySelectorAll('.nav-tab').forEach(function (tab) {
+        tab.addEventListener('click', function () { switchTab(tab.getAttribute('data-tab')); });
+      });
+      q('campaignConsoleClose').addEventListener('click', function () {
+        q('campaignDossierOverlay').classList.remove('active');
+      });
+      renderDossier();
+      switchTab('overview');
+      q('campaignDossierOverlay').classList.add('active');
+    });
+  </script>
+</body>
+
+</html>

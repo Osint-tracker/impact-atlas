@@ -1669,414 +1669,533 @@
     }
 
     /* ============================================
-       STRATEGIC CAMPAIGN DOSSIER MODAL
+       STRATEGIC CAMPAIGN DOSSIER CONSOLE
        ============================================ */
+    :root {
+      --bg-base: #0f172a;
+      --bg-panel: #1e293b;
+      --border-main: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-amber: #f59e0b;
+      --tie-red: #ef4444;
+      --tie-yellow: #eab308;
+      --tie-blue: #3b82f6;
+    }
+
     .campaign-dossier-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.65);
+      inset: 0;
+      display: none;
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
-      z-index: 9000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      animation: cdFadeIn 0.25s var(--ease-out);
+      z-index: 9998;
     }
+
     .campaign-dossier-overlay.active {
-      display: flex;
-    }
-    @keyframes cdFadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes cdSlideUp {
-      from { opacity: 0; transform: translateY(24px) scale(0.97); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      display: block;
     }
 
-    .campaign-dossier-card {
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      width: min(820px, 92vw);
-      max-height: 88vh;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(245, 158, 11, 0.08);
-      animation: cdSlideUp 0.3s var(--ease-out);
+    #campaign-console {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 75vw;
+      height: 80vh;
+      min-width: 760px;
+      background: var(--bg-base);
+      border: 1px solid var(--accent-amber);
+      color: var(--text-primary);
+      display: grid;
+      grid-template-columns: 60px 1fr 280px;
+      grid-template-rows: 40px 1fr;
+      z-index: 9999;
       overflow: hidden;
+      border-radius: 0;
     }
 
-    /* --- Header --- */
-    .cd-header {
+    #campaign-console,
+    #campaign-console * {
+      box-sizing: border-box;
+    }
+
+    #campaign-console ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    #campaign-console ::-webkit-scrollbar-track {
+      background: var(--bg-base);
+    }
+
+    #campaign-console ::-webkit-scrollbar-thumb {
+      background: var(--border-main);
+      border-radius: 2px;
+    }
+
+    .campaign-topbar {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      border-bottom: 1px solid var(--border-main);
       display: flex;
-      align-items: flex-start;
       justify-content: space-between;
-      padding: 18px 22px 14px 22px;
-      border-bottom: 1px solid #334155;
-      flex-shrink: 0;
-    }
-    .cd-header-left {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .cd-header-left h2 {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: #fbbf24;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      line-height: 1.3;
-    }
-    .cd-meta-row {
-      display: flex;
       align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
+      padding: 0 16px;
+      min-width: 0;
     }
-    .cd-meta-row span {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.6rem;
-      color: #64748b;
-      letter-spacing: 0.3px;
-    }
-    .cd-meta-row .cd-id {
-      color: #475569;
-    }
-    .cd-header-actions {
+
+    .campaign-title-strip {
       display: flex;
       align-items: center;
       gap: 8px;
-      flex-shrink: 0;
+      min-width: 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
     }
-    .cd-toggle-btn {
+
+    .campaign-code {
+      color: var(--accent-amber);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .campaign-title {
+      color: var(--text-primary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .classification-badge,
+    .source-badge,
+    .badge-imint {
+      border: 1px solid var(--border-main);
+      border-radius: 2px;
+      padding: 2px 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-secondary);
+      background: var(--bg-base);
+      white-space: nowrap;
+    }
+
+    .classification-badge {
+      color: var(--accent-amber);
+    }
+
+    .console-close {
+      border: 0;
       background: transparent;
-      border: 1px solid #334155;
-      color: #94a3b8;
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
       cursor: pointer;
+      padding: 4px;
+      text-transform: uppercase;
+    }
+
+    .console-close:hover {
+      color: var(--accent-amber);
+    }
+
+    .campaign-nav-rail {
+      grid-column: 1;
+      grid-row: 2;
+      border-right: 1px solid var(--border-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 16px;
+      gap: 24px;
+      background: var(--bg-base);
+    }
+
+    .nav-tab {
+      width: 60px;
+      height: 28px;
+      border: 0;
+      border-left: 2px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.85rem;
-      transition: all 0.2s;
-    }
-    .cd-toggle-btn:hover {
-      background: #1e293b;
-      color: #fbbf24;
-      border-color: #f59e0b;
-    }
-    .cd-toggle-btn .fa-xmark {
-      font-size: 1rem;
-    }
-    .cd-view-toggle {
-      background: transparent;
-      border: 1px solid #334155;
-      color: #94a3b8;
-      padding: 5px 10px;
-      border-radius: 6px;
       cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.6rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .cd-view-toggle:hover {
-      background: #1e293b;
-      color: #fbbf24;
-      border-color: #f59e0b;
+      border-radius: 0;
+      font-size: 14px;
     }
 
-    /* --- Grid Layout --- */
-    .cd-grid {
+    .nav-tab:hover,
+    .nav-tab.active {
+      color: var(--accent-amber);
+    }
+
+    .nav-tab.active {
+      border-left-color: var(--accent-amber);
+    }
+
+    .campaign-main-pane {
+      grid-column: 2;
+      grid-row: 2;
+      overflow-y: auto;
+      position: relative;
+      padding: 12px;
+      background: var(--bg-base);
+    }
+
+    .console-section {
+      display: none;
+      min-height: 100%;
+    }
+
+    .console-section.active {
+      display: block;
+    }
+
+    .section-title,
+    .block-title,
+    .metric-label,
+    .label {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    .section-title {
+      color: var(--accent-amber);
+      border-bottom: 1px solid var(--border-main);
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+    .summary-list {
+      margin: 0;
+      padding-left: 16px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .summary-list li {
+      margin: 0 0 8px;
+    }
+
+    .metadata-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto auto auto;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 1px;
-      background: #334155;
-      flex: 1;
+      margin-top: 12px;
+      background: var(--border-main);
+      border: 1px solid var(--border-main);
+    }
+
+    .meta-cell,
+    .degradation-panel,
+    .graveyard-panel {
+      background: var(--bg-base);
+      padding: 8px;
+    }
+
+    .metric-value,
+    .meta-value,
+    .bar-row,
+    .event-row,
+    .source-table td,
+    .graveyard-grid {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .meta-value {
+      color: var(--text-primary);
+      margin-top: 4px;
+    }
+
+    .bda-layout {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 520px;
+      gap: 12px;
+    }
+
+    .degradation-panel {
+      border: 1px solid var(--border-main);
+      flex: 1 1 44%;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 150px 1fr 44px;
+      gap: 8px;
+      align-items: center;
+      margin-top: 10px;
+      color: var(--text-primary);
+    }
+
+    .track {
+      height: 12px;
+      border: 1px solid var(--border-main);
+      background: var(--bg-panel);
       overflow: hidden;
     }
-    .cd-section {
-      background: #0f172a;
-      padding: 14px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .cd-section-header {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.6rem;
-      font-weight: 700;
-      color: #64748b;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      border-bottom: 1px solid #1e293b;
-      padding-bottom: 6px;
-    }
-    .cd-section-header i {
-      font-size: 0.55rem;
-      color: #f59e0b;
+
+    .fill {
+      height: 100%;
+      background: var(--accent-amber);
     }
 
-    /* --- AI Executive Summary --- */
-    .cd-exec-summary {
-      grid-column: 1;
-      grid-row: 1;
-    }
-    .cd-exec-summary ul {
-      margin: 0;
-      padding: 0 0 0 14px;
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .cd-exec-summary ul li {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.7rem;
-      color: #cbd5e1;
-      line-height: 1.4;
-      position: relative;
-      padding-left: 10px;
-    }
-    .cd-exec-summary ul li::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 7px;
-      width: 4px;
-      height: 4px;
-      background: #f59e0b;
-      border-radius: 50%;
+    .fill.critical {
+      background: var(--tie-red);
     }
 
-    /* --- T.I.E. Score Rings --- */
-    .cd-tie-rings {
-      grid-column: 2;
-      grid-row: 1;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-around;
-      align-items: center;
-      gap: 4px;
-    }
-    .tie-ring-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    .tie-ring-svg {
-      width: 90px;
-      height: 90px;
-    }
-    .tie-ring-label {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.55rem;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-weight: 600;
-    }
-
-    /* --- Detected Units --- */
-    .cd-detected-units {
-      grid-column: 1;
-      grid-row: 2;
-    }
-    .cd-unit-list {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .cd-unit-list li {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.7rem;
-      color: #cbd5e1;
-      padding: 4px 6px;
-      background: #0f172a;
-      border: 1px solid #1e293b;
-      border-radius: 4px;
-    }
-    .cd-unit-list li i {
-      width: 14px;
-      text-align: center;
-      font-size: 0.6rem;
-      color: #64748b;
-    }
-
-    /* --- Tactical Feed --- */
-    .cd-tactical-feed {
-      grid-column: 2;
-      grid-row: 2;
-    }
-    .cd-feed-scroll {
-      max-height: 140px;
+    .graveyard-panel {
+      border: 1px solid var(--border-main);
+      flex: 1 1 56%;
       overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding-right: 4px;
-    }
-    .cd-feed-scroll::-webkit-scrollbar {
-      width: 3px;
-    }
-    .cd-feed-scroll::-webkit-scrollbar-track {
-      background: #1e293b;
-      border-radius: 2px;
-    }
-    .cd-feed-scroll::-webkit-scrollbar-thumb {
-      background: #475569;
-      border-radius: 2px;
-    }
-    .cd-feed-item {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.55rem;
-      color: #94a3b8;
-      padding: 5px 7px;
-      background: #0f172a;
-      border: 1px solid #1e293b;
-      border-left: 2px solid #334155;
-      border-radius: 3px;
-      line-height: 1.4;
-      transition: border-color 0.2s;
-    }
-    .cd-feed-item:hover {
-      border-left-color: #f59e0b;
-      background: #1a1a2e;
-    }
-    .cd-feed-item .cd-feed-score {
-      color: #f59e0b;
-      font-weight: 700;
     }
 
-    /* --- Intelligence Metadata --- */
-    .cd-intel-meta {
-      grid-column: 1 / span 2;
-      grid-row: 3;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 18px;
+    .graveyard-grid {
+      display: grid;
+      grid-template-columns: 34px minmax(150px, 1fr) 56px 124px 104px;
+      border-top: 1px solid var(--border-main);
+      border-left: 1px solid var(--border-main);
+      margin-top: 10px;
     }
-    .cd-intel-meta .cd-section-header {
-      border-bottom: none;
-      padding-bottom: 0;
-      flex-shrink: 0;
-    }
-    .cd-intel-right {
+
+    .graveyard-grid > div {
+      border-right: 1px solid var(--border-main);
+      border-bottom: 1px solid var(--border-main);
+      padding: 6px 8px;
+      min-height: 28px;
       display: flex;
       align-items: center;
-      gap: 16px;
+      color: var(--text-primary);
     }
-    .cd-reliability-score {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: #22c55e;
-    }
-    .cd-reliability-label {
+
+    .graveyard-grid .grid-head {
+      color: var(--text-secondary);
       font-family: 'Inter', sans-serif;
-      font-size: 0.55rem;
-      color: #64748b;
+      font-size: 10px;
       text-transform: uppercase;
-    }
-    .cd-confirmed-badge {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      background: rgba(34, 197, 94, 0.12);
-      border: 1px solid rgba(34, 197, 94, 0.3);
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.6rem;
-      font-weight: 700;
-      color: #22c55e;
       letter-spacing: 0.5px;
-    }
-    .cd-confirmed-badge i {
-      font-size: 0.55rem;
-    }
-    .cd-event-count-badge {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.6rem;
-      color: #94a3b8;
-    }
-    .cd-event-count-badge i {
-      font-size: 0.55rem;
-      color: #f59e0b;
+      background: var(--bg-panel);
     }
 
-    /* --- Status Badge --- */
-    .cd-status-badge {
+    .badge-imint {
+      color: var(--accent-amber);
+      border-color: var(--accent-amber);
+      background: rgba(245, 158, 11, 0.12);
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 2px 8px;
-      border-radius: 3px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.55rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-    .cd-status-badge.live {
-      color: #22c55e;
-      background: rgba(34, 197, 94, 0.1);
-      border: 1px solid rgba(34, 197, 94, 0.25);
-    }
-    .cd-status-badge.standby {
-      color: #64748b;
-      background: rgba(71, 85, 105, 0.15);
-      border: 1px solid #334155;
-    }
-    .cd-status-badge i {
-      font-size: 0.45rem;
+      padding: 2px 5px;
     }
 
-    .cd-body-scroll {
-      flex: 1;
+    .feed-list {
       overflow-y: auto;
+      max-height: calc(80vh - 92px);
+      padding-right: 6px;
+    }
+
+    .event-row {
+      border-left: 2px solid var(--border-main);
+      padding-left: 12px;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+      line-height: 1.45;
+    }
+
+    .event-row:hover {
+      border-left-color: var(--accent-amber);
+      background: var(--bg-panel);
+    }
+
+    .source-table-wrap {
+      overflow-y: auto;
+      max-height: calc(80vh - 92px);
+      border: 1px solid var(--border-main);
+    }
+
+    .source-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .source-table th {
+      position: sticky;
+      top: 0;
+      background: var(--bg-base);
+      border-bottom: 1px solid var(--border-main);
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      color: var(--text-secondary);
+      text-align: left;
+      padding: 4px 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      z-index: 1;
+    }
+
+    .source-table td {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-bottom: 1px solid var(--border-main);
+      color: var(--text-primary);
+    }
+
+    .source-table tr:hover td {
+      background: var(--bg-panel);
+    }
+
+    .reliability-cell {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .reliability-track {
+      width: 50px;
+      height: 6px;
+      border: 1px solid var(--border-main);
+      background: var(--bg-base);
+    }
+
+    .reliability-fill {
+      height: 100%;
+      background: var(--accent-amber);
+    }
+
+    .campaign-telemetry-rail {
+      grid-column: 3;
+      grid-row: 2;
+      border-left: 1px solid var(--border-main);
+      background: var(--bg-panel);
+      padding: 16px;
       display: flex;
       flex-direction: column;
+      gap: 24px;
+      overflow-y: auto;
     }
-    .cd-body-scroll::-webkit-scrollbar {
-      width: 4px;
+
+    .tie-ring-stack {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
     }
-    .cd-body-scroll::-webkit-scrollbar-track {
-      background: #1e293b;
+
+    .tie-ring {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
     }
-    .cd-body-scroll::-webkit-scrollbar-thumb {
-      background: #475569;
+
+    .ring-frame {
+      width: 72px;
+      height: 72px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ring-svg {
+      width: 72px;
+      height: 72px;
+      transform: rotate(-90deg);
+    }
+
+    .ring-track,
+    .ring-progress {
+      fill: none;
+      stroke-width: 7;
+    }
+
+    .ring-track {
+      stroke: var(--border-main);
+    }
+
+    .ring-progress {
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.25s linear;
+    }
+
+    .ring-score {
+      position: absolute;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 24px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-primary);
+    }
+
+    .ring-caption {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .telemetry-block {
+      border: 1px solid var(--border-main);
+      padding: 8px;
+      background: var(--bg-base);
+    }
+
+    .evector-value {
+      color: var(--accent-amber);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-variant-numeric: tabular-nums;
+      margin-top: 6px;
+    }
+
+    .tempo-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .blink-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--tie-red);
       border-radius: 2px;
+      animation: dossierBlink 1s steps(2, start) infinite;
+    }
+
+    @keyframes dossierBlink {
+      50% { opacity: 0.2; }
+    }
+
+    @media (max-width: 980px) {
+      #campaign-console {
+        width: 94vw;
+        min-width: 0;
+        grid-template-columns: 52px minmax(0, 1fr) 240px;
+      }
+
+      .metadata-grid,
+      .tie-ring-stack {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
   <style>
@@ -3783,7 +3902,7 @@
           <button class="ttb-btn" onclick="setTimeWindow(0)" data-hours="0">ALL</button>
           <div class="ttb-divider"></div>
           <div class="ttb-custom-group">
-            <input type="number" class="ttb-custom-input" id="ttbCustomHours" min="1" max="720" placeholder="—"
+            <input type="number" class="ttb-custom-input" id="ttbCustomHours" min="1" max="720" placeholder="â€”"
               title="Custom hours" onchange="setTimeWindow(parseInt(this.value) || 0)">
             <span class="ttb-custom-suffix">H</span>
           </div>
@@ -3810,11 +3929,11 @@
           <div class="ttb-divider"></div>
           <!-- Performance Filters -->
           <button class="ttb-btn perf-filter-btn" data-filter="elite" onclick="togglePerformanceFilter('elite')"
-            title="Show only high-value engagements (T.I.E. ≥ 80 or T ≥ 8)">
+            title="Show only high-value engagements (T.I.E. â‰¥ 80 or T â‰¥ 8)">
             <i class="fa-solid fa-star" style="font-size:0.6rem;"></i> ELITE
           </button>
           <button class="ttb-btn perf-filter-btn" data-filter="attrition" onclick="togglePerformanceFilter('attrition')"
-            title="Show only events with major confirmed effect (E ≥ 7)">
+            title="Show only events with major confirmed effect (E â‰¥ 7)">
             <i class="fa-solid fa-skull" style="font-size:0.6rem;"></i> ATTRITION
           </button>
           <button class="ttb-btn perf-filter-btn" id="lowRepFilterBtn" onclick="toggleLowReputationVisibility()"
@@ -4354,11 +4473,11 @@
                       <div class="tooltip-header">T.I.E. Score</div>
                       <div class="tooltip-body">
                         Composite metric (0-100) measuring event significance:<br><br>
-                        • <strong>Kinetic (K)</strong>: Violence/Intensity<br>
-                        • <strong>Target (T)</strong>: Strategic value<br>
-                        • <strong>Effect (E)</strong>: Confirmed success
+                        â€¢ <strong>Kinetic (K)</strong>: Violence/Intensity<br>
+                        â€¢ <strong>Target (T)</strong>: Strategic value<br>
+                        â€¢ <strong>Effect (E)</strong>: Confirmed success
                       </div>
-                      <div class="tooltip-footer">Formula: (T^1.6) × (E/10) × K-Mult</div>
+                      <div class="tooltip-footer">Formula: (T^1.6) Ã— (E/10) Ã— K-Mult</div>
                     </div>
                   </div>
                 </div>
@@ -4410,9 +4529,9 @@
                             <div class="tooltip-header">Bias Score (-10 to +10)</div>
                             <div class="tooltip-body">
                               Indicates narrative leaning:<br>
-                              • <span style="color:#ef4444">-10 to -3:</span> Pro-Russian<br>
-                              • <span style="color:#94a3b8">-3 to +3:</span> Neutral<br>
-                              • <span style="color:#3b82f6">+3 to +10:</span> Pro-Ukrainian
+                              â€¢ <span style="color:#ef4444">-10 to -3:</span> Pro-Russian<br>
+                              â€¢ <span style="color:#94a3b8">-3 to +3:</span> Neutral<br>
+                              â€¢ <span style="color:#3b82f6">+3 to +10:</span> Pro-Ukrainian
                             </div>
                             <div class="tooltip-footer">Calculated via HBC Formula.</div>
                           </div>
@@ -4509,7 +4628,7 @@
             <div class="ud-title-group">
               <h2 id="udTitle">Unit Name</h2>
               <div class="ud-subtitle">
-                <span id="udFaction">Faction</span> •
+                <span id="udFaction">Faction</span> â€¢
                 <span id="udEchelon">Echelon</span>
                 <span id="udTypeBadge" class="ud-badge">Type</span>
               </div>
@@ -4577,7 +4696,7 @@
                   <span class="ud-stat-value" id="udEquipment">--</span>
                 </div>
                 <div class="ud-stat-row" id="udMilUnitRow" style="display:none;">
-                  <span class="ud-stat-label">Military Unit №</span>
+                  <span class="ud-stat-label">Military Unit â„–</span>
                   <span class="ud-stat-value" id="udMilUnit">--</span>
                 </div>
                 <div class="ud-stat-row" id="udBaseRow" style="display:none;">
@@ -5093,7 +5212,7 @@
           container.innerHTML = html;
         }
 
-        // Open event dossier from intel feed — fly to event + open source URL
+        // Open event dossier from intel feed â€” fly to event + open source URL
         function openEventDossierFromFeed(index) {
           var events = getLoadedEvents();
           var sorted = events.slice().sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
@@ -5238,7 +5357,7 @@
             _analyticsCharts.tie = new Chart(ctx2, { type: 'bar', data: { labels: ['0-2', '2-4', '4-6', '6-8', '8-10'], datasets: [{ data: tieBuckets, backgroundColor: ['#233554', '#06b6d4', '#f59e0b', '#f97316', '#e94560'], borderRadius: 3, borderSkipped: false }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b', font: { size: 8, family: 'JetBrains Mono' } }, grid: { display: false } }, y: { ticks: { color: '#64748b', font: { size: 8 } }, grid: { color: '#233554' } } } } });
           }
 
-          // Source Breakdown — parse sources_list, apply dropdown filter
+          // Source Breakdown â€” parse sources_list, apply dropdown filter
           var srcCounts = {};
           var allSrcNames = {};
           events.forEach(function (e) {
@@ -5335,7 +5454,7 @@
             var cats = {}; ev.forEach(function (e) { var c = e.category || 'OTHER'; cats[c] = (cats[c] || 0) + 1; });
             el = document.getElementById('drawerCategories'); if (el) el.textContent = Object.keys(cats).length;
 
-            // LAST 24H — use timestamp field (ms since epoch) for accurate 24h window
+            // LAST 24H â€” use timestamp field (ms since epoch) for accurate 24h window
             var now24 = Date.now(); var count24h = 0;
             ev.forEach(function (e) {
               var ts = parseInt(e.timestamp || 0);
@@ -5343,7 +5462,7 @@
             });
             el = document.getElementById('drawerLast24h'); if (el) el.textContent = count24h;
 
-            // TOP REGION — extract from title heuristic (Ukrainian oblasts)
+            // TOP REGION â€” extract from title heuristic (Ukrainian oblasts)
             var oblastNames = ['Donetsk', 'Luhansk', 'Kherson', 'Zaporizhzhia', 'Kharkiv', 'Mykolaiv', 'Dnipropetrovsk', 'Odesa', 'Sumy', 'Chernihiv', 'Kyiv', 'Crimea', 'Kursk', 'Belgorod', 'Bryansk', 'Rostov'];
             var regionCounts = {};
             ev.forEach(function (e) {
@@ -5380,344 +5499,417 @@
         }, 2000);
 
         // ==========================================
-        // STRATEGIC CAMPAIGN DOSSIER MODAL LOGIC
+        // STRATEGIC CAMPAIGN DOSSIER CONSOLE LOGIC
         // ==========================================
 
-        window._campaignDossierData = null;
-        window._campaignDossierUnitsMap = {
-          'refineries_and_oil_hubs': [
-            { icon: 'fa-truck', name: '152nd Logistics Brigade (Fuel Supply)' },
-            { icon: 'fa-train', name: 'Railway Oil Terminal Unit' },
-            { icon: 'fa-tank', name: '3rd Armored Supply Column' },
-            { icon: 'fa-gas-pump', name: 'Forward Fuel Depot (Station 7)' }
-          ],
-          'energy_grid_degradation': [
-            { icon: 'fa-bolt', name: 'Power Grid Monitoring Detachment' },
-            { icon: 'fa-tower-broadcast', name: 'Substation Defense Unit' },
-            { icon: 'fa-truck', name: 'Mobile Generator Convoy' },
-            { icon: 'fa-helmet-safety', name: 'Critical Infrastructure Recovery Team' }
-          ],
-          'air_defense_suppression': [
-            { icon: 'fa-satellite', name: 'S-400 SAM Battery (Site Alpha)' },
-            { icon: 'fa-radar', name: '96L6E Radar Platoon' },
-            { icon: 'fa-crosshairs', name: 'Pantsir-S1 Air Defense Unit' },
-            { icon: 'fa-tower-cell', name: 'EW/Radar Suppression Squadron' }
-          ],
-          'logistics': [
-            { icon: 'fa-truck', name: '25th Supply Transport Battalion' },
-            { icon: 'fa-train', name: 'Railway Logistics Hub (Bryansk)' },
-            { icon: 'fa-warehouse', name: 'Forward Ammunition Depot' },
-            { icon: 'fa-truck-fast', name: 'Tactical Resupply Convoy' }
-          ],
-          'civilian': [
-            { icon: 'fa-building', name: 'Civilian Evacuation Corridor' },
-            { icon: 'fa-hospital', name: 'Medical Aid Station (NGO)' },
-            { icon: 'fa-bus', name: 'Humanitarian Aid Convoy' },
-            { icon: 'fa-people-group', name: 'Displaced Persons Assembly Point' }
-          ],
-          'infantry': [
-            { icon: 'fa-crosshairs', name: '72nd Mechanized Infantry Battalion' },
-            { icon: 'fa-tank', name: 'Armored Support Company' },
-            { icon: 'fa-truck', name: 'Infantry Resupply Column' },
-            { icon: 'fa-user', name: 'Forward Observation Team' }
-          ],
-          'default': [
-            { icon: 'fa-truck', name: 'Supply Transport Unit (Unidentified)' },
-            { icon: 'fa-tank', name: 'Armored Battalion (Unknown)' },
-            { icon: 'fa-train', name: 'Logistics Rail Node' },
-            { icon: 'fa-crosshairs', name: 'Reconnaissance Element' }
-          ]
-        };
+        document.addEventListener('DOMContentLoaded', function () {
+          var mockDossier = {
+            campaignCode: '[ OD-SC-04 ]',
+            title: 'SUPPLY CHAIN DISRUPTION',
+            classification: 'SECRET // OSINT ONLY',
+            activeSince: '2026-04-18',
+            region: 'Crimea - Zaporizhzhia Logistics Arc',
+            assignedUnits: 'OSINT Cell Vostok, IMINT Desk 12, SIGINT Relay 4',
+            cumulativeE: 246.0,
+            opTempo: 'HIGH',
+            tie: { kinetic: 8.7, target: 7.9, effect: 9.1 },
+            summary: [
+              'Sustained strikes against rail transfer nodes and fuel depots are degrading adversary ground-line throughput across the southern axis.',
+              'Verified imagery indicates repeated damage to switching yards, rolling stock, and mobile repair assets near Dzhankoi and Melitopol.',
+              'Source confidence remains high after cross-corroboration between commercial SAR, local HUMINT reports, and geolocated social video.'
+            ],
+            degradation: [
+              { label: 'LOGISTICS NODES', value: 80 },
+              { label: 'RAIL CAPACITY', value: 72 },
+              { label: 'FUEL DISTRIBUTION', value: 64 },
+              { label: 'REPAIR CADENCE', value: 100 }
+            ],
+            equipment: [
+              { icon: 'fa-train', asset: 'Rail switching assembly - Dzhankoi north yard', qty: 3, state: 'Destroyed', imint: true },
+              { icon: 'fa-truck', asset: 'Ural-4320 logistics trucks', qty: 11, state: 'Burned out', imint: true },
+              { icon: 'fa-gas-pump', asset: 'Forward fuel bladder farm', qty: 6, state: 'Ruptured', imint: true },
+              { icon: 'fa-wrench', asset: 'Mobile track repair kits', qty: 4, state: 'Abandoned', imint: false },
+              { icon: 'fa-tower-broadcast', asset: 'Rail dispatch relay mast', qty: 1, state: 'Offline', imint: true }
+            ],
+            feed: [
+              { stamp: '2026-05-06 14:30Z', event: 'Dzhankoi Rail Node Hit', tie: 85.0 },
+              { stamp: '2026-05-06 17:10Z', event: 'Secondary fuel ignition observed', tie: 79.5 },
+              { stamp: '2026-05-07 04:20Z', event: 'Repair convoy rerouted through Armyansk', tie: 61.0 },
+              { stamp: '2026-05-08 21:45Z', event: 'Melitopol depot thermal anomaly', tie: 88.0 },
+              { stamp: '2026-05-09 08:05Z', event: 'Rolling stock backlog at Simferopol yard', tie: 73.0 },
+              { stamp: '2026-05-10 19:30Z', event: 'Bridge approach traffic halted', tie: 67.5 }
+            ],
+            sources: [
+              { stamp: '2026-05-06T14:42Z', id: 'SAR-COM-7721', type: 'SAR', reliability: 92, bias: 'LOW', corroboration: '3/3' },
+              { stamp: '2026-05-06T15:18Z', id: 'SOCVID-118A', type: 'GEOLOC', reliability: 84, bias: 'MED', corroboration: '2/3' },
+              { stamp: '2026-05-06T18:50Z', id: 'IMINT-MAX-44', type: 'IMINT', reliability: 96, bias: 'LOW', corroboration: '3/3' },
+              { stamp: '2026-05-07T06:12Z', id: 'SIG-RAIL-09', type: 'SIGINT', reliability: 78, bias: 'LOW', corroboration: '2/3' },
+              { stamp: '2026-05-08T22:30Z', id: 'THERM-221C', type: 'IR', reliability: 89, bias: 'LOW', corroboration: '3/3' },
+              { stamp: '2026-05-10T20:16Z', id: 'HUM-LOG-31', type: 'HUMINT', reliability: 68, bias: 'MED', corroboration: '1/3' }
+            ]
+          };
 
-        window._campaignFeedEvents = {};
+          window._campaignDossierUnitsMap = {
+            refineries_and_oil_hubs: ['152nd Logistics Brigade', 'Railway Oil Terminal Unit', 'Forward Fuel Depot Station 7'],
+            energy_grid_degradation: ['Grid Monitoring Detachment', 'Substation Defense Unit', 'Critical Infrastructure Recovery Team'],
+            air_defense_suppression: ['S-400 SAM Battery Site Alpha', '96L6E Radar Platoon', 'EW/Radar Suppression Squadron'],
+            logistics: ['25th Supply Transport Battalion', 'Bryansk Railway Logistics Hub', 'Forward Ammunition Depot'],
+            default: ['Supply Transport Unit Unidentified', 'Armored Battalion Unknown', 'Logistics Rail Node']
+          };
 
-        function getCampaignUnits(campaignId) {
-          var map = window._campaignDossierUnitsMap || {};
-          return map[campaignId] || map['default'] || [];
-        }
+          function q(id) {
+            return document.getElementById(id);
+          }
 
-        function computeCampaignTieScores(campaign) {
-          var weekly = parseFloat(campaign.weekly_tie_cumulative || 0);
-          var totalEvents = parseInt(campaign.total_events || 0);
-          var effect = parseFloat(campaign.sum_vec_e || 0);
+          function escapeHtml(value) {
+            return String(value == null ? '' : value)
+              .replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#39;');
+          }
 
-          var k = Math.min(10, Math.round((weekly / 60) * 10 * 10) / 10);
-          var t = Math.min(10, Math.round((totalEvents / 40) * 10 * 10) / 10);
-          var e = Math.min(10, Math.round((effect / 30) * 10 * 10) / 10);
+          function cloneMock() {
+            return JSON.parse(JSON.stringify(mockDossier));
+          }
 
-          return { kinetic: Math.max(0.5, k), target: Math.max(0.5, t), effect: Math.max(0.5, e) };
-        }
+          function formatDossierDate(dateStr) {
+            if (!dateStr) return '--';
+            var d = new Date(dateStr);
+            if (isNaN(d.getTime())) return String(dateStr).substring(0, 10);
+            return d.toISOString().substring(0, 10);
+          }
 
-        function generateExecutiveSummary(campaign) {
-          var items = [];
-          var name = campaign.name || 'Campaign';
-          var status = (campaign.status || 'STANDBY').toUpperCase();
-          var total = parseInt(campaign.total_events || 0);
-          var effect = parseFloat(campaign.sum_vec_e || 0);
-          var weekly = parseFloat(campaign.weekly_tie_cumulative || 0);
+          function formatDossierStamp(ev) {
+            var raw = ev.timestamp || ev.date || ev.event_date || ev.created_at;
+            var d = raw ? new Date(parseInt(raw, 10) || raw) : null;
+            if (!d || isNaN(d.getTime())) return '2026-05-06 14:30Z';
+            return d.toISOString().substring(0, 16).replace('T', ' ') + 'Z';
+          }
 
-          items.push('Campaign "' + name + '" is ' + status + ' with ' + total + ' confirmed events and cumulative effect vector of ' + effect.toFixed(1) + '.');
-          items.push('Weekly T.I.E. cumulative score stands at ' + weekly.toFixed(1) + ', indicating ' + (weekly > 100 ? 'sustained high-intensity pressure' : weekly > 40 ? 'moderate operational tempo' : 'contained/low-level activity') + ' across assessed sectors.');
-          items.push('Strategic recommendation: ' + (weekly > 80 ? 'Accelerate phase-two strikes and reinforce intelligence coverage for emerging secondary targets.' : weekly > 30 ? 'Maintain current operational cadence; allocate additional reconnaissance assets to verify BDA.' : 'Continue monitoring for escalation indicators; current resource allocation is adequate.'));
+          function computeConsoleTieScores(campaign) {
+            var weekly = parseFloat(campaign.weekly_tie_cumulative || campaign.avg_tie || 0);
+            var totalEvents = parseInt(campaign.total_events || campaign.event_count || 0, 10);
+            var effect = parseFloat(campaign.sum_vec_e || campaign.avg_effect || 0);
+            return {
+              kinetic: Math.min(10, Math.max(0.5, Math.round((weekly / 60) * 100) / 10)),
+              target: Math.min(10, Math.max(0.5, Math.round((totalEvents / 40) * 100) / 10)),
+              effect: Math.min(10, Math.max(0.5, Math.round((effect / 30) * 100) / 10))
+            };
+          }
 
-          return items;
-        }
-
-        function getCampaignFeedEvents(campaignId, allEvents) {
-          if (window._campaignFeedEvents[campaignId]) return window._campaignFeedEvents[campaignId];
-          var feed = [];
-          var cid = String(campaignId || '').toLowerCase().trim();
-          if (allEvents && allEvents.length) {
-            var matched = [];
-            for (var i = 0; i < allEvents.length; i++) {
-              var ev = allEvents[i];
-              var evCampaign = String(ev.campaign_id || ev.campaign || '').toLowerCase().trim();
-              if (evCampaign === cid) {
-                matched.push(ev);
+          function findConsoleCampaign(campaignId) {
+            var cid = String(campaignId || '').toLowerCase().trim();
+            var reports = window.strategicCampaignReports || [];
+            var defs = window.strategicCampaignDefinitions || [];
+            var i;
+            for (i = 0; i < reports.length; i++) {
+              if (String(reports[i].campaign_id || '').toLowerCase().trim() === cid) return reports[i];
+            }
+            for (i = 0; i < defs.length; i++) {
+              if (String(defs[i].campaign_id || '').toLowerCase().trim() === cid) {
+                return {
+                  campaign_id: defs[i].campaign_id,
+                  name: defs[i].name,
+                  status: 'STANDBY',
+                  total_events: defs[i].stats ? defs[i].stats.event_count : 0,
+                  sum_vec_e: defs[i].stats ? defs[i].stats.avg_effect : 0,
+                  weekly_tie_cumulative: defs[i].stats ? defs[i].stats.avg_tie : 0,
+                  last_event_date: defs[i].stats ? defs[i].stats.last_seen : null
+                };
               }
             }
-            matched.sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
-            feed = matched.slice(0, 5).map(function (ev) {
-              var date = '';
-              if (ev.timestamp) {
-                var d = new Date(parseInt(ev.timestamp));
-                date = d.toISOString().substring(0, 10);
-              } else {
-                date = String(ev.date || '').substring(0, 10) || '--';
-              }
-              var loc = ev.location || ev.title || ev.event_title || 'Unknown AO';
-              if (loc.length > 30) loc = loc.substring(0, 28) + '..';
-              var tie = parseFloat(ev.tie_total || 0) / 10;
+            return null;
+          }
+
+          function getLoadedEventsSafe() {
+            try {
+              return typeof getLoadedEvents === 'function' ? getLoadedEvents() : [];
+            } catch (err) {
+              return [];
+            }
+          }
+
+          function getConsoleCampaignFeed(campaignId) {
+            var events = getLoadedEventsSafe();
+            var cid = String(campaignId || '').toLowerCase().trim();
+            var matched = events.filter(function (ev) {
+              return String(ev.campaign_id || ev.campaign || '').toLowerCase().trim() === cid;
+            });
+            matched.sort(function (a, b) {
+              return (parseInt(b.timestamp || 0, 10) || 0) - (parseInt(a.timestamp || 0, 10) || 0);
+            });
+            return matched.slice(0, 8).map(function (ev) {
+              var rawTie = parseFloat(ev.tie_total || ev.tie || ev.score || 0);
+              var tie = rawTie <= 10 ? rawTie * 10 : rawTie;
               return {
-                date: date,
-                location: loc,
-                score: isNaN(tie) ? 0 : tie.toFixed(1),
-                raw: ev
+                stamp: formatDossierStamp(ev),
+                event: ev.location || ev.title || ev.event_title || 'Unspecified campaign event',
+                tie: isNaN(tie) ? 0 : tie
               };
             });
           }
-          if (!feed.length) {
-            var start = new Date();
-            start.setDate(start.getDate() - 7);
-            for (var j = 0; j < 3; j++) {
-              var d = new Date(start.getTime() + j * 86400000);
-              feed.push({
-                date: d.toISOString().substring(0, 10),
-                location: 'Sector ' + ['Alpha', 'Bravo', 'Charlie'][j] + ' — ' + campaignId,
-                score: (5 - j * 1.2).toFixed(1),
-                raw: null
-              });
-            }
+
+          function getConsoleCampaignUnits(campaignId) {
+            var map = window._campaignDossierUnitsMap || {};
+            return map[campaignId] || map.default || [];
           }
-          window._campaignFeedEvents[campaignId] = feed;
-          return feed;
-        }
 
-        function formatDate(dateStr) {
-          if (!dateStr) return '--';
-          var d = new Date(dateStr);
-          if (isNaN(d.getTime())) return dateStr.substring(0, 10);
-          return d.toISOString().substring(0, 10);
-        }
-
-        function openCampaignDossier(campaignId) {
-          var overlay = document.getElementById('campaignDossierOverlay');
-          if (!overlay) return;
-
-          var campaign = null;
-          var reports = window.strategicCampaignReports || [];
-          var defs = window.strategicCampaignDefinitions || [];
-          var cid = String(campaignId || '').toLowerCase().trim();
-
-          for (var i = 0; i < reports.length; i++) {
-            if (String(reports[i].campaign_id || '').toLowerCase().trim() === cid) {
-              campaign = reports[i];
-              break;
-            }
+          function dossierFromCampaign(campaignId) {
+            var campaign = findConsoleCampaign(campaignId);
+            if (!campaign) return cloneMock();
+            var dossier = cloneMock();
+            var id = campaign.campaign_id || campaignId || 'OD-SC-04';
+            var weekly = parseFloat(campaign.weekly_tie_cumulative || 0);
+            var total = parseInt(campaign.total_events || 0, 10);
+            var effect = parseFloat(campaign.sum_vec_e || dossier.cumulativeE);
+            var units = getConsoleCampaignUnits(id);
+            var feed = getConsoleCampaignFeed(id);
+            dossier.campaignCode = '[ ' + String(id).toUpperCase().replace(/_/g, '-').substring(0, 18) + ' ]';
+            dossier.title = String(campaign.name || 'SUPPLY CHAIN DISRUPTION').toUpperCase();
+            dossier.activeSince = formatDossierDate(campaign.last_event_date || campaign.last_seen);
+            dossier.region = campaign.region || campaign.sector || dossier.region;
+            dossier.assignedUnits = units.length ? units.join(', ') : dossier.assignedUnits;
+            dossier.cumulativeE = isNaN(effect) ? dossier.cumulativeE : effect;
+            dossier.opTempo = weekly > 80 ? 'HIGH' : weekly > 30 ? 'MED' : 'LOW';
+            dossier.tie = computeConsoleTieScores(campaign);
+            dossier.summary = [
+              'Campaign "' + dossier.title + '" is tracking ' + (total || 0) + ' confirmed events across assigned OSINT feeds.',
+              'Cumulative E-vector is ' + dossier.cumulativeE.toFixed(1) + ' with weekly T.I.E. pressure at ' + weekly.toFixed(1) + '.',
+              'Recommended posture: maintain collection on primary nodes and prioritize fresh IMINT for damage-state verification.'
+            ];
+            if (feed.length) dossier.feed = feed;
+            return dossier;
           }
-          if (!campaign) {
-            for (var j = 0; j < defs.length; j++) {
-              if (String(defs[j].campaign_id || '').toLowerCase().trim() === cid) {
-                campaign = {
-                  campaign_id: defs[j].campaign_id,
-                  name: defs[j].name,
-                  color: defs[j].color,
-                  status: 'STANDBY',
-                  total_events: defs[j].stats ? defs[j].stats.event_count : 0,
-                  sum_vec_e: defs[j].stats ? defs[j].stats.avg_effect : 0,
-                  weekly_tie_cumulative: defs[j].stats ? defs[j].stats.avg_tie : 0,
-                  last_event_date: defs[j].stats ? defs[j].stats.last_seen : null,
-                  brief_text: 'Campaign defined with ' + (defs[j].keywords || 'no specific') + ' target keywords.'
-                };
-                break;
-              }
-            }
+
+          function setConsoleRing(ringId, textId, score) {
+            var ring = q(ringId);
+            var text = q(textId);
+            if (!ring || !text) return;
+            var radius = parseFloat(ring.getAttribute('r'));
+            var circumference = 2 * Math.PI * radius;
+            var normalized = Math.max(0, Math.min(10, parseFloat(score) || 0)) / 10;
+            ring.style.strokeDasharray = circumference.toFixed(2);
+            ring.style.strokeDashoffset = ((1 - normalized) * circumference).toFixed(2);
+            text.textContent = (parseFloat(score) || 0).toFixed(1);
           }
-          if (!campaign) return;
 
-          document.getElementById('cdTitle').textContent = (campaign.name || campaignId).toUpperCase();
-          document.getElementById('cdCampaignId').textContent = 'ID: ' + (campaign.campaign_id || campaignId);
-          document.getElementById('cdActiveSince').textContent = 'Active Since: ' + formatDate(campaign.last_event_date || campaign.last_seen);
-          document.getElementById('cdEventCount').innerHTML = '<i class="fa-solid fa-database"></i> ' + (campaign.total_events || 0) + ' events';
-
-          var statusBadge = document.getElementById('cdStatusBadge');
-          var status = String(campaign.status || 'STANDBY').toUpperCase();
-          statusBadge.textContent = status;
-          statusBadge.className = 'cd-status-badge ' + (status === 'LIVE' ? 'live' : 'standby');
-          statusBadge.innerHTML = '<i class="fa-solid fa-circle"></i> ' + status;
-
-          // Executive Summary
-          var summaryItems = generateExecutiveSummary(campaign);
-          var summaryList = document.getElementById('cdExecutiveSummary');
-          summaryList.innerHTML = summaryItems.map(function (s) { return '<li>' + s + '</li>'; }).join('');
-
-          // T.I.E. Rings
-          var tie = computeCampaignTieScores(campaign);
-          var circumference = 314.16;
-          document.getElementById('cdKText').textContent = tie.kinetic.toFixed(1);
-          document.getElementById('cdKRing').style.strokeDashoffset = circumference - (circumference * tie.kinetic / 10);
-          document.getElementById('cdTText').textContent = tie.target.toFixed(1);
-          document.getElementById('cdTRing').style.strokeDashoffset = circumference - (circumference * tie.target / 10);
-          document.getElementById('cdEText').textContent = tie.effect.toFixed(1);
-          document.getElementById('cdERing').style.strokeDashoffset = circumference - (circumference * tie.effect / 10);
-
-          // Detected Units
-          var units = getCampaignUnits(campaign.campaign_id);
-          var unitList = document.getElementById('cdUnitList');
-          unitList.innerHTML = units.map(function (u) {
-            return '<li><i class="fa-solid ' + u.icon + '"></i> ' + u.name + '</li>';
-          }).join('');
-
-          // Tactical Feed
-          var events = getLoadedEvents();
-          var feedItems = getCampaignFeedEvents(campaign.campaign_id, events);
-          var feedContainer = document.getElementById('cdTacticalFeed');
-          feedContainer.innerHTML = feedItems.map(function (f) {
-            return '<div class="cd-feed-item">[' + f.date + '] | ' + f.location + ' | Score: <span class="cd-feed-score">' + f.score + '</span></div>';
-          }).join('');
-
-          // Intel Metadata
-          var reliability = Math.min(10, Math.max(1, Math.round(((tie.kinetic + tie.target + tie.effect) / 3) * 10) / 10));
-          document.getElementById('cdReliabilityScore').textContent = reliability.toFixed(1) + '/10';
-
-          overlay.classList.add('active');
-          document.body.style.overflow = 'hidden';
-        }
-
-        function closeCampaignDossier(event) {
-          if (event && event.target && event.target.id !== 'campaignDossierOverlay' && !event.target.closest('.cd-view-toggle') && !event.target.closest('.cd-toggle-btn')) {
-            return;
+          function renderCampaignConsole(dossier) {
+            if (!q('campaign-console')) return;
+            q('cdCampaignCode').textContent = dossier.campaignCode;
+            q('cdTitle').textContent = dossier.title;
+            q('cdClassification').textContent = dossier.classification;
+            q('cdActiveSince').textContent = dossier.activeSince;
+            q('cdRegion').textContent = dossier.region;
+            q('cdAssignedUnits').textContent = dossier.assignedUnits;
+            q('cdEVector').textContent = dossier.cumulativeE.toFixed(1);
+            q('cdOpTempo').textContent = dossier.opTempo;
+            q('cdExecutiveSummary').innerHTML = dossier.summary.map(function (item) {
+              return '<li>' + escapeHtml(item) + '</li>';
+            }).join('');
+            q('cdDegradationBars').innerHTML = dossier.degradation.map(function (item) {
+              var critical = item.value >= 100 ? ' critical' : '';
+              return '<div class="bar-row"><span class="label">' + escapeHtml(item.label) + '</span><div class="track"><div class="fill' + critical + '" style="width: ' + item.value + '%"></div></div><span class="value">' + item.value + '%</span></div>';
+            }).join('');
+            q('cdEquipmentGrid').innerHTML = '<div class="grid-head">TYPE</div><div class="grid-head">ASSET NAME</div><div class="grid-head">QTY</div><div class="grid-head">DAMAGE STATE</div><div class="grid-head">VERIFY</div>' + dossier.equipment.map(function (row) {
+              var badge = row.imint ? '<span class="badge-imint"><i class="fa-solid fa-eye"></i> [ IMINT ]</span>' : '<span class="source-badge">[ PENDING ]</span>';
+              return '<div><i class="fa-solid ' + escapeHtml(row.icon) + '"></i></div><div>' + escapeHtml(row.asset) + '</div><div>' + row.qty + '</div><div>' + escapeHtml(row.state) + '</div><div>' + badge + '</div>';
+            }).join('');
+            q('cdTacticalFeed').innerHTML = dossier.feed.map(function (row) {
+              return '<div class="event-row">[' + escapeHtml(row.stamp) + '] | ' + escapeHtml(row.event) + ' | TIE: ' + Number(row.tie).toFixed(1) + '</div>';
+            }).join('');
+            q('cdSourcesBody').innerHTML = dossier.sources.map(function (row) {
+              return '<tr><td>' + escapeHtml(row.stamp) + '</td><td>' + escapeHtml(row.id) + '</td><td>' + escapeHtml(row.type) + '</td><td><div class="reliability-cell"><div class="reliability-track"><div class="reliability-fill" style="width:' + row.reliability + '%"></div></div><span>' + row.reliability + '</span></div></td><td>' + escapeHtml(row.bias) + '</td><td>' + escapeHtml(row.corroboration) + '</td></tr>';
+            }).join('');
+            setConsoleRing('cdKineticRing', 'cdKineticText', dossier.tie.kinetic);
+            setConsoleRing('cdTargetRing', 'cdTargetText', dossier.tie.target);
+            setConsoleRing('cdEffectRing', 'cdEffectText', dossier.tie.effect);
           }
-          var overlay = document.getElementById('campaignDossierOverlay');
-          if (overlay) overlay.classList.remove('active');
-          document.body.style.overflow = '';
-        }
 
-        window.openCampaignDossier = openCampaignDossier;
-        window.closeCampaignDossier = closeCampaignDossier;
+          function switchTab(tabId) {
+            document.querySelectorAll('#campaign-console .nav-tab').forEach(function (tab) {
+              tab.classList.toggle('active', tab.getAttribute('data-tab') === tabId);
+            });
+            document.querySelectorAll('#campaign-console .console-section').forEach(function (section) {
+              var active = section.getAttribute('data-section') === tabId;
+              section.classList.toggle('active', active);
+              section.style.display = active ? (section.classList.contains('bda-layout') ? 'flex' : 'block') : 'none';
+            });
+          }
+
+          function openConsoleCampaignDossier(campaignId) {
+            var overlay = q('campaignDossierOverlay');
+            if (!overlay) return;
+            renderCampaignConsole(dossierFromCampaign(campaignId));
+            switchTab('overview');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+          }
+
+          function closeConsoleCampaignDossier(event) {
+            var overlay = q('campaignDossierOverlay');
+            if (!overlay) return;
+            if (event && event.currentTarget === overlay && event.target !== overlay) return;
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+          }
+
+          document.querySelectorAll('#campaign-console .nav-tab').forEach(function (tab) {
+            tab.addEventListener('click', function () {
+              switchTab(tab.getAttribute('data-tab'));
+            });
+          });
+
+          var overlay = q('campaignDossierOverlay');
+          if (overlay) overlay.addEventListener('click', closeConsoleCampaignDossier);
+          var closeBtn = q('campaignConsoleClose');
+          if (closeBtn) closeBtn.addEventListener('click', closeConsoleCampaignDossier);
+
+          window.switchTab = switchTab;
+          window.openCampaignDossier = openConsoleCampaignDossier;
+          window.closeCampaignDossier = closeConsoleCampaignDossier;
+
+          renderCampaignConsole(cloneMock());
+          switchTab('overview');
+          if (overlay && overlay.getAttribute('data-standalone') === 'true') {
+            overlay.classList.add('active');
+          }
+        });
 
       </script>
 
       <!-- ==========================================
-           STRATEGIC CAMPAIGN DOSSIER MODAL (FLOATING)
+           STRATEGIC CAMPAIGN DOSSIER CONSOLE
            ========================================== -->
-      <div id="campaignDossierOverlay" class="campaign-dossier-overlay" onclick="closeCampaignDossier(event)">
-        <div class="campaign-dossier-card" onclick="event.stopPropagation()">
-          <!-- Header -->
-          <div class="cd-header">
-            <div class="cd-header-left">
-              <h2 id="cdTitle">CAMPAIGN TITLE</h2>
-              <div class="cd-meta-row">
-                <span class="cd-id" id="cdCampaignId">ID: --</span>
-                <span id="cdActiveSince">Active Since: --</span>
-                <span id="cdStatusBadge" class="cd-status-badge live"><i class="fa-solid fa-circle"></i> LIVE</span>
-              </div>
+      <div id="campaignDossierOverlay" class="campaign-dossier-overlay">
+        <div id="campaign-console" role="dialog" aria-modal="true" aria-label="Strategic Campaign Dossier">
+          <header class="campaign-topbar">
+            <div class="campaign-title-strip">
+              <span class="campaign-code" id="cdCampaignCode">[ OD-SC-04 ]</span>
+              <span class="campaign-title" id="cdTitle">SUPPLY CHAIN DISRUPTION</span>
+              <span class="classification-badge" id="cdClassification">SECRET // OSINT ONLY</span>
             </div>
-            <div class="cd-header-actions">
-              <button class="cd-view-toggle" onclick="closeCampaignDossier(event)" title="Close dossier and return to event view">
-                <i class="fa-solid fa-arrow-left"></i> Back to Events
-              </button>
-              <button class="cd-toggle-btn" onclick="closeCampaignDossier(event)" title="Close dossier">
-                <i class="fa-solid fa-xmark"></i>
-              </button>
-            </div>
-          </div>
+            <button class="console-close" id="campaignConsoleClose" type="button">[X] CLOSE / SWITCH VIEW</button>
+          </header>
 
-          <div class="cd-body-scroll">
-            <div class="cd-grid">
-              <!-- AI Executive Summary (Top Left) -->
-              <div class="cd-section cd-exec-summary">
-                <div class="cd-section-header"><i class="fa-solid fa-brain"></i> AI Executive Summary</div>
-                <ul id="cdExecutiveSummary">
-                  <li>Loading strategic assessment...</li>
-                  <li>Parsing campaign intelligence feeds...</li>
-                  <li>Computing operational impact vectors...</li>
-                </ul>
-              </div>
+          <nav class="campaign-nav-rail" aria-label="Campaign dossier views">
+            <button class="nav-tab active" type="button" data-tab="overview" title="Overview" aria-label="Overview">
+              <i class="fa-solid fa-crosshairs"></i>
+            </button>
+            <button class="nav-tab" type="button" data-tab="bda" title="B.D.A. and targets" aria-label="B.D.A. and targets">
+              <i class="fa-solid fa-chart-gantt"></i>
+            </button>
+            <button class="nav-tab" type="button" data-tab="feed" title="Tactical feed" aria-label="Tactical feed">
+              <i class="fa-solid fa-satellite-dish"></i>
+            </button>
+            <button class="nav-tab" type="button" data-tab="sources" title="SIGINT and sources" aria-label="SIGINT and sources">
+              <i class="fa-solid fa-database"></i>
+            </button>
+          </nav>
 
-              <!-- T.I.E. Score Rings (Top Right) -->
-              <div class="cd-section cd-tie-rings">
-                <div class="tie-ring-container">
-                  <svg class="tie-ring-svg" viewBox="0 0 120 120">
-                    <circle cx="60" cy="60" r="50" fill="none" stroke="#1e293b" stroke-width="8"/>
-                    <circle id="cdKRing" cx="60" cy="60" r="50" fill="none" stroke="#dc2626" stroke-width="8" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16" transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 0.8s var(--ease-out);"/>
-                    <text x="60" y="52" text-anchor="middle" fill="#e2e8f0" font-family="JetBrains Mono, monospace" font-size="26" font-weight="700" id="cdKText">--</text>
-                    <text x="60" y="70" text-anchor="middle" fill="#475569" font-family="Inter, sans-serif" font-size="9">/10</text>
-                  </svg>
-                  <span class="tie-ring-label">Intensity</span>
+          <main class="campaign-main-pane">
+            <section class="console-section active" data-section="overview">
+              <h2 class="section-title">EXECUTIVE SUMMARY</h2>
+              <ul class="summary-list" id="cdExecutiveSummary"></ul>
+              <div class="metadata-grid">
+                <div class="meta-cell">
+                  <div class="metric-label">ACTIVE SINCE</div>
+                  <div class="meta-value" id="cdActiveSince">--</div>
                 </div>
-                <div class="tie-ring-container">
-                  <svg class="tie-ring-svg" viewBox="0 0 120 120">
-                    <circle cx="60" cy="60" r="50" fill="none" stroke="#1e293b" stroke-width="8"/>
-                    <circle id="cdTRing" cx="60" cy="60" r="50" fill="none" stroke="#eab308" stroke-width="8" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16" transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 0.8s var(--ease-out);"/>
-                    <text x="60" y="52" text-anchor="middle" fill="#e2e8f0" font-family="JetBrains Mono, monospace" font-size="26" font-weight="700" id="cdTText">--</text>
-                    <text x="60" y="70" text-anchor="middle" fill="#475569" font-family="Inter, sans-serif" font-size="9">/10</text>
-                  </svg>
-                  <span class="tie-ring-label">Value</span>
+                <div class="meta-cell">
+                  <div class="metric-label">REGION</div>
+                  <div class="meta-value" id="cdRegion">--</div>
                 </div>
-                <div class="tie-ring-container">
-                  <svg class="tie-ring-svg" viewBox="0 0 120 120">
-                    <circle cx="60" cy="60" r="50" fill="none" stroke="#1e293b" stroke-width="8"/>
-                    <circle id="cdERing" cx="60" cy="60" r="50" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16" transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 0.8s var(--ease-out);"/>
-                    <text x="60" y="52" text-anchor="middle" fill="#e2e8f0" font-family="JetBrains Mono, monospace" font-size="26" font-weight="700" id="cdEText">--</text>
-                    <text x="60" y="70" text-anchor="middle" fill="#475569" font-family="Inter, sans-serif" font-size="9">/10</text>
-                  </svg>
-                  <span class="tie-ring-label">Outcome</span>
+                <div class="meta-cell">
+                  <div class="metric-label">ASSIGNED UNITS</div>
+                  <div class="meta-value" id="cdAssignedUnits">--</div>
                 </div>
               </div>
+            </section>
 
-              <!-- Detected Units (Middle Left) -->
-              <div class="cd-section cd-detected-units">
-                <div class="cd-section-header"><i class="fa-solid fa-shield-halved"></i> Detected Units</div>
-                <ul class="cd-unit-list" id="cdUnitList">
-                  <li><i class="fa-solid fa-spinner fa-spin"></i> Loading unit intelligence...</li>
-                </ul>
+            <section class="console-section bda-layout" data-section="bda">
+              <div class="degradation-panel">
+                <h2 class="section-title">MACRO-DEGRADATION</h2>
+                <div id="cdDegradationBars"></div>
               </div>
-
-              <!-- Tactical Feed (Middle Right → moved to Bottom Right per spec) -->
-              <div class="cd-section cd-tactical-feed">
-                <div class="cd-section-header"><i class="fa-solid fa-timeline"></i> Tactical Feed</div>
-                <div class="cd-feed-scroll" id="cdTacticalFeed">
-                  <div class="cd-feed-item"><i class="fa-solid fa-spinner fa-spin"></i> Loading recent events...</div>
-                </div>
+              <div class="graveyard-panel">
+                <h2 class="section-title">EQUIPMENT GRAVEYARD</h2>
+                <div class="graveyard-grid" id="cdEquipmentGrid"></div>
               </div>
+            </section>
 
-              <!-- Intelligence Metadata (Bottom - full width) -->
-              <div class="cd-section cd-intel-meta">
-                <div style="display:flex;align-items:center;gap:12px;">
-                  <div class="cd-section-header" style="border-bottom:none;padding-bottom:0;"><i class="fa-solid fa-shield"></i> Intel Metadata</div>
-                  <span class="cd-event-count-badge" id="cdEventCount"><i class="fa-solid fa-database"></i> -- events</span>
-                </div>
-                <div class="cd-intel-right">
-                  <div style="display:flex;align-items:center;gap:6px;">
-                    <span class="cd-reliability-label">Source Reliability</span>
-                    <span class="cd-reliability-score" id="cdReliabilityScore">--</span>
+            <section class="console-section" data-section="feed">
+              <h2 class="section-title">TACTICAL FEED</h2>
+              <div class="feed-list" id="cdTacticalFeed"></div>
+            </section>
+
+            <section class="console-section" data-section="sources">
+              <h2 class="section-title">SIGINT &amp; SOURCES</h2>
+              <div class="source-table-wrap">
+                <table class="source-table">
+                  <thead>
+                    <tr>
+                      <th>T-STAMP</th>
+                      <th>SOURCE ID</th>
+                      <th>TYPE</th>
+                      <th>RELIABILITY</th>
+                      <th>BIAS</th>
+                      <th>CORROB.</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cdSourcesBody"></tbody>
+                </table>
+              </div>
+            </section>
+          </main>
+
+          <aside class="campaign-telemetry-rail">
+            <div>
+              <h2 class="section-title">T.I.E. VECTOR</h2>
+              <div class="tie-ring-stack">
+                <div class="tie-ring">
+                  <div class="ring-frame">
+                    <svg class="ring-svg" viewBox="0 0 80 80" aria-hidden="true">
+                      <circle class="ring-track" cx="40" cy="40" r="30"></circle>
+                      <circle class="ring-progress" id="cdKineticRing" cx="40" cy="40" r="30" style="stroke: var(--tie-red);"></circle>
+                    </svg>
+                    <span class="ring-score" id="cdKineticText">--</span>
                   </div>
-                  <span class="cd-confirmed-badge"><i class="fa-solid fa-check"></i> CONFIRMED</span>
+                  <span class="ring-caption">KINETIC</span>
+                </div>
+                <div class="tie-ring">
+                  <div class="ring-frame">
+                    <svg class="ring-svg" viewBox="0 0 80 80" aria-hidden="true">
+                      <circle class="ring-track" cx="40" cy="40" r="30"></circle>
+                      <circle class="ring-progress" id="cdTargetRing" cx="40" cy="40" r="30" style="stroke: var(--tie-yellow);"></circle>
+                    </svg>
+                    <span class="ring-score" id="cdTargetText">--</span>
+                  </div>
+                  <span class="ring-caption">TARGET</span>
+                </div>
+                <div class="tie-ring">
+                  <div class="ring-frame">
+                    <svg class="ring-svg" viewBox="0 0 80 80" aria-hidden="true">
+                      <circle class="ring-track" cx="40" cy="40" r="30"></circle>
+                      <circle class="ring-progress" id="cdEffectRing" cx="40" cy="40" r="30" style="stroke: var(--tie-blue);"></circle>
+                    </svg>
+                    <span class="ring-score" id="cdEffectText">--</span>
+                  </div>
+                  <span class="ring-caption">EFFECT</span>
                 </div>
               </div>
             </div>
-          </div>
+
+            <div class="telemetry-block">
+              <div class="metric-label">CUMULATIVE E-VECTOR</div>
+              <div class="evector-value" id="cdEVector">246.0</div>
+              <div class="tempo-line">
+                <span class="blink-dot"></span>
+                <span>OP TEMPO: <span id="cdOpTempo">HIGH</span></span>
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
 
