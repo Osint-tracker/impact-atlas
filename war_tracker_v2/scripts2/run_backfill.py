@@ -42,7 +42,7 @@ def main():
     print("[START] AVVIO BACKFILL: 23 Febbraio 2026 -> 27 Febbraio 2026")
 
     # Timezone Aware (UTC)
-    start_dt = datetime(2026, 2, 23, 0, 0, 0, tzinfo=timezone.utc)
+    start_dt = datetime(2026, 5, 13, 0, 0, 0, tzinfo=timezone.utc)
     # Impostiamo la fine a "domani" per essere sicuri di prendere tutto oggi
     end_dt = datetime(2026, 5, 30, 0, 0, 0, tzinfo=timezone.utc)
 

@@ -133,4 +133,4 @@ def fetch_gdelt_news(start_date, end_date):
 
 # Test rapido
 if __name__ == "__main__":
-    fetch_gdelt_news("20260425000000", "20260510000000")
+    fetch_gdelt_news("20260514000000", "20260518000000")

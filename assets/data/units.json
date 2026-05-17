@@ -723,13 +723,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -742,7 +742,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -767,9 +767,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -1722,13 +1731,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -1741,7 +1750,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -1766,9 +1775,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -6645,13 +6663,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -6664,7 +6682,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -6689,9 +6707,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -7386,13 +7413,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -7405,7 +7432,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -7430,9 +7457,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -7557,13 +7593,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -7576,7 +7612,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -7601,9 +7637,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -8012,13 +8057,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -8031,7 +8076,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -8056,9 +8101,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -8690,13 +8744,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-13 18:48:04",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 4.5,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -8731,9 +8785,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-13",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-13 18:48:04",
         "title": "Ukrainian Forces Move to New Positions in Myropilske Area",
@@ -9326,13 +9389,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -9345,7 +9408,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -9370,9 +9433,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -11359,13 +11431,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -11378,7 +11450,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -11403,9 +11475,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -12165,13 +12246,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -12184,7 +12265,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -12209,9 +12290,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -13393,13 +13483,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -13412,7 +13502,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -13437,9 +13527,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -15826,13 +15925,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -15845,7 +15944,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -15870,9 +15969,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -17197,13 +17305,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -17216,7 +17324,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -17241,9 +17349,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -18550,13 +18667,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -18569,7 +18686,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -18594,9 +18711,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -20935,13 +21061,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -20954,7 +21080,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -20979,9 +21105,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -25765,13 +25900,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-13 18:48:04",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 4.5,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -25806,9 +25941,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-13",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-13 18:48:04",
         "title": "Ukrainian Forces Move to New Positions in Myropilske Area",
@@ -27821,24 +27965,19 @@
     "echelon_symbol": "X",
     "sub_branch": "Ukrainian Ground Forces",
     "superior": null,
-    "engagement_count": 3,
-    "last_active": "2026-05-09T16:52:11",
+    "engagement_count": 4,
+    "last_active": "2026-05-15T20:44:13",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.67,
-      "target": 3.33,
-      "effect": 7.33
+      "kinetic": 3.25,
+      "target": 3.25,
+      "effect": 7.75
     },
     "assets_detected": [
+      "UNKNOWN_INFANTRY_POSITION",
       "UNKNOWN_UAV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -27862,11 +28001,26 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-09",
+    "engagement_trend_anchor": "2026-05-15",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-15T20:44:13",
+        "title": "Ukrainian Forces Conduct Drone Strike on Russian Positions in Vozdvyzhivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.855,
+        "lon": 32.4775,
+        "url": "https://t.me/ukrliberation/20424",
+        "event_id": "08f4bdeb-37db-4c54-bba3-8bda1136de97"
+      },
       {
         "date": "2026-05-09T16:52:11",
         "title": "Ukrainian Forces Conduct Drone Strike on Russian Infantry in Sumy Oblast",
@@ -29819,13 +29973,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-13 18:48:04",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 4.5,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -29860,9 +30014,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-13",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-13 18:48:04",
         "title": "Ukrainian Forces Move to New Positions in Myropilske Area",
@@ -30797,13 +30960,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -30816,7 +30979,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -30841,9 +31004,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -31915,24 +32087,19 @@
     "echelon_symbol": "X",
     "sub_branch": "Ukrainian Ground Forces",
     "superior": null,
-    "engagement_count": 3,
-    "last_active": "2026-05-09T16:52:11",
+    "engagement_count": 4,
+    "last_active": "2026-05-15T20:44:13",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.67,
-      "target": 3.33,
-      "effect": 7.33
+      "kinetic": 3.25,
+      "target": 3.25,
+      "effect": 7.75
     },
     "assets_detected": [
+      "UNKNOWN_INFANTRY_POSITION",
       "UNKNOWN_UAV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -31956,11 +32123,26 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-09",
+    "engagement_trend_anchor": "2026-05-15",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-15T20:44:13",
+        "title": "Ukrainian Forces Conduct Drone Strike on Russian Positions in Vozdvyzhivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.855,
+        "lon": 32.4775,
+        "url": "https://t.me/ukrliberation/20424",
+        "event_id": "08f4bdeb-37db-4c54-bba3-8bda1136de97"
+      },
       {
         "date": "2026-05-09T16:52:11",
         "title": "Ukrainian Forces Conduct Drone Strike on Russian Infantry in Sumy Oblast",
@@ -32012,13 +32194,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -32031,7 +32213,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -32056,9 +32238,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -32776,24 +32967,19 @@
     "echelon_symbol": "X",
     "sub_branch": "Ukrainian Ground Forces",
     "superior": null,
-    "engagement_count": 3,
-    "last_active": "2026-05-09T16:52:11",
+    "engagement_count": 4,
+    "last_active": "2026-05-15T20:44:13",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.67,
-      "target": 3.33,
-      "effect": 7.33
+      "kinetic": 3.25,
+      "target": 3.25,
+      "effect": 7.75
     },
     "assets_detected": [
+      "UNKNOWN_INFANTRY_POSITION",
       "UNKNOWN_UAV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -32817,11 +33003,26 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-09",
+    "engagement_trend_anchor": "2026-05-15",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-15T20:44:13",
+        "title": "Ukrainian Forces Conduct Drone Strike on Russian Positions in Vozdvyzhivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.855,
+        "lon": 32.4775,
+        "url": "https://t.me/ukrliberation/20424",
+        "event_id": "08f4bdeb-37db-4c54-bba3-8bda1136de97"
+      },
       {
         "date": "2026-05-09T16:52:11",
         "title": "Ukrainian Forces Conduct Drone Strike on Russian Infantry in Sumy Oblast",
@@ -36244,24 +36445,19 @@
     "echelon_symbol": "X",
     "sub_branch": "Ukrainian Ground Forces",
     "superior": null,
-    "engagement_count": 3,
-    "last_active": "2026-05-09T16:52:11",
+    "engagement_count": 4,
+    "last_active": "2026-05-15T20:44:13",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.67,
-      "target": 3.33,
-      "effect": 7.33
+      "kinetic": 3.25,
+      "target": 3.25,
+      "effect": 7.75
     },
     "assets_detected": [
+      "UNKNOWN_INFANTRY_POSITION",
       "UNKNOWN_UAV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -36285,11 +36481,26 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-09",
+    "engagement_trend_anchor": "2026-05-15",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-15T20:44:13",
+        "title": "Ukrainian Forces Conduct Drone Strike on Russian Positions in Vozdvyzhivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.855,
+        "lon": 32.4775,
+        "url": "https://t.me/ukrliberation/20424",
+        "event_id": "08f4bdeb-37db-4c54-bba3-8bda1136de97"
+      },
       {
         "date": "2026-05-09T16:52:11",
         "title": "Ukrainian Forces Conduct Drone Strike on Russian Infantry in Sumy Oblast",
@@ -37490,24 +37701,19 @@
     "echelon_symbol": "X",
     "sub_branch": "Ukrainian Ground Forces",
     "superior": null,
-    "engagement_count": 3,
-    "last_active": "2026-05-09T16:52:11",
+    "engagement_count": 4,
+    "last_active": "2026-05-15T20:44:13",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.67,
-      "target": 3.33,
-      "effect": 7.33
+      "kinetic": 3.25,
+      "target": 3.25,
+      "effect": 7.75
     },
     "assets_detected": [
+      "UNKNOWN_INFANTRY_POSITION",
       "UNKNOWN_UAV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -37531,11 +37737,26 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-09",
+    "engagement_trend_anchor": "2026-05-15",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-15T20:44:13",
+        "title": "Ukrainian Forces Conduct Drone Strike on Russian Positions in Vozdvyzhivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.855,
+        "lon": 32.4775,
+        "url": "https://t.me/ukrliberation/20424",
+        "event_id": "08f4bdeb-37db-4c54-bba3-8bda1136de97"
+      },
       {
         "date": "2026-05-09T16:52:11",
         "title": "Ukrainian Forces Conduct Drone Strike on Russian Infantry in Sumy Oblast",
@@ -42535,13 +42756,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -42554,7 +42775,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -42579,9 +42800,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -42798,13 +43028,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -42817,7 +43047,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -42842,9 +43072,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -42947,13 +43186,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-13 18:48:04",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 4.5,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -42988,9 +43227,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-13",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-13 18:48:04",
         "title": "Ukrainian Forces Move to New Positions in Myropilske Area",
@@ -43628,13 +43876,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -43647,7 +43895,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -43672,9 +43920,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -44383,13 +44640,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -44402,7 +44659,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -44427,9 +44684,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -45243,24 +45509,19 @@
     "echelon_symbol": "X",
     "sub_branch": "Ukrainian Ground Forces",
     "superior": null,
-    "engagement_count": 3,
-    "last_active": "2026-05-09T16:52:11",
+    "engagement_count": 4,
+    "last_active": "2026-05-15T20:44:13",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.67,
-      "target": 3.33,
-      "effect": 7.33
+      "kinetic": 3.25,
+      "target": 3.25,
+      "effect": 7.75
     },
     "assets_detected": [
+      "UNKNOWN_INFANTRY_POSITION",
       "UNKNOWN_UAV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -45284,11 +45545,26 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-09",
+    "engagement_trend_anchor": "2026-05-15",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-15T20:44:13",
+        "title": "Ukrainian Forces Conduct Drone Strike on Russian Positions in Vozdvyzhivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.855,
+        "lon": 32.4775,
+        "url": "https://t.me/ukrliberation/20424",
+        "event_id": "08f4bdeb-37db-4c54-bba3-8bda1136de97"
+      },
       {
         "date": "2026-05-09T16:52:11",
         "title": "Ukrainian Forces Conduct Drone Strike on Russian Infantry in Sumy Oblast",
@@ -46833,13 +47109,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -46852,7 +47128,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -46877,9 +47153,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -47470,24 +47755,19 @@
     "echelon_symbol": "X",
     "sub_branch": "Ukrainian Ground Forces",
     "superior": null,
-    "engagement_count": 3,
-    "last_active": "2026-05-09T16:52:11",
+    "engagement_count": 4,
+    "last_active": "2026-05-15T20:44:13",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.67,
-      "target": 3.33,
-      "effect": 7.33
+      "kinetic": 3.25,
+      "target": 3.25,
+      "effect": 7.75
     },
     "assets_detected": [
+      "UNKNOWN_INFANTRY_POSITION",
       "UNKNOWN_UAV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -47511,11 +47791,26 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-09",
+    "engagement_trend_anchor": "2026-05-15",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-15T20:44:13",
+        "title": "Ukrainian Forces Conduct Drone Strike on Russian Positions in Vozdvyzhivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.855,
+        "lon": 32.4775,
+        "url": "https://t.me/ukrliberation/20424",
+        "event_id": "08f4bdeb-37db-4c54-bba3-8bda1136de97"
+      },
       {
         "date": "2026-05-09T16:52:11",
         "title": "Ukrainian Forces Conduct Drone Strike on Russian Infantry in Sumy Oblast",
@@ -48233,13 +48528,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-13 18:48:04",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 4.5,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -48274,9 +48569,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-13",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-13 18:48:04",
         "title": "Ukrainian Forces Move to New Positions in Myropilske Area",
@@ -48392,24 +48696,19 @@
     "echelon_symbol": "X",
     "sub_branch": "Ukrainian Ground Forces",
     "superior": null,
-    "engagement_count": 3,
-    "last_active": "2026-05-09T16:52:11",
+    "engagement_count": 4,
+    "last_active": "2026-05-15T20:44:13",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.67,
-      "target": 3.33,
-      "effect": 7.33
+      "kinetic": 3.25,
+      "target": 3.25,
+      "effect": 7.75
     },
     "assets_detected": [
+      "UNKNOWN_INFANTRY_POSITION",
       "UNKNOWN_UAV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -48433,11 +48732,26 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-09",
+    "engagement_trend_anchor": "2026-05-15",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-15T20:44:13",
+        "title": "Ukrainian Forces Conduct Drone Strike on Russian Positions in Vozdvyzhivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.855,
+        "lon": 32.4775,
+        "url": "https://t.me/ukrliberation/20424",
+        "event_id": "08f4bdeb-37db-4c54-bba3-8bda1136de97"
+      },
       {
         "date": "2026-05-09T16:52:11",
         "title": "Ukrainian Forces Conduct Drone Strike on Russian Infantry in Sumy Oblast",
@@ -52778,13 +53092,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -52797,7 +53111,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -52822,9 +53136,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -54430,13 +54753,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -54449,7 +54772,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -54474,9 +54797,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -56669,13 +57001,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-13 18:48:04",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 4.5,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -56710,9 +57042,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-13",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-13 18:48:04",
         "title": "Ukrainian Forces Move to New Positions in Myropilske Area",
@@ -59749,13 +60090,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -59768,7 +60109,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -59793,9 +60134,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -61858,13 +62208,13 @@
     "echelon_symbol": "X",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-13 18:48:04",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 4.5,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 3.67,
+      "effect": 6.33
     },
     "assets_detected": [],
     "engagement_trend_30d": [
@@ -61899,9 +62249,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-13",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-13 18:48:04",
         "title": "Ukrainian Forces Move to New Positions in Myropilske Area",
@@ -62977,13 +63336,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -62996,7 +63355,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -63021,9 +63380,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -64135,13 +64503,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -64154,7 +64522,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -64179,9 +64547,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -65562,13 +65939,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -65581,7 +65958,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -65606,9 +65983,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -66392,13 +66778,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -66411,7 +66797,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -66436,9 +66822,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -66574,13 +66969,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -66593,7 +66988,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -66618,9 +67013,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -67800,13 +68204,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -67819,7 +68223,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -67844,9 +68248,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -69595,13 +70008,13 @@
     "echelon_symbol": "III",
     "sub_branch": null,
     "superior": null,
-    "engagement_count": 2,
-    "last_active": "2026-04-14 17:24:44",
+    "engagement_count": 3,
+    "last_active": "2026-05-16T06:31:43",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.0,
-      "target": 5.0,
-      "effect": 5.0
+      "kinetic": 4.0,
+      "target": 4.0,
+      "effect": 6.33
     },
     "assets_detected": [
       "Shark-M UAV",
@@ -69614,7 +70027,7 @@
       0,
       0,
       0,
-      1,
+      0,
       0,
       0,
       0,
@@ -69639,9 +70052,18 @@
       0,
       1
     ],
-    "engagement_trend_anchor": "2026-04-14",
+    "engagement_trend_anchor": "2026-05-16",
     "engagement_freq_label": "Low",
     "recent_engagements": [
+      {
+        "date": "2026-05-16T06:31:43",
+        "title": "Ukrainian Forces Conduct Drone Strike on Civilian Facility in Shakhtersk",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 50.232499999999995,
+        "lon": 31.587500000000002,
+        "url": "https://t.me/rybar/80319",
+        "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4"
+      },
       {
         "date": "2026-04-14 17:24:44",
         "title": "Ukrainian Forces Capture Enemy UAV near Krasnolymansk",
@@ -73406,24 +73828,19 @@
     "echelon_symbol": "X",
     "sub_branch": "Ukrainian Ground Forces",
     "superior": null,
-    "engagement_count": 3,
-    "last_active": "2026-05-09T16:52:11",
+    "engagement_count": 4,
+    "last_active": "2026-05-15T20:44:13",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.67,
-      "target": 3.33,
-      "effect": 7.33
+      "kinetic": 3.25,
+      "target": 3.25,
+      "effect": 7.75
     },
     "assets_detected": [
+      "UNKNOWN_INFANTRY_POSITION",
       "UNKNOWN_UAV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -73447,11 +73864,26 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-09",
+    "engagement_trend_anchor": "2026-05-15",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-15T20:44:13",
+        "title": "Ukrainian Forces Conduct Drone Strike on Russian Positions in Vozdvyzhivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.855,
+        "lon": 32.4775,
+        "url": "https://t.me/ukrliberation/20424",
+        "event_id": "08f4bdeb-37db-4c54-bba3-8bda1136de97"
+      },
       {
         "date": "2026-05-09T16:52:11",
         "title": "Ukrainian Forces Conduct Drone Strike on Russian Infantry in Sumy Oblast",
@@ -73682,24 +74114,19 @@
     "echelon_symbol": "X",
     "sub_branch": "Ukrainian Ground Forces",
     "superior": null,
-    "engagement_count": 3,
-    "last_active": "2026-05-09T16:52:11",
+    "engagement_count": 4,
+    "last_active": "2026-05-15T20:44:13",
     "primary_tactic": "MILITARY_BASE",
     "avg_tie": {
-      "kinetic": 3.67,
-      "target": 3.33,
-      "effect": 7.33
+      "kinetic": 3.25,
+      "target": 3.25,
+      "effect": 7.75
     },
     "assets_detected": [
+      "UNKNOWN_INFANTRY_POSITION",
       "UNKNOWN_UAV"
     ],
     "engagement_trend_30d": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
       0,
       0,
       0,
@@ -73723,11 +74150,26 @@
       0,
       0,
       0,
-      2
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
     ],
-    "engagement_trend_anchor": "2026-05-09",
+    "engagement_trend_anchor": "2026-05-15",
     "engagement_freq_label": "Medium",
     "recent_engagements": [
+      {
+        "date": "2026-05-15T20:44:13",
+        "title": "Ukrainian Forces Conduct Drone Strike on Russian Positions in Vozdvyzhivka",
+        "location": "UNKNOWN_SECTOR",
+        "lat": 49.855,
+        "lon": 32.4775,
+        "url": "https://t.me/ukrliberation/20424",
+        "event_id": "08f4bdeb-37db-4c54-bba3-8bda1136de97"
+      },
       {
         "date": "2026-05-09T16:52:11",
         "title": "Ukrainian Forces Conduct Drone Strike on Russian Infantry in Sumy Oblast",
@@ -81205,25 +81647,6 @@
     "last_seen_lat": 48.369328789,
     "last_seen_lon": 37.091323755,
     "last_seen_date": "2025-11-02T11:02:48.224642",
-    "status": "ACTIVE",
-    "source": "PARABELLUM",
-    "engagement_count": 0,
-    "avg_tie": 0
-  },
-  {
-    "unit_id": "1083",
-    "display_name": "71st",
-    "faction": "RU",
-    "type": "SOF",
-    "echelon": "Regiment",
-    "branch": null,
-    "sub_branch": null,
-    "garrison": null,
-    "district": null,
-    "superior": null,
-    "last_seen_lat": 48.269299783,
-    "last_seen_lon": 37.196008889,
-    "last_seen_date": "2025-05-05T18:29:53.419756",
     "status": "ACTIVE",
     "source": "PARABELLUM",
     "engagement_count": 0,
@@ -90628,25 +91051,6 @@
     "avg_tie": 0,
     "casualty_count": 15,
     "missing_count": 15
-  },
-  {
-    "unit_id": "661",
-    "display_name": "Freedoom Russia",
-    "faction": "UA",
-    "type": "Infantry Light",
-    "echelon": "Brigade",
-    "branch": "Ground Forces",
-    "sub_branch": "Rocket Forces and Artillery",
-    "garrison": null,
-    "district": "Operational Command North",
-    "superior": null,
-    "last_seen_lat": 47.648518912,
-    "last_seen_lon": 35.330728101,
-    "last_seen_date": "2024-04-12T17:31:33.459",
-    "status": "ACTIVE",
-    "source": "PARABELLUM",
-    "engagement_count": 0,
-    "avg_tie": 0
   },
   {
     "unit_id": "659",

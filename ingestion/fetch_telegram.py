@@ -41,7 +41,7 @@ CHANNELS_METADATA = {
     # UA Sources
     'deepstatemap': {'bias': 'PRO_UA', 'reliability': 0.85, 'type': 'UA_MILITARY'},
     'DeepStateUA': {'bias': 'PRO_UA', 'reliability': 0.85, 'type': 'UA_MILITARY'},
-    'MAKS23_NAFO': {'bias': 'PRO_UA', 'reliability': 0.75, 'type': 'UA_ACTIVIST'},
+    'MAKS23_NAFO': {'bias': 'PRO_UA', 'reliability': 0.70, 'type': 'UA_ACTIVIST'},
     'Tatarigami_UA': {'bias': 'PRO_UA', 'reliability': 0.80, 'type': 'UA_ANALYST'},
     'ukrliberation': {'bias': 'PRO_UA', 'reliability': 0.65, 'type': 'UA_NEWS'},
     'DroneBomber': {'bias': 'PRO_UA', 'reliability': 0.80, 'type': 'UA_NEWS'},
@@ -96,8 +96,7 @@ CHANNELS_METADATA = {
     'kherson_non_fake': {'bias': 'PRO_UA', 'reliability': 0.85, 'type': 'OSINT'},
     'vysokygovorit': {'bias': 'PRO_RU', 'reliability': 0.55, 'type': 'MILBLOGGER'},
     'exilenova_plus': {'bias': 'PRO_UA', 'reliability': 0.80, 'type': 'OSINT'},
-    'CITeam': {'bias': 'NEUTRAL', 'reliability': 0.92, 'type': 'OSINT'},
-    'batalyon_monaco': {'bias': 'PRO_UA', 'reliability': 0.50, 'type': 'HUMANITARIAN'},
+    'CITeam': {'bias': 'NEUTRAL', 'reliability': 0.70, 'type': 'OSINT'},
     'z_komitet': {'bias': 'PRO_RU', 'reliability': 0.40, 'type': 'MILBLOGGER'}
 }
 

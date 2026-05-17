@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-05-16T19:29:18.456874+00:00",
+  "generated_at": "2026-05-17T16:50:57.527793+00:00",
   "campaigns": [
     {
       "campaign_id": "refineries_and_oil_hubs",
       "name": "Refineries And Oil Hubs",
       "color": "#f59e0b",
       "status": "LIVE",
-      "total_events": 78,
+      "total_events": 81,
       "last_event_date": "2026-05-16T12:00:33+00:00",
       "points": [
         {
@@ -618,6 +618,30 @@
           "tie_total": 35.0
         },
         {
+          "event_id": "29340f81-ec9f-4596-bdf7-9b6df52fc629",
+          "lat": 48.3,
+          "lon": 31.8825,
+          "date": "2026-05-15T10:50:19",
+          "vec_e": 4.0,
+          "tie_total": 99.0
+        },
+        {
+          "event_id": "3312348a-a16d-4ffa-a390-445d045a0a50",
+          "lat": 48.3375,
+          "lon": 32.14,
+          "date": "2026-05-16T05:26:18",
+          "vec_e": 1.0,
+          "tie_total": 17.0
+        },
+        {
+          "event_id": "4e5b9ea3-7a47-4185-af8e-13456a2968a9",
+          "lat": 50.1725,
+          "lon": 32.195,
+          "date": "2026-05-15T13:06:58",
+          "vec_e": 9.0,
+          "tie_total": 100.0
+        },
+        {
           "event_id": "601df530-0133-4af8-a8e6-9c87cf17e200",
           "lat": 50.012499999999996,
           "lon": 32.585,
@@ -640,7 +664,7 @@
       "name": "Civilian Pressure Ops",
       "color": "#94a3b8",
       "status": "LIVE",
-      "total_events": 130,
+      "total_events": 142,
       "last_event_date": "2026-05-16T12:24:59+00:00",
       "points": [
         {
@@ -1636,6 +1660,14 @@
           "tie_total": 6.0
         },
         {
+          "event_id": "1eb7d74c-3836-4252-9e81-5852bb1390a4",
+          "lat": 50.232499999999995,
+          "lon": 31.587500000000002,
+          "date": "2026-05-16T06:31:43",
+          "vec_e": 9.0,
+          "tie_total": 14.0
+        },
+        {
           "event_id": "214d70f8-d545-4f52-a2a2-c0dce6edef6c",
           "lat": 52.069902,
           "lon": 32.924437,
@@ -1644,12 +1676,68 @@
           "tie_total": 21.0
         },
         {
+          "event_id": "385faf01-a263-430d-838b-efe4385823dc",
+          "lat": 50.5325,
+          "lon": 31.68,
+          "date": "2026-05-15T17:16:57",
+          "vec_e": 9.0,
+          "tie_total": 22.0
+        },
+        {
+          "event_id": "3b05ccc0-8777-465a-a761-31c51fa584eb",
+          "lat": 49.279999999999994,
+          "lon": 33.11,
+          "date": "2026-05-15T13:56:01",
+          "vec_e": 9.0,
+          "tie_total": 14.0
+        },
+        {
+          "event_id": "408e0e2c-655e-4211-b5a8-b3f526a08a8d",
+          "lat": 48.644999999999996,
+          "lon": 31.44,
+          "date": "2026-05-15T12:26:59",
+          "vec_e": 1.0,
+          "tie_total": 0.0
+        },
+        {
           "event_id": "4a829850-60af-4487-b6d4-6b74cbffec23",
           "lat": 48.887499999999996,
           "lon": 32.8975,
           "date": "2026-05-16T12:24:59",
           "vec_e": 4.0,
           "tie_total": 6.0
+        },
+        {
+          "event_id": "52232d87-5573-4c36-9bdc-3a1bb8659a3a",
+          "lat": 48.7525,
+          "lon": 33.362500000000004,
+          "date": "2026-05-15T18:24:41",
+          "vec_e": 9.0,
+          "tie_total": 19.0
+        },
+        {
+          "event_id": "736cfd9c-0ab5-4fc3-99ea-1533f56ba516",
+          "lat": 49.9075,
+          "lon": 31.677500000000002,
+          "date": "2026-05-15T12:33:01",
+          "vec_e": 9.0,
+          "tie_total": 18.0
+        },
+        {
+          "event_id": "76181b19-b623-4f9e-a497-3cf0dd655135",
+          "lat": 49.279999999999994,
+          "lon": 32.545,
+          "date": "2026-05-15T18:03:01",
+          "vec_e": 9.0,
+          "tie_total": 11.0
+        },
+        {
+          "event_id": "805eec17-2f1d-4d77-ad5a-cb0a44c7fc94",
+          "lat": 50.345,
+          "lon": 32.5625,
+          "date": "2026-05-15T13:45:16",
+          "vec_e": 9.0,
+          "tie_total": 24.0
         },
         {
           "event_id": "8d503f39-475e-42dd-8d7c-9de82e60cfb6",
@@ -1668,12 +1756,44 @@
           "tie_total": 0.0
         },
         {
+          "event_id": "a56d1c06-a667-4ccc-ad00-be9401e927a1",
+          "lat": 49.19,
+          "lon": 31.105,
+          "date": "2026-05-15T17:03:10",
+          "vec_e": 4.0,
+          "tie_total": 5.0
+        },
+        {
+          "event_id": "b32a639b-c347-4f07-a759-ee448a1fd6e6",
+          "lat": 49.287499999999994,
+          "lon": 31.110000000000003,
+          "date": "2026-05-15T14:16:15",
+          "vec_e": 9.0,
+          "tie_total": 22.0
+        },
+        {
+          "event_id": "b3bb5474-7c8f-44f8-89cc-2d5e5964d50c",
+          "lat": 49.419999999999995,
+          "lon": 32.8225,
+          "date": "2026-05-15T12:25:18",
+          "vec_e": 4.0,
+          "tie_total": 5.0
+        },
+        {
           "event_id": "befce1a4-d04c-4455-8239-85b093f34e99",
           "lat": 49.714999999999996,
           "lon": 33.095,
           "date": "2026-05-16T07:52:23",
           "vec_e": 9.0,
           "tie_total": 14.0
+        },
+        {
+          "event_id": "e0d70002-90ff-496a-ae84-b6e2dadd8da4",
+          "lat": 50.647499999999994,
+          "lon": 32.945,
+          "date": "2026-05-15T14:05:17",
+          "vec_e": 9.0,
+          "tie_total": 100.0
         },
         {
           "event_id": "f7491298-fa2b-422b-b0b9-3205aaec8476",
@@ -1690,7 +1810,7 @@
       "name": "UAV Ecosystem",
       "color": "#a3e635",
       "status": "LIVE",
-      "total_events": 38,
+      "total_events": 40,
       "last_event_date": "2026-05-16T09:56:21+00:00",
       "points": [
         {
@@ -1974,6 +2094,14 @@
           "tie_total": 2.0
         },
         {
+          "event_id": "08f4bdeb-37db-4c54-bba3-8bda1136de97",
+          "lat": 49.855,
+          "lon": 32.4775,
+          "date": "2026-05-15T20:44:13",
+          "vec_e": 9.0,
+          "tie_total": 19.0
+        },
+        {
           "event_id": "22976843-22dd-4ed1-852d-033a8b1d54ce",
           "lat": 46.66587,
           "lon": 31.02804,
@@ -1990,6 +2118,14 @@
           "tie_total": 15.0
         },
         {
+          "event_id": "41d4ec05-edc1-4f94-bb4d-0463f7821182",
+          "lat": 50.105,
+          "lon": 31.96,
+          "date": "2026-05-15T12:29:54",
+          "vec_e": 9.0,
+          "tie_total": 19.0
+        },
+        {
           "event_id": "93bc5b80-6086-4061-8ba9-bf0994d34ae6",
           "lat": 46.665874,
           "lon": 31.027913,
@@ -2004,7 +2140,7 @@
       "name": "Logistics Network Attrition",
       "color": "#fb7185",
       "status": "LIVE",
-      "total_events": 43,
+      "total_events": 47,
       "last_event_date": "2026-05-16T11:56:13+00:00",
       "points": [
         {
@@ -2344,10 +2480,42 @@
           "tie_total": 29.0
         },
         {
+          "event_id": "61f94ef6-959f-4127-a158-91383449e9af",
+          "lat": 50.026126,
+          "lon": 36.182235,
+          "date": "2026-05-16T05:13:32",
+          "vec_e": 4.0,
+          "tie_total": 34.0
+        },
+        {
+          "event_id": "b31b140a-2751-4395-9cb6-29f34cc75d67",
+          "lat": 47.66693,
+          "lon": 35.830165,
+          "date": "2026-05-15T10:56:08",
+          "vec_e": 6.0,
+          "tie_total": 29.0
+        },
+        {
+          "event_id": "dcad2c1a-5e99-4b54-9a5b-021266435eb4",
+          "lat": 44.660387,
+          "lon": 41.949075,
+          "date": "2026-05-16T05:28:28",
+          "vec_e": 7.0,
+          "tie_total": 100.0
+        },
+        {
           "event_id": "ef6f4707-8e54-4a9c-a3d8-9d61dae79c9b",
           "lat": 49.87,
           "lon": 31.675,
           "date": "2026-05-16T10:15:48",
+          "vec_e": 1.0,
+          "tie_total": 0.0
+        },
+        {
+          "event_id": "fa08d7f9-45ab-4ec1-b69b-22bb547a01f4",
+          "lat": 49.357499999999995,
+          "lon": 33.2175,
+          "date": "2026-05-15T12:33:51",
           "vec_e": 1.0,
           "tie_total": 0.0
         }
@@ -2786,7 +2954,7 @@
       "name": "Air Defense Suppression",
       "color": "#ef4444",
       "status": "LIVE",
-      "total_events": 47,
+      "total_events": 48,
       "last_event_date": "2026-05-16T07:48:44+00:00",
       "points": [
         {
@@ -3158,6 +3326,14 @@
           "tie_total": 89.0
         },
         {
+          "event_id": "00165f99-1371-4323-b6e8-cdec2ec4d74a",
+          "lat": 49.4225,
+          "lon": 32.8225,
+          "date": "2026-05-15T21:21:21",
+          "vec_e": 3.0,
+          "tie_total": 27.0
+        },
+        {
           "event_id": "7c640784-4032-4588-ac14-50ee53666279",
           "lat": 48.8525,
           "lon": 31.970000000000002,
@@ -3172,8 +3348,8 @@
       "name": "Command And Control Disruption",
       "color": "#38bdf8",
       "status": "LIVE",
-      "total_events": 12,
-      "last_event_date": "2026-05-10T20:53:36+00:00",
+      "total_events": 13,
+      "last_event_date": "2026-05-15T17:51:59+00:00",
       "points": [
         {
           "event_id": "c8ba334f-573e-4108-bab2-e24350a69df2",
@@ -3270,6 +3446,14 @@
           "date": "2026-05-10T20:48:08",
           "vec_e": 7.0,
           "tie_total": 74.0
+        },
+        {
+          "event_id": "29acc9ef-98ef-4465-89a2-ed748431c766",
+          "lat": 50.4375,
+          "lon": 32.215,
+          "date": "2026-05-15T17:51:59",
+          "vec_e": 4.0,
+          "tie_total": 58.0
         }
       ]
     },
@@ -3278,8 +3462,8 @@
       "name": "Aerospace Asset Attrition",
       "color": "#22c55e",
       "status": "LIVE",
-      "total_events": 10,
-      "last_event_date": "2026-05-10T19:27:38+00:00",
+      "total_events": 11,
+      "last_event_date": "2026-05-15T12:31:48+00:00",
       "points": [
         {
           "event_id": "6e7169a8-d093-4990-bd1c-856d35cad2ad",
@@ -3360,6 +3544,14 @@
           "date": "2026-05-10T19:27:38",
           "vec_e": 1.0,
           "tie_total": 7.0
+        },
+        {
+          "event_id": "45459bb5-4186-49d7-91fb-1090b6bf8316",
+          "lat": 50.7825,
+          "lon": 32.415,
+          "date": "2026-05-15T12:31:48",
+          "vec_e": 9.0,
+          "tie_total": 100.0
         }
       ]
     },
