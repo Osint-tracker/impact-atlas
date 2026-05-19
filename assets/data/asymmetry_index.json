@@ -2,22 +2,22 @@
   "sectors": {
     "Rear_Area_UA": {
       "UA": {
-        "asymmetry_index": 4.4231,
-        "events": 385,
-        "numerator": 8510.0,
-        "denominator": 1924.0
+        "asymmetry_index": 4.453,
+        "events": 423,
+        "numerator": 9240.0,
+        "denominator": 2075.0
       },
       "RU": {
-        "asymmetry_index": 4.4,
-        "events": 407,
-        "numerator": 8316.0,
-        "denominator": 1890.0
+        "asymmetry_index": 4.3743,
+        "events": 444,
+        "numerator": 8858.0,
+        "denominator": 2025.0
       },
       "UNK": {
-        "asymmetry_index": 3.0935,
-        "events": 71,
-        "numerator": 761.0,
-        "denominator": 246.0
+        "asymmetry_index": 3.0873,
+        "events": 74,
+        "numerator": 778.0,
+        "denominator": 252.0
       }
     },
     "Kurakhove-Vuhledar Axis": {
@@ -28,44 +28,44 @@
         "denominator": 27.0
       },
       "UA": {
-        "asymmetry_index": 5.5476,
-        "events": 15,
-        "numerator": 466.0,
-        "denominator": 84.0
+        "asymmetry_index": 5.551,
+        "events": 20,
+        "numerator": 544.0,
+        "denominator": 98.0
       },
       "RU": {
-        "asymmetry_index": 4.5455,
-        "events": 3,
-        "numerator": 50.0,
-        "denominator": 11.0
+        "asymmetry_index": 6.7308,
+        "events": 9,
+        "numerator": 175.0,
+        "denominator": 26.0
       }
     },
     "Kherson Axis": {
       "UA": {
-        "asymmetry_index": 5.6585,
-        "events": 12,
-        "numerator": 232.0,
-        "denominator": 41.0
+        "asymmetry_index": 5.56,
+        "events": 15,
+        "numerator": 278.0,
+        "denominator": 50.0
       },
       "RU": {
-        "asymmetry_index": 6.3182,
-        "events": 94,
-        "numerator": 1807.0,
-        "denominator": 286.0
+        "asymmetry_index": 6.3927,
+        "events": 101,
+        "numerator": 1937.0,
+        "denominator": 303.0
       },
       "UNK": {
-        "asymmetry_index": 3.9286,
-        "events": 21,
-        "numerator": 165.0,
-        "denominator": 42.0
+        "asymmetry_index": 4.2273,
+        "events": 22,
+        "numerator": 186.0,
+        "denominator": 44.0
       }
     },
     "Kupyansk-Lyman Axis": {
       "UA": {
-        "asymmetry_index": 5.122,
-        "events": 19,
-        "numerator": 420.0,
-        "denominator": 82.0
+        "asymmetry_index": 5.2093,
+        "events": 20,
+        "numerator": 448.0,
+        "denominator": 86.0
       },
       "RU": {
         "asymmetry_index": 2.5789,
@@ -76,16 +76,16 @@
     },
     "Pokrovsk Axis": {
       "UA": {
-        "asymmetry_index": 6.32,
-        "events": 12,
-        "numerator": 316.0,
-        "denominator": 50.0
+        "asymmetry_index": 6.5593,
+        "events": 15,
+        "numerator": 387.0,
+        "denominator": 59.0
       },
       "RU": {
-        "asymmetry_index": 2.3333,
-        "events": 6,
-        "numerator": 49.0,
-        "denominator": 21.0
+        "asymmetry_index": 4.8387,
+        "events": 9,
+        "numerator": 150.0,
+        "denominator": 31.0
       }
     },
     "Chasiv Yar Axis": {
@@ -96,10 +96,10 @@
         "denominator": 10.0
       },
       "RU": {
-        "asymmetry_index": 0.5,
-        "events": 1,
-        "numerator": 1.0,
-        "denominator": 2.0
+        "asymmetry_index": 1.625,
+        "events": 3,
+        "numerator": 13.0,
+        "denominator": 8.0
       }
     },
     "Sumy Axis": {
@@ -110,30 +110,30 @@
         "denominator": 19.0
       },
       "UA": {
-        "asymmetry_index": 6.8462,
-        "events": 3,
-        "numerator": 89.0,
-        "denominator": 13.0
+        "asymmetry_index": 6.8824,
+        "events": 4,
+        "numerator": 117.0,
+        "denominator": 17.0
       }
     },
     "UNKNOWN_SECTOR": {
       "UA": {
-        "asymmetry_index": 4.3381,
-        "events": 205,
-        "numerator": 4555.0,
-        "denominator": 1050.0
+        "asymmetry_index": 4.7589,
+        "events": 274,
+        "numerator": 6672.0,
+        "denominator": 1402.0
       },
       "UNK": {
-        "asymmetry_index": 4.2658,
-        "events": 21,
-        "numerator": 337.0,
-        "denominator": 79.0
+        "asymmetry_index": 4.5859,
+        "events": 26,
+        "numerator": 454.0,
+        "denominator": 99.0
       },
       "RU": {
-        "asymmetry_index": 6.0198,
-        "events": 224,
-        "numerator": 5159.0,
-        "denominator": 857.0
+        "asymmetry_index": 6.1605,
+        "events": 278,
+        "numerator": 6487.0,
+        "denominator": 1053.0
       }
     },
     "Kharkiv Axis": {
@@ -144,10 +144,16 @@
         "denominator": 32.0
       },
       "UA": {
-        "asymmetry_index": 6.3333,
-        "events": 6,
-        "numerator": 114.0,
-        "denominator": 18.0
+        "asymmetry_index": 5.4333,
+        "events": 10,
+        "numerator": 163.0,
+        "denominator": 30.0
+      },
+      "UNK": {
+        "asymmetry_index": 13.5,
+        "events": 1,
+        "numerator": 27.0,
+        "denominator": 2.0
       }
     },
     "Toretsk Axis": {
@@ -158,10 +164,10 @@
         "denominator": 1.0
       },
       "UA": {
-        "asymmetry_index": 5.2286,
-        "events": 6,
-        "numerator": 183.0,
-        "denominator": 35.0
+        "asymmetry_index": 4.9286,
+        "events": 8,
+        "numerator": 207.0,
+        "denominator": 42.0
       },
       "RU": {
         "asymmetry_index": 0.6,
@@ -186,16 +192,16 @@
     },
     "Deep_Strike_RU": {
       "UA": {
-        "asymmetry_index": 5.7089,
-        "events": 12,
-        "numerator": 451.0,
-        "denominator": 79.0
+        "asymmetry_index": 5.3981,
+        "events": 16,
+        "numerator": 583.0,
+        "denominator": 108.0
       },
       "RU": {
-        "asymmetry_index": 0.2222,
-        "events": 2,
-        "numerator": 2.0,
-        "denominator": 9.0
+        "asymmetry_index": 3.1852,
+        "events": 4,
+        "numerator": 86.0,
+        "denominator": 27.0
       }
     },
     "Siversk Axis": {
@@ -206,16 +212,16 @@
         "denominator": 4.0
       },
       "RU": {
-        "asymmetry_index": 10.5,
-        "events": 2,
-        "numerator": 63.0,
-        "denominator": 6.0
+        "asymmetry_index": 8.0,
+        "events": 3,
+        "numerator": 72.0,
+        "denominator": 9.0
       }
     }
   },
   "global": {
-    "RU": 4.9755,
-    "UA": 4.5559,
-    "UNK": 3.481
+    "RU": 5.0707,
+    "UA": 4.7083,
+    "UNK": 3.6635
   }
 }

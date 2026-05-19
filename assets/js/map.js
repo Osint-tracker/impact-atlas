@@ -1548,7 +1548,7 @@
     .then(r => r.json())
     .then(data => {
       window.orbatData = data;
-      console.log(`Ã¢Å“â€¦ ORBAT Metadata Loaded: ${data.length} units`);
+      console.log(`✅ ORBAT Metadata Loaded: ${data.length} units`);
     })
  .catch(e => console.warn("¢¡ ¯¸ ORBAT Metadata missing"));
 
@@ -1653,7 +1653,7 @@
  console.log(`°¸¦° Owl Data Ready: ${units.size} Units, ${fortifications.length} Forts`);
         return window.owlData;
       })
-      .catch(err => console.error("Ã¢ÂÅ’ Failed to fetch Owl Data:", err));
+      .catch(err => console.error("❌ Failed to fetch Owl Data:", err));
   }
 
   // Alias for backward compatibility if needed, or simply replaced
@@ -1698,9 +1698,9 @@
             }
           }
         }).addTo(map);
-        console.log("Ã¢Å“â€¦ Frontline loaded:", url);
+        console.log("✅ Frontline loaded:", url);
       })
-      .catch(err => console.error("Ã¢ÂÅ’ Error loading frontline:", err));
+      .catch(err => console.error("❌ Error loading frontline:", err));
   }
 
   // ============================================
@@ -1823,7 +1823,7 @@
     // Load PROJECT OWL as default
     loadOwlLayer();
 
-    console.log("Ã¢Å“â€¦ Map initialized");
+    console.log("✅ Map initialized");
   }
 
   // ============================================
@@ -1882,7 +1882,7 @@
           window.tacticalSectorsIndex.set(sectorName, entries);
         });
       })
-      .catch(err => console.error("Ã¢ÂÅ’ Failed to load sectors:", err));
+      .catch(err => console.error("❌ Failed to load sectors:", err));
   }
 
   function loadSectorAnomaliesData() {
@@ -2023,7 +2023,7 @@
           })
           .sort((a, b) => b.timestamp - a.timestamp); // Descending order
 
-        console.log(`Ã¢Å“â€¦ Events processed: ${window.globalEvents.length}`);
+        console.log(`✅ Events processed: ${window.globalEvents.length}`);
 
         // 3. FILTER DEFINITION (CIVILIAN + ACTORS + SMART SEARCH + HIGH IMPACT)
         // 3. FILTER DEFINITION (Comprehensive Rewrite)
@@ -2221,7 +2221,7 @@
           if (window.Dashboard) window.Dashboard.init();
         } catch (e) { console.log("Charts/Dashboard error:", e); }
 
-        console.log(`Ã¢Å“â€¦ Events processed: ${window.globalEvents.length} ready for map`);
+        console.log(`✅ Events processed: ${window.globalEvents.length} ready for map`);
 
         // Slider Init
         if (typeof setupTimeSlider === 'function') setupTimeSlider(window.globalEvents);
@@ -2238,7 +2238,7 @@
 
       }) // <--- THIS CLOSES THE .THEN (The critical point of previous errors)
       .catch(err => {
-        console.error("Ã¢Â Å’ CRITICAL: Failed to load events:", err);
+        console.error("❌  CRITICAL: Failed to load events:", err);
       });
   }
 
@@ -2585,7 +2585,7 @@
                   l.bindPopup("<b>Fortification Line</b><br>Dragon's Teeth / Trench System");
                 }
               }).addTo(map);
-              console.log(`Ã¢Å“â€¦ Fortifications loaded: ${data.features.length}`);
+              console.log(`✅ Fortifications loaded: ${data.features.length}`);
             })
             .catch(e => console.error("Fortification load failed:", e));
         } else {
@@ -2603,7 +2603,7 @@
       if (isChecked) {
  console.log("°¸¡¬ STARTING UNITS FETCH (PARABELLUM PRIMARY)...");
 
-        // 1. Fetch Parabellum Data (Primary Ã¢â‚¬â€ accurate WFS positions)
+        // 1. Fetch Parabellum Data (Primary — accurate WFS positions)
         fetch(`assets/data/orbat_units.json?v=${new Date().getTime()}`)
           .then(res => res.json())
           .then(async userUnits => {
@@ -2693,7 +2693,7 @@
               console.log(`🦉 Owl enriched ${enrichCount} units with metadata.`);
             }
             const finalData = Array.from(mergedUnits.values());
-            console.log(`Ã¢Å“â€¦ Final Units: ${finalData.length} (Parabellum: ${userUnits.length})`);
+            console.log(`✅ Final Units: ${finalData.length} (Parabellum: ${userUnits.length})`);
 
             // 4. RENDER (Cluster)
             unitsLayer = L.markerClusterGroup({
@@ -2781,7 +2781,7 @@
             unitsLayer.addTo(map);
           })
           .catch(err => {
-            console.error("Ã¢ÂÅ’ Failed to load Units:", err);
+            console.error("❌ Failed to load Units:", err);
             alert("Error loading units.");
           });
       } else {
@@ -3120,12 +3120,12 @@
         // We use 'past' frames for the loop
         // data.radar.past is array of { time: UNIX_TIMESTAMP, path: ... }
         if (!data.radar || !data.radar.past) {
-          console.error("Ã¢ÂÅ’ RainViewer Metadata invalid:", data);
+          console.error("❌ RainViewer Metadata invalid:", data);
           return;
         }
 
         const pastFrames = data.radar.past;
-        console.log(`Ã¢Å“â€¦ Loaded ${pastFrames.length} radar frames from ${data.host}`);
+        console.log(`✅ Loaded ${pastFrames.length} radar frames from ${data.host}`);
 
         radarFrames = pastFrames.map(frame => {
           return L.tileLayer(`${data.host}${frame.path}/256/{z}/{x}/{y}/2/1_1.png`, {
@@ -3146,7 +3146,7 @@
           currentFrameIndex = (currentFrameIndex + 1) % radarFrames.length;
         }, 500); // 0.5s per frame
       })
-      .catch(e => console.error("Ã¢ÂÅ’ Weather Radar Metadata Fetch Failed:", e));
+      .catch(e => console.error("❌ Weather Radar Metadata Fetch Failed:", e));
   };
 
   window.stopWeatherRadar = function () {
@@ -3356,7 +3356,7 @@
     }
 
     if (!eventData) {
-      console.error(`Ã¢ÂÅ’ Event not found for Dossier. Searched ID: ${eventIdOrObj}`);
+      console.error(`❌ Event not found for Dossier. Searched ID: ${eventIdOrObj}`);
       return; // Interrupts execution if no data found
     }
 
@@ -3480,12 +3480,12 @@
     try {
       const modal = document.getElementById('unitModal');
       if (!modal) {
-        console.error("Ã¢ÂÅ’ CRITICAL: 'unitModal' element NOT FOUND in DOM!");
+        console.error("❌ CRITICAL: 'unitModal' element NOT FOUND in DOM!");
         alert("DEBUG: unitModal element not found in DOM!");
         return;
       }
 
-      console.log("Ã¢Å“â€¦ Modal element found. Current display:", modal.style.display);
+      console.log("✅ Modal element found. Current display:", modal.style.display);
  console.log("°¸ Modal computed style:", window.getComputedStyle(modal).display);
 
       // NUCLEAR STYLE RESET
@@ -3550,10 +3550,10 @@
       const elDist = document.getElementById('udDistrict');
       renderStatValue(elDist, unit.district, { placeholder: 'N/A' });
 
-      console.log("Ã¢Å“â€¦ Unit Modal Content Population Complete.");
+      console.log("✅ Unit Modal Content Population Complete.");
 
     } catch (e) {
-      console.error("Ã¢ÂÅ’ Error generating Unit Modal content:", e);
+      console.error("❌ Error generating Unit Modal content:", e);
     }
 
     // Calculations: Find related events
@@ -3596,7 +3596,7 @@
     }
     document.getElementById('udTactic').innerText = unit.primary_tactic || '--';
 
-    // Last Location (Coordinates) Ã¢â‚¬â€ user coords only, NOT Owl garrison coords
+    // Last Location (Coordinates) — user coords only, NOT Owl garrison coords
     const lat = unit.last_seen_lat || unit.lat;
     const lon = unit.last_seen_lon || unit.lon;
     const elLoc = document.getElementById('udLastLocation');
@@ -4301,44 +4301,7 @@
           videoContainer.style.display = 'none';
           if (telegramUrls.length > 0) {
             let tgUrl = telegramUrls[0].trim();
-            const assessment = (window.strategicAssessments || {})[item.campaign_id] || {};
-          const aiInsight = assessment.situational_overview ? 
-            `<div class="sc-ai-insight" style="margin-bottom:12px; background:rgba(245,158,11,0.05); border-left:2px solid var(--amber-500); padding:8px; font-size:0.75rem; color:#cbd5e1; font-style:italic; line-height:1.4;">
-                <span style="color:var(--amber-500); font-weight:700; font-family:var(--font-mono); font-size:0.6rem; display:block; margin-bottom:4px;">[ STRATEGIC INTEL ]</span> ${assessment.situational_overview}
-             </div>` : '';
-
-          card.innerHTML = `
-                <div class="sc-header">
-                    <span class="sc-status ${item.status === 'LIVE' ? 'status-live' : 'status-standby'}">${item.status}</span>
-                    <span class="sc-id">${item.campaign_id.toUpperCase()}</span>
-                </div>
-                <h3 class="sc-title" style="color: ${item.color}">${item.name}</h3>
-                <div class="sc-brief">${item.brief_text || 'No strategic brief available.'}</div>
-                
-                ${aiInsight}
-
-                <div class="sc-stats-row">
-                    <div class="sc-stat">
-                        <span class="sc-stat-label">EVENTS</span>
-                        <span class="sc-stat-value">${item.total_events}</span>
-                    </div>
-                    <div class="sc-stat">
-                        <span class="sc-stat-label">IMPACT (E)</span>
-                        <span class="sc-stat-value">${item.sum_vec_e}</span>
-                    </div>
-                </div>
-                
-                <div class="sc-sparkline-wrap">
-                    <canvas id="${chartId}"></canvas>
-                </div>
-
-                <div class="sc-actions" style="display: flex; gap: 8px; flex-direction: column;">
-                    <button class="sc-btn sc-btn-primary" style="width: 100%;" 
-                            onclick="event.stopPropagation(); openCampaignDossier('${item.campaign_id}')">
-                        <i class="fa-solid fa-folder-open" style="margin-right:8px;"></i>OPEN CAMPAIGN DOSSIER
-                    </button>
-                </div>
-            `;  let embedUrl = tgUrl;
+            let embedUrl = tgUrl;
             if (!embedUrl.includes('?embed=')) {
               embedUrl = embedUrl.split('?')[0] + '?embed=1&dark=1';
             } else if (!embedUrl.includes('dark=')) {

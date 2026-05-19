@@ -110,6 +110,17 @@ def _date_to_epoch_ms(date_str):
     if not date_str or not isinstance(date_str, str):
         return 0
     date_str = date_str.strip()
+    if not date_str or date_str.lower() in ('nat', 'none', 'null', 'unknown'):
+        return 0
+    # Priority: try fromisoformat (handles 'T' separator and optional timezone)
+    try:
+        dt = _dt.datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=_dt.timezone.utc)
+        return int(dt.timestamp() * 1000)
+    except (ValueError, OverflowError):
+        pass
+    # Fallback: strptime for legacy formats
     for fmt in ('%Y-%m-%d %H:%M:%S%z', '%Y-%m-%d %H:%M:%S', '%Y-%m-%d'):
         try:
             dt = _dt.datetime.strptime(date_str[:len(fmt)+5], fmt)
@@ -119,6 +130,36 @@ def _date_to_epoch_ms(date_str):
         except (ValueError, OverflowError):
             continue
     return 0
+
+
+def _safe_float(val, default=0.0):
+    if val is None:
+        return default
+    if isinstance(val, (int, float)):
+        return float(val)
+    try:
+        clean = str(val).strip()
+        match = re.match(r'^[-+]?\d*\.?\d+', clean)
+        if match:
+            return float(match.group(0))
+        return float(clean)
+    except (ValueError, TypeError):
+        return default
+
+
+def _safe_int(val, default=0):
+    if val is None:
+        return default
+    if isinstance(val, int):
+        return val
+    try:
+        clean = str(val).strip()
+        match = re.match(r'^[-+]?\d+', clean)
+        if match:
+            return int(match.group(0))
+        return int(clean)
+    except (ValueError, TypeError):
+        return default
 
 
 def _parse_event_datetime_utc(date_str):
@@ -596,12 +637,12 @@ def main():
             
             title = row.get('title') or ''
             description = row.get('description') or ''
-            tie_score = float(row.get('tie_score') or 0)
-            k_score = float(row.get('kinetic_score') or 0)
-            t_score = float(row.get('target_score') or 0)
-            e_score = float(row.get('effect_score') or 0)
-            reliability = int(row.get('reliability') or 0)
-            bias_score = float(row.get('bias_score') or 0)
+            tie_score = _safe_float(row.get('tie_score'))
+            k_score = _safe_float(row.get('kinetic_score'))
+            t_score = _safe_float(row.get('target_score'))
+            e_score = _safe_float(row.get('effect_score'))
+            reliability = _safe_int(row.get('reliability'))
+            bias_score = _safe_float(row.get('bias_score'))
             ai_summary = row.get('ai_summary') or ''
             has_video = bool(row.get('has_video'))
             

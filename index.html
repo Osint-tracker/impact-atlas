@@ -3969,7 +3969,7 @@
           <button class="ttb-btn" onclick="setTimeWindow(0)" data-hours="0">ALL</button>
           <div class="ttb-divider"></div>
           <div class="ttb-custom-group">
-            <input type="number" class="ttb-custom-input" id="ttbCustomHours" min="1" max="720" placeholder="â€”"
+            <input type="number" class="ttb-custom-input" id="ttbCustomHours" min="1" max="720" placeholder="—"
               title="Custom hours" onchange="setTimeWindow(parseInt(this.value) || 0)">
             <span class="ttb-custom-suffix">H</span>
           </div>
@@ -3996,11 +3996,11 @@
           <div class="ttb-divider"></div>
           <!-- Performance Filters -->
           <button class="ttb-btn perf-filter-btn" data-filter="elite" onclick="togglePerformanceFilter('elite')"
-            title="Show only high-value engagements (T.I.E. â‰¥ 80 or T â‰¥ 8)">
+            title="Show only high-value engagements (T.I.E. ≥ 80 or T ≥ 8)">
             <i class="fa-solid fa-star" style="font-size:0.6rem;"></i> ELITE
           </button>
           <button class="ttb-btn perf-filter-btn" data-filter="attrition" onclick="togglePerformanceFilter('attrition')"
-            title="Show only events with major confirmed effect (E â‰¥ 7)">
+            title="Show only events with major confirmed effect (E ≥ 7)">
             <i class="fa-solid fa-skull" style="font-size:0.6rem;"></i> ATTRITION
           </button>
           <button class="ttb-btn perf-filter-btn" id="lowRepFilterBtn" onclick="toggleLowReputationVisibility()"
@@ -4540,11 +4540,11 @@
                       <div class="tooltip-header">T.I.E. Score</div>
                       <div class="tooltip-body">
                         Composite metric (0-100) measuring event significance:<br><br>
-                        â€¢ <strong>Kinetic (K)</strong>: Violence/Intensity<br>
-                        â€¢ <strong>Target (T)</strong>: Strategic value<br>
-                        â€¢ <strong>Effect (E)</strong>: Confirmed success
+                        • <strong>Kinetic (K)</strong>: Violence/Intensity<br>
+                        • <strong>Target (T)</strong>: Strategic value<br>
+                        • <strong>Effect (E)</strong>: Confirmed success
                       </div>
-                      <div class="tooltip-footer">Formula: (T^1.6) Ã— (E/10) Ã— K-Mult</div>
+                      <div class="tooltip-footer">Formula: (T^1.6) × (E/10) × K-Mult</div>
                     </div>
                   </div>
                 </div>
@@ -4596,9 +4596,9 @@
                             <div class="tooltip-header">Bias Score (-10 to +10)</div>
                             <div class="tooltip-body">
                               Indicates narrative leaning:<br>
-                              â€¢ <span style="color:#ef4444">-10 to -3:</span> Pro-Russian<br>
-                              â€¢ <span style="color:#94a3b8">-3 to +3:</span> Neutral<br>
-                              â€¢ <span style="color:#3b82f6">+3 to +10:</span> Pro-Ukrainian
+                              • <span style="color:#ef4444">-10 to -3:</span> Pro-Russian<br>
+                              • <span style="color:#94a3b8">-3 to +3:</span> Neutral<br>
+                              • <span style="color:#3b82f6">+3 to +10:</span> Pro-Ukrainian
                             </div>
                             <div class="tooltip-footer">Calculated via HBC Formula.</div>
                           </div>
@@ -4721,7 +4721,7 @@
             <div class="ud-title-group">
               <h2 id="udTitle">Unit Name</h2>
               <div class="ud-subtitle">
-                <span id="udFaction">Faction</span> â€¢
+                <span id="udFaction">Faction</span> •
                 <span id="udEchelon">Echelon</span>
                 <span id="udTypeBadge" class="ud-badge">Type</span>
               </div>
@@ -4789,7 +4789,7 @@
                   <span class="ud-stat-value" id="udEquipment">--</span>
                 </div>
                 <div class="ud-stat-row" id="udMilUnitRow" style="display:none;">
-                  <span class="ud-stat-label">Military Unit â„–</span>
+                  <span class="ud-stat-label">Military Unit №</span>
                   <span class="ud-stat-value" id="udMilUnit">--</span>
                 </div>
                 <div class="ud-stat-row" id="udBaseRow" style="display:none;">
@@ -5057,7 +5057,7 @@
 
       <script src="assets/js/charts.js?v=2.2"></script>
 
-      <script src="assets/js/map.js?v=3.7"></script>
+      <script src="assets/js/map.js?v=3.8"></script>
       <script src="assets/js/orbat_tracker.js?v=2.2"></script>
       <script src="assets/js/unit_dossier.js?v=2"></script>
 
@@ -5305,7 +5305,7 @@
           container.innerHTML = html;
         }
 
-        // Open event dossier from intel feed â€” fly to event + open source URL
+        // Open event dossier from intel feed — fly to event + open source URL
         function openEventDossierFromFeed(index) {
           var events = getLoadedEvents();
           var sorted = events.slice().sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
@@ -5450,7 +5450,7 @@
             _analyticsCharts.tie = new Chart(ctx2, { type: 'bar', data: { labels: ['0-2', '2-4', '4-6', '6-8', '8-10'], datasets: [{ data: tieBuckets, backgroundColor: ['#233554', '#06b6d4', '#f59e0b', '#f97316', '#e94560'], borderRadius: 3, borderSkipped: false }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b', font: { size: 8, family: 'JetBrains Mono' } }, grid: { display: false } }, y: { ticks: { color: '#64748b', font: { size: 8 } }, grid: { color: '#233554' } } } } });
           }
 
-          // Source Breakdown â€” parse sources_list, apply dropdown filter
+          // Source Breakdown — parse sources_list, apply dropdown filter
           var srcCounts = {};
           var allSrcNames = {};
           events.forEach(function (e) {
@@ -5547,7 +5547,7 @@
             var cats = {}; ev.forEach(function (e) { var c = e.category || 'OTHER'; cats[c] = (cats[c] || 0) + 1; });
             el = document.getElementById('drawerCategories'); if (el) el.textContent = Object.keys(cats).length;
 
-            // LAST 24H â€” use timestamp field (ms since epoch) for accurate 24h window
+            // LAST 24H — use timestamp field (ms since epoch) for accurate 24h window
             var now24 = Date.now(); var count24h = 0;
             ev.forEach(function (e) {
               var ts = parseInt(e.timestamp || 0);
@@ -5555,7 +5555,7 @@
             });
             el = document.getElementById('drawerLast24h'); if (el) el.textContent = count24h;
 
-            // TOP REGION â€” extract from title heuristic (Ukrainian oblasts)
+            // TOP REGION — extract from title heuristic (Ukrainian oblasts)
             var oblastNames = ['Donetsk', 'Luhansk', 'Kherson', 'Zaporizhzhia', 'Kharkiv', 'Mykolaiv', 'Dnipropetrovsk', 'Odesa', 'Sumy', 'Chernihiv', 'Kyiv', 'Crimea', 'Kursk', 'Belgorod', 'Bryansk', 'Rostov'];
             var regionCounts = {};
             ev.forEach(function (e) {

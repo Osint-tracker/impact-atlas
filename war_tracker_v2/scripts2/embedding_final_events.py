@@ -26,8 +26,9 @@ def get_embedding(text):
             "X-Title": "Impact Atlas Refiner"
         }
         payload = {
-            "model": "qwen/qwen3-embedding-8b",
-            "input": [safe_text]
+            "model": "openai/text-embedding-3-large",
+            "input": [safe_text],
+            "dimensions": 1536 
         }
         
         resp = requests.post("https://openrouter.ai/api/v1/embeddings", headers=headers, json=payload, timeout=60)
