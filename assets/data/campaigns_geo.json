@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-19T18:14:16.546759+00:00",
+  "generated_at": "2026-05-19T19:02:00.225949+00:00",
   "campaigns": [
     {
       "campaign_id": "refineries_and_oil_hubs",
@@ -840,7 +840,7 @@
       "name": "Civilian Pressure Ops",
       "color": "#94a3b8",
       "status": "LIVE",
-      "total_events": 178,
+      "total_events": 179,
       "last_event_date": "2026-05-19T15:30:01+00:00",
       "points": [
         {
@@ -2260,6 +2260,14 @@
           "tie_total": 0.0
         },
         {
+          "event_id": "722f98ca-2fef-469f-b33b-7f090bfb87c0",
+          "lat": 50.4775,
+          "lon": 33.3175,
+          "date": "2026-05-19T13:53:01",
+          "vec_e": 9.0,
+          "tie_total": 18.0
+        },
+        {
           "event_id": "e55ad4af-578f-4c6a-9c4a-155217bd91a2",
           "lat": 50.732499999999995,
           "lon": 32.065000000000005,
@@ -2700,7 +2708,7 @@
       "name": "Logistics Network Attrition",
       "color": "#fb7185",
       "status": "LIVE",
-      "total_events": 55,
+      "total_events": 56,
       "last_event_date": "2026-05-19T15:13:28+00:00",
       "points": [
         {
@@ -3136,6 +3144,14 @@
           "tie_total": 3.0
         },
         {
+          "event_id": "4f2c781e-13b7-4e97-804e-5fa3d435192d",
+          "lat": 49.974999999999994,
+          "lon": 33.5275,
+          "date": "2026-05-19T14:42:24",
+          "vec_e": 9.0,
+          "tie_total": 38.0
+        },
+        {
           "event_id": "86968cc1-9cda-4ee3-ad74-7e3dcc237692",
           "lat": 49.595,
           "lon": 32.435,
@@ -3392,8 +3408,8 @@
       "name": "Missile And Strike Complex",
       "color": "#f97316",
       "status": "LIVE",
-      "total_events": 25,
-      "last_event_date": "2026-05-17T04:40:01+00:00",
+      "total_events": 26,
+      "last_event_date": "2026-05-19T14:28:05+00:00",
       "points": [
         {
           "event_id": "fus_669984_1769034366",
@@ -3594,6 +3610,14 @@
           "date": "2026-05-17T04:40:01",
           "vec_e": 9.0,
           "tie_total": 100.0
+        },
+        {
+          "event_id": "b0d6c05a-9cc3-4f0d-8ca0-436a4ca58402",
+          "lat": 48.964999999999996,
+          "lon": 33.58,
+          "date": "2026-05-19T14:28:05",
+          "vec_e": 1.0,
+          "tie_total": 0.0
         }
       ]
     },

@@ -1079,11 +1079,11 @@
 
           let impactHtml = '';
           if (tMax <= -2) {
-            impactHtml = `<span style="background:#082f49; color:#38bdf8; border:1px solid #0284c7; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-snowflake"></i> Frozen (${tMax}Ã‚Â°C)</span>`;
+            impactHtml = `<span style="background:#082f49; color:#38bdf8; border:1px solid #0284c7; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-snowflake"></i> Frozen (${tMax}°C)</span>`;
           } else if (tMax > 0 && precip > 5) {
             impactHtml = `<span style="background:#422006; color:#fb923c; border:1px solid #ea580c; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-cloud-showers-heavy"></i> Mud/Rain (${precip}mm)</span>`;
           } else {
-            impactHtml = `<span style="background:#1e293b; color:#94a3b8; border:1px solid #334155; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-cloud"></i> Fair (${tMax}Ã‚Â°C)</span>`;
+            impactHtml = `<span style="background:#1e293b; color:#94a3b8; border:1px solid #334155; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-cloud"></i> Fair (${tMax}°C)</span>`;
           }
 
           badge.innerHTML = impactHtml;
@@ -1795,7 +1795,7 @@
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
-      attribution: 'Ã‚Â© IMPACT ATLAS'
+      attribution: '© IMPACT ATLAS'
     }).addTo(map);
 
     eventsLayer = L.markerClusterGroup({
