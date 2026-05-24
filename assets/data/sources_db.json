@@ -1,8 +1,8 @@
 {
     "metadata": {
         "description": "Database Sources Impact Atlas - Reliability & Bias Scoring",
-        "version": "2.0",
-        "last_updated": "2025-12-12",
+        "version": "2.1",
+        "last_updated": "2026-05-24",
         "scoring_legend": {
             "reliability": "0-100 (100 = Satellite/Raw Data, 0 = Fake News)",
             "bias": "-5 (Max Pro-Russia) <-> 0 (Neutral) <-> +5 (Max Pro-Ukraine)"
@@ -27,7 +27,7 @@
         },
         "oryx": {
             "reliability": 95,
-            "bias": 0,
+            "bias": 1,
             "type": "osint_visual"
         },
         "deepstatemap": {
@@ -56,23 +56,23 @@
             "type": "think_tank_us"
         },
         "isw": {
-            "reliability": 88,
+            "reliability": 85,
             "bias": 2,
             "type": "think_tank_us"
         },
         "osinttechnical": {
             "reliability": 88,
-            "bias": 1,
+            "bias": 2,
             "type": "osint_aggregator"
         },
         "def mon": {
             "reliability": 85,
-            "bias": 1,
+            "bias": 2,
             "type": "osint_aggregator"
         },
         "majakovsk73": {
-            "reliability": 85,
-            "bias": 1,
+            "reliability": 90,
+            "bias": 0,
             "type": "mapper_it"
         },
         "dario d'angelo": {
@@ -107,17 +107,17 @@
             "type": "newspaper_uk"
         },
         "Wikipedia": {
-            "reliability": 88,
+            "reliability": 75,
             "bias": 1,
             "type": "enciclopedia_global"
         },
         "bbc": {
-            "reliability": 85,
+            "reliability": 88,
             "bias": 1,
             "type": "state_media_uk"
         },
         "bbc news": {
-            "reliability": 85,
+            "reliability": 88,
             "bias": 1,
             "type": "state_media_uk"
         },
@@ -127,33 +127,33 @@
             "type": "financial_us"
         },
         "new york times": {
-            "reliability": 85,
-            "bias": 2,
+            "reliability": 88,
+            "bias": 1,
             "type": "newspaper_us"
         },
         "nytimes": {
-            "reliability": 85,
-            "bias": 2,
+            "reliability": 88,
+            "bias": 1,
             "type": "newspaper_us"
         },
         "washington post": {
-            "reliability": 85,
-            "bias": 2,
+            "reliability": 88,
+            "bias": 1,
             "type": "newspaper_us"
         },
         "wall street journal": {
-            "reliability": 85,
+            "reliability": 88,
             "bias": 1,
             "type": "newspaper_us"
         },
         "wsj": {
-            "reliability": 85,
+            "reliability": 88,
             "bias": 1,
             "type": "newspaper_us"
         },
         "the economist": {
-            "reliability": 85,
-            "bias": 2,
+            "reliability": 88,
+            "bias": 1,
             "type": "magazine_uk"
         },
         "der spiegel": {
@@ -182,12 +182,12 @@
             "type": "newspaper_uk"
         },
         "cnn": {
-            "reliability": 70,
-            "bias": 2,
+            "reliability": 75,
+            "bias": 1,
             "type": "broadcaster_us"
         },
         "fox news": {
-            "reliability": 60,
+            "reliability": 65,
             "bias": 1,
             "type": "broadcaster_us"
         },
@@ -208,17 +208,17 @@
         },
         "__UKRAINE_INSTITUTIONS_MEDIA__": "TIER B/C - STATE & INDEPENDENT",
         "noel_reports": {
-            "reliability": 80,
+            "reliability": 75,
             "bias": 3,
             "type": "osint_ua"
         },
         "noelreports": {
-            "reliability": 80,
+            "reliability": 75,
             "bias": 3,
             "type": "osint_ua"
         },
         "noel report": {
-            "reliability": 80,
+            "reliability": 75,
             "bias": 3,
             "type": "osint_ua"
         },
@@ -233,7 +233,7 @@
             "type": "state_official_ua"
         },
         "cinca afu": {
-            "reliability": 70,
+            "reliability": 65,
             "bias": 5,
             "type": "military_official_ua"
         },
@@ -243,7 +243,7 @@
             "type": "investigative_ua"
         },
         "deepstateua": {
-            "reliability": 85,
+            "reliability": 90,
             "bias": 2,
             "type": "telegram_ua"
         },
@@ -258,12 +258,12 @@
             "type": "newspaper_ua"
         },
         "liveuamap": {
-            "reliability": 78,
+            "reliability": 75,
             "bias": 2,
             "type": "aggregator_ua"
         },
         "crimean wind": {
-            "reliability": 75,
+            "reliability": 70,
             "bias": 3,
             "type": "telegram_local_ua"
         },
@@ -272,13 +272,13 @@
             "bias": 4,
             "type": "media_nationalist_ua"
         },
-        "sternenko": {
-            "reliability": 65,
+        "ssternenko": {
+            "reliability": 70,
             "bias": 4,
             "type": "activist_ua"
         },
         "unian": {
-            "reliability": 60,
+            "reliability": 55,
             "bias": 4,
             "type": "agency_state_ua"
         },
@@ -299,104 +299,104 @@
             "type": "military_portal_ru"
         },
         "tass": {
-            "reliability": 40,
+            "reliability": 30,
             "bias": -5,
             "type": "state_propaganda_ru"
         },
         "ria novosti": {
-            "reliability": 40,
+            "reliability": 30,
             "bias": -5,
             "type": "state_propaganda_ru"
         },
         "komsomolskaya pravda": {
-            "reliability": 35,
+            "reliability": 25,
             "bias": -4,
             "type": "tabloid_ru"
         },
         "rt": {
-            "reliability": 30,
+            "reliability": 20,
             "bias": -5,
             "type": "state_propaganda_ru"
         },
         "russia today": {
-            "reliability": 30,
+            "reliability": 20,
             "bias": -5,
             "type": "state_propaganda_ru"
         },
         "sputnik": {
-            "reliability": 30,
+            "reliability": 20,
             "bias": -5,
             "type": "state_propaganda_ru"
         },
         "intel slava": {
-            "reliability": 30,
+            "reliability": 25,
             "bias": -5,
             "type": "telegram_propaganda_ru"
         },
         "azgeopolitics": {
-            "reliability": 30,
+            "reliability": 25,
             "bias": -5,
             "type": "telegram_propaganda_ru"
         },
         "__RUSSIA_MILBLOGGERS__": "TIER C/D - Z-CHANNELS",
         "rybar": {
-            "reliability": 65,
-            "bias": -3,
+            "reliability": 60,
+            "bias": -4,
             "type": "milblogger_ru"
         },
         "lost armour": {
-            "reliability": 65,
-            "bias": -2,
+            "reliability": 80,
+            "bias": -3,
             "type": "osint_ru"
         },
         "fighterbomber": {
-            "reliability": 60,
+            "reliability": 80,
             "bias": -3,
             "type": "milblogger_ru_air"
         },
         "two majors": {
-            "reliability": 55,
+            "reliability": 60,
             "bias": -4,
             "type": "milblogger_ru"
         },
         "dva majora": {
-            "reliability": 55,
+            "reliability": 60,
             "bias": -4,
             "type": "milblogger_ru"
         },
         "grey zone": {
-            "reliability": 50,
+            "reliability": 65,
             "bias": -4,
             "type": "milblogger_ru_wagner"
         },
         "wargonzo": {
-            "reliability": 50,
+            "reliability": 30,
             "bias": -4,
             "type": "milblogger_ru"
         },
         "kotsnews": {
-            "reliability": 55,
+            "reliability": 30,
             "bias": -4,
             "type": "milblogger_ru"
         },
         "__RUSSIA_INDEPENDENT__": "TIER B - EXILE MEDIA",
         "mediazona": {
-            "reliability": 85,
-            "bias": 2,
+            "reliability": 90,
+            "bias": 1,
             "type": "independent_ru_exile"
         },
         "meduza": {
-            "reliability": 80,
-            "bias": 2,
+            "reliability": 85,
+            "bias": 1,
             "type": "independent_ru_exile"
         },
         "novaya gazeta": {
-            "reliability": 80,
+            "reliability": 82,
             "bias": 1,
             "type": "independent_ru_exile"
         },
         "the moscow times": {
-            "reliability": 75,
+            "reliability": 80,
             "bias": 1,
             "type": "independent_ru_exile"
         },
@@ -408,7 +408,7 @@
         "__ITALIAN_MEDIA__": "TIER B/C/D",
         "il post": {
             "reliability": 82,
-            "bias": 1,
+            "bias": 0,
             "type": "newspaper_it"
         },
         "il sole 24 ore": {
@@ -422,13 +422,13 @@
             "type": "agency_it"
         },
         "rainews": {
-            "reliability": 80,
-            "bias": 0,
+            "reliability": 75,
+            "bias": 1,
             "type": "broadcaster_it"
         },
         "il foglio": {
             "reliability": 75,
-            "bias": 4,
+            "bias": 2,
             "type": "newspaper_it"
         },
         "corriere della sera": {
@@ -443,22 +443,22 @@
         },
         "la stampa": {
             "reliability": 75,
-            "bias": 2,
+            "bias": 1,
             "type": "newspaper_it"
         },
         "la repubblica": {
             "reliability": 72,
-            "bias": 2,
+            "bias": 1,
             "type": "newspaper_it"
         },
         "repubblica": {
             "reliability": 72,
-            "bias": 2,
+            "bias": 1,
             "type": "newspaper_it"
         },
         "sky tg24": {
-            "reliability": 70,
-            "bias": 1,
+            "reliability": 75,
+            "bias": 0,
             "type": "broadcaster_it"
         },
         "adnkronos": {
@@ -467,23 +467,23 @@
             "type": "agency_it"
         },
         "open": {
-            "reliability": 65,
-            "bias": 2,
+            "reliability": 70,
+            "bias": 1,
             "type": "newspaper_it_online"
         },
         "fanpage": {
             "reliability": 60,
-            "bias": -1,
+            "bias": 0,
             "type": "newspaper_it_online"
         },
         "tgcom24": {
-            "reliability": 60,
-            "bias": 1,
+            "reliability": 65,
+            "bias": 0,
             "type": "broadcaster_it"
         },
         "il fatto quotidiano": {
-            "reliability": 50,
-            "bias": -4,
+            "reliability": 60,
+            "bias": -2,
             "type": "newspaper_it"
         },
         "libero": {
@@ -497,33 +497,33 @@
             "type": "newspaper_it"
         },
         "la verità": {
-            "reliability": 45,
-            "bias": -4,
+            "reliability": 50,
+            "bias": -2,
             "type": "newspaper_it"
         },
         "l'antidiplomatico": {
-            "reliability": 30,
-            "bias": -5,
+            "reliability": 20,
+            "bias": -4,
             "type": "blog_it"
         },
         "dagospia": {
-            "reliability": 40,
+            "reliability": 30,
             "bias": 0,
             "type": "tabloid_it"
         },
         "__TABLOID_AND_OTHER__": "TIER C/D",
         "bild": {
-            "reliability": 60,
-            "bias": 3,
+            "reliability": 55,
+            "bias": 2,
             "type": "tabloid_de"
         },
         "nexta": {
-            "reliability": 60,
+            "reliability": 50,
             "bias": 3,
             "type": "media_exile_by"
         },
         "visegrad24": {
-            "reliability": 55,
+            "reliability": 40,
             "bias": 4,
             "type": "aggregator_pl"
         },
@@ -543,33 +543,249 @@
             "type": "tabloid_uk"
         },
         "global times": {
-            "reliability": 40,
-            "bias": -3,
+            "reliability": 30,
+            "bias": -4,
             "type": "state_media_cn"
+        },
+        "__TELEGRAM_CHANNELS__": "SYNCED FROM fetch_telegram.py CHANNELS_METADATA (2026-05-24)",
+        "maks23_nafo": {
+            "reliability": 55,
+            "bias": 4,
+            "type": "telegram_ua_activist"
+        },
+        "tatarigami_ua": {
+            "reliability": 85,
+            "bias": 3,
+            "type": "telegram_ua_analyst"
+        },
+        "ukrliberation": {
+            "reliability": 60,
+            "bias": 3,
+            "type": "telegram_ua_news"
+        },
+        "dronebomber": {
+            "reliability": 80,
+            "bias": 3,
+            "type": "telegram_ua_news"
+        },
+        "karymat": {
+            "reliability": 85,
+            "bias": 2,
+            "type": "telegram_osint"
+        },
+        "stanislav_osman": {
+            "reliability": 70,
+            "bias": 3,
+            "type": "telegram_ua_military"
+        },
+        "officer_33": {
+            "reliability": 70,
+            "bias": 3,
+            "type": "telegram_ua_military"
+        },
+        "magyarbirds414": {
+            "reliability": 85,
+            "bias": 3,
+            "type": "telegram_ua_military"
+        },
+        "insiderukr": {
+            "reliability": 60,
+            "bias": 3,
+            "type": "telegram_aggregator_ua"
+        },
+        "serhii_flash": {
+            "reliability": 90,
+            "bias": 2,
+            "type": "telegram_ua_analyst"
+        },
+        "amk_mapping": {
+            "reliability": 70,
+            "bias": -2,
+            "type": "telegram_osint_ru"
+        },
+        "bahshiddemon": {
+            "reliability": 70,
+            "bias": 3,
+            "type": "telegram_ua_military"
+        },
+        "fighter_bomber": {
+            "reliability": 80,
+            "bias": -3,
+            "type": "telegram_milblogger_ru"
+        },
+        "strelkovii": {
+            "reliability": 65,
+            "bias": -3,
+            "type": "telegram_ru_analyst"
+        },
+        "lost_armour": {
+            "reliability": 80,
+            "bias": -3,
+            "type": "telegram_osint_ru"
+        },
+        "grey_zone": {
+            "reliability": 65,
+            "bias": -4,
+            "type": "telegram_wagner"
+        },
+        "voenkorkotenok": {
+            "reliability": 45,
+            "bias": -3,
+            "type": "telegram_reporter_ru"
+        },
+        "belarusian_silovik": {
+            "reliability": 55,
+            "bias": -5,
+            "type": "telegram_propaganda_ru"
+        },
+        "warmonitors": {
+            "reliability": 50,
+            "bias": 0,
+            "type": "telegram_aggregator"
+        },
+        "chriso_wiki": {
+            "reliability": 85,
+            "bias": 1,
+            "type": "telegram_osint"
+        },
+        "parabellumcommunity": {
+            "reliability": 90,
+            "bias": 0,
+            "type": "telegram_analyst"
+        },
+        "ukrainewarreports": {
+            "reliability": 70,
+            "bias": 3,
+            "type": "telegram_ua_news"
+        },
+        "myro_shnykov": {
+            "reliability": 75,
+            "bias": 3,
+            "type": "telegram_ua_news"
+        },
+        "spravdi": {
+            "reliability": 60,
+            "bias": 5,
+            "type": "telegram_state_media_ua"
+        },
+        "clement_molin": {
+            "reliability": 95,
+            "bias": 0,
+            "type": "telegram_osint"
+        },
+        "war_mapper": {
+            "reliability": 85,
+            "bias": 0,
+            "type": "telegram_osint"
+        },
+        "supernova_plus": {
+            "reliability": 75,
+            "bias": 3,
+            "type": "telegram_aggregator_ua"
+        },
+        "dva_majors": {
+            "reliability": 60,
+            "bias": -4,
+            "type": "telegram_milblogger_ru"
+        },
+        "astrapress": {
+            "reliability": 85,
+            "bias": 0,
+            "type": "telegram_journalist"
+        },
+        "sashakots": {
+            "reliability": 30,
+            "bias": -5,
+            "type": "telegram_propaganda_ru"
+        },
+        "ab3army": {
+            "reliability": 85,
+            "bias": 4,
+            "type": "telegram_military_official_ua"
+        },
+        "sladkov_plus": {
+            "reliability": 30,
+            "bias": -5,
+            "type": "telegram_propaganda_ru"
+        },
+        "lachentyt": {
+            "reliability": 65,
+            "bias": 4,
+            "type": "telegram_ua_activist"
+        },
+        "butusovplus": {
+            "reliability": 80,
+            "bias": 3,
+            "type": "telegram_journalist_ua"
+        },
+        "moscowcalling": {
+            "reliability": 75,
+            "bias": 0,
+            "type": "telegram_osint"
+        },
+        "brygada47": {
+            "reliability": 85,
+            "bias": 4,
+            "type": "telegram_military_official_ua"
+        },
+        "rusich_army": {
+            "reliability": 60,
+            "bias": -4,
+            "type": "telegram_paramilitary_ru"
+        },
+        "kherson_non_fake": {
+            "reliability": 75,
+            "bias": 2,
+            "type": "telegram_osint_ua"
+        },
+        "vysokygovorit": {
+            "reliability": 60,
+            "bias": -3,
+            "type": "telegram_milblogger_ru"
+        },
+        "exilenova_plus": {
+            "reliability": 75,
+            "bias": 2,
+            "type": "telegram_osint_ua"
+        },
+        "citeam": {
+            "reliability": 90,
+            "bias": 0,
+            "type": "telegram_osint"
+        },
+        "batalyon_monaco": {
+            "reliability": 40,
+            "bias": 3,
+            "type": "telegram_meme_political"
+        },
+        "z_komitet": {
+            "reliability": 40,
+            "bias": -4,
+            "type": "telegram_milblogger_ru"
         },
         "__SOCIAL_GENERIC__": "TIER D",
         "twitter": {
-            "reliability": 45,
-            "bias": 0,
-            "type": "social"
-        },
-        "x.com": {
-            "reliability": 45,
-            "bias": 0,
-            "type": "social"
-        },
-        "telegram": {
-            "reliability": 45,
-            "bias": 0,
-            "type": "social"
-        },
-        "facebook": {
             "reliability": 30,
             "bias": 0,
             "type": "social"
         },
-        "tiktok": {
+        "x.com": {
+            "reliability": 30,
+            "bias": 0,
+            "type": "social"
+        },
+        "telegram": {
+            "reliability": 40,
+            "bias": 0,
+            "type": "social"
+        },
+        "facebook": {
             "reliability": 20,
+            "bias": 0,
+            "type": "social"
+        },
+        "tiktok": {
+            "reliability": 10,
             "bias": 0,
             "type": "social"
         },

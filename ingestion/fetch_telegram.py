@@ -77,6 +77,11 @@ CHANNELS_METADATA = {
     'UkraineWarReports': {'bias': 'PRO_UA', 'reliability': 0.70, 'type': 'UA_NEWS'},
     'myro_shnykov': {'bias': 'PRO_UA', 'reliability': 0.75, 'type': 'UA_NEWS'},
     'spravdi': {'bias': 'PRO_UA', 'reliability': 0.70, 'type': 'UA_MILITARY'},
+    'clement_molin':{'bias': 'NEUTRAL', 'reliability': 0.95, 'type': 'OSINT'},
+    'war_mapper':{'bias': 'NEUTRAL', 'reliability': 0.80, 'type': 'OSINT'},
+    'Kanal_Mriya':{'bias': 'PRO_RU', 'reliability': 0.40, 'type': 'MILBLOGGER'},
+    'Mriya_TG':{'bias': 'PRO_RU', 'reliability': 0.40, 'type': 'MILBLOGGER'},
+
 
 
     # NEW_CHANNELS
