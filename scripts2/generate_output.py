@@ -463,6 +463,52 @@ def get_marker_style(tie_score, effect_score):
     return radius, color
 
 
+def save_media_frame(event_id, frame_id, base64_str):
+    """
+    Decodes a base64 data URI or raw base64 string, saves it to 
+    assets/data/media/{event_id}_{frame_id}.{ext}, and returns the 
+    relative path for referencing in index.html.
+    """
+    if not base64_str or not isinstance(base64_str, str):
+        return ""
+    
+    # Check if it starts with the data URI prefix
+    if base64_str.startswith("data:image/"):
+        try:
+            header, raw_b64 = base64_str.split(";base64,", 1)
+            ext = header.split("image/", 1)[1]
+            if ext == "jpeg":
+                ext = "jpg"
+        except Exception:
+            return ""
+    else:
+        # Fallback to jpg for raw base64
+        raw_b64 = base64_str
+        ext = "jpg"
+        
+    import base64
+    try:
+        img_data = base64.b64decode(raw_b64)
+    except Exception as e:
+        print(f"[WARN] Failed to decode base64 for event {event_id} frame {frame_id}: {e}")
+        return ""
+        
+    media_dir = os.path.abspath(os.path.join(BASE_DIR, '../assets/data/media'))
+    os.makedirs(media_dir, exist_ok=True)
+    
+    filename = f"{event_id}_{frame_id}.{ext}"
+    filepath = os.path.join(media_dir, filename)
+    
+    try:
+        if not os.path.exists(filepath):
+            with open(filepath, "wb") as f:
+                f.write(img_data)
+        return f"assets/data/media/{filename}"
+    except Exception as e:
+        print(f"[WARN] Failed to save frame image to {filepath}: {e}")
+        return ""
+
+
 def classify_sector(lat, lon, target_type):
     """
     Classify event into strategic sector based on geography and target.
@@ -1112,12 +1158,15 @@ def main():
                     analyzed_frames = visionary_report.get('analyzed_frames', [])
                     v_status = visionary_report.get('visual_confirmation', {}).get('verification_status', '')
                     for af in analyzed_frames:
+                        frame_id = af.get('frame_id', 0)
+                        b64 = af.get('base64_data', '')
+                        img_path = save_media_frame(event_id, frame_id, b64) if b64 else ""
                         visual_analysis.append({
-                            "frame_id": af.get('frame_id', 0),
+                            "frame_id": frame_id,
                             "confidence": af.get('confidence', 0),
                             "selection_reason": af.get('selection_reason', ''),
                             "explanation": af.get('explanation', ''),
-                            "base64_data": af.get('base64_data', ''),
+                            "base64_data": img_path,
                             "verification_status": v_status
                         })
             

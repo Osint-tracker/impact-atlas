@@ -50,7 +50,7 @@ async def main():
 
     # Timezone Aware (UTC)
     start_dt = datetime(2026, 5, 13, 0, 0, 0, tzinfo=timezone.utc)
-    end_dt = datetime(2026, 5, 30, 0, 0, 0, tzinfo=timezone.utc)
+    end_dt = datetime(2026, 6, 30, 0, 0, 0, tzinfo=timezone.utc)
 
     # GDELT date strings
     gdelt_start = start_dt.strftime("%Y%m%d%H%M%S")

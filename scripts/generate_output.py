@@ -1,7 +1,9 @@
 """
-Generate Output Script (v2.0 - Column-Based)
+Generate Output Script (v2.1 - Optimized)
 Exports events from SQLite to GeoJSON and CSV.
 Reads directly from dedicated columns for reliability.
+Performance: orjson, pre-compiled regex, parallel DB queries,
+             ORBAT HashMap indexing, single-pass JSON parse.
 """
 import sqlite3
 import json
@@ -9,8 +11,18 @@ import os
 import csv
 import sys
 import re
+import hashlib
+from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlparse
 from dotenv import load_dotenv
+
+try:
+    import orjson
+    def _fast_json_loads(s):
+        return orjson.loads(s)
+except ImportError:
+    def _fast_json_loads(s):
+        return json.loads(s)
 
 from campaigns_engine import (
     build_campaign_reports,
@@ -43,6 +55,17 @@ CAMPAIGN_REPORTS_PATH = os.path.join(BASE_DIR, '../assets/data/campaign_reports.
 CAMPAIGNS_GEO_PATH = os.path.join(BASE_DIR, '../assets/data/campaigns_geo.json')
 
 import datetime as _dt
+
+# Pre-compiled regex patterns (avoid re-compilation in hot loops)
+_ASSET_RE = re.compile(
+    r'\b(T-(?:72|80|90|64|55)[A-Z0-9]*|BMP-[123][A-Z]*|BTR-[0-9]+[A-Z]*|'
+    r'2S(?:1|3|5|7|19|35)[A-Z\- ]*|HIMARS|GMLRS|M270|M142|Grad|Smerch|Uragan|'
+    r'TOS-1[A]?|S-[234]00[A-Z0-9]*|Buk[- ]?[A-Z0-9]*|Patriot|NASAMS|IRIS-T|Gepard|'
+    r'Iskander[- ]?[MK]?|Kalibr|Kinzhal|Shahed[- ]?1[0-9]{2}|Lancet[- ]?[0-9]*|'
+    r'FPV|Orlan[- ]?10|Ka-52|Su-[0-9]+[A-Z]*|Leopard[- ]?[12][A-Z0-9]*|Bradley|'
+    r'CV90|CAESAR|PzH[- ]?2000|Krab|M777|Storm Shadow|ATACMS|Javelin|NLAW|'
+    r'Stugna[- ]?P?|Kornet)\b', re.IGNORECASE)
+_ALPHANUM_RE = re.compile(r'^[A-Za-z0-9_]+$')
 
 load_dotenv()
 
@@ -301,12 +324,11 @@ def parse_sources_to_list(sources_str):
                 except: domain = "Source"
                 result.append({"name": domain, "url": url})
         else:
-            import re as _re
             if item == 'GDELT_Network': result.append({"name": "GDELT", "url": "#"})
             elif '.' in item and not item.startswith('@'):
                 url = f"https://{item}" if not item.startswith('http') else item
                 result.append({"name": item, "url": url})
-            elif _re.match(r'^[A-Za-z0-9_]+$', item): result.append({"name": item, "url": f"https://t.me/{item}"})
+            elif _ALPHANUM_RE.match(item): result.append({"name": item, "url": f"https://t.me/{item}"})
     seen_names = {}
     unique_result = []
     for r in result:
@@ -327,8 +349,49 @@ def load_orbat_data():
     return []
 
 
-def enrich_units(ai_units, orbat_data):
+def build_orbat_index(orbat_data):
+    """Pre-build HashMap for O(1) ORBAT lookups instead of O(n*m) per-event."""
+    index = {}  # (faction_upper, name_lower) -> orbat_entry
+    for ob in (orbat_data or []):
+        faction = (ob.get('faction') or '').upper()
+        ob_name = (ob.get('unit_name') or '').lower()
+        if ob_name:
+            index[(faction, ob_name)] = ob
+    return index
+
+
+def enrich_units(ai_units, orbat_data, orbat_index=None):
     if not ai_units or not orbat_data: return ai_units
+    # Fast path: use pre-built index
+    if orbat_index is not None:
+        for u in ai_units:
+            u_name = (u.get('unit_name') or '').lower()
+            u_id = (u.get('unit_id') or '').lower()
+            u_faction = (u.get('faction') or 'UNKNOWN').upper()
+            best_match, best_score = None, 0
+            # Exact match first (O(1) lookup)
+            for candidate in (u_name, u_id):
+                if candidate:
+                    ob = orbat_index.get((u_faction, candidate))
+                    if ob:
+                        best_match, best_score = ob, 100
+                        break
+            # Substring match only if no exact match (fallback to scan)
+            if best_score < 80:
+                for (fac, ob_name), ob in orbat_index.items():
+                    if fac != u_faction: continue
+                    if ob_name in u_name or ob_name in u_id:
+                        best_match, best_score = ob, 80
+                        break
+            if best_match and best_score >= 80:
+                u['orbat_id'] = best_match.get('orbat_id')
+                ob_name = best_match.get('unit_name') or best_match.get('full_name_en')
+                if ob_name: u['display_name'] = ob_name
+                for k in ['echelon', 'echelon_symbol', 'type', 'branch', 'sub_branch', 'garrison', 'district', 'commander', 'superior']:
+                    u[k] = best_match.get(k)
+                best_match['_used'] = True
+        return ai_units
+    # Legacy fallback (original O(n*m) behavior)
     for u in ai_units:
         best_match, best_score = None, 0
         u_name = (u.get('unit_name') or '').lower()
@@ -359,6 +422,52 @@ def get_marker_style(tie_score, effect_score):
     return radius, color
 
 
+def save_media_frame(event_id, frame_id, base64_str):
+    """
+    Decodes a base64 data URI or raw base64 string, saves it to 
+    assets/data/media/{event_id}_{frame_id}.{ext}, and returns the 
+    relative path for referencing in index.html.
+    """
+    if not base64_str or not isinstance(base64_str, str):
+        return ""
+    
+    # Check if it starts with the data URI prefix
+    if base64_str.startswith("data:image/"):
+        try:
+            header, raw_b64 = base64_str.split(";base64,", 1)
+            ext = header.split("image/", 1)[1]
+            if ext == "jpeg":
+                ext = "jpg"
+        except Exception:
+            return ""
+    else:
+        # Fallback to jpg for raw base64
+        raw_b64 = base64_str
+        ext = "jpg"
+        
+    import base64
+    try:
+        img_data = base64.b64decode(raw_b64)
+    except Exception as e:
+        print(f"[WARN] Failed to decode base64 for event {event_id} frame {frame_id}: {e}")
+        return ""
+        
+    media_dir = os.path.abspath(os.path.join(BASE_DIR, '../assets/data/media'))
+    os.makedirs(media_dir, exist_ok=True)
+    
+    filename = f"{event_id}_{frame_id}.{ext}"
+    filepath = os.path.join(media_dir, filename)
+    
+    try:
+        if not os.path.exists(filepath):
+            with open(filepath, "wb") as f:
+                f.write(img_data)
+        return f"assets/data/media/{filename}"
+    except Exception as e:
+        print(f"[WARN] Failed to save frame image to {filepath}: {e}")
+        return ""
+
+
 def classify_sector(lat, lon, target_type):
     target_type_lower = (target_type or '').lower()
     energy_keywords = ['power', 'grid', 'dam', 'plant', 'refinery', 'substation', 'transformer', 'energy']
@@ -374,7 +483,6 @@ def classify_sector(lat, lon, target_type):
 
 
 def update_unit_stats(stats_acc, unit, event_data):
-    import re as _re_local
     key = str(unit.get('orbat_id') or unit.get('unit_id') or unit.get('unit_name') or 'UNKNOWN').lower()
     if key not in stats_acc:
         stats_acc[key] = {"engagement_count": 0, "last_active": "2000-01-01", "total_tie": 0, "tactics_hist": {}, "roles_hist": {}, "orbat_id": unit.get('orbat_id'), "tie_vectors": [], "assets_set": set(), "daily_dates": [], "recent_events": []}
@@ -393,7 +501,6 @@ def update_unit_stats(stats_acc, unit, event_data):
             atype = a.get('type', '') if isinstance(a, dict) else str(a)
             if atype and atype not in ('UNKNOWN_ARMOR', 'UNKNOWN_VEHICLE', 'UNKNOWN_SYSTEM', 'UNKNOWN_AIRCRAFT'): entry["assets_set"].add(atype)
     else:
-        _ASSET_RE = _re_local.compile(r'\b(T-(?:72|80|90|64|55)[A-Z0-9]*|BMP-[123][A-Z]*|BTR-[0-9]+[A-Z]*|2S(?:1|3|5|7|19|35)[A-Z\- ]*|HIMARS|GMLRS|M270|M142|Grad|Smerch|Uragan|TOS-1[A]?|S-[234]00[A-Z0-9]*|Buk[- ]?[A-Z0-9]*|Patriot|NASAMS|IRIS-T|Gepard|Iskander[- ]?[MK]?|Kalibr|Kinzhal|Shahed[- ]?1[0-9]{2}|Lancet[- ]?[0-9]*|FPV|Orlan[- ]?10|Ka-52|Su-[0-9]+[A-Z]*|Leopard[- ]?[12][A-Z0-9]*|Bradley|CV90|CAESAR|PzH[- ]?2000|Krab|M777|Storm Shadow|ATACMS|Javelin|NLAW|Stugna[- ]?P?|Kornet)\b', _re_local.IGNORECASE)
         text_blob = f"{event_data.get('title', '')} {event_data.get('description', '')}"
         for m in _ASSET_RE.findall(text_blob): entry["assets_set"].add(m.strip())
     if evt_date and evt_date != '2000-01-01': entry["daily_dates"].append(evt_date[:10])
@@ -401,7 +508,7 @@ def update_unit_stats(stats_acc, unit, event_data):
 
 
 def _build_dossier_fields(stats_entry):
-    import datetime as _dt_local
+    _dt_local = _dt  # use module-level import
     result = {}
     vecs = stats_entry.get('tie_vectors', [])
     if vecs:
@@ -428,8 +535,9 @@ def _build_dossier_fields(stats_entry):
     return result
 
 
-def enrich_units_with_casualties(units_list):
-    if not os.path.exists(IMPACT_ATLAS_DB_PATH): return units_list
+def preload_casualties_index():
+    """Pre-load UALosses casualty counts once, return dict {unit_raw_lower: count}."""
+    if not os.path.exists(IMPACT_ATLAS_DB_PATH): return {}
     try:
         conn = sqlite3.connect(IMPACT_ATLAS_DB_PATH)
         conn.row_factory = sqlite3.Row
@@ -440,16 +548,27 @@ def enrich_units_with_casualties(units_list):
         casualties_by_unit_raw = {}
         for row in rows:
             try:
-                data = json.loads(row['raw_data'])
+                data = _fast_json_loads(row['raw_data'])
                 unit_raw = (data.get('unit_raw') or '').strip().lower()
                 if unit_raw: casualties_by_unit_raw[unit_raw] = casualties_by_unit_raw.get(unit_raw, 0) + 1
             except: pass
+        return casualties_by_unit_raw
+    except Exception as e:
+        print(f"[ERR] Failed to preload casualties: {e}")
+        return {}
+
+
+def enrich_units_with_casualties(units_list, casualties_index=None):
+    if casualties_index is None:
+        casualties_index = preload_casualties_index()
+    if not casualties_index: return units_list
+    try:
         for unit in units_list:
             if (unit.get('faction') or '').upper() != 'UA': continue
             display_name = (unit.get('display_name') or '').strip().lower()
             unit_id = (unit.get('unit_id') or '').replace('UA_', '').replace('_', ' ').lower()
             best_count = 0
-            for unit_key, cas_count in casualties_by_unit_raw.items():
+            for unit_key, cas_count in casualties_index.items():
                 if (display_name and (display_name in unit_key or unit_key in display_name)) or (unit_id and (unit_id in unit_key or unit_key in unit_id)):
                     if cas_count > best_count: best_count = cas_count
             if best_count > 0:
@@ -471,7 +590,7 @@ def export_equipment_losses():
         losses = []
         for row in rows:
             try:
-                data = json.loads(row['raw_data'])
+                data = _fast_json_loads(row['raw_data'])
                 source = row['source']
                 if source == 'Oryx':
                     loss = {"date": row['date'] or 'Unknown', "model": data.get('entry', 'Unknown'), "type": data.get('category', 'Vehicle'), "country": "RUS", "status": data.get('status', 'Verified Loss'), "proof_url": 'https://www.oryxspioenkop.com/2022/02/attack-on-europe-documenting-equipment.html', "source_tag": "Oryx"}
@@ -485,7 +604,7 @@ def export_equipment_losses():
     except: pass
 
 
-def export_units(unit_stats=None, orbat_data=None):
+def export_units(unit_stats=None, orbat_data=None, casualties_index=None):
     try:
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
@@ -520,14 +639,42 @@ def export_units(unit_stats=None, orbat_data=None):
                 if not ob.get('_used'):
                     new_u = {"unit_id": ob.get('orbat_id') or ob.get('unit_name'), "display_name": ob.get('unit_name'), "faction": ob.get('faction'), "type": ob.get('type') or 'UNKNOWN', "echelon": ob.get('echelon'), "branch": ob.get('branch'), "sub_branch": ob.get('sub_branch'), "garrison": ob.get('garrison'), "district": ob.get('district'), "commander": ob.get('commander'), "superior": ob.get('superior'), "last_seen_lat": ob.get('lat'), "last_seen_lon": ob.get('lon'), "last_seen_date": ob.get('updated_at'), "status": "ACTIVE", "source": "PARABELLUM", "engagement_count": 0, "avg_tie": 0}
                     if new_u['last_seen_lat'] and new_u['last_seen_lon']: units.append(new_u)
-        units = enrich_units_with_casualties(units)
+        units = enrich_units_with_casualties(units, casualties_index)
         units = sanitize_public_object(units)
         with open(UNITS_JSON_PATH, 'w', encoding='utf-8') as f: json.dump(units, f, indent=2, ensure_ascii=False)
         conn.close()
     except Exception as e: print(f"[ERR] Failed to export units: {e}")
 
 
+def _fetch_tg_deeplinks(db_path):
+    """Fetch TG deep-links in a separate thread (parallel with main query)."""
+    tg_deeplinks = {}
+    try:
+        tg_conn = sqlite3.connect(db_path)
+        tg_conn.row_factory = sqlite3.Row
+        tg_cursor = tg_conn.cursor()
+        tg_cursor.execute("""
+            SELECT cluster_id, url 
+            FROM raw_signals 
+            WHERE url LIKE '%t.me/%/%' AND cluster_id IS NOT NULL
+        """)
+        for sig in tg_cursor.fetchall():
+            cid, url = sig['cluster_id'], sig['url']
+            if not cid or not url: continue
+            try:
+                channel = url.split('t.me/')[1].split('/')[0]
+                if cid not in tg_deeplinks: tg_deeplinks[cid] = {}
+                tg_deeplinks[cid][channel] = url
+            except: continue
+        tg_conn.close()
+    except Exception as e:
+        print(f"[WARN] Could not build deep-link lookup: {e}")
+    return tg_deeplinks
+
+
 def main():
+    import time as _time
+    _t0 = _time.perf_counter()
     print("[DB] Connecting to database...")
     
     if not os.path.exists(DB_PATH):
@@ -542,9 +689,15 @@ def main():
     ensure_sources_reputation_schema(conn)
     apply_reputation_decay(conn)
     
-    # Load ORBAT Data
+    # Load ORBAT Data + pre-build index
     orbat_data = load_orbat_data()
-    print(f"[INFO] Loaded {len(orbat_data)} ORBAT units for enrichment.")
+    orbat_index = build_orbat_index(orbat_data)
+    print(f"[INFO] Loaded {len(orbat_data)} ORBAT units for enrichment (indexed).")
+    sys.stdout.flush()
+
+    # Pre-load casualty data once
+    casualties_index = preload_casualties_index()
+    print(f"[INFO] Pre-loaded {len(casualties_index)} casualty unit entries.")
     sys.stdout.flush()
 
     campaign_definitions = load_campaign_definitions(
@@ -556,59 +709,46 @@ def main():
     print(f"[INFO] Loaded {len(campaign_definitions)} campaign definitions.")
     sys.stdout.flush()
     
-    # Query ALL columns directly
-    cursor.execute("""
-        SELECT 
-            event_id,
-            last_seen_date,
-            title,
-            description,
-            tie_score,
-            tie_status,
-            kinetic_score,
-            target_score,
-            effect_score,
-            reliability,
-            bias_score,
-            ai_summary,
-            has_video,
-            urls_list,
-            sources_list,
-            ai_report_json,
-            operational_sector,
-            image_phash,
-            source_reputation_score,
-            ai_analysis_status,
-            campaign_id,
-            campaign_match_meta,
-            campaign_tagged_at
-        FROM unique_events 
-        WHERE ai_analysis_status = 'COMPLETED'
-    """)
-    
-    rows = cursor.fetchall()
-    
-    # Pre-build lookup: event_id → actual Telegram deep links from raw_signals
-    tg_deeplinks = {}
-    try:
+    # PARALLEL: Launch TG deep-link query in background thread while main query runs
+    _t_db = _time.perf_counter()
+    with ThreadPoolExecutor(max_workers=1) as tg_pool:
+        tg_future = tg_pool.submit(_fetch_tg_deeplinks, DB_PATH)
+        
+        # Main query runs in main thread simultaneously
         cursor.execute("""
-            SELECT cluster_id, url 
-            FROM raw_signals 
-            WHERE url LIKE '%t.me/%/%' AND cluster_id IS NOT NULL
+            SELECT 
+                event_id,
+                last_seen_date,
+                title,
+                description,
+                tie_score,
+                tie_status,
+                kinetic_score,
+                target_score,
+                effect_score,
+                reliability,
+                bias_score,
+                ai_summary,
+                has_video,
+                urls_list,
+                sources_list,
+                ai_report_json,
+                operational_sector,
+                image_phash,
+                source_reputation_score,
+                ai_analysis_status,
+                campaign_id,
+                campaign_match_meta,
+                campaign_tagged_at
+            FROM unique_events 
+            WHERE ai_analysis_status = 'COMPLETED'
         """)
-        for sig in cursor.fetchall():
-            cid, url = sig['cluster_id'], sig['url']
-            if not cid or not url: continue
-            try:
-                channel = url.split('t.me/')[1].split('/')[0]
-                if cid not in tg_deeplinks: tg_deeplinks[cid] = {}
-                tg_deeplinks[cid][channel] = url
-            except: continue
-        print(f"[INFO] Built Telegram deep-link lookup: {len(tg_deeplinks)} events")
-    except Exception as e:
-        print(f"[WARN] Could not build deep-link lookup: {e}")
+        rows = cursor.fetchall()
+        
+        # Wait for TG deep-links (should be done or nearly done)
+        tg_deeplinks = tg_future.result()
     
-    print(f"[INFO] Found {len(rows)} completed events")
+    print(f"[INFO] Found {len(rows)} completed events, {len(tg_deeplinks)} TG deep-links  (DB: {(_time.perf_counter()-_t_db)*1000:.0f}ms)")
     
     # 3. AI Triage Accumulator
     unit_stats_acc = {}
@@ -620,19 +760,18 @@ def main():
     opsec_withheld_count = 0
     csv_headers = ["ID", "Date", "Title", "Lat", "Lon", "TIE", "K", "T", "E", "Reliability", "Bias", "HasVideo", "Sources"]
     
+    _t_loop = _time.perf_counter()
     for db_row in rows:
         try:
             row = dict(db_row)
-            ai_data = {}
+            # SINGLE-PASS JSON parse (was parsed twice before)
+            ai_data = _fast_json_loads(row['ai_report_json']) if row.get('ai_report_json') else {}
 
             event_id = row['event_id']
             date = row['last_seen_date']
             if not date or str(date).lower() in ['none', 'nat', 'null', '']:
-                if row.get('ai_report_json'):
-                    try:
-                        ai_data = json.loads(row['ai_report_json'])
-                        date = (ai_data.get('timestamp_generated') or '')[:10]
-                    except: pass
+                if ai_data:
+                    date = (ai_data.get('timestamp_generated') or '')[:10]
                 if not date: date = 'Unknown'
             
             title = row.get('title') or ''
@@ -678,11 +817,10 @@ def main():
                         if channel in event_deeplinks and (not '/' in url.split('t.me/' + channel)[-1]):
                             s['url'] = event_deeplinks[channel]
 
-            # Coordinate & Metadata Recovery
+            # Coordinate & Metadata Recovery (uses pre-parsed ai_data)
             lat, lon = None, None
-            if row.get('ai_report_json'):
+            if ai_data:
                 try:
-                    if not ai_data: ai_data = json.loads(row['ai_report_json'])
                     tactics = ai_data.get('tactics') or {}
                     geo = (tactics.get('geo_location') or {}).get('explicit') or {}
                     lat, lon = geo.get('lat'), geo.get('lon')
@@ -709,12 +847,15 @@ def main():
                     v_status = (visionary_report.get('visual_confirmation') or {}).get('verification_status', '')
                     for af in analyzed_frames:
                         if not isinstance(af, dict): continue
+                        frame_id = af.get('frame_id', 0)
+                        b64 = af.get('base64_data', '')
+                        img_path = save_media_frame(event_id, frame_id, b64) if b64 else ""
                         visual_analysis.append({
-                            "frame_id": af.get('frame_id', 0),
+                            "frame_id": frame_id,
                             "confidence": af.get('confidence', 0),
                             "selection_reason": af.get('selection_reason', ''),
                             "explanation": af.get('explanation', ''),
-                            "base64_data": af.get('base64_data', ''),
+                            "base64_data": img_path,
                             "verification_status": v_status
                         })
             
@@ -731,7 +872,6 @@ def main():
             # Geo Jitter Fallback for IMINT-only events
             if not lat or not lon or float(lat) == 0 or float(lon) == 0:
                 if visual_analysis:
-                    import hashlib
                     h1 = int(hashlib.md5(event_id.encode('utf-8')).hexdigest()[:8], 16)
                     h2 = int(hashlib.md5(event_id.encode('utf-8')[::-1]).hexdigest()[:8], 16)
                     lat = 48.3 + (h1 % 1000) / 400.0  # Jitter around Central Ukraine
@@ -741,7 +881,7 @@ def main():
             # Final marker styles
             radius, color = get_marker_style(tie_score, e_score)
             raw_units = (ai_data.get('tactics') or {}).get('military_units_detected', []) if ai_data else []
-            enriched_units = enrich_units(raw_units, orbat_data)
+            enriched_units = enrich_units(raw_units, orbat_data, orbat_index)
             
             campaign_id = (row.get('campaign_id') or '').strip().lower() or None
             campaign_info = campaign_index.get(campaign_id) if campaign_id else None
@@ -783,8 +923,10 @@ def main():
             continue
     
     conn.close()
+    print(f"[PERF] Event loop: {(_time.perf_counter()-_t_loop)*1000:.0f}ms ({len(geojson_features)} features, {opsec_withheld_count} withheld)")
     
     # Save outputs
+    _t_out = _time.perf_counter()
     os.makedirs(os.path.dirname(GEOJSON_PATH), exist_ok=True)
     with open(GEOJSON_PATH, 'w', encoding='utf-8') as f:
         json.dump(build_public_payload(geojson_features, generated_at, opsec_withheld_count), f, indent=2, ensure_ascii=False)
@@ -798,8 +940,10 @@ def main():
         writer.writeheader()
         writer.writerows(csv_rows)
     
-    export_units(unit_stats_acc, orbat_data)
+    export_units(unit_stats_acc, orbat_data, casualties_index)
     export_equipment_losses()
+    print(f"[PERF] Output writes + campaigns: {(_time.perf_counter()-_t_out)*1000:.0f}ms")
+    print(f"[PERF] Total execution: {(_time.perf_counter()-_t0)*1000:.0f}ms")
     print('Export complete.')
 
 

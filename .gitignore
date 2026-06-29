@@ -38,6 +38,9 @@ ualosses_complete_dump.csv
 __pycache__/
 *.py[cod]
 venv/
+.venv/
+.venv_corrupt/
+.venv_old_314/
 env/
 .env
 .vscode/

@@ -566,6 +566,58 @@ body {
     color: var(--text-muted);
 }
 
+.btn-sm:disabled,
+.btn-sm.is-disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    filter: grayscale(0.4);
+}
+
+.briefing-empty-text {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.briefing-empty-row {
+    padding: 20px;
+    color: #64748b;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+
+@media print {
+    body.print-briefing-only {
+        display: block;
+        padding: 0;
+        background: #0f172a;
+    }
+
+    body.print-briefing-only * {
+        visibility: hidden;
+    }
+
+    body.print-briefing-only .report-container,
+    body.print-briefing-only .report-container * {
+        visibility: visible;
+    }
+
+    body.print-briefing-only .report-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        max-width: none;
+        padding: 24px;
+    }
+
+    body.print-briefing-only .map-actions,
+    body.print-briefing-only .user-profile {
+        display: none !important;
+    }
+}
+
 /* Visualization Points */
 .point {
     position: absolute;

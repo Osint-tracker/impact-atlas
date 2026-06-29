@@ -4,6 +4,7 @@ import json
 import os
 import re
 import sqlite3
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 from urllib.parse import quote
@@ -365,8 +366,10 @@ def build_campaign_reports(
             continue
         by_campaign.setdefault(campaign_id, []).append(feature)
 
+    # Collect all LLM tasks, then execute in parallel
     report_items = []
-    for campaign in campaigns:
+    llm_tasks = []
+    for idx, campaign in enumerate(campaigns):
         cid = campaign["campaign_id"]
         entries = by_campaign.get(cid, [])
 
@@ -402,22 +405,6 @@ def build_campaign_reports(
 
         sparkline_values = [round(daily_vec_e_map[d], 2) for d in sparkline_dates]
 
-        brief_text = _maybe_generate_llm_brief(
-            campaign_name=campaign["name"],
-            status=status,
-            total_events=len(parsed_rows),
-            weekly_tie_cumulative=weekly_tie_cumulative,
-            sum_vec_e=sum_vec_e,
-        )
-        if not brief_text:
-            brief_text = _build_fallback_brief(
-                name=campaign["name"],
-                weekly_tie=weekly_tie_cumulative,
-                sum_vec_e=sum_vec_e,
-                status=status,
-                total_events=len(parsed_rows),
-            )
-
         report_items.append(
             {
                 "campaign_id": cid,
@@ -432,9 +419,47 @@ def build_campaign_reports(
                     "dates": sparkline_dates,
                     "values": sparkline_values,
                 },
-                "brief_text": brief_text,
+                "brief_text": "",  # placeholder, filled by LLM or fallback
             }
         )
+
+        llm_tasks.append((
+            idx,
+            campaign["name"],
+            status,
+            len(parsed_rows),
+            weekly_tie_cumulative,
+            sum_vec_e,
+        ))
+
+    # Execute LLM briefs in parallel (5 concurrent requests)
+    def _generate_brief(task):
+        idx, name, status, total_events, weekly_tie, sum_e = task
+        brief = _maybe_generate_llm_brief(
+            campaign_name=name,
+            status=status,
+            total_events=total_events,
+            weekly_tie_cumulative=weekly_tie,
+            sum_vec_e=sum_e,
+        )
+        if not brief:
+            brief = _build_fallback_brief(
+                name=name,
+                weekly_tie=weekly_tie,
+                sum_vec_e=sum_e,
+                status=status,
+                total_events=total_events,
+            )
+        return idx, brief
+
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        futures = [pool.submit(_generate_brief, task) for task in llm_tasks]
+        for future in as_completed(futures):
+            try:
+                idx, brief = future.result()
+                report_items[idx]["brief_text"] = brief
+            except Exception:
+                pass
 
     payload = {
         "generated_at": now_utc.isoformat(),

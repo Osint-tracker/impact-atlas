@@ -159,7 +159,7 @@
                     <i class="fa-solid fa-ellipsis"></i>
                 </div>
 
-                <div class="alerts-list">
+                <div class="alerts-list" id="topAlertsList">
                     <div style="padding:20px; color:#64748b;">No high-priority alerts for this period.</div>
                 </div>
             </section>
@@ -169,14 +169,9 @@
                 <div class="outlook-content">
                     <div class="outlook-text">
                         <h3>STRATEGIC OUTLOOK</h3>
-                        <p>
-                        <p><b>Strategic Outlook</b>: Over the next 24-48 hours, it is crucial to focus on enhancing
-                            intelligence collection efforts, particularly in the identified active sector which
-                            currently remains UNKNOWN. Units should prepare for possible escalation points by increasing
-                            readiness levels and conducting preemptive reconnaissance missions. Special attention should
-                            be given to cyber and electronic warfare fronts, as these could be the new theaters for
-                            adversarial engagements amidst the current operational silence.</p>
-                        </p>
+                        <div id="strategicOutlookText">
+                            <p>INSUFFICIENT KINETIC DATA TO GENERATE OUTLOOK.</p>
+                        </div>
                     </div>
                     <div class="outlook-map">
                         <!-- Placeholder for Map Visualization -->
@@ -204,8 +199,9 @@
                             </div>
                         </div>
                         <div class="map-actions">
-                            <button class="btn-sm">GENERATE DETAILED REPORT</button>
-                            <button class="btn-sm outline">SHARE WITH COMMAND</button>
+                            <button class="btn-sm" id="generateDetailedReportBtn" type="button">GENERATE DETAILED REPORT</button>
+                            <button class="btn-sm outline" id="downloadTextBtn" type="button">DOWNLOAD RAW TEXT</button>
+                            <button class="btn-sm outline" id="downloadPdfBtn" type="button">PRINT / PDF</button>
                         </div>
                     </div>
                 </div>
