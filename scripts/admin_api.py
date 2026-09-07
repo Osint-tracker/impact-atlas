@@ -1,44 +1,65 @@
-"""
-IMPACT ATLAS — Admin Manual Merge API
+﻿"""
+IMPACT ATLAS â€” Admin Manual Merge API
 Lightweight HTTP server for browsing events and manually merging duplicates.
 Uses the same merge protocol as smart_fusion.py.
 
 Usage: python -u scripts/admin_api.py
-Then open http://localhost:8787/admin_merge.html in your browser.
+Then open http://localhost:8800/admin_merge.html in your browser.
 """
 
-import sqlite3
+from __future__ import annotations
+
+import contextlib
 import json
-import os
-import sys
+import logging
 import mimetypes
+import sqlite3
+import sys
+import uuid
+from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from typing import Any
 from urllib.parse import urlparse, parse_qs, unquote
-from datetime import datetime, timedelta
 
-sys.stdout.reconfigure(encoding='utf-8')
+from impact_atlas.config import ProjectPaths
+from impact_atlas.logging import configure_logging
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, '..', 'war_tracker_v2', 'data', 'raw_events.db')
-STATIC_DIR = os.path.normpath(os.path.join(BASE_DIR, '..'))
+PATHS = ProjectPaths.discover()
+DB_PATH = PATHS.raw_events_database
+STATIC_DIR = PATHS.root
 
 PORT = 8800
+MAX_PER_PAGE = 500
+
+logger = logging.getLogger("admin_api")
 
 
 class AdminHTTPServer(HTTPServer):
+    """HTTP server that tolerates immediate port reuse across restarts."""
+
     allow_reuse_address = True
 
 
-def get_db():
-    conn = sqlite3.connect(DB_PATH, check_same_thread=False, timeout=10)
+def get_db() -> sqlite3.Connection:
+    """Open a WAL-mode connection to the raw-events database."""
+    conn = sqlite3.connect(str(DB_PATH), check_same_thread=False, timeout=10)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
     return conn
 
 
-class AdminAPIHandler(BaseHTTPRequestHandler):
+def _error_id(error: Exception) -> str:
+    """Log an exception with a correlation id and return the id."""
+    error_id = uuid.uuid4().hex[:8]
+    logger.error("admin_api error %s: %s", error_id, error, exc_info=error)
+    return error_id
 
-    def do_GET(self):
+
+class AdminAPIHandler(BaseHTTPRequestHandler):
+    """Request handler exposing the manual merge REST endpoints."""
+
+    def do_GET(self) -> None:
+        """Route GET requests to the API or the static file server."""
         parsed = urlparse(self.path)
         path = parsed.path
 
@@ -54,45 +75,50 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
         else:
             self._serve_static(path)
 
-    def do_OPTIONS(self):
+    def do_OPTIONS(self) -> None:
+        """Answer CORS preflight requests."""
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
 
-    def do_POST(self):
+    def do_POST(self) -> None:
+        """Route POST bodies to merge/unmerge endpoints."""
         parsed = urlparse(self.path)
+        try:
+            content_length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(content_length))
+        except (ValueError, json.JSONDecodeError):
+            self._json_response(400, {"error": "Malformed JSON body"})
+            return
+
         if parsed.path == '/api/merge':
-            content_length = int(self.headers.get('Content-Length', 0))
-            body = self.rfile.read(content_length)
-            self._handle_merge(json.loads(body))
+            self._handle_merge(body)
         elif parsed.path == '/api/unmerge':
-            content_length = int(self.headers.get('Content-Length', 0))
-            body = self.rfile.read(content_length)
-            self._handle_unmerge(json.loads(body))
+            self._handle_unmerge(body)
         else:
             self._json_response(404, {"error": "Not found"})
 
-    # ─── Static file serving ─────────────────────────────────────────
+    # â”€â”€â”€ Static file serving â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    def _serve_static(self, path):
-        """Serve static files from the project root."""
+    def _serve_static(self, path: str) -> None:
+        """Serve static files from the project root with traversal protection."""
         if path == '/' or path == '':
             path = '/admin_merge.html'
 
         # Security: prevent path traversal
-        safe_path = os.path.normpath(os.path.join(STATIC_DIR, path.lstrip('/')))
-        if not safe_path.startswith(STATIC_DIR):
+        safe_path = (STATIC_DIR / path.lstrip('/')).resolve()
+        if not str(safe_path).startswith(str(STATIC_DIR)):
             self.send_error(403, "Forbidden")
             return
 
-        if not os.path.isfile(safe_path):
+        if not safe_path.is_file():
             self.send_error(404, "File not found")
             return
 
         try:
-            content_type, _ = mimetypes.guess_type(safe_path)
+            content_type, _ = mimetypes.guess_type(str(safe_path))
             if not content_type:
                 content_type = 'application/octet-stream'
 
@@ -106,12 +132,13 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(content)
             self.wfile.flush()
-        except Exception as e:
+        except OSError as e:
             self.send_error(500, str(e))
 
-    # ─── JSON helper ─────────────────────────────────────────────────
+    # â”€â”€â”€ JSON helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    def _json_response(self, status, data):
+    def _json_response(self, status: int, data: Any) -> None:
+        """Write a JSON response, tolerating client disconnects."""
         try:
             body = json.dumps(data, ensure_ascii=False).encode('utf-8')
             self.send_response(status)
@@ -122,11 +149,13 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             self.wfile.write(body)
             self.wfile.flush()
         except (BrokenPipeError, ConnectionAbortedError, ConnectionResetError):
-            pass  # Client disconnected, ignore
+            pass
 
-    # ─── API: List Events ────────────────────────────────────────────
+    # â”€â”€â”€ API: List Events â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    def _handle_list_events(self, params):
+    def _handle_list_events(self, params: dict[str, list[str]]) -> None:
+        """List events with search/sector/status filters and pagination."""
+        conn: sqlite3.Connection | None = None
         try:
             conn = get_db()
             cursor = conn.cursor()
@@ -134,12 +163,15 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             search = params.get('search', [''])[0].strip()
             sector = params.get('sector', [''])[0].strip()
             status = params.get('status', [''])[0].strip()
-            page = int(params.get('page', ['1'])[0])
-            per_page = int(params.get('per_page', ['50'])[0])
+            try:
+                page = max(1, int(params.get('page', ['1'])[0]))
+                per_page = min(MAX_PER_PAGE, max(1, int(params.get('per_page', ['50'])[0])))
+            except ValueError:
+                page, per_page = 1, 50
             offset = (page - 1) * per_page
 
             conditions = []
-            bind_params = []
+            bind_params: list[Any] = []
 
             if status:
                 conditions.append("ai_analysis_status = ?")
@@ -154,7 +186,7 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
 
             where_clause = " AND ".join(conditions) if conditions else "1=1"
 
-            cursor.execute(f"SELECT COUNT(*) FROM unique_events WHERE {where_clause}", bind_params)
+            cursor.execute(f"SELECT COUNT(*) FROM unique_events WHERE {where_clause}", bind_params)  # noqa: S608
             total = cursor.fetchone()[0]
 
             cursor.execute(f"""
@@ -179,18 +211,22 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                     "ai_summary": (row["ai_summary"] or "")[:300]
                 })
 
-            conn.close()
             self._json_response(200, {
                 "events": events, "total": total,
                 "page": page, "per_page": per_page,
                 "pages": max(1, (total + per_page - 1) // per_page)
             })
-        except Exception as e:
-            self._json_response(500, {"error": str(e)})
+        except sqlite3.Error as e:
+            self._json_response(500, {"error": f"Database error (ref {_error_id(e)})"})
+        finally:
+            if conn is not None:
+                conn.close()
 
-    # ─── API: Get Event Detail ───────────────────────────────────────
+    # â”€â”€â”€ API: Get Event Detail â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    def _handle_get_event(self, event_id):
+    def _handle_get_event(self, event_id: str) -> None:
+        """Return the full dossier for a single event."""
+        conn: sqlite3.Connection | None = None
         try:
             conn = get_db()
             cursor = conn.cursor()
@@ -202,14 +238,13 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                 FROM unique_events WHERE event_id = ?
             """, (event_id,))
             row = cursor.fetchone()
-            conn.close()
 
             if not row:
                 self._json_response(404, {"error": "Event not found"})
                 return
 
             lat, lon = None, None
-            ai_data = {}
+            ai_data: dict[str, Any] = {}
             if row["ai_report_json"]:
                 try:
                     ai_data = json.loads(row["ai_report_json"])
@@ -217,7 +252,7 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                     expl = geo.get("explicit", {})
                     lat = expl.get("lat") or geo.get("inferred", {}).get("lat")
                     lon = expl.get("lon") or geo.get("inferred", {}).get("lon")
-                except Exception:
+                except (json.JSONDecodeError, AttributeError, TypeError):
                     pass
 
             self._json_response(200, {
@@ -237,12 +272,17 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                 "sources": row["sources_list"] or "",
                 "classification": ai_data.get("classification", "")
             })
-        except Exception as e:
-            self._json_response(500, {"error": str(e)})
+        except sqlite3.Error as e:
+            self._json_response(500, {"error": f"Database error (ref {_error_id(e)})"})
+        finally:
+            if conn is not None:
+                conn.close()
 
-    # ─── API: List Sectors ───────────────────────────────────────────
+    # â”€â”€â”€ API: List Sectors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    def _handle_list_sectors(self):
+    def _handle_list_sectors(self) -> None:
+        """Return event counts grouped by operational sector."""
+        conn: sqlite3.Connection | None = None
         try:
             conn = get_db()
             cursor = conn.cursor()
@@ -254,17 +294,21 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                 ORDER BY cnt DESC
             """)
             sectors = [{"name": r[0], "count": r[1]} for r in cursor.fetchall()]
-            conn.close()
             self._json_response(200, {"sectors": sectors})
-        except Exception as e:
-            self._json_response(500, {"error": str(e)})
+        except sqlite3.Error as e:
+            self._json_response(500, {"error": f"Database error (ref {_error_id(e)})"})
+        finally:
+            if conn is not None:
+                conn.close()
 
-    # ─── API: Merge ──────────────────────────────────────────────────
+    # â”€â”€â”€ API: Merge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    def _handle_merge(self, data):
+    def _handle_merge(self, data: dict[str, Any]) -> None:
+        """Merge duplicate events: oldest becomes master, rest are marked MERGED."""
+        conn: sqlite3.Connection | None = None
         try:
             event_ids = data.get("event_ids", [])
-            if len(event_ids) < 2:
+            if not isinstance(event_ids, list) or len(event_ids) < 2:
                 self._json_response(400, {"error": "Need at least 2 events"})
                 return
 
@@ -279,7 +323,6 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             events = cursor.fetchall()
 
             if len(events) < 2:
-                conn.close()
                 self._json_response(400, {"error": f"Only {len(events)} events found"})
                 return
 
@@ -287,14 +330,12 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             master = sorted_events[0]
             victims = sorted_events[1:]
 
-            # ── Merge full_text_dossier ──
             merged_text = master["full_text_dossier"] or ""
             for v in victims:
                 merged_text += f" ||| [MERGED]: {v['full_text_dossier'] or ''}"
 
-            # ── Merge urls_list and sources_list ──
-            all_urls = set()
-            all_sources = set()
+            all_urls: set[str] = set()
+            all_sources: set[str] = set()
             for ev in sorted_events:
                 for url in (ev["urls_list"] or "").split(","):
                     url = url.strip()
@@ -308,14 +349,12 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             merged_urls = ", ".join(sorted(all_urls))
             merged_sources = ", ".join(sorted(all_sources))
 
-            # ── Mark victims as MERGED ──
             for v in victims:
                 cursor.execute(
                     "UPDATE unique_events SET ai_analysis_status='MERGED' WHERE event_id=?",
                     (v["event_id"],)
                 )
 
-            # ── Update master: preserve AI intelligence, just enrich data ──
             cursor.execute("""
                 UPDATE unique_events
                 SET full_text_dossier=?,
@@ -325,7 +364,6 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             """, (merged_text, merged_urls, merged_sources, master["event_id"]))
 
             conn.commit()
-            conn.close()
 
             self._json_response(200, {
                 "status": "ok",
@@ -334,12 +372,23 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                 "merged_count": len(victims),
                 "merged_ids": [v["event_id"] for v in victims]
             })
-        except Exception as e:
-            self._json_response(500, {"error": str(e)})
+            logger.info(
+                "Merged %d events into master %s",
+                len(victims), master["event_id"],
+            )
+        except sqlite3.Error as e:
+            if conn is not None:
+                conn.rollback()
+            self._json_response(500, {"error": f"Database error (ref {_error_id(e)})"})
+        finally:
+            if conn is not None:
+                conn.close()
 
-    # ─── API: Unmerge ────────────────────────────────────────────────
+    # â”€â”€â”€ API: Unmerge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    def _handle_unmerge(self, data):
+    def _handle_unmerge(self, data: dict[str, Any]) -> None:
+        """Revert a previously merged event back to PENDING analysis."""
+        conn: sqlite3.Connection | None = None
         try:
             event_id = data.get("event_id", "")
             if not event_id:
@@ -349,34 +398,53 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             conn = get_db()
             cursor = conn.cursor()
             cursor.execute(
-                "UPDATE unique_events SET ai_analysis_status='PENDING' WHERE event_id=? AND ai_analysis_status='MERGED'",
+                "UPDATE unique_events SET ai_analysis_status='PENDING' "
+                "WHERE event_id=? AND ai_analysis_status='MERGED'",
                 (event_id,)
             )
             affected = cursor.rowcount
             conn.commit()
-            conn.close()
 
             if affected == 0:
                 self._json_response(404, {"error": "Not MERGED or not found"})
             else:
                 self._json_response(200, {"status": "ok", "event_id": event_id})
-        except Exception as e:
-            self._json_response(500, {"error": str(e)})
+                logger.info("Unmerged event %s", event_id)
+        except sqlite3.Error as e:
+            if conn is not None:
+                conn.rollback()
+            self._json_response(500, {"error": f"Database error (ref {_error_id(e)})"})
+        finally:
+            if conn is not None:
+                conn.close()
 
-    # ─── API: AI Suggestions ─────────────────────────────────────────
+    # â”€â”€â”€ API: AI Suggestions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    def _handle_suggestions(self, params):
+    @staticmethod
+    def _parse_local_iso(value: str) -> datetime | None:
+        """Parse an ISO date string to a naive local datetime, or ``None``."""
+        if not value:
+            return None
+        return datetime.fromisoformat(value.replace('Z', '+00:00')).replace(tzinfo=None)
+
+    def _handle_suggestions(self, params: dict[str, list[str]]) -> None:
+        """Cluster similar events via embedding cosine similarity."""
+        conn: sqlite3.Connection | None = None
         try:
             import numpy as np  # Lazy import to avoid blocking server startup
 
-            sim_threshold = float(params.get('threshold', ['0.85'])[0])
-            max_hours = float(params.get('hours', ['72'])[0])
-            limit = int(params.get('limit', ['2000'])[0])
+            try:
+                sim_threshold = float(params.get('threshold', ['0.85'])[0])
+                max_hours = float(params.get('hours', ['72'])[0])
+                limit = min(5000, max(2, int(params.get('limit', ['2000'])[0])))
+            except ValueError:
+                self._json_response(400, {"error": "threshold, hours and limit must be numeric"})
+                return
             sector = params.get('sector', [''])[0].strip()
             search = params.get('search', [''])[0].strip()
             status = params.get('status', [''])[0].strip()
 
-            # ── Build context-aware filter ──
+            # â”€â”€ Build context-aware filter â”€â”€
             conditions = [
                 "embedding_vector IS NOT NULL",
                 "ai_analysis_status IN ('COMPLETED', 'PENDING')",
@@ -384,7 +452,7 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                 "TRIM(title) != ''",
                 "title != '(No title)'",
             ]
-            bind_params = []
+            bind_params: list[Any] = []
 
             if sector:
                 conditions.append("operational_sector = ?")
@@ -411,21 +479,27 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                 LIMIT ?
             """, bind_params)
             rows = cursor.fetchall()
-            conn.close()
 
             if len(rows) < 2:
                 self._json_response(200, {"suggestions": [], "total_scanned": len(rows)})
                 return
 
-            events, vectors = [], []
+            events: list[dict[str, Any]] = []
+            vectors: list[list[float]] = []
             for r in rows:
                 try:
                     vec = json.loads(r["embedding_vector"])
                     if not vec or len(vec) < 10:
                         continue
-                    
+
                     raw_title = r["title"]
-                    if not raw_title or str(raw_title).strip() == "" or "(No title)" in str(raw_title) or str(raw_title).lower() in ("none", "null", "[no title]"):
+                    title_text = str(raw_title).strip().lower()
+                    if (
+                        not raw_title
+                        or title_text == ""
+                        or "(no title)" in title_text
+                        or title_text in ("none", "null", "[no title]")
+                    ):
                         continue
 
                     events.append({
@@ -437,7 +511,7 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                         "summary": (r["ai_summary"] or r["description"] or "")[:200]
                     })
                     vectors.append(vec)
-                except Exception:
+                except (json.JSONDecodeError, TypeError):
                     continue
 
             if len(events) < 2:
@@ -452,24 +526,24 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             np.fill_diagonal(sim_matrix, 0)
 
             # Find pairs above threshold
-            pairs = []
+            pairs: list[tuple[int, int, float]] = []
             for i in range(len(events)):
                 for j in range(i + 1, len(events)):
                     if sim_matrix[i, j] < sim_threshold:
                         continue
                     try:
-                        dt_i = datetime.fromisoformat(events[i]["date"].replace('Z', '+00:00')).replace(tzinfo=None) if events[i]["date"] else None
-                        dt_j = datetime.fromisoformat(events[j]["date"].replace('Z', '+00:00')).replace(tzinfo=None) if events[j]["date"] else None
+                        dt_i = self._parse_local_iso(events[i]["date"])
+                        dt_j = self._parse_local_iso(events[j]["date"])
                         if dt_i and dt_j and abs((dt_i - dt_j).total_seconds()) / 3600 > max_hours:
                             continue
-                    except Exception:
+                    except ValueError:
                         pass
                     pairs.append((i, j, float(sim_matrix[i, j])))
 
             # Union-find clustering
             parent = list(range(len(events)))
 
-            def find(x):
+            def find(x: int) -> int:
                 while parent[x] != x:
                     parent[x] = parent[parent[x]]
                     x = parent[x]
@@ -480,7 +554,7 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                 if ri != rj:
                     parent[ri] = rj
 
-            clusters_map = {}
+            clusters_map: dict[int, dict[str, Any]] = {}
             for i, j, sim in pairs:
                 root = find(i)
                 if root not in clusters_map:
@@ -489,7 +563,7 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                 clusters_map[root]["max_sim"] = max(clusters_map[root]["max_sim"], sim)
 
             suggestions = []
-            for root, cluster in clusters_map.items():
+            for _root, cluster in clusters_map.items():
                 members = sorted(cluster["members"], key=lambda idx: events[idx]["date"] or "")
                 suggestions.append({
                     "max_similarity": round(cluster["max_sim"], 3),
@@ -505,19 +579,27 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                 "threshold": sim_threshold,
                 "max_hours": max_hours
             })
+        except sqlite3.Error as e:
+            self._json_response(500, {"error": f"Database error (ref {_error_id(e)})"})
         except Exception as e:
-            import traceback
-            traceback.print_exc()
-            self._json_response(500, {"error": str(e)})
+            self._json_response(500, {"error": f"Internal error (ref {_error_id(e)})"})
+        finally:
+            if conn is not None:
+                conn.close()
 
-    # ─── Logging ─────────────────────────────────────────────────────
+    # â”€â”€â”€ Logging â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    def log_message(self, format, *args):
+    def log_message(self, format: str, *args: Any) -> None:
+        """Log only API requests, silencing noisy static file access logs."""
         if args and '/api/' in str(args[0]):
             super().log_message(format, *args)
 
 
-if __name__ == '__main__':
+def main() -> None:
+    """Start the admin API server on localhost."""
+    with contextlib.suppress(AttributeError, OSError):
+        sys.stdout.reconfigure(encoding='utf-8')
+    configure_logging("admin_api", PATHS.logs / "admin_api.log")
     print(f"[*] IMPACT ATLAS Admin API on http://localhost:{PORT}")
     print(f"[*] Static: {STATIC_DIR}")
     print(f"[*] DB: {DB_PATH}")
@@ -528,3 +610,7 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print("\n[!] Stopped.")
         server.server_close()
+
+
+if __name__ == '__main__':
+    main()

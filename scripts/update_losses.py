@@ -1,9 +1,9 @@
-"""
-Equipment Loss Scraper v3.0 — War Ledger Edition
+﻿"""
+Equipment Loss Scraper v3.0 â€” War Ledger Edition
 Scrapes Oryx (RU + UA pages) and WarSpotting for verified equipment losses.
 Produces:
-  1. external_losses.json — Individual item-level losses (legacy format, enriched)
-  2. net_losses_summary.json — Per-category Net Loss aggregation for the War Ledger UI
+  1. external_losses.json â€” Individual item-level losses (legacy format, enriched)
+  2. net_losses_summary.json â€” Per-category Net Loss aggregation for the War Ledger UI
 """
 import requests
 import json
@@ -11,7 +11,6 @@ import datetime
 import re
 import os
 import sys
-sys.stdout.reconfigure(encoding='utf-8')
 from bs4 import BeautifulSoup
 
 # Configuration
@@ -30,7 +29,7 @@ def safe_print(msg):
 
 
 # =============================================================================
-# ORYX CATEGORY MAPPING — Normalize H3 titles to standard categories
+# ORYX CATEGORY MAPPING â€” Normalize H3 titles to standard categories
 # =============================================================================
 CATEGORY_MAP = {
     'tanks': 'Tanks',
@@ -151,7 +150,7 @@ class OryxDualProvider:
                 for cat, s in faction_stats.items():
                     safe_print(f"   {cat}: {s['total']} (D:{s['destroyed']} Dam:{s['damaged']} Ab:{s['abandoned']} Cap:{s['captured']})")
 
-                # ---- PHASE 2: Parse individual <li> items — expand each entry ----
+                # ---- PHASE 2: Parse individual <li> items â€” expand each entry ----
                 li_items = soup.find_all('li')
                 count = 0
 
@@ -194,7 +193,7 @@ class OryxDualProvider:
                         proof_urls = [a['href'] for a in link_tags if a['href'].startswith('http')]
                         default_proof = proof_urls[0] if proof_urls else self.ORYX_PAGES[faction]
 
-                        # EXPAND: Parse each parenthesized entry "(N, status)" 
+                        # EXPAND: Parse each parenthesized entry "(N, status)"
                         entries = re.findall(r'\(([^)]+)\)', text)
                         proof_idx = 0
                         for entry in entries:
@@ -235,7 +234,7 @@ class OryxDualProvider:
 
     def build_net_summary(self):
         """Calculate Net Loss for each faction/category.
-        
+
         Net Loss = Total Losses - Captured from Enemy
         Where 'Captured from Enemy' = the opponent's 'captured' count for that category.
         """
@@ -303,9 +302,9 @@ class OryxDualProvider:
 
 
 def main():
-    safe_print("╔══════════════════════════════════════════════╗")
-    safe_print("║   WAR LEDGER — Equipment Loss Scraper v3.0  ║")
-    safe_print("╚══════════════════════════════════════════════╝")
+    safe_print("â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—")
+    safe_print("â•‘   WAR LEDGER â€” Equipment Loss Scraper v3.0  â•‘")
+    safe_print("â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•")
 
     oryx = OryxDualProvider()
     oryx.fetch()
@@ -329,7 +328,7 @@ def main():
         safe_print(f"[SUCCESS] Wrote Net Loss summary to {NET_SUMMARY_FILE}")
 
         # Print summary
-        safe_print("\n═══ WAR LEDGER SUMMARY ═══")
+        safe_print("\nâ•â•â• WAR LEDGER SUMMARY â•â•â•")
         for faction in ['RU', 'UA']:
             g = net_summary['global'][faction]
             safe_print(f"\n  {faction} GLOBAL: Total Lost={g['total_lost']}, Captured from Enemy={g['captured_from_enemy']}, NET LOSS={g['net_loss']}")

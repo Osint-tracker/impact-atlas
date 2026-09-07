@@ -16,8 +16,9 @@ import os
 import re
 import sqlite3
 from collections import Counter, defaultdict
-from datetime import datetime, timezone
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from datetime import datetime, UTC
+from typing import Any
+from collections.abc import Iterable
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_DB_PATH = os.path.join(BASE_DIR, "../war_tracker_v2/data/raw_events.db")
@@ -67,7 +68,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def safe_json_load(raw: Any) -> Dict[str, Any]:
+def safe_json_load(raw: Any) -> dict[str, Any]:
     if isinstance(raw, dict):
         return raw
     if not raw:
@@ -79,7 +80,7 @@ def safe_json_load(raw: Any) -> Dict[str, Any]:
         return {}
 
 
-def parse_date(raw: Any) -> Optional[datetime]:
+def parse_date(raw: Any) -> datetime | None:
     if not raw:
         return None
     txt = str(raw).strip()
@@ -90,22 +91,22 @@ def parse_date(raw: Any) -> Optional[datetime]:
     try:
         dt = datetime.fromisoformat(txt)
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
+            dt = dt.replace(tzinfo=UTC)
         else:
-            dt = dt.astimezone(timezone.utc)
+            dt = dt.astimezone(UTC)
         return dt
     except Exception:
         pass
     for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d", "%d/%m/%Y", "%d/%m/%y"):
         try:
-            dt = datetime.strptime(txt, fmt).replace(tzinfo=timezone.utc)
+            dt = datetime.strptime(txt, fmt).replace(tzinfo=UTC)
             return dt
         except Exception:
             continue
     return None
 
 
-def normalize_target_type(value: Any) -> Optional[str]:
+def normalize_target_type(value: Any) -> str | None:
     if value is None:
         return None
     txt = str(value).strip().lower()
@@ -120,7 +121,7 @@ def normalize_target_type(value: Any) -> Optional[str]:
     return txt
 
 
-def pick_target_type(ai_data: Dict[str, Any]) -> Optional[str]:
+def pick_target_type(ai_data: dict[str, Any]) -> str | None:
     tactics = ai_data.get("tactics") or {}
     strategy = ai_data.get("strategy") or {}
     titan_metrics = ai_data.get("titan_metrics") or {}
@@ -142,9 +143,9 @@ def pick_target_type(ai_data: Dict[str, Any]) -> Optional[str]:
     return None
 
 
-def tokenize(text: str) -> List[str]:
+def tokenize(text: str) -> list[str]:
     tokens = re.findall(r"[a-zA-Z][a-zA-Z0-9-]{2,}", (text or "").lower())
-    out: List[str] = []
+    out: list[str] = []
     for t in tokens:
         t = t.strip("-_")
         if len(t) < 3:
@@ -173,8 +174,8 @@ def slugify_campaign_id(target_type: str) -> str:
     return base
 
 
-def split_token_field(raw: str) -> List[str]:
-    out: List[str] = []
+def split_token_field(raw: str) -> list[str]:
+    out: list[str] = []
     seen = set()
     for token in re.split(r"[|,;]", str(raw or "")):
         cleaned = token.strip().lower()
@@ -214,8 +215,8 @@ def iter_rows(conn: sqlite3.Connection, limit: int = 0) -> Iterable[sqlite3.Row]
     return cur.fetchall()
 
 
-def build_bootstrap(rows: Iterable[sqlite3.Row], keywords_count: int) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
-    agg: Dict[str, Dict[str, Any]] = defaultdict(lambda: {
+def build_bootstrap(rows: Iterable[sqlite3.Row], keywords_count: int) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    agg: dict[str, dict[str, Any]] = defaultdict(lambda: {
         "count": 0,
         "token_counter": Counter(),
         "tie_sum": 0.0,
@@ -259,7 +260,7 @@ def build_bootstrap(rows: Iterable[sqlite3.Row], keywords_count: int) -> Tuple[L
                 continue
             bucket["token_counter"][tk] += 1
 
-    suggestions: List[Dict[str, Any]] = []
+    suggestions: list[dict[str, Any]] = []
     for target_type, data in agg.items():
         frequent_terms = [(w, c) for w, c in data["token_counter"].most_common(max(keywords_count * 4, 40)) if c >= 2]
         pool = frequent_terms if frequent_terms else data["token_counter"].most_common(max(keywords_count * 2, 20))
@@ -289,7 +290,7 @@ def build_bootstrap(rows: Iterable[sqlite3.Row], keywords_count: int) -> Tuple[L
     suggestions.sort(key=lambda x: x["stats"]["event_count"], reverse=True)
 
     diagnostics = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "total_completed_rows_scanned": total_rows,
         "rows_with_target_type": tagged_rows,
         "unique_target_types": len(agg),
@@ -298,7 +299,7 @@ def build_bootstrap(rows: Iterable[sqlite3.Row], keywords_count: int) -> Tuple[L
     return suggestions, diagnostics
 
 
-def write_csv(path: str, suggestions: List[Dict[str, Any]]) -> None:
+def write_csv(path: str, suggestions: list[dict[str, Any]]) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
@@ -316,13 +317,13 @@ def write_csv(path: str, suggestions: List[Dict[str, Any]]) -> None:
             })
 
 
-def write_json(path: str, payload: Dict[str, Any]) -> None:
+def write_json(path: str, payload: dict[str, Any]) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
 
 
-def publish_cache_json(path: str, suggestions: List[Dict[str, Any]]) -> None:
+def publish_cache_json(path: str, suggestions: list[dict[str, Any]]) -> None:
     campaigns = []
     for item in suggestions:
         campaigns.append({
@@ -334,13 +335,13 @@ def publish_cache_json(path: str, suggestions: List[Dict[str, Any]]) -> None:
         })
 
     payload = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "campaigns": campaigns,
     }
     write_json(path, payload)
 
 
-def try_write_csv(path: str, suggestions: List[Dict[str, Any]]) -> Tuple[bool, str]:
+def try_write_csv(path: str, suggestions: list[dict[str, Any]]) -> tuple[bool, str]:
     try:
         write_csv(path, suggestions)
         return True, ""
@@ -348,7 +349,7 @@ def try_write_csv(path: str, suggestions: List[Dict[str, Any]]) -> Tuple[bool, s
         return False, str(exc)
 
 
-def try_write_cache_json(path: str, suggestions: List[Dict[str, Any]]) -> Tuple[bool, str]:
+def try_write_cache_json(path: str, suggestions: list[dict[str, Any]]) -> tuple[bool, str]:
     try:
         publish_cache_json(path, suggestions)
         return True, ""

@@ -1,9 +1,9 @@
-import json
+﻿import json
 import os
 import requests
 import time
-from datetime import datetime, timezone
-from typing import List, Dict, Any
+from datetime import datetime, UTC
+from typing import Any
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -21,7 +21,7 @@ MODEL_ID = "deepseek/deepseek-v4-flash"
 def load_json(path: str) -> Any:
     if not os.path.exists(path):
         return None
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.load(f)
 
 def save_json(path: str, data: Any):
@@ -29,7 +29,7 @@ def save_json(path: str, data: Any):
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-def get_ai_assessment(campaign_name: str, stats: Dict, recent_events: List[Dict]) -> Dict:
+def get_ai_assessment(campaign_name: str, stats: dict, recent_events: list[dict]) -> dict:
     if not OPENROUTER_API_KEY:
         print("   [ERR] No OPENROUTER_API_KEY found.")
         return {}
@@ -64,6 +64,7 @@ Keep each section professional, clinical, and data-driven. Do not use flowery la
     try:
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
+            timeout=30,
             headers={
                 "Authorization": f"Bearer {OPENROUTER_API_KEY}",
                 "Content-Type": "application/json"
@@ -87,7 +88,7 @@ Keep each section professional, clinical, and data-driven. Do not use flowery la
         return {}
 
 def main():
-    print(f"--- STRATEGIC ASSESSMENT ENGINE ---")
+    print("--- STRATEGIC ASSESSMENT ENGINE ---")
     reports = load_json(CAMPAIGN_REPORTS_PATH)
     events_payload = load_json(EVENTS_GEOJSON_PATH)
 
@@ -97,7 +98,7 @@ def main():
 
     features = events_payload.get('features', [])
     campaigns = reports.get('campaigns', [])
-    
+
     assessments = {}
 
     for campaign in campaigns:
@@ -111,7 +112,7 @@ def main():
             props = feat.get('properties', {})
             if props.get('campaign_id') == cid:
                 campaign_events.append(props)
-        
+
         # Sort by date descending
         campaign_events.sort(key=lambda x: x.get('date', ''), reverse=True)
 
@@ -119,13 +120,13 @@ def main():
         assessment = get_ai_assessment(name, campaign, campaign_events)
         if assessment:
             assessments[cid] = assessment
-            print(f"   [OK] Assessment generated.")
-        
+            print("   [OK] Assessment generated.")
+
         # Rate limiting safety
         time.sleep(1)
 
     final_payload = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "model_used": MODEL_ID,
         "assessments": assessments
     }

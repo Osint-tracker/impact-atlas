@@ -24,28 +24,19 @@ except ImportError:
         from instruments.vision_instrument import MediaProcessor
     except ImportError:
         MediaProcessor = None  # Graceful degradation if opencv not installed
-from geo_instrument import GeoProbe  
+from geo_instrument import GeoProbe
 from history_instrument import UnitHistoryProbe
 from debug_instrument import CrashRecorder
 from layer1_sensor import TitanSensor  # Trident: Physics-based scorer
 import sys
 
 try:
-    from scripts2.geolocator_agent import geolocator as sector_geolocator, gazetteer
-except Exception:
-    sector_geolocator = None
-    gazetteer = None
-
-# Windows Unicode Fix
-sys.stdout.reconfigure(encoding='utf-8')
+    from scripts.geolocator_agent import get_gazetteer, get_geolocator
+except ImportError:
+    from geolocator_agent import get_gazetteer, get_geolocator
 
 # --- SETUP LOGGING ---
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("SUPER_SQUAD")
-
-# --- LOAD ENV ---
-load_dotenv()
 
 API_SEMAPHORE = asyncio.Semaphore(50)
 GEO_CACHE_LOCK = asyncio.Lock()
@@ -230,10 +221,10 @@ Return ONLY valid JSON:
   "timing": { "estimated_event_timestamp": "ISO_STRING | null" },
   "geo_location": {
     "explicit": { "lat": null, "lon": null },
-    "inferred": { 
-        "toponym_raw": "SINGLE_CITY_NAME", 
-        "region": "OBLAST_OR_REGION", 
-        "spatial_relation": "string" 
+    "inferred": {
+        "toponym_raw": "SINGLE_CITY_NAME",
+        "region": "OBLAST_OR_REGION",
+        "spatial_relation": "string"
     }
   },
   "titan_assessment": {
@@ -410,10 +401,10 @@ class SuperSquadAgent:
 
         # 4. Initialize Geographic Sanity Probe (Sanfilippo Method)
         self.geo_probe = GeoProbe(use_reverse_geocoding=False, timeout=5)
-        
+
         # 5. Initialize Kinetic Plausibility Probe (Sanfilippo Method - Part 2)
         self.history_probe = UnitHistoryProbe()
-        
+
         # Configuration for the retry loop
         self.GEO_MAX_RETRIES = 3
         self.KINETIC_MAX_RETRIES = 2  # Max retries for kinetic validation
@@ -648,7 +639,7 @@ class SuperSquadAgent:
     def _load_json_db(self, path, key_name):
         try:
             if os.path.exists(path):
-                with open(path, 'r', encoding='utf-8') as f:
+                with open(path, encoding='utf-8') as f:
                     data = json.load(f)
                     content = data.get(key_name, [])
 
@@ -675,12 +666,10 @@ class SuperSquadAgent:
         """
         import random
         import asyncio
-        import openai
-        import httpx
-        
+
         max_attempts = 4
         base_delay = 2.0
-        
+
         for attempt in range(1, max_attempts + 1):
             try:
                 return await client.chat.completions.create(**kwargs)
@@ -688,21 +677,17 @@ class SuperSquadAgent:
                 # Identify transient errors (Rate Limits, Timeouts, Server Overload)
                 is_transient = False
                 err_msg = str(e).lower()
-                
+
                 # Check for OpenAI specific transient errors
-                if hasattr(e, 'status_code') and getattr(e, 'status_code') in [429, 502, 503, 504]:
+                if hasattr(e, 'status_code') and e.status_code in [429, 502, 503, 504] or any(x in err_msg for x in ["rate limit", "timeout", "bad gateway", "connection error", "overloaded"]) or type(e).__name__ in ["RateLimitError", "APIConnectionError", "APITimeoutError", "TimeoutException"]:
                     is_transient = True
-                elif any(x in err_msg for x in ["rate limit", "timeout", "bad gateway", "connection error", "overloaded"]):
-                    is_transient = True
-                elif type(e).__name__ in ["RateLimitError", "APIConnectionError", "APITimeoutError", "TimeoutException"]:
-                    is_transient = True
-                    
+
                 if not is_transient or attempt == max_attempts:
                     # Log failure if all retries exhausted or not a transient error
                     if attempt == max_attempts:
                         print(f"      [ERROR] API Retries exhausted: {type(e).__name__} - {e}")
                     raise e
-                
+
                 # Exponential backoff with jitter: delay = base * 2^(n-1) + random[0, 1]
                 wait_time = base_delay * (2 ** (attempt - 1)) + random.uniform(0, 1)
                 print(f"      [RETRY] API Transient Error ({type(e).__name__}). Retrying in {wait_time:.1f}s (Attempt {attempt}/{max_attempts})...")
@@ -719,36 +704,36 @@ class SuperSquadAgent:
             if not os.path.exists(units_path):
                 print(f"⚠️ ORBAT whitelist not loaded: {units_path} not found")
                 return
-            
-            with open(units_path, 'r', encoding='utf-8-sig') as f:
+
+            with open(units_path, encoding='utf-8-sig') as f:
                 units = json.load(f)
-            
+
             for unit in units:
                 uid = unit.get('unit_id')
                 if not uid:
                     continue
-                
+
                 # Primary: exact unit_id
                 self.orbat_whitelist.add(uid)
-                
+
                 # Reverse lookup: display_name -> unit_id
                 display_name = (unit.get('display_name') or '').strip().strip('"').strip("'")
                 if display_name:
                     self.orbat_reverse_lookup[display_name.lower()] = uid
-                
+
                 # Also index the unit_id in a more readable form
                 # e.g., "RU_382ND_RGT" -> "382nd rgt" for fuzzy matching
                 readable_id = uid.replace('UA_', '').replace('RU_', '').replace('_', ' ').lower()
                 self.orbat_reverse_lookup[readable_id] = uid
-                
+
                 # Index common name patterns from subordination field
                 sub = unit.get('subordination', '')
                 if sub and isinstance(sub, str):
                     self.orbat_reverse_lookup[sub.lower()] = uid
-            
+
             print(f"   🛡️ ORBAT Whitelist: {len(self.orbat_whitelist)} units, "
                   f"{len(self.orbat_reverse_lookup)} reverse lookup entries")
-                
+
         except Exception as e:
             print(f"❌ Error loading ORBAT whitelist: {e}")
 
@@ -761,15 +746,15 @@ class SuperSquadAgent:
         """
         if not units_list or not self.orbat_whitelist:
             return units_list
-        
+
         validated = []
         rejected_count = 0
         corrected_count = 0
-        
+
         for unit in units_list:
             unit_id = unit.get('unit_id')
             unit_name = unit.get('unit_name', '')
-            
+
             # --- GATE 1: Reject obvious placeholders ---
             if not unit_id or unit_id in ('?', 'UNKNOWN', 'unknown', 'N/A', 'n/a', ''):
                 if unit_name:
@@ -782,23 +767,23 @@ class SuperSquadAgent:
                         corrected_count += 1
                         print(f"      🔧 ORBAT Corrected: '{unit_name}' -> {resolved_id}")
                         continue
-                
+
                 # Cannot resolve — skip this unit entirely
                 rejected_count += 1
                 print(f"      ❌ ORBAT Rejected: placeholder unit_id='{unit_id}' name='{unit_name}'")
                 continue
-            
+
             # --- GATE 2: Check if unit_id exists in whitelist ---
             if unit_id in self.orbat_whitelist:
                 validated.append(unit)
                 continue
-            
+
             # --- GATE 3: Unknown unit_id — attempt fuzzy correction ---
             # First try the raw unit_name against reverse lookup
             resolved_id = self._fuzzy_resolve_unit(
                 unit_name or unit_id, unit.get('faction', '')
             )
-            
+
             if resolved_id:
                 print(f"      🔧 ORBAT Corrected: '{unit_id}' -> {resolved_id} (via name '{unit_name}')")
                 unit['unit_id'] = resolved_id
@@ -813,64 +798,64 @@ class SuperSquadAgent:
                 # Still include it for event context, but won't update ORBAT registry
                 validated.append(unit)
                 rejected_count += 1
-        
+
         if rejected_count > 0 or corrected_count > 0:
             total = len(units_list)
             print(f"      🛡️ ORBAT Gatekeeper: {len(validated)}/{total} passed "
                   f"({corrected_count} corrected, {rejected_count} rejected/flagged)")
-        
+
         return validated
 
     def _fuzzy_resolve_unit(self, raw_name, faction_hint=''):
         """
         Attempts to resolve a raw unit name to a canonical unit_id
         using the reverse lookup dictionary and fuzzy matching.
-        
+
         Returns the canonical unit_id if a match is found (score > 0.85), else None.
         """
         if not raw_name:
             return None
-        
+
         name_lower = raw_name.lower().strip()
-        
+
         # 1. Direct match in reverse lookup
         if name_lower in self.orbat_reverse_lookup:
             return self.orbat_reverse_lookup[name_lower]
-        
+
         # 2. Fuzzy match against all reverse lookup keys
         # Filter by faction hint if available to reduce false positives
         candidates = {}
         faction_prefix = faction_hint.upper() + '_' if faction_hint else ''
-        
+
         for key, uid in self.orbat_reverse_lookup.items():
             # If we know the faction, only consider matching faction units
             if faction_prefix and not uid.startswith(faction_prefix):
                 continue
             candidates[key] = uid
-        
+
         if not candidates:
             # Fallback: search all units if faction filter yielded nothing
             candidates = self.orbat_reverse_lookup
-        
+
         # Use difflib to find the best match
         matches = difflib.get_close_matches(name_lower, candidates.keys(), n=1, cutoff=0.85)
-        
+
         if matches:
             return candidates[matches[0]]
-        
+
         # 3. Try matching against the unit_id itself (in case LLM produced a close variant)
         id_candidates = list(self.orbat_whitelist)
         if faction_prefix:
             id_candidates = [uid for uid in id_candidates if uid.startswith(faction_prefix)]
-        
+
         id_matches = difflib.get_close_matches(
-            raw_name.upper().replace(' ', '_'), 
+            raw_name.upper().replace(' ', '_'),
             id_candidates, n=1, cutoff=0.85
         )
-        
+
         if id_matches:
             return id_matches[0]
-        
+
         return None
     async def _normalize_units_ai(self, raw_units, context_text):
         """
@@ -884,7 +869,7 @@ class SuperSquadAgent:
         import re
         import difflib
         normalized_results = []
-        
+
         for unit in raw_units:
             raw_name = unit.get('raw_name', '')
             faction = unit.get('faction', 'UNK')
@@ -894,14 +879,14 @@ class SuperSquadAgent:
             numbers = re.findall(r'\d+', raw_name)
             candidates = []
             faction_prefix = faction.upper() + '_' if faction in ['UKR', 'RUS'] else ''
-            
+
             # Search by numbers
             if numbers:
                 for num in numbers:
                     for key, uid in self.orbat_reverse_lookup.items():
                         if num in key and (not faction_prefix or uid.startswith(faction_prefix)):
                             candidates.append({"name": key, "id": uid})
-            
+
             # If no number match or too many, try fuzzy as well
             keys = [k for k, v in self.orbat_reverse_lookup.items() if not faction_prefix or v.startswith(faction_prefix)]
             fuzzy_matches = difflib.get_close_matches(raw_name.lower(), keys, n=5, cutoff=0.6)
@@ -915,7 +900,7 @@ class SuperSquadAgent:
                 if c['id'] not in seen_ids:
                     unique_candidates.append(c)
                     seen_ids.add(c['id'])
-            
+
             unique_candidates = unique_candidates[:10] # Token safety
 
             # 2. AI Disambiguation
@@ -934,18 +919,18 @@ class SuperSquadAgent:
                 You are a Military Intelligence Analyst.
                 RAW TEXT CONTEXT: "{context_text[:2000]}"
                 EXTRACTED UNIT NAME: "{raw_name}"
-                
+
                 POSSIBLE ORBAT MATCHES:
                 {candidate_list_str}
-                
+
                 TASK:
                 Pick the EXACT match from the ORBAT list that corresponds to the extracted unit based on context.
                 If none match perfectly, pick the closest logical one or return 'NULL'.
                 Return ONLY the unit ID.
                 """
-                
+
                 async with API_SEMAPHORE:
-                    response = await self._call_llm_with_backoff(self.brain_client, 
+                    response = await self._call_llm_with_backoff(self.brain_client,
                         model="minimax/minimax-m2.5:free",
                         messages=[
                             {"role": "system", "content": "Return ONLY the canonical unit ID or 'NULL'."},
@@ -953,7 +938,7 @@ class SuperSquadAgent:
                         ],
                         temperature=0.0
                     )
-                
+
                 final_id = response.choices[0].message.content.strip().upper()
                 if "NULL" in final_id or final_id not in self.orbat_whitelist:
                     final_id = None
@@ -972,7 +957,7 @@ class SuperSquadAgent:
                     "status": "ENGAGED"
                 })
                 print(f"      🔗 AI Normalized: '{raw_name}' -> {final_id or 'UNKNOWN'}")
-                
+
             except Exception as e:
                 print(f"   ⚠️ Normalization AI Error: {e}")
                 normalized_results.append({"unit_id": None, "unit_name": raw_name, "faction": faction, "status": "ENGAGED"})
@@ -1042,9 +1027,9 @@ class SuperSquadAgent:
         prompt = f"""
         ROLE: Elite Military Intelligence Filter.
         TASK: Binary Classification (RELEVANT / IRRELEVANT).
-        
+
         CONTEXT: We are tracking the Russia-Ukraine war. We need KINETIC EVENTS (Strikes, Battles, Movements) or SIGNIFICANT STRATEGIC NEWS.
-        
+
         INPUT TEXT:
         "{preview_text}"
 
@@ -1060,7 +1045,7 @@ class SuperSquadAgent:
         2. **Movement:** Troop columns, equipment transfer (trains/convoys).
         3. **Damage:** Infrastructure hit, power outages caused by strikes.
         4. **Logistics:** Bridges hit, Ammo depots destroyed.
-        
+
         STRICT WORD LIMIT: The "reason" MUST be extremely short (5-10 words max).
         OUTPUT JSON: {{ "is_relevant": boolean, "confidence": float (0.0-1.0), "reason": "5-10 words explanation" }}
         """
@@ -1070,7 +1055,7 @@ class SuperSquadAgent:
                 return {"is_relevant": True, "reason": "Client Error - Fallback"}
 
             async with API_SEMAPHORE:
-                response = await self._call_llm_with_backoff(self.router_client, 
+                response = await self._call_llm_with_backoff(self.router_client,
                 model="deepseek/deepseek-v4-flash",
                 messages=[
                     {"role": "system", "content": "Output valid JSON only."},
@@ -1088,7 +1073,7 @@ class SuperSquadAgent:
                 ) if "json" in content else content.split("```")[1].strip()
 
             data = json.loads(content)
-            
+
             # Fail-safe: troncamento forzato se l'AI è prolissa (max 10 parole)
             if data.get('reason'):
                 words = data['reason'].split()
@@ -1143,7 +1128,7 @@ OUTPUT FORMAT:
             print(f"      🧬 Model: {model_id}")
 
             async with API_SEMAPHORE:
-                response = await self._call_llm_with_backoff(self.openai_client, 
+                response = await self._call_llm_with_backoff(self.openai_client,
                 model=model_id,
                 messages=[
                     {"role": "system", "content": system_prompt},
@@ -1304,7 +1289,7 @@ RAW TEXT:
         try:
             # Brain Reasoner (DeepSeek V4 Flash)
             async with API_SEMAPHORE:
-                response = await self._call_llm_with_backoff(self.brain_client, 
+                response = await self._call_llm_with_backoff(self.brain_client,
                 model="deepseek/deepseek-v4-flash",
 
                 messages=[
@@ -1335,13 +1320,13 @@ RAW TEXT:
                     if getattr(delta, "content", None):
                         full_content += delta.content
                         print(delta.content, end="", flush=True)
-                    
+
                     reasoning_piece = getattr(delta, "reasoning", None)
                     if not reasoning_piece and hasattr(delta, "model_extra") and delta.model_extra:
                         reasoning_piece = delta.model_extra.get("reasoning")
                     if reasoning_piece:
                         full_reasoning.append(reasoning_piece)
-                
+
                 if hasattr(chunk, "usage") and chunk.usage:
                     reasoning_tokens = getattr(chunk.usage, "reasoningTokens", 0)
 
@@ -1408,7 +1393,7 @@ RAW TEXT:
     async def _repair_json_with_ai(self, broken_text, error_context):
         """
         Calls a fast model (GPT-4o-mini) to fix JSON syntax errors.
-        
+
         INSTRUMENTED with CrashRecorder:
         - Logs successful repairs with before/after
         - Logs failures with full context for post-mortem
@@ -1431,7 +1416,7 @@ RAW TEXT:
 
         try:
             async with API_SEMAPHORE:
-                response = await self._call_llm_with_backoff(self.openai_client, 
+                response = await self._call_llm_with_backoff(self.openai_client,
                     model="gpt-4o-mini",
                     messages=[{"role": "user", "content": repair_prompt}],
                     temperature=0.0
@@ -1445,10 +1430,10 @@ RAW TEXT:
 
             # Attempt to parse the repaired JSON
             repaired_data = json.loads(fixed_text)
-            
+
             # SUCCESS: Log the repair for analysis (helps understand common errors)
             print(f"   ✅ JSON Mechanic succeeded! Repaired {len(broken_text)} chars -> {len(fixed_text)} chars")
-            
+
             return repaired_data
 
         except json.JSONDecodeError as repair_parse_error:
@@ -1464,7 +1449,7 @@ RAW TEXT:
                 }
             )
             return None
-            
+
         except Exception as e:
             # API error or other failure - log with original context
             print(f"   ❌ JSON Mechanic Failed: {e}")
@@ -1489,7 +1474,7 @@ RAW TEXT:
             k = max(1, min(10, int(titan_data.get('kinetic_score', 1))))
             t = max(1, min(10, int(titan_data.get('target_score', 1))))
             e = max(1, min(10, int(titan_data.get('effect_score', 1))))
-        except:
+        except (TypeError, ValueError):
             k, t, e = 1, 1, 1
 
         # 2. PROTOCOL "DEFERRED" (Sospensione del Giudizio)
@@ -1540,7 +1525,7 @@ RAW TEXT:
     async def _step_2_the_soldier(self, cluster_data):
         """
         Role: Strict Extraction from Cluster with Fallback Repair.
-        
+
         UPGRADED with Geographic Sanity Loop:
         - Validates extracted coordinates against theatre of operations
         - Retries up to 3 times if coordinates are hallucinated
@@ -1563,16 +1548,16 @@ RAW TEXT:
         """
 
         # =====================================================================
-        # GEOGRAPHIC SANITY LOOP 
+        # GEOGRAPHIC SANITY LOOP
         # =====================================================================
         attempt = 0
         last_probe_result = None
         parsed_data = None
-        
+
         while attempt < self.GEO_MAX_RETRIES:
             attempt += 1
             raw_response_text = ""
-            
+
             try:
                 # Build the prompt - add feedback if this is a retry
                 if attempt == 1:
@@ -1585,10 +1570,10 @@ RAW TEXT:
                         combined_text, parsed_data, last_probe_result, attempt
                     )
                     current_user_content = feedback_prompt
-                
+
                 # LLM Call
                 async with API_SEMAPHORE:
-                    response = await self._call_llm_with_backoff(self.openrouter_client, 
+                    response = await self._call_llm_with_backoff(self.openrouter_client,
                     model="deepseek/deepseek-v4-flash",
                     messages=[
                         {"role": "system", "content": SOLDIER_SYSTEM_PROMPT},
@@ -1621,19 +1606,19 @@ RAW TEXT:
                     if attempt >= self.GEO_MAX_RETRIES:
                         return None
                     continue
-                    
+
                 geo = parsed_data.get("geo_location", {}) or {}
                 explicit = geo.get("explicit")
-                
+
                 # Check if we have explicit coordinates to validate
                 if explicit:
                     lat = explicit.get('lat')
                     lon = explicit.get('lon')
-                    
+
                     # Skip validation for null/zero coordinates
                     is_invalid_lat = lat in [0, 0.0, "0", None, "null", ""]
                     is_invalid_lon = lon in [0, 0.0, "0", None, "null", ""]
-                    
+
                     if is_invalid_lat or is_invalid_lon:
                         # Clear invalid coordinates - no need to retry, toponym will be geocoded later
                         parsed_data["geo_location"]["explicit"] = None
@@ -1643,7 +1628,7 @@ RAW TEXT:
                         # PROBE THE COORDINATES
                         probe_result = self.geo_probe.probe_coordinates(lat, lon)
                         last_probe_result = probe_result
-                        
+
                         if probe_result['is_valid']:
                             # SUCCESS - Coordinates are valid
                             print(f"   ✅ GeoProbe PASS: {probe_result['region']} ({probe_result['country_code'].upper()})")
@@ -1667,7 +1652,7 @@ RAW TEXT:
                     # No explicit coordinates - nothing to validate
                     print("   📍 No explicit coordinates in response.")
                     break
-                    
+
             except Exception as e:
                 print(f"   ⚠️ Soldier Exception on attempt {attempt}: {e}")
                 if raw_response_text:
@@ -1677,7 +1662,7 @@ RAW TEXT:
                         break
                 if attempt >= self.GEO_MAX_RETRIES:
                     return None
-        
+
         # =================================================================
         # POST-LOOP CLEANUP: Sanity checks on toponym names
         # =================================================================
@@ -1696,7 +1681,7 @@ RAW TEXT:
                         clean_loc = raw_loc.lower().split(
                             " and ")[0].strip().title()
                         parsed_data["geo_location"]["inferred"]["toponym_raw"] = clean_loc
-            except:
+            except (KeyError, AttributeError, TypeError):
                 pass
 
         return parsed_data
@@ -1712,27 +1697,27 @@ RAW TEXT:
     async def _step_visionary(self, soldier_data: dict, frame_dicts: list, audio_transcript: str = "") -> dict | None:
         """
         Role: Surgical IMINT Verification & Equipment ID with per-frame analysis.
-        
+
         Activates ONLY when Base64-encoded keyframes are available.
         Cross-references The Soldier's text extraction against visual evidence.
         Identifies military hardware variants and assesses kinetic damage.
         Produces per-frame analysis for the IMINT Evidence Feed.
-        
+
         Args:
             soldier_data (dict): Output from The Soldier (text-extracted intel).
             frame_dicts (list): List of enriched frame dicts from MediaProcessor,
                                 each containing: base64_data, delta_score,
                                 frame_index, selection_reason.
-        
+
         Returns:
             dict: Structured IMINT report (with `analyzed_frames` array) or None on failure.
         """
         if not frame_dicts:
             return None
-        
+
         # Build text context from Soldier's extraction (The Dossier)
         dossier_context = json.dumps(soldier_data, indent=2, default=str)[:8000]
-        
+
         # Construct multimodal message content (text + Base64 images)
         # Format: array of content items per OpenRouter VLM spec
         content_items = [
@@ -1763,7 +1748,7 @@ For EACH frame, provide:
 Output ONLY valid JSON per your instructions."""
             }
         ]
-        
+
         # Attach each Base64 frame as an image_url content item
         # Cap at 4 frames to avoid token overflow on the VLM
         for fd in frame_dicts[:4]:
@@ -1772,10 +1757,10 @@ Output ONLY valid JSON per your instructions."""
                 "type": "image_url",
                 "image_url": {"url": str(b64_url)}
             })
-        
+
         try:
             async with API_SEMAPHORE:
-                response = await self._call_llm_with_backoff(self.openrouter_client, 
+                response = await self._call_llm_with_backoff(self.openrouter_client,
                 model="qwen/qwen3-vl-235b-a22b-instruct",  # MANDATORY HARD CONSTRAINT
                 messages=[
                     {"role": "system", "content": VISIONARY_SYSTEM_PROMPT},
@@ -1784,10 +1769,10 @@ Output ONLY valid JSON per your instructions."""
                 temperature=0.0,  # Strict Determinism
                 max_tokens=2048
                 )
-            
+
             raw_response = response.choices[0].message.content
             parsed = self._clean_and_parse_json(raw_response)
-            
+
             if not parsed:
                 print("   ⚠️ Visionary JSON parse failed. Attempting repair...")
                 parsed = await self._repair_json_with_ai(raw_response, "Visionary output malformed")
@@ -1813,17 +1798,17 @@ Output ONLY valid JSON per your instructions."""
                 v_conf = parsed.get('visual_confirmation', {}).get('confidence_score', 0)
                 v_damage = parsed.get('kinetic_effect', {}).get('damage_level', 'UNKNOWN')
                 assets = parsed.get('detected_assets', [])
-                
+
                 print(f"      \U0001f441\ufe0f VISIONARY VERDICT: {v_status} (Conf: {v_conf})")
                 print(f"      \U0001f4a5 Kinetic Effect: {v_damage}")
                 if assets:
                     for a in assets[:3]:
                         print(f"      \U0001f3af Detected: {a.get('type', '?')} [{a.get('faction', '?')}] x{a.get('count', '?')} \u2192 {a.get('state', '?')}")
-                
+
                 geo_clues = parsed.get('geo_clues', [])
                 if geo_clues:
                     print(f"      \U0001f4cd Geo Clues: {geo_clues[:5]}")
-                
+
                 # --- BUILD ANALYZED_FRAMES: Merge VLM per-frame analysis with MediaProcessor metadata ---
                 vlm_per_frame = parsed.pop('per_frame_analysis', [])  # Extract and remove from parsed
                 analyzed_frames = []
@@ -1831,7 +1816,7 @@ Output ONLY valid JSON per your instructions."""
                     frame_meta = fd if isinstance(fd, dict) else {"base64_data": str(fd)}
                     # Find matching VLM analysis for this frame (by frame_id = i+1)
                     vlm_match = next((pf for pf in vlm_per_frame if pf.get('frame_id') == i + 1), {})
-                    
+
                     analyzed_frames.append({
                         "frame_id": i + 1,
                         "confidence": vlm_match.get('confidence', v_conf),  # Fallback to aggregate confidence
@@ -1840,15 +1825,15 @@ Output ONLY valid JSON per your instructions."""
                         "base64_data": frame_meta.get('base64_data', ''),
                         "delta_score": frame_meta.get('delta_score', 0.0)
                     })
-                
+
                 parsed['analyzed_frames'] = analyzed_frames
                 print(f"      📋 IMINT Feed: {len(analyzed_frames)} frames with per-frame analysis.")
-                
+
                 return parsed
             else:
                 print("   \u274c Visionary Failed (Unfixable Response).")
                 return None
-                
+
         except Exception as e:
             print(f"   \u26a0\ufe0f Visionary Exception: {e}")
             return None
@@ -1858,11 +1843,11 @@ Output ONLY valid JSON per your instructions."""
     # =========================================================================
 
     # Liste di riferimento per il Sanity Check
-    SUSPICIOUS_CAPITALS = ["Moscow", "Kyiv", "Kiev", "Washington", "London", 
+    SUSPICIOUS_CAPITALS = ["Moscow", "Kyiv", "Kiev", "Washington", "London",
                            "Brussels", "Beijing", "Ankara", "Tehran", "Minsk",
                            "Kremlin", "White House", "Pentagon"]
-    
-    FRONTLINE_KEYWORDS = ["front", "frontline", "line of contact", "trench", 
+
+    FRONTLINE_KEYWORDS = ["front", "frontline", "line of contact", "trench",
                           "mortar", "grad", "howitzer", "artillery", "dugout",
                           "assault", "infantry", "mechanized", "trenchline",
                           "фронт", "окоп", "передова", "лінія зіткнення"]
@@ -1870,26 +1855,26 @@ Output ONLY valid JSON per your instructions."""
     async def _step_geo_verifier(self, location_name: str, context_text: str):
         """
         🌍 GEO-VERIFIER: Validates and corrects geolocation extracted by Soldier.
-        
+
         Protects against:
         1. Metonymy Errors ("Moscow says" != "Strike on Moscow")
         2. Typos / OCR Errors
         3. Ambiguous Places (Multiple cities with same name)
-        
+
         Returns: dict with {'lat': float, 'lon': float} or None
         """
         if not location_name or not isinstance(location_name, str):
             return None
-        
+
         location_name = location_name.strip()
         print(f"      🌍 Geo-Verifier: Validating '{location_name}'...")
-        
+
         # =====================================================================
         # STEP 1: SANITY CHECK (Local Python Logic - Zero API Cost)
         # =====================================================================
         clean_loc_lower = location_name.lower()
         is_suspicious = any(cap.lower() in clean_loc_lower for cap in self.SUSPICIOUS_CAPITALS)
-        
+
         # Block generic country names from snapping to capital centroid
         GENERIC_COUNTRIES = ["ukraine", "russia", "romania", "poland", "belarus", "moldova", "usa", "us", "uk", "nato"]
         if clean_loc_lower in GENERIC_COUNTRIES:
@@ -1905,20 +1890,20 @@ Output ONLY valid JSON per your instructions."""
             # Check if context implies frontline combat (metonymy detection)
             context_lower = context_text.lower()
             is_frontline_event = any(kw in context_lower for kw in self.FRONTLINE_KEYWORDS)
-            
+
             if is_frontline_event:
                 print(f"      ⚠️ METONYMY DETECTED: '{location_name}' mentioned but context is frontline combat.")
-                print(f"         → Skipping capital city. Triggering AI correction...")
-                
+                print("         → Skipping capital city. Triggering AI correction...")
+
                 # Trigger AI correction to find the REAL target
                 corrected_location = await self._ai_correct_location(location_name, context_text)
                 if corrected_location:
                     location_name = corrected_location
                     print(f"      ✅ AI Corrected Location: '{corrected_location}'")
                 else:
-                    print(f"      ❌ AI could not determine real location. Returning None.")
+                    print("      ❌ AI could not determine real location. Returning None.")
                     return None
-        
+
         # =====================================================================
         # STEP 1.5: LOCAL GAZETTEER FALLBACK (Zero API Cost)
         # =====================================================================
@@ -1927,12 +1912,12 @@ Output ONLY valid JSON per your instructions."""
             print(f"      📍 Local Gazetteer: Zero-latency match for '{location_name}'")
             await geo_cache_store(location_name, local_coords.get("lat"), local_coords.get("lon"))
             return local_coords
-            
+
         # =====================================================================
-        # STEP 2: PHOTON LOOKUP (Get Candidates) 
+        # STEP 2: PHOTON LOOKUP (Get Candidates)
         # =====================================================================
         # Photon lookup for zero-cost, high rate-limit fuzzy matching.
-        
+
         candidates_list = []
         try:
             # Search Photon API (Prioritize UA by adding it to query if not present, though Photon handles it implicitly well)
@@ -1943,7 +1928,7 @@ Output ONLY valid JSON per your instructions."""
                 )
                 resp.raise_for_status()
                 data = resp.json()
-            
+
             if data and "features" in data:
                 for i, f in enumerate(data["features"]):
                     props = f.get("properties", {})
@@ -1952,24 +1937,24 @@ Output ONLY valid JSON per your instructions."""
                         # Construct a display name similar to Geopy's address
                         address_parts = [props.get("name"), props.get("county"), props.get("state"), props.get("country")]
                         display_name = ", ".join([p for p in address_parts if p])
-                        
+
                         candidates_list.append({
                             'id': i,
                             'display_name': display_name,
                             'lat': coords[1],  # Photon returns [lon, lat]
                             'lon': coords[0]
                         })
-            
+
             if not candidates_list:
                 print(f"      ⚠️ Photon: No results for '{location_name}'")
                 return None
-                
+
             print(f"      📍 Photon: Found {len(candidates_list)} candidates")
-            
+
         except Exception as e:
             print(f"      ❌ Photon Error: {e}")
             return None
-        
+
         # =====================================================================
         # STEP 3: AI RERANKING & VALIDATION (DeepSeek Call)
         # =====================================================================
@@ -1980,24 +1965,24 @@ Output ONLY valid JSON per your instructions."""
                 await geo_cache_store(location_name, result['lat'], result['lon'])
                 return {'lat': result['lat'], 'lon': result['lon']}
             else:
-                print(f"      ⚠️ Single result outside war zone. Rejecting.")
+                print("      ⚠️ Single result outside war zone. Rejecting.")
                 return None
-        
+
         # Multiple candidates - use AI to pick the best one
         try:
             rerank_result = await self._ai_rerank_geo_candidates(
                 location_name, context_text, candidates_list
             )
-            
+
             if not rerank_result:
                 # Fallback: use first result in war zone
                 for c in candidates_list:
                     if self._is_in_war_zone(c['lat'], c['lon']):
-                        print(f"      📍 Fallback: Using first war-zone candidate")
+                        print("      📍 Fallback: Using first war-zone candidate")
                         await geo_cache_store(location_name, c['lat'], c['lon'])
                         return {'lat': c['lat'], 'lon': c['lon']}
                 return None
-            
+
             # Handle WRONG_EXTRACTION response
             if rerank_result.get('status') == 'WRONG_EXTRACTION':
                 corrected_name = rerank_result.get('correct_name')
@@ -2005,7 +1990,7 @@ Output ONLY valid JSON per your instructions."""
                     print(f"      🔄 AI says wrong target. Re-geocoding: '{corrected_name}'")
                     return await self._step_geo_verifier(corrected_name, context_text)
                 return None
-            
+
             # Handle selected_id response
             selected_id = rerank_result.get('selected_id')
             if selected_id is not None and 0 <= selected_id < len(candidates_list):
@@ -2013,24 +1998,24 @@ Output ONLY valid JSON per your instructions."""
                 print(f"      ✅ AI Selected: {chosen['display_name'][:50]}...")
                 await geo_cache_store(location_name, chosen['lat'], chosen['lon'])
                 return {'lat': chosen['lat'], 'lon': chosen['lon']}
-            
+
         except Exception as e:
             print(f"      ⚠️ AI Reranking Error: {e}")
-        
+
         # Ultimate fallback
         for c in candidates_list:
             if self._is_in_war_zone(c['lat'], c['lon']):
                 await geo_cache_store(location_name, c['lat'], c['lon'])
                 return {'lat': c['lat'], 'lon': c['lon']}
-        
+
         return None
-    
+
     def _is_in_war_zone(self, lat: float, lon: float) -> bool:
         """Check if coordinates are within the Ukraine/Russia war zone bounding box."""
         MIN_LAT, MAX_LAT = 44.0, 60.0
         MIN_LON, MAX_LON = 22.0, 55.0
         return MIN_LAT <= lat <= MAX_LAT and MIN_LON <= lon <= MAX_LON
-    
+
     async def _ai_correct_location(self, wrong_location: str, context_text: str) -> str:
         """
         Uses DeepSeek to extract the REAL kinetic target from context
@@ -2056,29 +2041,29 @@ If you cannot determine the real location, output:
 """
         try:
             async with API_SEMAPHORE:
-                response = await self._call_llm_with_backoff(self.brain_client, 
+                response = await self._call_llm_with_backoff(self.brain_client,
                     model="deepseek/deepseek-v4-flash",
                     messages=[{"role": "user", "content": prompt}],
                     temperature=0.0,
                     response_format={"type": "json_object"},
                     stream=True
                 )
-            
+
             full_content = ""
             full_reasoning = []
-            
+
             async for chunk in response:
                 delta = chunk.choices[0].delta if chunk.choices else None
                 if delta:
                     if getattr(delta, "content", None):
                         full_content += delta.content
-                    
+
                     reasoning_piece = getattr(delta, "reasoning", None)
                     if not reasoning_piece and hasattr(delta, "model_extra") and delta.model_extra:
                         reasoning_piece = delta.model_extra.get("reasoning")
                     if reasoning_piece:
                         full_reasoning.append(reasoning_piece)
-            
+
             assistant_message = {
                 "role": "assistant",
                 "content": full_content,
@@ -2090,14 +2075,14 @@ If you cannot determine the real location, output:
         except Exception as e:
             print(f"      ❌ AI Correction Error: {e}")
             return None
-    
+
     async def _ai_rerank_geo_candidates(self, location_name: str, context_text: str,
                                    candidates: list) -> dict:
         """
         Uses DeepSeek to select the best geolocation candidate based on context.
         """
         candidates_json = json.dumps(candidates, ensure_ascii=False, indent=2)
-        
+
         prompt = f"""
 CONTEXT: {context_text[:2500]}
 
@@ -2106,7 +2091,7 @@ Geopy found these candidates:
 {candidates_json}
 
 TASK:
-1. VERIFY: Is "{location_name}" the ACTUAL kinetic target in the text? 
+1. VERIFY: Is "{location_name}" the ACTUAL kinetic target in the text?
    Or is it just a government/source announcing something?
 2. IF WRONG TARGET: Output {{"status": "WRONG_EXTRACTION", "correct_name": "Actual Place Name"}}
 3. IF CORRECT TARGET: Pick the best Candidate ID from the list based on:
@@ -2115,47 +2100,47 @@ TASK:
    - Preference for Ukrainian/Russian locations over global matches
 
 OUTPUT (JSON only, no explanation):
-{{"selected_id": <0-4>}} 
-OR 
+{{"selected_id": <0-4>}}
+OR
 {{"selected_id": null}} if none match
-OR 
+OR
 {{"status": "WRONG_EXTRACTION", "correct_name": "..."}}
 """
         try:
             async with API_SEMAPHORE:
-                response = await self._call_llm_with_backoff(self.brain_client, 
+                response = await self._call_llm_with_backoff(self.brain_client,
                     model="deepseek/deepseek-v4-flash",
                     messages=[{"role": "user", "content": prompt}],
                     temperature=0.0,
                     response_format={"type": "json_object"},
                     stream=True
                 )
-            
+
             full_content = ""
             full_reasoning = []
-            
+
             async for chunk in response:
                 delta = chunk.choices[0].delta if chunk.choices else None
                 if delta:
                     if getattr(delta, "content", None):
                         full_content += delta.content
-                    
+
                     reasoning_piece = getattr(delta, "reasoning", None)
                     if not reasoning_piece and hasattr(delta, "model_extra") and delta.model_extra:
                         reasoning_piece = delta.model_extra.get("reasoning")
                     if reasoning_piece:
                         full_reasoning.append(reasoning_piece)
-            
+
             assistant_message = {
                 "role": "assistant",
                 "content": full_content,
                 "reasoning_details": "".join(full_reasoning)
             }
-            
+
             content = full_content.strip()
             if "```json" in content:
                 content = content.split("```json")[1].split("```")[0].strip()
-            
+
             return json.loads(content)
         except Exception as e:
             print(f"      ❌ AI Rerank Error: {e}")
@@ -2166,18 +2151,18 @@ OR
     def _clean_and_parse_json(self, raw_text):
         """
         SAFE PARSE PATTERN (Sanfilippo Method - Part 3)
-        
+
         Implements 3-level fallback for JSON parsing with forensic logging:
         - Level 1: Standard json.loads()
         - Level 2: Heuristic cleaning (markdown, trailing commas)
         - Level 3: CrashRecorder dump for post-mortem analysis
-        
+
         Returns:
             dict: Parsed JSON object, or None if all levels fail
         """
         # Store original for crash dump
         original_raw_text = raw_text
-        
+
         # =====================================================================
         # LEVEL 1: Direct Parse Attempt
         # =====================================================================
@@ -2185,50 +2170,48 @@ OR
             return json.loads(raw_text.strip())
         except json.JSONDecodeError:
             pass  # Expected for LLM output with markdown wrappers
-        
+
         # =====================================================================
         # LEVEL 2: Heuristic Cleaning
         # =====================================================================
         print("   🧹 Level 2: Cleaning attempt triggered...")
-        
+
         try:
             text = raw_text.strip()
-            
+
             # 2a. Remove markdown backticks (e.g., ```json ... ```)
             if "```" in text:
                 # Handle ```json\n...``` pattern
                 parts = text.split("```")
                 if len(parts) >= 2:
                     text = parts[1]
-                    if text.startswith("json"):
-                        text = text[4:]
-                    elif text.startswith("JSON"):
+                    if text.startswith("json") or text.startswith("JSON"):
                         text = text[4:]
                     text = text.strip()
-            
+
             # 2b. Surgical extraction: Find first '{' and last '}'
             start = text.find('{')
             end = text.rfind('}')
-            
+
             if start != -1 and end != -1 and start < end:
                 text = text[start:end + 1]
-            
+
             # 2c. Fix trailing commas before closing braces/brackets
             # Common LLM error: {"key": "value",}
             text = re.sub(r',\s*}', '}', text)
             text = re.sub(r',\s*]', ']', text)
-            
+
             # 2d. Attempt parse on cleaned text
             parsed = json.loads(text)
             print("   ✅ Level 2: Cleaning succeeded.")
             return parsed
-            
+
         except json.JSONDecodeError as level_2_error:
             # =====================================================================
             # LEVEL 3: CRASH DUMP (Flight Data Recorder)
             # =====================================================================
-            print(f"   🔴 Level 3: Parsing failed after cleaning. Recording crash dump...")
-            
+            print("   🔴 Level 3: Parsing failed after cleaning. Recording crash dump...")
+
             # Trigger the CrashRecorder
             CrashRecorder.dump_state(
                 context_name="_clean_and_parse_json",
@@ -2236,10 +2219,10 @@ OR
                 error=level_2_error,
                 partial_data={"cleaned_length": len(text) if text else 0}
             )
-            
+
             # Return None - caller should try _repair_json_with_ai as fallback
             return None
-        
+
         except Exception as unexpected_error:
             # Catch-all for non-JSON errors (shouldn't happen, but safety first)
             print(f"   🔴 Unexpected error during parsing: {unexpected_error}")
@@ -2474,7 +2457,7 @@ OR
         try:
             # 1. Chiamata API (Temperatura 0 = Robotico)
             async with API_SEMAPHORE:
-                response = await self._call_llm_with_backoff(self.openai_client, 
+                response = await self._call_llm_with_backoff(self.openai_client,
                     model="gpt-4o-mini",
                     messages=[
                         {"role": "system",
@@ -2514,12 +2497,12 @@ OR
         # 1. Prepare Data
         editorial = final_report.get('editorial', {})
         metrics = final_report.get('titan_metrics', {})
-        
+
         # Tactical Dossier
         dossier = f"""
         EVENT: {editorial.get('title_en')}
         CONTEXT: {editorial.get('description_en')}
-        
+
         === TACTICAL METRICS ===
         CATEGORY: {metrics.get('target_type_category', 'UNKNOWN')}
         KINETIC: {metrics.get('kinetic_score', 0)}
@@ -2545,7 +2528,7 @@ OR
 
         try:
             async with API_SEMAPHORE:
-                response = await self._call_llm_with_backoff(client_or, 
+                response = await self._call_llm_with_backoff(client_or,
                     model="deepseek/deepseek-v4-flash",
                     messages=[
                         {"role": "system", "content": system_prompt},
@@ -2557,13 +2540,13 @@ OR
 
             full_content = ""
             full_reasoning = []
-            
+
             async for chunk in response:
                 delta = chunk.choices[0].delta if chunk.choices else None
                 if delta:
                     if getattr(delta, "content", None):
                         full_content += delta.content
-                    
+
                     reasoning_piece = getattr(delta, "reasoning", None)
                     if not reasoning_piece and hasattr(delta, "model_extra") and delta.model_extra:
                         reasoning_piece = delta.model_extra.get("reasoning")
@@ -2755,13 +2738,14 @@ async def geo_cache_store(query, lat, lon):
 
 async def safe_geocode(query, region=""):
     """
-    Geocoding wrapper that uses the new GazetteerCache (SQLite) 
+    Geocoding wrapper that uses the new GazetteerCache (SQLite)
     before falling back to external APIs.
     """
     if not query:
         return None, None
 
-    if gazetteer:
+    gazetteer = get_gazetteer()
+    if gazetteer is not None:
         try:
             lat, lon, canonical = await gazetteer.get_coordinates(query, region)
             if lat and lon:
@@ -2792,8 +2776,9 @@ async def safe_geocode(query, region=""):
                 lon, lat = float(coords[0]), float(coords[1])
                 await geo_cache_store(clean_query, lat, lon)
                 return lat, lon
-    except: pass
-    
+    except (httpx.HTTPError, KeyError, TypeError, ValueError):
+        pass
+
     return None, None
 
 
@@ -2875,8 +2860,9 @@ def _write_final_report_sync(cluster_id, final_report, tie_result, titan_data, c
                 persist_lat, persist_lon = pair
                 break
 
-        if sector_geolocator and persist_lat is not None and persist_lon is not None:
-            operational_sector = sector_geolocator.assign_sector(float(persist_lon), float(persist_lat))
+        sector_agent = get_geolocator()
+        if sector_agent is not None and persist_lat is not None and persist_lon is not None:
+            operational_sector = sector_agent.assign_sector(float(persist_lon), float(persist_lat))
     except Exception:
         operational_sector = 'UNKNOWN_SECTOR'
 
@@ -3034,11 +3020,11 @@ async def process_cluster_async(agent, row, campaign_definitions, db_write_lock)
                             # Extract geometric frames
                             frames = await asyncio.to_thread(media_proc.extract_keyframes, m_url_str)
                             all_frame_dicts.extend(frames)
-                            
+
                             # [NEW] Extract audio transcript (Whisper)
                             if not audio_transcript:
                                 audio_transcript = await media_proc.extract_audio_transcript(m_url_str)
-                                
+
                             if len(all_frame_dicts) >= 4:
                                 all_frame_dicts = all_frame_dicts[:4]
                                 break
@@ -3319,33 +3305,37 @@ async def main():
     conn.close()
 
     db_write_lock = asyncio.Lock()
-    
+
     # --- SEQUENTIAL BATCH PROCESSING (Chunks of 50) ---
     # This prevents the terminal from being flooded with 2000+ bouncer messages at once.
     batch_size = 50
     total_events = len(clusters_to_process)
-    
+
     for i in range(0, total_events, batch_size):
         batch = clusters_to_process[i:i + batch_size]
         current_batch_num = (i // batch_size) + 1
         total_batches = math.ceil(total_events / batch_size)
-        
-        print(f"\n" + "█"*80)
+
+        print("\n" + "█"*80)
         print(f"📦 BATCH {current_batch_num}/{total_batches} | Processing {len(batch)} events concurrently")
         print("█"*80 + "\n")
-        
+
         await asyncio.gather(*[
             process_cluster_async(agent, row, campaign_definitions, db_write_lock)
             for row in batch
         ])
-        
+
         print(f"\n✅ BATCH {current_batch_num}/{total_batches} COMPLETED.")
         if i + batch_size < total_events:
-            print(f"⏳ Waiting 2 seconds before next batch to stabilize output...")
+            print("⏳ Waiting 2 seconds before next batch to stabilize output...")
             await asyncio.sleep(2)
 
     print("\n[DONE] Sessione conclusa.")
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding='utf-8')
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s')
+    load_dotenv()
     asyncio.run(main())

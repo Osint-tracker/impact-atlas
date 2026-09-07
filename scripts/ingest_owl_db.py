@@ -18,7 +18,7 @@ import os
 import sys
 import re
 import base64
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -195,7 +195,7 @@ def fetch_toml_socials(toml_entries: dict, max_fetch: int = 0) -> dict:
 
 def harvest_owl_units():
     print("🦅 Owl Unit Harvester v4.0 (TOML Edition) started...")
-    print(f"   Timestamp: {datetime.now(timezone.utc).isoformat()}")
+    print(f"   Timestamp: {datetime.now(UTC).isoformat()}")
 
     # Step 1: Fetch the full repo tree
     print("\n1. Fetching repository tree via GitHub API...")
@@ -271,7 +271,7 @@ def harvest_owl_units():
 
     # Summary
     print(f"\n{'='*60}")
-    print(f"  ORBAT EXTRACTION COMPLETE")
+    print("  ORBAT EXTRACTION COMPLETE")
     print(f"{'='*60}")
     print(f"  RU Units: {ru_units}")
     print(f"  UA Units: {ua_units}")

@@ -4,8 +4,8 @@ import json
 import os
 import re
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import datetime, UTC
+from typing import Any
 
 try:
     from openai import OpenAI
@@ -74,7 +74,7 @@ class TieGateResult:
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _normalize_text(value: Any) -> str:
@@ -88,7 +88,7 @@ def _safe_float(value: Any, default: float = 0.0) -> float:
         return default
 
 
-def _safe_json_load(value: Any) -> Dict[str, Any]:
+def _safe_json_load(value: Any) -> dict[str, Any]:
     if isinstance(value, dict):
         return value
     if not value:
@@ -100,7 +100,7 @@ def _safe_json_load(value: Any) -> Dict[str, Any]:
         return {}
 
 
-def _extract_json_object(raw: str) -> Dict[str, Any]:
+def _extract_json_object(raw: str) -> dict[str, Any]:
     text = str(raw or "").strip()
     if not text:
         return {}
@@ -121,7 +121,7 @@ def _extract_json_object(raw: str) -> Dict[str, Any]:
         return {}
 
 
-def extract_target_type(event_row: Dict[str, Any]) -> Optional[str]:
+def extract_target_type(event_row: dict[str, Any]) -> str | None:
     ai_data = _safe_json_load(event_row.get("ai_report_json"))
     titan_metrics = ai_data.get("titan_metrics") or _safe_json_load(event_row.get("titan_metrics"))
     strategy = ai_data.get("strategy") or {}
@@ -143,7 +143,7 @@ def extract_target_type(event_row: Dict[str, Any]) -> Optional[str]:
     return None
 
 
-def evaluate_tie_gate(event_row: Dict[str, Any], min_k: float = 3.0, min_e: float = 3.0) -> TieGateResult:
+def evaluate_tie_gate(event_row: dict[str, Any], min_k: float = 3.0, min_e: float = 3.0) -> TieGateResult:
     ai_data = _safe_json_load(event_row.get("ai_report_json"))
     titan_metrics = ai_data.get("titan_metrics") or _safe_json_load(event_row.get("titan_metrics"))
 
@@ -173,16 +173,16 @@ def evaluate_tie_gate(event_row: Dict[str, Any], min_k: float = 3.0, min_e: floa
 
 
 def build_keyword_candidates(
-    campaigns: List[Dict[str, Any]],
-    target_type: Optional[str],
+    campaigns: list[dict[str, Any]],
+    target_type: str | None,
     event_text: str,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     norm_target = _normalize_text(target_type)
     norm_text = _normalize_text(event_text)
     if not norm_target or not norm_text:
         return []
 
-    matches: List[Dict[str, Any]] = []
+    matches: list[dict[str, Any]] = []
     for campaign in campaigns:
         target_types = [str(x).strip().lower() for x in (campaign.get("target_types") or []) if str(x).strip()]
         keywords = [str(x).strip().lower() for x in (campaign.get("keywords") or []) if str(x).strip()]
@@ -208,7 +208,7 @@ def build_keyword_candidates(
     return matches
 
 
-def _openrouter_client(api_key: Optional[str] = None) -> Optional[Any]:
+def _openrouter_client(api_key: str | None = None) -> Any | None:
     key = api_key or os.getenv("OPENROUTER_API_KEY")
     if not key or OpenAI is None:
         return None
@@ -219,7 +219,7 @@ def _openrouter_client(api_key: Optional[str] = None) -> Optional[Any]:
     )
 
 
-def get_llm_runtime_status(api_key: Optional[str] = None) -> Dict[str, Any]:
+def get_llm_runtime_status(api_key: str | None = None) -> dict[str, Any]:
     key = api_key or os.getenv("OPENROUTER_API_KEY")
     if OpenAI is None:
         return {"available": False, "reason": "OpenAI SDK not installed (pip install openai)"}
@@ -232,9 +232,9 @@ def _chat_json(
     client: Any,
     model: str,
     system_prompt: str,
-    payload: Dict[str, Any],
+    payload: dict[str, Any],
     max_tokens: int = 420,
-) -> Tuple[Dict[str, Any], str]:
+) -> tuple[dict[str, Any], str]:
     response = client.chat.completions.create(
         model=model,
         messages=[
@@ -250,11 +250,11 @@ def _chat_json(
 
 
 def admit_event_two_agents(
-    event_row: Dict[str, Any],
-    campaigns: List[Dict[str, Any]],
-    api_key: Optional[str] = None,
+    event_row: dict[str, Any],
+    campaigns: list[dict[str, Any]],
+    api_key: str | None = None,
     text_limit: int = 5000,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     event_id = str(event_row.get("event_id") or "").strip()
     target_type = extract_target_type(event_row)
     full_text = " ".join(
@@ -380,7 +380,7 @@ def admit_event_two_agents(
     return base
 
 
-def merge_campaign_into_ai_report(ai_report_json: Any, admission_result: Dict[str, Any]) -> str:
+def merge_campaign_into_ai_report(ai_report_json: Any, admission_result: dict[str, Any]) -> str:
     ai_data = _safe_json_load(ai_report_json)
     strategy = ai_data.get("strategy")
     if not isinstance(strategy, dict):

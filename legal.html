@@ -6,15 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Impact Atlas | Legal & Terms of Service</title>
   <meta name="description" content="Terms of Service and legal disclaimer for the Impact Atlas experimental OSINT research project.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/theme.css?v=1">
+  <link rel="stylesheet" href="assets/css/console.css?v=1">
   <style>
     :root {
       color-scheme: dark;
-      --bg: #0f172a;
-      --panel: #16213e;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --border: #334155;
-      --accent: #f59e0b;
+      --bg: var(--bg-body);
+      --panel: var(--bg-panel);
+      --text: var(--tx-primary);
+      --muted: var(--tx-muted);
+      --border: var(--line-strong);
+      --accent: var(--am-500);
     }
 
     * {
@@ -32,7 +37,7 @@
     main {
       width: min(920px, calc(100% - 32px));
       margin: 0 auto;
-      padding: 40px 0 64px;
+      padding: 24px 0 64px;
     }
 
     a {
@@ -44,6 +49,7 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 24px;
+      box-shadow: var(--el-1);
     }
 
     h1,
@@ -59,7 +65,9 @@
     h2 {
       margin-top: 28px;
       color: var(--accent);
-      font-size: 1.05rem;
+      font-family: var(--font-data);
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
     }
 
     p,
@@ -69,20 +77,34 @@
 
     .kicker {
       color: var(--accent);
+      font-family: var(--font-data);
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      font-size: var(--fs-micro);
       font-weight: 700;
     }
   </style>
 </head>
 
-<body>
+<body class="bg-grid">
+  <header class="acled-header">
+    <div class="header-content">
+      <div class="brand">
+        <h1>IMPACT<span>ATLAS</span></h1>
+      </div>
+      <div class="classification-strip">OSINT // OPEN SOURCE</div>
+      <nav>
+        <a href="index.html" title="Return to the command console">Console</a>
+        <a href="report.html" target="_blank" rel="noopener noreferrer" title="Daily briefing console">Briefing</a>
+      </nav>
+    </div>
+  </header>
+
   <main>
-    <div class="panel">
+    <div class="panel" style="margin-top: 24px;">
       <div class="kicker">Impact Atlas</div>
-      <h1>Legal & Terms of Service</h1>
-      <p>Last Update: April 29, 2026</p>
+      <h1 style="font-family: var(--font-data); letter-spacing: 0.04em;">Legal &amp; Terms of Service</h1>
+      <p style="font-family: var(--font-data); font-size: 0.75rem; color: var(--tx-dim);">Last Update: April 29, 2026</p>
 
       <h2>1. Nature of the Project</h2>
       <p>

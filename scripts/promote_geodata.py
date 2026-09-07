@@ -2,7 +2,6 @@ import argparse
 import json
 import os
 import sqlite3
-from typing import Optional, Tuple
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -12,7 +11,7 @@ DB_PATH = os.path.join(BASE_DIR, "../war_tracker_v2/data/raw_events.db")
 INVALID_TOKENS = {"", "0", "0.0", "null", "none", "unknown", "n/a"}
 
 
-def _to_float(value) -> Optional[float]:
+def _to_float(value) -> float | None:
     if value is None:
         return None
 
@@ -32,7 +31,7 @@ def _to_float(value) -> Optional[float]:
     return num
 
 
-def _extract_pair(candidate) -> Optional[Tuple[float, float]]:
+def _extract_pair(candidate) -> tuple[float, float] | None:
     if not isinstance(candidate, dict):
         return None
 
@@ -45,7 +44,7 @@ def _extract_pair(candidate) -> Optional[Tuple[float, float]]:
     return lat, lon
 
 
-def _extract_best_pair(ai_report_json: str) -> Tuple[Optional[float], Optional[float], Optional[str]]:
+def _extract_best_pair(ai_report_json: str) -> tuple[float | None, float | None, str | None]:
     try:
         report = json.loads(ai_report_json)
     except (TypeError, ValueError):

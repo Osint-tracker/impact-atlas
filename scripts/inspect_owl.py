@@ -4,9 +4,9 @@ from collections import Counter
 
 def inspect():
     try:
-        with open('assets/data/owl_layer.geojson', 'r', encoding='utf-8') as f:
+        with open('assets/data/owl_layer.geojson', encoding='utf-8') as f:
             data = json.load(f)
-        
+
         names = Counter()
         descriptions = Counter()
         types = Counter()
@@ -14,7 +14,7 @@ def inspect():
         for feature in data.get('features', []):
             props = feature.get('properties', {})
             geom = feature.get('geometry', {})
-            
+
             if geom.get('type') in ['LineString', 'MultiLineString']:
                 name = props.get('name', 'Unknown')
                 desc = props.get('description', 'Unknown')

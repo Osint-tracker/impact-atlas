@@ -1,0 +1,70 @@
+[project]
+name = "impact-atlas"
+version = "2.2.0"
+description = "OSINT conflict intelligence platform: multi-source ingestion, AI fusion, and a C4ISR dashboard."
+requires-python = ">=3.11"
+readme = "README.md"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = [
+    "_archive",
+    "scripts_una_tantum",
+    "training_finetuning",
+    "war_tracker_v2",
+    ".venv",
+    ".kilo",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "W",   # pycodestyle warnings
+    "B",   # bugbear (common bug patterns)
+    "S",   # bandit (security)
+    "UP",  # pyupgrade
+    "SIM", # flake8-simplify
+]
+ignore = [
+    "S101",  # assert usage (used in tests and guarded invariants)
+    "S602",  # subprocess recommendations (admin tooling is local-only)
+    "B008",  # function-call-in-default-argument (dataclass patterns)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S", "E501"]
+# Legacy pipeline modules await Phase 3 decomposition: correctness rules
+# (F, E7xx, S6xx injection checks are still audited manually) stay active
+# where feasible; style-only and suppression-pattern rules are deferred.
+"scripts/*" = [
+    "E501",   # long lines in legacy monoliths
+    "E701",   # compact try/except one-liners in legacy modules
+    "SIM",    # style simplifications
+    "S110",   # logged per-record resilience loops
+    "S112",   # same
+    "S311",   # non-cryptographic random for jitter/decay
+    "S324",   # non-security md5 for deterministic ids
+    "S608",   # vetted literal-clause SQL with bound parameters
+    "F841",   # defensive unpacking leftovers
+]
+"scripts/ai_agent.py" = ["S104"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["impact_atlas", "ingestion"]
+exclude = ["_archive/", "scripts_una_tantum/"]
+# map_loader and the scripts/ tier depend on geo/AI libraries without type
+# stubs; they are covered by ruff, compile checks, and the test suite, and
+# migrate into the strict scope as stubs become available.
+[[tool.mypy.overrides]]
+module = ["map_loader", "shapely.*", "geopandas", "fiona"]
+ignore_missing_imports = true
+follow_imports = "skip"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning:chromadb.*"]

@@ -1,4 +1,4 @@
-import json
+﻿import json
 import os
 import sys
 import math
@@ -38,12 +38,12 @@ def get_frontline_geom(geojson_path):
     if not os.path.exists(geojson_path):
         return None
     try:
-        with open(geojson_path, 'r', encoding='utf-8') as f:
+        with open(geojson_path, encoding='utf-8') as f:
             data = json.load(f)
     except Exception as e:
         print(f"[!] Error loading {geojson_path}: {e}")
         return None
-    
+
     geoms = []
     for feature in data.get('features', []):
         if feature.get('properties', {}).get('name') == 'Frontline':
@@ -51,20 +51,20 @@ def get_frontline_geom(geojson_path):
                 geom = shape(feature['geometry'])
                 if isinstance(geom, (LineString, MultiLineString)):
                     geoms.append(geom)
-            except:
+            except (TypeError, ValueError, AttributeError):
                 continue
-    
+
     if not geoms:
         return None
-    
+
     # Merge into a single MultiLineString for easier distance calculation
     if len(geoms) == 1:
         return geoms[0]
     return MultiLineString(geoms)
 
 def calculate_delta():
-    print(f"[*] Starting Frontline Delta Calculation...")
-    
+    print("[*] Starting Frontline Delta Calculation...")
+
     if not SHAPELY_AVAILABLE:
         print("[!] Shapely not installed. Cannot perform geometric delta calculation.")
         sys.exit(1)
@@ -72,7 +72,7 @@ def calculate_delta():
     if not os.path.exists(OLD_FILE):
         print(f"[!] Old frontline file {OLD_FILE} not found. Skipping delta calculation.")
         return
-    
+
     if not os.path.exists(NEW_FILE):
         print(f"[!] New frontline file {NEW_FILE} not found.")
         return
@@ -81,7 +81,7 @@ def calculate_delta():
     old_geom = get_frontline_geom(OLD_FILE)
     print(f"[*] Loading new frontline: {NEW_FILE}")
     new_geom = get_frontline_geom(NEW_FILE)
-    
+
     if old_geom is None or new_geom is None:
         print("[!] Could not extract frontline geometry from one of the files.")
         return
@@ -90,24 +90,24 @@ def calculate_delta():
     if not os.path.exists(SECTORS_FILE):
         print(f"[!] Sectors file {SECTORS_FILE} missing.")
         return
-        
-    with open(SECTORS_FILE, 'r', encoding='utf-8') as f:
+
+    with open(SECTORS_FILE, encoding='utf-8') as f:
         sectors_data = json.load(f)
-    
+
     results = {}
     total_delta = 0.0
     sectors_count = 0
-    
+
     print("[*] Computing displacement per operational sector...")
     for feature in sectors_data.get('features', []):
         props = feature.get('properties', {})
         sector_name = props.get('operational_sector', props.get('name', 'Unknown'))
-        
+
         try:
             sector_poly = shape(feature['geometry'])
-        except:
+        except (TypeError, ValueError, KeyError):
             continue
-        
+
         # Clip frontline to sector
         try:
             # We use buffer(0) to fix potential invalid geometries
@@ -116,15 +116,15 @@ def calculate_delta():
         except Exception as e:
             print(f"    [!] Error clipping sector {sector_name}: {e}")
             continue
-            
+
         if old_sector_line.is_empty or new_sector_line.is_empty:
             results[sector_name] = 0.0
             continue
-            
+
         # Calculate displacement
         total_dist = 0.0
         sample_count = 0
-        
+
         # Collect points from the NEW line to measure distance to the OLD one
         points_to_check = []
         if isinstance(new_sector_line, (LineString, MultiLineString)):
@@ -137,7 +137,7 @@ def calculate_delta():
             for g in new_sector_line.geoms:
                 if isinstance(g, (LineString, MultiLineString)):
                     points_to_check.extend(list(g.coords))
-        
+
         # Sub-sample points if too many (to keep performance decent)
         if len(points_to_check) > 200:
             points_to_check = points_to_check[::len(points_to_check)//100]
@@ -150,9 +150,9 @@ def calculate_delta():
                 dist = haversine_km(lat, lon, closest_pt.y, closest_pt.x)
                 total_dist += dist
                 sample_count += 1
-            except:
+            except (TypeError, ValueError, AttributeError):
                 continue
-        
+
         avg_delta = total_dist / sample_count if sample_count > 0 else 0.0
         results[sector_name] = round(avg_delta, 3)
         total_delta += avg_delta
@@ -166,10 +166,10 @@ def calculate_delta():
         "sectors": results,
         "global_average_delta": round(total_delta / sectors_count, 3) if sectors_count > 0 else 0
     }
-    
+
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         json.dump(final_output, f, indent=2)
-    
+
     print(f"\n[SUCCESS] Frontline delta saved to {OUTPUT_FILE}")
 
 if __name__ == "__main__":

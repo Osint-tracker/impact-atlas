@@ -1,49 +1,45 @@
-import time
-import logging
-import requests
-import re
 import json
+import logging
+import re
 from abc import ABC, abstractmethod
-from datetime import datetime, timezone
-import random
-from typing import List, Dict, Any, Optional
+from typing import Any
+
+import requests
+
+from impact_atlas.config import RuntimeSettings
+from impact_atlas.http import ResilientHttpClient, RetryPolicy
 
 # Configure module-level logger
 logger = logging.getLogger("connectors")
 
 class BaseConnector(ABC):
     """Abstract base class for all data connectors."""
-    
-    def __init__(self, name: str, rate_limit_sec: float = 1.0):
+
+    def __init__(self, name: str, rate_limit_sec: float = 1.0, settings: RuntimeSettings | None = None) -> None:
+        """Initialize a named connector with shared HTTP resilience controls."""
         self.name = name
-        self.rate_limit_sec = rate_limit_sec
-        self.last_request_time = 0.0
-        self.session = requests.Session()
-        self.session.headers.update({
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        })
+        runtime = settings or RuntimeSettings.from_environment()
+        self._http = ResilientHttpClient(
+            name=name.lower().replace(" ", "-"),
+            user_agent=runtime.user_agent,
+            retry_policy=RetryPolicy(
+                max_attempts=runtime.max_retries,
+                timeout_seconds=runtime.request_timeout_seconds,
+                backoff_seconds=runtime.retry_backoff_seconds,
+            ),
+            rate_limit_seconds=rate_limit_sec,
+        )
 
-    def _wait_for_rate_limit(self):
-        """Enforce leaky bucket rate limiting."""
-        elapsed = time.time() - self.last_request_time
-        if elapsed < self.rate_limit_sec:
-            sleep_time = self.rate_limit_sec - elapsed
-            time.sleep(sleep_time)
-        self.last_request_time = time.time()
+    def safe_request(self, url: str, method: str = "GET", **kwargs: Any) -> requests.Response | None:
+        """Execute a rate-limited request with bounded retries and timeout enforcement."""
+        return self._http.request(method, url, **kwargs)
 
-    def safe_request(self, url: str, method: str = "GET", **kwargs) -> Optional[requests.Response]:
-        """Execute HTTP request with error handling and rate limiting."""
-        self._wait_for_rate_limit()
-        try:
-            resp = self.session.request(method, url, timeout=30, **kwargs)
-            resp.raise_for_status()
-            return resp
-        except requests.exceptions.RequestException as e:
-            logger.error(f"[{self.name}] HTTP Error on {url}: {e}")
-            return None
+    def close(self) -> None:
+        """Release underlying pooled HTTP connections."""
+        self._http.close()
 
     @abstractmethod
-    def fetch_events(self) -> List[Dict[str, Any]]:
+    def fetch_events(self) -> list[dict[str, Any]]:
         """Main method to retrieve normalized events."""
         pass
 
@@ -55,21 +51,24 @@ class WarSpottingClient(BaseConnector):
     """
     BASE_URL = "https://ukr.warspotting.net/api"
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Strict rate limit: 10 requests / 10 seconds = 1 req/sec
         super().__init__("WarSpotting", rate_limit_sec=1.5)
 
-    def fetch_events(self) -> List[Dict[str, Any]]:
+    def fetch_events(self) -> list[dict[str, Any]]:
         url = f"{self.BASE_URL}/losses/russia"
         logger.info(f"[{self.name}] Fetching authoritative data from {url}")
-        
+
         # Use full headers to avoid 520 errors
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'User-Agent': (
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                '(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            ),
             'Referer': 'https://ukr.warspotting.net/',
             'Accept': 'application/json, text/plain, */*'
         }
-        
+
         resp = self.safe_request(url, headers=headers)
         if not resp:
             return []
@@ -83,16 +82,16 @@ class WarSpottingClient(BaseConnector):
         # API v0.4 returns {"losses": [...]}
         items = data.get('losses', [])
         logger.info(f"[{self.name}] Retrieved {len(items)} raw items")
-        
+
         normalized_events = []
         for item in items:
             event = self._normalize_item(item)
             if event:
                 normalized_events.append(event)
-                
+
         return normalized_events
 
-    def _normalize_item(self, item: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def _normalize_item(self, item: dict[str, Any]) -> dict[str, Any] | None:
         """Convert raw WarSpotting item to internal schema."""
         try:
             # Mandate ID presence
@@ -104,15 +103,17 @@ class WarSpottingClient(BaseConnector):
             model = item.get('model', 'Unknown')
             status = item.get('status', 'Unknown')
             timestamp = item.get('date') or item.get('created_at')
-            
+
             # Geo handling
             geo = item.get('geo') or {}
-            lat = None
-            lon = None
+            lat: float | None = None
+            lon: float | None = None
             if geo:
-                lat = float(geo.get('lat')) if geo.get('lat') else None
-                lon = float(geo.get('lng') or geo.get('lon')) if (geo.get('lng') or geo.get('lon')) else None
-            
+                raw_lat = geo.get('lat')
+                raw_lon = geo.get('lng') or geo.get('lon')
+                lat = float(raw_lat) if raw_lat else None
+                lon = float(raw_lon) if raw_lon else None
+
             # Unit info
             unit_raw = item.get('unit')
 
@@ -130,8 +131,9 @@ class WarSpottingClient(BaseConnector):
                     "type": "equipment_loss"
                 }
             }
-        except Exception as e:
-            logger.warning(f"[{self.name}] Error normalizing item {item.get('id')}: {e}")
+        except (AttributeError, TypeError, ValueError) as error:
+            item_id = item.get("id") if isinstance(item, dict) else "<invalid>"
+            logger.warning("[%s] Error normalizing item %s: %s", self.name, item_id, error)
             return None
 
 
@@ -146,23 +148,23 @@ class ParabellumGeoExtractor(BaseConnector):
     TARGET_URL = "https://geo.parabellumthinktank.com/index.php/view/map?repository=russoukrainianwar&project=russian_invasion_of_ukraine"
     WFS_BASE = "https://geo.parabellumthinktank.com/index.php/lizmap/service?repository=russoukrainianwar&project=russian_invasion_of_ukraine"
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("Parabellum", rate_limit_sec=2.0)
 
-    def fetch_events(self) -> List[Dict[str, Any]]:
+    def fetch_events(self) -> list[dict[str, Any]]:
         logger.info(f"[{self.name}] Starting heuristic extraction...")
-        
+
         # Strategy 1: HTML Inspection
         events = self._strategy_html_embedded()
         if events:
             logger.info(f"[{self.name}] Strategy 1 (HTML) success: {len(events)} events")
             return events
-            
+
         # Strategy 2: WFS Fallback (Legacy method)
         logger.info(f"[{self.name}] Strategy 1 failed. Falling back to WFS...")
         return self._strategy_wfs()
 
-    def _strategy_html_embedded(self) -> List[Dict[str, Any]]:
+    def _strategy_html_embedded(self) -> list[dict[str, Any]]:
         """Inspect HTML for 'var json_data = ...' or similar patterns."""
         resp = self.safe_request(self.TARGET_URL)
         if not resp:
@@ -172,13 +174,13 @@ class ParabellumGeoExtractor(BaseConnector):
         # Regex to find JSON assigned to variables or passed to functions
         # Look for: var someData = {...}; OR param = {...}
         # Common pattern in Lizmap/Leaflet: "options": {...} or "features": [...]
-        
+
         # 1. Look for explicit GeoJSON structure in scripts
         # Pattern: {"type":"FeatureCollection" ... }
         geojson_matches = re.findall(r'(\{"type"\s*:\s*"FeatureCollection".+?\})\s*(?:;|\))', html, re.DOTALL)
-        
+
         all_events = []
-        
+
         for match in geojson_matches:
             try:
                 data = json.loads(match)
@@ -196,40 +198,40 @@ class ParabellumGeoExtractor(BaseConnector):
 
         return all_events
 
-    def _strategy_wfs(self) -> List[Dict[str, Any]]:
+    def _strategy_wfs(self) -> list[dict[str, Any]]:
         """Fallback to WFS scraping."""
         # Known useful layers
         layers = ["russian_invasion_of_ukraine", "frontline", "events", "units"]
         all_events = []
-        
+
         for layer in layers:
             wfs_url = (f"{self.WFS_BASE}&SERVICE=WFS&REQUEST=GetFeature"
                        f"&TYPENAME={layer}&OUTPUTFORMAT=GeoJSON&SRSNAME=EPSG:4326")
-            
+
             resp = self.safe_request(wfs_url)
             if not resp:
                 continue
-                
+
             try:
                 data = resp.json()
                 features = data.get('features', [])
                 logger.info(f"[{self.name}] WFS Layer '{layer}': {len(features)} features")
-                
+
                 for feat in features:
                     parsed = self._parse_feature(feat, layer_name=layer)
                     if parsed:
                         all_events.append(parsed)
             except json.JSONDecodeError:
                 continue
-                
+
         return all_events
 
-    def _parse_feature(self, feature: Dict[str, Any], layer_name: str) -> Optional[Dict[str, Any]]:
+    def _parse_feature(self, feature: dict[str, Any], layer_name: str) -> dict[str, Any] | None:
         """Normalize GeoJSON feature."""
         try:
             props = feature.get('properties', {})
             geom = feature.get('geometry', {})
-            
+
             # ID extraction
             raw_id = feature.get('id') or props.get('id') or props.get('fid')
             if not raw_id:
@@ -277,10 +279,10 @@ class ParabellumGeoExtractor(BaseConnector):
                 }
             }
 
-        except Exception as e:
+        except Exception:
             return None
 
-    def _flatten_coords(self, coords):
+    def _flatten_coords(self, coords: list[Any]) -> list[Any]:
         """Recursively get first coordinate pair."""
         if not coords:
             return []

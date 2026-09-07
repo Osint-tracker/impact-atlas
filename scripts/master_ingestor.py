@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 master_ingestor.py -- Production-Grade OSINT Multi-Source Ingestor
 =================================================================
@@ -28,19 +28,22 @@ import argparse
 import hashlib
 import json
 import logging
-import os
 import re
 import sqlite3
-import sys
 import time
-from datetime import datetime, timezone
+from contextlib import contextmanager
+from datetime import datetime, UTC
 from pathlib import Path
+from collections.abc import Iterator
 from urllib.parse import urljoin
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from io import BytesIO
+
+from impact_atlas.config import ProjectPaths, RuntimeSettings
+from impact_atlas.logging import configure_logging
 
 try:
     from PIL import Image
@@ -53,45 +56,33 @@ from ingestion.connectors import WarSpottingClient, ParabellumGeoExtractor
 # ---------------------------------------------------------------------------
 # CONFIGURATION
 # ---------------------------------------------------------------------------
-BASE_DIR = Path(__file__).resolve().parent.parent
-DB_PATH = BASE_DIR / "impact_atlas.db"
-LOG_DIR = BASE_DIR / "logs"
-DATA_DIR = BASE_DIR / "data"
+PATHS = ProjectPaths.discover()
+BASE_DIR = PATHS.root
+DB_PATH = PATHS.impact_database
+LOG_DIR = PATHS.logs
+DATA_DIR = PATHS.data
 DEEPSTATE_DIR = DATA_DIR / "deepstate"
 GEOCONFIRMED_DIR = DATA_DIR / "geoconfirmed"
 
-RATE_LIMIT_SECONDS = 1.5
-REQUEST_TIMEOUT = 30
-MAX_RETRIES = 3
+_settings_instance: RuntimeSettings | None = None
 
-USER_AGENT = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/120.0.0.0 Safari/537.36"
-)
+
+def get_settings() -> RuntimeSettings:
+    """Return the validated runtime settings, loading them on first use."""
+    global _settings_instance
+    if _settings_instance is None:
+        _settings_instance = RuntimeSettings.from_environment(dotenv_path=PATHS.root / ".env")
+    return _settings_instance
 
 # ---------------------------------------------------------------------------
 # LOGGING SETUP
 # ---------------------------------------------------------------------------
-LOG_DIR.mkdir(parents=True, exist_ok=True)
-
 logger = logging.getLogger("master_ingestor")
-logger.setLevel(logging.DEBUG)
 
-fh = logging.FileHandler(LOG_DIR / "master_ingestor.log", encoding="utf-8")
-fh.setLevel(logging.DEBUG)
 
-ch = logging.StreamHandler(sys.stdout)
-ch.setLevel(logging.INFO)
-
-fmt = logging.Formatter(
-    "[%(asctime)s] %(levelname)-8s %(name)s | %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
-fh.setFormatter(fmt)
-ch.setFormatter(fmt)
-logger.addHandler(fh)
-logger.addHandler(ch)
+def configure_runtime_logging(*, verbose: bool = False) -> logging.Logger:
+    """Configure the ingestor logger only when the pipeline is actually invoked."""
+    return configure_logging("master_ingestor", LOG_DIR / "master_ingestor.log", verbose=verbose)
 
 
 # ===========================================================================
@@ -105,7 +96,7 @@ class UnitResolver:
 
     # Master alias dictionary: canonical_id -> [list of known aliases/patterns]
     ALIAS_MAP: dict[str, list[str]] = {
-        # ── Ukrainian Ground Forces ──
+        # â”€â”€ Ukrainian Ground Forces â”€â”€
         "ua_1_tank": ["1st tank brigade", "1 otbr", "1-a otbr", "1st tank bde"],
         "ua_3_assault": ["3rd assault brigade", "3rd assault", "3 oshbr", "azov brigade"],
         "ua_10_mtn_assault": ["10th mountain assault brigade", "10 ogshbr", "10th mtn assault"],
@@ -125,7 +116,7 @@ class UnitResolver:
         "ua_93_mech": ["93rd mechanized brigade", "93 ombr", "93rd mech", "kholodny yar"],
         "ua_110_mech": ["110th mechanized brigade", "110 ombr", "110th mech"],
         "ua_128_mtn_assault": ["128th mountain assault brigade", "128 ogshbr", "128th mtn"],
-        # ── Russian Ground Forces ──
+        # â”€â”€ Russian Ground Forces â”€â”€
         "ru_1_gta": ["1st guards tank army", "1 gta", "1st tank army", "1-ya gvardeiskaya"],
         "ru_2_gma": ["2nd guards motor rifle army", "2nd combined arms army", "2 oa"],
         "ru_4_tank": ["4th guards tank division", "4 gtd", "4th kantemirovskaya"],
@@ -134,8 +125,8 @@ class UnitResolver:
         "ru_155_marine": ["155th marine brigade", "155 obmp", "155th marines", "pacific marines"],
         "ru_200_motor": ["200th motor rifle brigade", "200 omsbr", "200th arctic"],
         "ru_810_marine": ["810th marine brigade", "810 obmp", "810th marines", "sevastopol marines"],
-        "ru_storm_z": ["storm-z", "shtorm z", "штурм-z", "storm z detachment"],
-        "ru_wagner": ["wagner group", "pmc wagner", "wagner pmc", "чвк вагнер", "prigozhin"],
+        "ru_storm_z": ["storm-z", "shtorm z", "ÑˆÑ‚ÑƒÑ€Ð¼-z", "storm z detachment"],
+        "ru_wagner": ["wagner group", "pmc wagner", "wagner pmc", "Ñ‡Ð²Ðº Ð²Ð°Ð³Ð½ÐµÑ€", "prigozhin"],
     }
 
     def __init__(self):
@@ -173,11 +164,11 @@ class UnitResolver:
 
         normalized = self._normalize(raw_name)
 
-        # ── Direct match ──
+        # â”€â”€ Direct match â”€â”€
         if normalized in self._lookup:
             return self._lookup[normalized]
 
-        # ── Substring / keyword match ──
+        # â”€â”€ Substring / keyword match â”€â”€
         for alias_norm, canonical_id in self._lookup.items():
             if alias_norm in normalized or normalized in alias_norm:
                 logger.debug(
@@ -186,7 +177,7 @@ class UnitResolver:
                 )
                 return canonical_id
 
-        # ── Ordinal extraction heuristic ──
+        # â”€â”€ Ordinal extraction heuristic â”€â”€
         numbers = re.findall(r"\d+", normalized)
         if numbers:
             for num in numbers:
@@ -202,7 +193,7 @@ class UnitResolver:
                                 )
                                 return canonical_id
 
-        # ── No match ──
+        # â”€â”€ No match â”€â”€
         logger.warning("UnitResolver: UNRESOLVED unit '%s' -- needs human review", raw_name)
         return None
 
@@ -211,18 +202,51 @@ class UnitResolver:
 # DATABASE MANAGER
 # ===========================================================================
 class DatabaseManager:
-    """SQLite wrapper with schema init and upsert helpers."""
+    """SQLite persistence boundary with explicit batch transaction semantics."""
 
-    def __init__(self, db_path: Path = DB_PATH):
+    def __init__(self, db_path: Path = DB_PATH, *, enable_image_hashing: bool = False) -> None:
+        """Open the canonical database with WAL and bounded lock-wait behavior."""
+        settings = get_settings()
+        timeout_seconds = settings.request_timeout_seconds
         self.db_path = db_path
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        self.conn = sqlite3.connect(str(self.db_path))
+        self.conn = sqlite3.connect(str(self.db_path), timeout=timeout_seconds)
         self.conn.execute("PRAGMA journal_mode=WAL")
         self.conn.execute("PRAGMA foreign_keys=ON")
+        self.conn.execute(f"PRAGMA busy_timeout={int(timeout_seconds * 1000)}")
+        self._transaction_depth = 0
+        self._enable_image_hashing = enable_image_hashing and PHASH_INGEST_AVAILABLE
         self._init_schema()
         logger.info("DatabaseManager connected: %s", self.db_path)
 
-    def _init_schema(self):
+    def __enter__(self) -> "DatabaseManager":
+        """Allow the manager to be used as a deterministic context manager."""
+        return self
+
+    def __exit__(self, exc_type: object, exc_value: object, traceback: object) -> None:
+        """Close the connection after rolling back unfinished work on error."""
+        if exc_type is not None:
+            self.conn.rollback()
+        self.close()
+
+    @contextmanager
+    def transaction(self) -> Iterator["DatabaseManager"]:
+        """Batch related writes into one atomic commit and rollback them on failure."""
+        is_outermost = self._transaction_depth == 0
+        self._transaction_depth += 1
+        try:
+            yield self
+            if is_outermost:
+                self.conn.commit()
+        except Exception:
+            if is_outermost:
+                self.conn.rollback()
+            raise
+        finally:
+            self._transaction_depth -= 1
+
+    def _init_schema(self) -> None:
+        """Create the current schema and apply additive migrations idempotently."""
         cursor = self.conn.cursor()
         cursor.executescript("""
             CREATE TABLE IF NOT EXISTS units_registry (
@@ -253,50 +277,57 @@ class DatabaseManager:
             CREATE INDEX IF NOT EXISTS idx_ke_unit ON kinetic_events(unit_id);
             CREATE INDEX IF NOT EXISTS idx_ke_geo ON kinetic_events(lat, lon);
         """)
-        try:
-            cursor.execute("ALTER TABLE kinetic_events ADD COLUMN image_phash TEXT;")
-        except sqlite3.OperationalError:
-            pass
+        columns = {row[1] for row in cursor.execute("PRAGMA table_info(kinetic_events)")}
+        if "image_phash" not in columns:
+            cursor.execute("ALTER TABLE kinetic_events ADD COLUMN image_phash TEXT")
         self.conn.commit()
 
     def _extract_image_phash(self, raw_data: str | None) -> str | None:
-        if not PHASH_INGEST_AVAILABLE or not raw_data:
+        """Optionally calculate an image hash without making it an ingest-path dependency."""
+        if not self._enable_image_hashing or not raw_data:
             return None
         try:
             payload = json.loads(raw_data) if isinstance(raw_data, str) else raw_data
-            if not isinstance(payload, dict):
-                return None
-            candidate_urls = []
-            for key in ('image_url', 'photo_url', 'media_url', 'source_url'):
-                url = payload.get(key)
-                if isinstance(url, str):
-                    candidate_urls.append(url)
-            media_urls = payload.get('media_urls')
-            if isinstance(media_urls, list):
-                candidate_urls.extend([u for u in media_urls if isinstance(u, str)])
-
-            headers = {"User-Agent": USER_AGENT}
-            for url in candidate_urls:
-                if not url or not url.startswith('http'):
-                    continue
-                try:
-                    resp = requests.get(url, timeout=12, headers=headers)
-                    if resp.status_code != 200:
-                        continue
-                    ctype = (resp.headers.get('Content-Type') or "").lower()
-                    if "image" not in ctype and not url.lower().endswith(('.jpg', '.jpeg', '.png', '.webp', '.bmp')):
-                        continue
-                    img = Image.open(BytesIO(resp.content)).convert('RGB')
-                    return str(imagehash.phash(img))
-                except Exception:
-                    continue
-        except Exception:
+        except (TypeError, json.JSONDecodeError) as error:
+            logger.debug("Skipping invalid image metadata: %s", error)
             return None
+        if not isinstance(payload, dict):
+            return None
+        candidate_urls = [
+            payload[key] for key in ("image_url", "photo_url", "media_url", "source_url")
+            if isinstance(payload.get(key), str)
+        ]
+        media_urls = payload.get("media_urls")
+        if isinstance(media_urls, list):
+            candidate_urls.extend(url for url in media_urls if isinstance(url, str))
+        for url in candidate_urls:
+            if not url.startswith(("http://", "https://")):
+                continue
+            try:
+                response = requests.get(
+                    url,
+                    timeout=12,
+                    headers={"User-Agent": get_settings().user_agent},
+                )
+                content_type = (response.headers.get("Content-Type") or "").lower()
+                if response.status_code != 200 or "image" not in content_type:
+                    continue
+                image = Image.open(BytesIO(response.content)).convert("RGB")
+                return str(imagehash.phash(image))
+            except (OSError, ValueError, requests.RequestException) as error:
+                logger.debug("Skipping unavailable image for perceptual hash: %s", error)
         return None
 
-    def upsert_unit(self, unit_id: str, official_name: str = None,
-                    aliases: str = None, faction: str = None,
-                    status: str = "ACTIVE", equipment_manifest: str = None):
+    def upsert_unit(
+        self,
+        unit_id: str,
+        official_name: str | None = None,
+        aliases: str | None = None,
+        faction: str | None = None,
+        status: str = "ACTIVE",
+        equipment_manifest: str | None = None,
+    ) -> None:
+        """Insert or enrich one military unit without committing an active batch."""
         self.conn.execute("""
             INSERT INTO units_registry (unit_id, official_name, aliases, faction, status, equipment_manifest)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -307,15 +338,26 @@ class DatabaseManager:
                 status = COALESCE(excluded.status, units_registry.status),
                 equipment_manifest = COALESCE(excluded.equipment_manifest, units_registry.equipment_manifest)
         """, (unit_id, official_name, aliases, faction, status, equipment_manifest))
-        self.conn.commit()
+        self._commit_if_unbatched()
 
-    def upsert_event(self, event_id: str, unit_id: str = None,
-                     source: str = None, date: str = None,
-                     lat: float = None, lon: float = None,
-                     intensity_score: float = None, raw_data: str = None):
+    def upsert_event(
+        self,
+        event_id: str,
+        unit_id: str | None = None,
+        source: str | None = None,
+        date: str | None = None,
+        lat: float | None = None,
+        lon: float | None = None,
+        intensity_score: float | None = None,
+        raw_data: str | None = None,
+    ) -> None:
+        """Insert or enrich one kinetic event without committing an active batch."""
+        if not source:
+            raise ValueError("An event source is required for persistence.")
         image_phash = self._extract_image_phash(raw_data)
         self.conn.execute("""
-            INSERT INTO kinetic_events (event_id, unit_id, source, date, lat, lon, intensity_score, raw_data, image_phash)
+            INSERT INTO kinetic_events
+                (event_id, unit_id, source, date, lat, lon, intensity_score, raw_data, image_phash)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(event_id) DO UPDATE SET
                 unit_id = COALESCE(excluded.unit_id, kinetic_events.unit_id),
@@ -327,54 +369,69 @@ class DatabaseManager:
                 raw_data = COALESCE(excluded.raw_data, kinetic_events.raw_data),
                 image_phash = COALESCE(excluded.image_phash, kinetic_events.image_phash)
         """, (event_id, unit_id, source, date, lat, lon, intensity_score, raw_data, image_phash))
-        self.conn.commit()
+        self._commit_if_unbatched()
 
-    def close(self):
+    def _commit_if_unbatched(self) -> None:
+        """Preserve compatibility for direct calls while allowing pipeline batching."""
+        if self._transaction_depth == 0:
+            self.conn.commit()
+
+    def close(self) -> None:
+        """Close the SQLite connection once all work has completed."""
         self.conn.close()
         logger.info("Database connection closed.")
 
-    def get_stats(self) -> dict:
-        cur = self.conn.cursor()
-        cur.execute("SELECT COUNT(*) FROM units_registry")
-        units = cur.fetchone()[0]
-        cur.execute("SELECT COUNT(*) FROM kinetic_events")
-        events = cur.fetchone()[0]
+    def get_stats(self) -> dict[str, int]:
+        """Return lightweight row counts for pipeline observability."""
+        units = int(self.conn.execute("SELECT COUNT(*) FROM units_registry").fetchone()[0])
+        events = int(self.conn.execute("SELECT COUNT(*) FROM kinetic_events").fetchone()[0])
         return {"units_registry": units, "kinetic_events": events}
 
 
 # ===========================================================================
 # HTTP HELPER
 # ===========================================================================
-def safe_request(url: str, method: str = "GET", retries: int = MAX_RETRIES,
-                 **kwargs) -> requests.Response | None:
+def safe_request(
+    url: str,
+    method: str = "GET",
+    retries: int | None = None,
+    **kwargs: object,
+) -> requests.Response | None:
     """Execute an HTTP request with retry logic, rate limiting, and error handling."""
-    headers = kwargs.pop("headers", {})
-    headers.setdefault("User-Agent", USER_AGENT)
-    kwargs["headers"] = headers
-    kwargs.setdefault("timeout", REQUEST_TIMEOUT)
+    settings = get_settings()
+    effective_retries = retries or settings.max_retries
+    timeout = settings.request_timeout_seconds
+    rate_limit = settings.retry_backoff_seconds
+    headers = dict(kwargs.pop("headers", {}) or {})  # type: ignore[arg-type]
+    headers.setdefault("User-Agent", settings.user_agent)
+    kwargs["headers"] = headers  # type: ignore[assignment]
+    request_timeout = kwargs.pop("timeout", timeout)  # type: ignore[assignment]
 
-    for attempt in range(1, retries + 1):
+    for attempt in range(1, effective_retries + 1):
         try:
-            time.sleep(RATE_LIMIT_SECONDS)
-            resp = requests.request(method, url, **kwargs)
+            time.sleep(rate_limit)
+            resp = requests.request(
+                method, url, timeout=request_timeout, **kwargs  # type: ignore[arg-type]
+            )
             if resp.status_code == 200:
                 return resp
-            elif resp.status_code >= 500:
+            if resp.status_code >= 500:
                 logger.warning(
                     "Server error %d on %s (attempt %d/%d)",
-                    resp.status_code, url, attempt, retries,
+                    resp.status_code, url, attempt, effective_retries,
                 )
                 time.sleep(attempt * 2)
                 continue
-            else:
-                logger.error("HTTP %d on %s -- not retrying", resp.status_code, url)
-                return None
+            logger.error("HTTP %d on %s -- not retrying", resp.status_code, url)
+            return None
         except requests.exceptions.RequestException as e:
-            logger.error("Request failed for %s (attempt %d/%d): %s",
-                         url, attempt, retries, e)
+            logger.error(
+                "Request failed for %s (attempt %d/%d): %s",
+                url, attempt, effective_retries, e,
+            )
             time.sleep(attempt * 2)
 
-    logger.error("All %d retries exhausted for %s", retries, url)
+    logger.error("All %d retries exhausted for %s", effective_retries, url)
     return None
 
 
@@ -448,16 +505,16 @@ def hash_text(text: str) -> str:
 def ingest_warspotting(db: DatabaseManager, resolver: UnitResolver):
     """Fetch WarSpotting data via authoritative API connector."""
     logger.info("=== SOURCE 1: WarSpotting -- Starting ingestion ===")
-    
+
     client = WarSpottingClient()
     events = client.fetch_events()
-    
+
     count = 0
     for ev in events:
         try:
             # Resolve unit ID
             unit_id = resolver.resolve_unit_id(ev.get('unit_raw'))
-            
+
             db.upsert_event(
                 event_id=ev['event_id'],
                 unit_id=unit_id,
@@ -559,7 +616,7 @@ def ingest_deepstate(db: DatabaseManager, resolver: UnitResolver):
     DEEPSTATE_DIR.mkdir(parents=True, exist_ok=True)
 
     # Use current timestamp rounded to the day
-    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    timestamp = datetime.now(UTC).strftime("%Y-%m-%d")
     endpoints = [
         f"https://deepstatemap.live/api/history/{timestamp}/geojson",
         "https://deepstatemap.live/api/history/public",
@@ -578,7 +635,7 @@ def ingest_deepstate(db: DatabaseManager, resolver: UnitResolver):
                     json.dump(data, f, ensure_ascii=False, indent=2)
                 logger.info("DeepState: saved GeoJSON to %s (%d bytes)", filepath, filepath.stat().st_size)
                 return
-            except (json.JSONDecodeError, IOError) as e:
+            except (OSError, json.JSONDecodeError) as e:
                 logger.error("DeepState: failed to save from %s: %s", url, e)
         else:
             logger.warning("DeepState: endpoint %s unreachable", url)
@@ -644,7 +701,7 @@ def ingest_lostarmour(db: DatabaseManager, resolver: UnitResolver):
                     event_id=event_id,
                     unit_id=unit_id,
                     source=f"LostArmour_{tag_name}",
-                    date=normalize_date(datetime.now(timezone.utc).strftime("%Y-%m-%d")),
+                    date=normalize_date(datetime.now(UTC).strftime("%Y-%m-%d")),
                     raw_data=raw_data,
                 )
                 total_count += 1
@@ -675,7 +732,7 @@ def ingest_oryx(db: DatabaseManager, resolver: UnitResolver):
     # Parse category headers and list items ONLY (no <a> tags)
     current_category = "Unknown"
     count = 0
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    today = datetime.now(UTC).strftime("%Y-%m-%d")
 
     for element in content.find_all(["h3", "h2", "li"]):
         tag_name = element.name
@@ -1121,7 +1178,7 @@ def ingest_motolko(db: DatabaseManager, resolver: UnitResolver):
             db.upsert_event(
                 event_id=event_id,
                 source="Motolko",
-                date=normalize_date(datetime.now(timezone.utc).strftime("%Y-%m-%d")),
+                date=normalize_date(datetime.now(UTC).strftime("%Y-%m-%d")),
                 raw_data=raw_data,
             )
             count += 1
@@ -1140,7 +1197,7 @@ def _parse_kml_placemarks(kml_content: bytes, db: DatabaseManager):
 
     count = 0
     try:
-        root = ET.fromstring(kml_content)
+        root = ET.fromstring(kml_content)  # noqa: S314
     except ET.ParseError as e:
         logger.error("GeoConfirmed: KML XML parse error: %s", e)
         return 0
@@ -1205,7 +1262,7 @@ def ingest_geoconfirmed(db: DatabaseManager, resolver: UnitResolver):
     """Download GeoConfirmed KML/data and ingest geolocated events."""
     logger.info("=== SOURCE 10: GeoConfirmed -- Starting ingestion ===")
     GEOCONFIRMED_DIR.mkdir(parents=True, exist_ok=True)
-    ts = datetime.now(timezone.utc).strftime("%Y%m%d")
+    ts = datetime.now(UTC).strftime("%Y%m%d")
 
     # Strategy 1: The CDN KML is a NetworkLink redirect -- follow it to get the real KML
     real_kml_url = "https://geoconfirmed.org/api/map/ExportAsKml/Ukraine"
@@ -1227,7 +1284,7 @@ def ingest_geoconfirmed(db: DatabaseManager, resolver: UnitResolver):
             with open(kml_path, "wb") as f:
                 f.write(resp.content)
             logger.info("GeoConfirmed: saved KML to %s (%d bytes)", kml_path, len(resp.content))
-        except IOError as e:
+        except OSError as e:
             logger.error("GeoConfirmed: failed to save KML: %s", e)
 
         # Check if it's a NetworkLink (small file = redirect stub)
@@ -1244,7 +1301,7 @@ def ingest_geoconfirmed(db: DatabaseManager, resolver: UnitResolver):
                     try:
                         with open(redirect_path, "wb") as f:
                             f.write(redirect_resp.content)
-                    except IOError:
+                    except OSError:
                         pass
                     parsed = _parse_kml_placemarks(redirect_resp.content, db)
                     total_count += parsed
@@ -1313,10 +1370,10 @@ PARABELLUM_DIR = DATA_DIR / "parabellum"
 def ingest_parabellum(db: DatabaseManager, resolver: UnitResolver):
     """Fetch Parabellum data via heuristic map scraper."""
     logger.info("=== SOURCE 11: Parabellum -- Starting ingestion ===")
-    
+
     extractor = ParabellumGeoExtractor()
     events = extractor.fetch_events()
-    
+
     count = 0
     for ev in events:
         try:
@@ -1356,69 +1413,76 @@ SOURCE_REGISTRY = {
 }
 
 
-def run_pipeline(sources: list[str] | None = None, dry_run: bool = False):
-    """Execute the full ingestion pipeline."""
+def run_pipeline(sources: list[str] | None = None, dry_run: bool = False) -> None:
+    """Execute the full ingestion pipeline.
+
+    Each source ingests inside a single batch transaction: its writes commit
+    atomically when the source succeeds and roll back when it fails, which
+    avoids per-row commit amplification and keeps sources independent.
+    """
+    configure_runtime_logging()
     logger.info("=====================================================")
     logger.info("    MASTER INGESTOR -- Pipeline Start")
     logger.info("    Mode: %s", "DRY RUN" if dry_run else "LIVE")
     logger.info("=====================================================")
 
     resolver = UnitResolver()
-    db = DatabaseManager()
+    with DatabaseManager() as db:
+        if dry_run:
+            stats = db.get_stats()
+            logger.info("DRY RUN: Schema initialized successfully.")
+            logger.info("DRY RUN: Current DB state -- %s", stats)
+            logger.info("DRY RUN: All %d source modules registered.", len(SOURCE_REGISTRY))
+            for key, (name, _) in SOURCE_REGISTRY.items():
+                logger.info("  [%s] %s -- READY", key, name)
+            return
 
-    if dry_run:
+        # Determine which sources to run
+        if sources:  # noqa: SIM108
+            targets = {k: v for k, v in SOURCE_REGISTRY.items() if k in sources}
+        else:
+            targets = dict(SOURCE_REGISTRY)
+
+        logger.info(
+            "Running %d source(s): %s",
+            len(targets), ", ".join(name for name, _ in targets.values()),
+        )
+
+        # Seeding known units in one batch to prevent FK errors when
+        # MilitaryLand is not part of this run.
+        logger.info("Seeding %d known units into units_registry...", len(resolver.ALIAS_MAP))
+        with db.transaction():
+            for unit_id, aliases in resolver.ALIAS_MAP.items():
+                official_name = aliases[0].title()
+                db.upsert_unit(
+                    unit_id=unit_id,
+                    official_name=official_name,
+                    faction="Unknown",
+                    aliases=",".join(aliases),
+                )
+        logger.info("Seeded %d known units.", len(resolver.ALIAS_MAP))
+
+        for key, (name, func) in targets.items():
+            try:
+                logger.info("--- Starting source: %s [%s] ---", name, key)
+                start_time = time.time()
+                with db.transaction():
+                    func(db, resolver)
+                elapsed = time.time() - start_time
+                logger.info("--- Completed %s in %.1fs ---", name, elapsed)
+            except Exception as e:
+                logger.error(
+                    "CRITICAL: Source %s failed with unhandled exception: %s",
+                    name, e, exc_info=True,
+                )
+
+        # Final stats
         stats = db.get_stats()
-        logger.info("DRY RUN: Schema initialized successfully.")
-        logger.info("DRY RUN: Current DB state -- %s", stats)
-        logger.info("DRY RUN: All %d source modules registered.", len(SOURCE_REGISTRY))
-        for key, (name, _) in SOURCE_REGISTRY.items():
-            logger.info("  [%s] %s -- READY", key, name)
-        db.close()
-        return
-
-    # Determine which sources to run
-    if sources:
-        targets = {k: v for k, v in SOURCE_REGISTRY.items() if k in sources}
-    else:
-        targets = SOURCE_REGISTRY
-
-    logger.info("Running %d source(s): %s", len(targets),
-                ", ".join(name for name, _ in targets.values()))
-
-    # Seeding known units to prevent FK errors if MilitaryLand source isn't run
-    logger.info("Seeding %d known units into units_registry...", len(resolver.ALIAS_MAP))
-    seed_count = 0
-    for unit_id, aliases in resolver.ALIAS_MAP.items():
-        # Use first alias as official name placeholder; don't overwrite if exists
-        # We use INSERT OR IGNORE logic via upsert_unit but we only want to ensure existence.
-        # Actually upsert_unit updates if exists. Let's strictly ensure it exists.
-        # Since we don't have full metadata here, we'll just upsert with status='ACTIVE'
-        # and the first alias as name. This is safe as MilitaryLand will overwrite with better data later.
-        official_name = aliases[0].title()
-        db.upsert_unit(unit_id=unit_id, official_name=official_name, faction="Unknown", aliases=",".join(aliases))
-        seed_count += 1
-
-
-    for key, (name, func) in targets.items():
-        try:
-            logger.info("--- Starting source: %s [%s] ---", name, key)
-            start_time = time.time()
-            func(db, resolver)
-            elapsed = time.time() - start_time
-            logger.info("--- Completed %s in %.1fs ---", name, elapsed)
-        except Exception as e:
-            logger.error("CRITICAL: Source %s failed with unhandled exception: %s", name, e,
-                         exc_info=True)
-
-    # Final stats
-    stats = db.get_stats()
-    logger.info("=====================================================")
-    logger.info("    Pipeline Complete")
-    logger.info("    units_registry:  %6d rows", stats["units_registry"])
-    logger.info("    kinetic_events:  %6d rows", stats["kinetic_events"])
-    logger.info("=====================================================")
-
-    db.close()
+        logger.info("=====================================================")
+        logger.info("    Pipeline Complete")
+        logger.info("    units_registry:  %6d rows", stats["units_registry"])
+        logger.info("    kinetic_events:  %6d rows", stats["kinetic_events"])
+        logger.info("=====================================================")
 
 
 # ===========================================================================

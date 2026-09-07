@@ -1,19 +1,49 @@
-openai>=1.0.0
-numpy>=1.24.0
-geopy>=2.3.0
-beautifulsoup4>=4.12.0
-matplotlib>=3.8.0
-fpdf2>=2.7.0
-requests>=2.31.0
-pandas>=2.0.0
-chromadb>=0.4.0
-tenacity>=8.0.0
-python-dotenv>=1.0.0
-emoji>=2.0.0
-scikit-learn>=1.3.0
-shapely>=2.0.0
-opencv-python-headless>=4.8.0
-pillow>=10.0.0
-ImageHash>=4.3.1
-aiohttp
-telethon
+# Impact Atlas runtime dependencies (Python 3.11+).
+# Versions are bounded to compatible major series; CI installs this file.
+# Optional accelerators (orjson) degrade gracefully when absent.
+
+# --- Core HTTP / config / logging ------------------------------------
+requests>=2.31.0,<3
+python-dotenv>=1.0.0,<2
+tenacity>=8.0.0,<9
+httpx>=0.27.0,<1
+aiohttp>=3.9.0,<4
+
+# --- AI providers -----------------------------------------------------
+openai>=1.30.0,<2
+
+# --- Data processing --------------------------------------------------
+numpy>=1.24.0,<3
+pandas>=2.0.0,<3
+orjson>=3.9.0,<4
+
+# --- Parsing / extraction ---------------------------------------------
+beautifulsoup4>=4.12.0,<5
+emoji>=2.0.0,<3
+
+# --- Geo ---------------------------------------------------------------
+geopy>=2.3.0,<3
+shapely>=2.0.0,<3
+geopandas>=0.14.0,<2
+fiona>=1.9.0,<2
+
+# --- Media / perception -----------------------------------------------
+pillow>=10.0.0,<12
+opencv-python-headless>=4.8.0,<5
+ImageHash>=4.3.1,<5
+
+# --- ML / vector stores -----------------------------------------------
+scikit-learn>=1.3.0,<2
+chromadb>=0.4.0,<2
+
+# --- Telegram ingestion ------------------------------------------------
+telethon>=1.34.0,<2
+tqdm>=4.66.0,<5
+
+# --- Reporting ----------------------------------------------------------
+matplotlib>=3.8.0,<4
+fpdf2>=2.7.0,<3
+
+# --- Google Sheets campaign sync ----------------------------------------
+gspread>=6.0.0,<7
+oauth2client>=4.1.0,<5

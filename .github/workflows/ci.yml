@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    name: Lint, type-check, and test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install tooling and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff mypy pytest requests python-dotenv shapely aiohttp
+
+      - name: Ruff (lint + format check on canonical tier)
+        run: ruff check impact_atlas ingestion scripts map_loader.py tests
+
+      - name: Mypy (strict on shared foundation)
+        run: mypy impact_atlas ingestion
+
+      - name: Compile every live Python module
+        run: python -m compileall -q impact_atlas ingestion scripts tests map_loader.py
+
+      - name: Run regression tests
+        run: pytest tests
+
+      - name: Verify UI DOM contracts
+        run: |
+          python tests/verify_dom_ids.py
+          python tests/verify_html_structure.py

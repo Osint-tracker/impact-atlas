@@ -10,7 +10,6 @@ import sys
 import os
 import json
 import requests
-import time
 from datetime import datetime
 
 # =============================================================================
@@ -33,7 +32,7 @@ def normalize_faction(insignia_name):
     """Normalize insignia name to 'UA', 'RU', or 'UNKNOWN'."""
     if not insignia_name:
         return 'UNKNOWN'
-    
+
     name_lower = insignia_name.lower()
     if 'ukraine' in name_lower:
         return 'UA'
@@ -47,7 +46,7 @@ def normalize_unit_entry(feature):
     # Handle geometry (can be None)
     geometry = feature.get('geometry')
     coords = geometry.get('coordinates', []) if geometry else []
-    
+
     # Handle MultiPoint vs Point
     lat, lon = None, None
     if coords and geometry:
@@ -81,7 +80,7 @@ def normalize_unit_entry(feature):
 # MAIN EXECUTION
 # =============================================================================
 def main():
-    print(f"[INFO] Fetching ORBAT data from WFS...")
+    print("[INFO] Fetching ORBAT data from WFS...")
     try:
         response = requests.get(WFS_URL, timeout=30)
         response.raise_for_status()

@@ -1,11 +1,11 @@
-"""
-Build ORBAT from KMZ v2.0 — Rich Intelligence Extraction
+﻿"""
+Build ORBAT from KMZ v2.0 â€” Rich Intelligence Extraction
 ==========================================================
 Parses owl_layer.geojson (with ExtendedData) to build enriched orbat_full.json.
 Extracts per-unit:
   - name, side, coordinates (last known position)
   - description (operational notes, subordination)
-  - military_unit_number (в/ч)
+  - military_unit_number (Ð²/Ñ‡)
   - last_known_location (with source URL and date)
   - older_geolocations (full movement timeline)
   - emblem_url (unit insignia from Google MyMaps)
@@ -16,7 +16,7 @@ import json
 import os
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -36,7 +36,7 @@ def parse_geolocation_entries(raw_text):
         return []
 
     entries = []
-    lines = [l.strip() for l in raw_text.split('\n') if l.strip()]
+    lines = [ln.strip() for ln in raw_text.split('\n') if ln.strip()]
 
     for line in lines:
         entry = {"raw": line}
@@ -141,15 +141,15 @@ def determine_side_from_features(features):
 
 
 def build_orbat():
-    print("🏗️  ORBAT Builder v2.0 — Rich KMZ Intelligence Extraction")
-    print(f"   Timestamp: {datetime.now(timezone.utc).isoformat()}")
+    print("ðŸ—ï¸  ORBAT Builder v2.0 â€” Rich KMZ Intelligence Extraction")
+    print(f"   Timestamp: {datetime.now(UTC).isoformat()}")
 
     if not os.path.exists(INPUT_GEOJSON):
-        print(f"❌ Input file not found: {INPUT_GEOJSON}")
+        print(f"âŒ Input file not found: {INPUT_GEOJSON}")
         print("   Run ingest_owl_total.py first.")
         return
 
-    with open(INPUT_GEOJSON, 'r', encoding='utf-8') as f:
+    with open(INPUT_GEOJSON, encoding='utf-8') as f:
         data = json.load(f)
 
     features = data.get('features', [])
@@ -245,14 +245,14 @@ def build_orbat():
 
     # Summary
     print(f"\n{'='*60}")
-    print(f"  ORBAT EXTRACTION COMPLETE")
+    print("  ORBAT EXTRACTION COMPLETE")
     print(f"{'='*60}")
     print(f"  Total Units:          {len(orbat)}")
     print(f"  RU:                   {stats['ru']}")
     print(f"  UA:                   {stats['ua']}")
     print(f"  NEUTRAL/Unknown:      {len(orbat) - stats['ru'] - stats['ua']}")
     print(f"  With Description:     {stats['has_description']}")
-    print(f"  With Mil Unit №:      {stats['has_mil_number']}")
+    print(f"  With Mil Unit â„–:      {stats['has_mil_number']}")
     print(f"  With Last Location:   {stats['has_location']}")
     print(f"  With Geo Timeline:    {stats['has_geolocations']}")
     print(f"  With Emblem:          {stats['has_emblem']}")

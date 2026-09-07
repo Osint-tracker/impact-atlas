@@ -4,53 +4,67 @@ map_loader.py - Legitimate OSINT Data Sources for Impact Atlas
 Author: Impact Atlas Project (Modified via Gemini)
 """
 
+import csv
 import json
-import requests
-import time
-from pathlib import Path
-from typing import Dict, Optional, List
 import logging
-from datetime import datetime, timedelta
-import os
-from shapely.geometry import Point, Polygon, MultiPolygon
+from datetime import datetime
+from io import StringIO
+from pathlib import Path
+from typing import Any
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+import requests
+from shapely.geometry import Point, Polygon
+
+from impact_atlas.config import ProjectPaths, RuntimeSettings
+from impact_atlas.http import ResilientHttpClient, RetryPolicy
+from impact_atlas.logging import configure_logging
+
 logger = logging.getLogger(__name__)
+PROJECT_ROOT = ProjectPaths.discover().root
 
 
 class MapDataLoader:
     """Fetches and converts map data from legitimate public sources."""
 
-    def __init__(self, output_dir: str = "assets/data"):
+    def __init__(
+        self,
+        output_dir: str | Path = PROJECT_ROOT / "assets" / "data",
+        *,
+        settings: RuntimeSettings | None = None,
+        http_client: ResilientHttpClient | None = None,
+    ) -> None:
+        """Create a map loader with explicit configuration and an injectable transport."""
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        self.session = requests.Session()
-        self.session.headers.update({
-            'User-Agent': 'ImpactAtlas/1.0 (Educational OSINT Project)'
-        })
-        # --- CONFIGURAZIONE CHIAVI ---
-        self.firms_api_key = "29ca712bddef41c37ea9989a2b521dea"
+        self.settings = settings or RuntimeSettings.from_environment(dotenv_path=PROJECT_ROOT / ".env")
+        self._http = http_client or ResilientHttpClient(
+            name="map-loader",
+            user_agent=self.settings.user_agent,
+            retry_policy=RetryPolicy(
+                max_attempts=self.settings.max_retries,
+                timeout_seconds=self.settings.request_timeout_seconds,
+                backoff_seconds=self.settings.retry_backoff_seconds,
+            ),
+        )
+        self.firms_api_key = self.settings.firms_api_key
         self.borders = self._load_borders()
 
-    def _load_borders(self) -> List[Polygon]:
+    def _load_borders(self) -> list[Polygon]:
         """Loads UA and RU borders from GeoJSON for filtering."""
-        borders_path = Path("assets/data/national_borders.geojson")
+        borders_path = PROJECT_ROOT / "assets" / "data" / "national_borders.geojson"
         polygons = []
         if not borders_path.exists():
             logger.warning(f"Borders file not found: {borders_path}")
             return polygons
 
         try:
-            with open(borders_path, 'r', encoding='utf-8-sig') as f:
+            with open(borders_path, encoding='utf-8-sig') as f:
                 data = json.load(f)
                 for feature in data.get('features', []):
                     geom = feature.get('geometry', {})
-                    if not geom: continue
-                    
+                    if not geom:
+                        continue
+
                     if geom.get('type') == 'Polygon':
                         # Validating coordinates structure
                         coords = geom.get('coordinates', [])
@@ -60,7 +74,7 @@ class MapDataLoader:
                         for poly_coords in geom.get('coordinates', []):
                             if poly_coords and isinstance(poly_coords[0], list):
                                 polygons.append(Polygon(poly_coords[0]))
-                                
+
             logger.info(f"Loaded {len(polygons)} boundary polygons for filtering.")
         except Exception as e:
             logger.error(f"Failed to load borders: {e}")
@@ -71,9 +85,9 @@ class MapDataLoader:
         if not self.borders:
             return True  # Fallback if borders can't be loaded
         point = Point(lon, lat)
-        return any(poly.contains(point) for poly in self.borders)
+        return any(poly.covers(point) for poly in self.borders)
 
-    def create_dummy_geojson(self, filename: str, feature_type: str = "LineString") -> Dict:
+    def create_dummy_geojson(self, filename: str, feature_type: str = "LineString") -> dict[str, Any]:
         """Creates a valid empty GeoJSON file as fallback."""
         dummy = {
             "type": "FeatureCollection",
@@ -93,33 +107,9 @@ class MapDataLoader:
             logger.info(f"Created fallback GeoJSON: {filename}")
         return dummy
 
-    def fetch_with_retry(self, url: str, max_retries: int = 3, backoff: float = 2.0) -> Optional[requests.Response]:
-        """Fetch URL with exponential backoff retry logic."""
-        for attempt in range(max_retries):
-            try:
-                response = self.session.get(url, timeout=30)
-
-                if response.status_code == 200:
-                    return response
-                elif response.status_code in [403, 401]:
-                    logger.warning(
-                        f"Access denied ({response.status_code}): {url}")
-                    return None
-                elif response.status_code == 404:
-                    logger.warning(f"Resource not found (404): {url}")
-                    return None
-                else:
-                    logger.warning(
-                        f"HTTP {response.status_code} on attempt {attempt + 1}/{max_retries}")
-
-            except requests.exceptions.RequestException as e:
-                logger.error(
-                    f"Request failed on attempt {attempt + 1}/{max_retries}: {e}")
-
-            if attempt < max_retries - 1:
-                time.sleep(backoff ** attempt)
-
-        return None
+    def fetch_with_retry(self, url: str) -> requests.Response | None:
+        """Fetch a URL through the shared timeout and retry policy."""
+        return self._http.request("GET", url)
 
     def load_nasa_firms(self, days: int = 3) -> bool:
         """
@@ -137,7 +127,7 @@ class MapDataLoader:
             "22.1,44.0,41.0,65.0", # Western Sector (UA + Border)
             "41.0,44.0,60.0,65.0"  # Eastern Sector (RU Deep)
         ]
-        
+
         # Multiple satellite sources for better coverage
         satellites = [
             ("VIIRS_SNPP_NRT", "VIIRS_SNPP"),
@@ -145,80 +135,72 @@ class MapDataLoader:
             ("VIIRS_NOAA21_NRT", "VIIRS_NOAA21"),
             ("MODIS_NRT", "MODIS"),
         ]
-        
+
         all_features = []
         seen_coords = set()  # For deduplication
-        
+
         logger.info(f"Fetching NASA FIRMS from {len(satellites)} satellite sources ({days}-day window)...")
-        
+
         for source_id, source_label in satellites:
+            count = 0
             for bbox in bboxes:
                 url = f"https://firms.modaps.eosdis.nasa.gov/api/area/csv/{self.firms_api_key}/{source_id}/{bbox}/{days}"
-                
+
                 response = self.fetch_with_retry(url)
                 if not response:
                     logger.warning(f"  {source_label} ({bbox}): No response")
                     continue
-                
-                lines = response.text.strip().split('\n')
-                if len(lines) < 2:
+
+                reader = csv.DictReader(StringIO(response.text.lstrip("\ufeff")))
+                if not reader.fieldnames:
                     logger.info(f"  {source_label} ({bbox}): No data")
                     continue
-                
-                headers = lines[0].split(',')
-                count = 0
-                
-                for line in lines[1:]:
-                    values = line.split(',')
-                if len(values) < 3:
-                    continue
-                
-                data = dict(zip(headers, values))
-                
-                try:
-                    lat = float(data['latitude'])
-                    lon = float(data['longitude'])
-                    
-                    # Mandatory Geo-Filtering (Backend)
-                    if not self.is_in_theater(lat, lon):
+
+                for data in reader:
+                    try:
+                        lat = float(data['latitude'])
+                        lon = float(data['longitude'])
+
+                        # Mandatory Geo-Filtering (Backend)
+                        if not self.is_in_theater(lat, lon):
+                            continue
+
+                        # Deduplication by rounded coordinates (prevent near-duplicates)
+                        coord_key = (round(lat, 3), round(lon, 3))
+                        if coord_key in seen_coords:
+                            continue
+                        seen_coords.add(coord_key)
+
+                        # Get brightness - field name varies by satellite
+                        brightness = float(data.get('bright_ti4', data.get('brightness', 300)))
+
+                        feature = {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [lon, lat]
+                            },
+                            "properties": {
+                                "brightness": brightness,
+                                "confidence": data.get('confidence', 'n'),
+                                "acq_date": data.get('acq_date'),
+                                "acq_time": data.get('acq_time'),
+                                "satellite": source_label,
+                                "frp": float(data.get('frp', 0)) if data.get('frp') else 0
+                            }
+                        }
+                        all_features.append(feature)
+                        count += 1
+
+                    except (TypeError, ValueError, KeyError):
                         continue
 
-                    # Deduplication by rounded coordinates (prevent near-duplicates)
-                    coord_key = (round(lat, 3), round(lon, 3))
-                    if coord_key in seen_coords:
-                        continue
-                    seen_coords.add(coord_key)
-                    
-                    # Get brightness - field name varies by satellite
-                    brightness = float(data.get('bright_ti4', data.get('brightness', 300)))
-                    
-                    feature = {
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [lon, lat]
-                        },
-                        "properties": {
-                            "brightness": brightness,
-                            "confidence": data.get('confidence', 'n'),
-                            "acq_date": data.get('acq_date'),
-                            "acq_time": data.get('acq_time'),
-                            "satellite": source_label,
-                            "frp": float(data.get('frp', 0)) if data.get('frp') else 0
-                        }
-                    }
-                    all_features.append(feature)
-                    count += 1
-                    
-                except (ValueError, KeyError):
-                    continue
-            
             logger.info(f"  {source_label}: {count} detections")
-        
+
         if not all_features:
             logger.warning("NASA FIRMS returned no data from any satellite.")
             return False
-        
+
         geojson = {
             "type": "FeatureCollection",
             "metadata": {
@@ -299,5 +281,6 @@ class MapDataLoader:
 
 
 if __name__ == "__main__":
+    configure_logging("map_loader", PROJECT_ROOT / "logs" / "map_loader.log")
     loader = MapDataLoader()
     loader.run_all()

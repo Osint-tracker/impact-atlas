@@ -12,7 +12,7 @@ import requests
 import json
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -61,7 +61,7 @@ def fetch_and_save(url: str, output_path: str, label: str) -> bool:
 def analyze_frontline_data(path: str):
     """Quick analysis of the downloaded frontline history."""
     try:
-        with open(path, 'r', encoding='utf-8') as f:
+        with open(path, encoding='utf-8') as f:
             data = json.load(f)
 
         if isinstance(data, list):
@@ -82,7 +82,7 @@ def analyze_frontline_data(path: str):
 def analyze_positions_data(path: str):
     """Quick analysis of the downloaded positions data."""
     try:
-        with open(path, 'r', encoding='utf-8') as f:
+        with open(path, encoding='utf-8') as f:
             data = json.load(f)
 
         if isinstance(data, dict):
@@ -106,7 +106,7 @@ def analyze_positions_data(path: str):
 
 def ingest_timeline_data():
     print("🦉 Owl Timeline Data Ingestor v1.0")
-    print(f"   Timestamp: {datetime.now(timezone.utc).isoformat()}")
+    print(f"   Timestamp: {datetime.now(UTC).isoformat()}")
     print(f"{'='*60}")
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -129,7 +129,7 @@ def ingest_timeline_data():
 
     # Summary
     print(f"\n{'='*60}")
-    print(f"  TIMELINE DATA INGESTION COMPLETE")
+    print("  TIMELINE DATA INGESTION COMPLETE")
     print(f"{'='*60}")
     for key, success in results.items():
         status = "✅ OK" if success else "❌ FAILED"

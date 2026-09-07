@@ -1,13 +1,25 @@
+﻿"""Campaign definition loading, event tagging, and campaign report builders.
+
+Campaign definitions load through a three-tier fallback chain: the Google
+Sheet CSV export, the local JSON cache, and finally the curated bootstrap
+CSV. Events are tagged with campaigns via deterministic target-type and
+keyword matching; reports and geo views are then derived from tagged
+features.
+"""
+
 import csv
 import io
 import json
+import logging
 import os
 import re
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from datetime import datetime, timedelta, UTC
+from typing import Any
 from urllib.parse import quote
+
+logger = logging.getLogger("campaigns_engine")
 
 try:
     import requests
@@ -23,14 +35,17 @@ DEFAULT_CAMPAIGN_COLOR = "#f59e0b"
 
 
 def _now_utc() -> datetime:
-    return datetime.now(timezone.utc)
+    """Return the current UTC time as an aware datetime."""
+    return datetime.now(UTC)
 
 
 def _normalize_text(value: Any) -> str:
+    """Lowercase, collapse whitespace, and strip a value to comparable text."""
     return re.sub(r"\s+", " ", str(value or "").strip().lower())
 
 
 def _normalize_hex_color(value: Any) -> str:
+    """Normalize arbitrary color input to a canonical ``#rrggbb`` string."""
     raw = str(value or "").strip()
     if not raw:
         return DEFAULT_CAMPAIGN_COLOR
@@ -47,7 +62,8 @@ def _normalize_hex_color(value: Any) -> str:
     return DEFAULT_CAMPAIGN_COLOR
 
 
-def _split_tokens(value: Any) -> List[str]:
+def _split_tokens(value: Any) -> list[str]:
+    """Split a list/JSON/pipe-separated value into unique normalized tokens."""
     if value is None:
         return []
 
@@ -60,11 +76,8 @@ def _split_tokens(value: Any) -> List[str]:
         if raw.startswith("[") and raw.endswith("]"):
             try:
                 parsed = json.loads(raw)
-                if isinstance(parsed, list):
-                    items = parsed
-                else:
-                    items = [raw]
-            except Exception:
+                items = parsed if isinstance(parsed, list) else [raw]
+            except json.JSONDecodeError:
                 items = [raw]
         else:
             items = re.split(r"[|,;]", raw)
@@ -82,7 +95,8 @@ def _split_tokens(value: Any) -> List[str]:
     return out
 
 
-def _parse_event_date(value: Any) -> Optional[datetime]:
+def _parse_event_date(value: Any) -> datetime | None:
+    """Parse an event date to an aware UTC datetime, or ``None``."""
     if value is None:
         return None
 
@@ -97,8 +111,8 @@ def _parse_event_date(value: Any) -> Optional[datetime]:
     try:
         dt = datetime.fromisoformat(candidate)
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        return dt.astimezone(timezone.utc)
+            dt = dt.replace(tzinfo=UTC)
+        return dt.astimezone(UTC)
     except ValueError:
         pass
 
@@ -113,7 +127,7 @@ def _parse_event_date(value: Any) -> Optional[datetime]:
     ):
         try:
             dt = datetime.strptime(raw, fmt)
-            dt = dt.replace(tzinfo=timezone.utc)
+            dt = dt.replace(tzinfo=UTC)
             return dt
         except ValueError:
             continue
@@ -122,19 +136,22 @@ def _parse_event_date(value: Any) -> Optional[datetime]:
 
 
 def _safe_float(value: Any, default: float = 0.0) -> float:
+    """Coerce ``value`` to float with a fallback default."""
     try:
         return float(value)
     except (TypeError, ValueError):
         return default
 
 
-def _safe_json_dump(path: str, payload: Dict[str, Any]) -> None:
+def _safe_json_dump(path: str, payload: dict[str, Any]) -> None:
+    """Write ``payload`` as pretty JSON, creating parent directories."""
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as handle:
         json.dump(payload, handle, ensure_ascii=False, indent=2)
 
 
 def build_campaign_sheet_csv_url(sheet_url: str, tab_name: str = "campaign_definitions") -> str:
+    """Convert a Google Sheets URL into its CSV export URL, or ``'``."""
     match = re.search(r"/spreadsheets/d/([a-zA-Z0-9_-]+)", str(sheet_url or ""))
     if not match:
         return ""
@@ -144,11 +161,12 @@ def build_campaign_sheet_csv_url(sheet_url: str, tab_name: str = "campaign_defin
     return f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={encoded_tab}"
 
 
-def normalize_campaign_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    campaigns: List[Dict[str, Any]] = []
+def normalize_campaign_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Validate and normalize raw sheet/CSV rows into campaign definitions."""
+    campaigns: list[dict[str, Any]] = []
 
     for row in rows:
-        lowered = {str(k or "").strip().lower(): row[k] for k in row.keys()}
+        lowered = {str(k or "").strip().lower(): row[k] for k in row}
 
         campaign_id = _normalize_text(lowered.get("campaign_id"))
         name = str(lowered.get("name") or "").strip()
@@ -174,15 +192,17 @@ def normalize_campaign_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return campaigns
 
 
-def load_campaign_definitions_from_csv(csv_path: str) -> List[Dict[str, Any]]:
+def load_campaign_definitions_from_csv(csv_path: str) -> list[dict[str, Any]]:
+    """Load and normalize campaign definitions from a local CSV file."""
     if not csv_path or not os.path.exists(csv_path):
         return []
     try:
-        with open(csv_path, "r", encoding="utf-8-sig", newline="") as handle:
+        with open(csv_path, encoding="utf-8-sig", newline="") as handle:
             reader = csv.DictReader(handle)
             rows = list(reader)
         return normalize_campaign_rows(rows)
-    except Exception:
+    except (OSError, csv.Error) as error:
+        logger.warning("Failed to load campaign CSV %s: %s", csv_path, error)
         return []
 
 
@@ -191,8 +211,9 @@ def load_campaign_definitions(
     cache_path: str,
     tab_name: str = "campaign_definitions",
     timeout_seconds: int = 10,
-) -> List[Dict[str, Any]]:
-    campaigns: List[Dict[str, Any]] = []
+) -> list[dict[str, Any]]:
+    """Load campaign definitions using the sheet -> cache -> bootstrap chain."""
+    campaigns: list[dict[str, Any]] = []
 
     csv_url = build_campaign_sheet_csv_url(sheet_url, tab_name=tab_name)
     if csv_url and requests is not None:
@@ -207,9 +228,10 @@ def load_campaign_definitions(
                         cache_path,
                         {"generated_at": _now_utc().isoformat(), "campaigns": campaigns},
                     )
-                except Exception:
-                    pass
-        except Exception:
+                except OSError as error:
+                    logger.warning("Failed to refresh campaign cache %s: %s", cache_path, error)
+        except Exception as error:
+            logger.warning("Campaign sheet fetch failed, falling back to cache: %s", error)
             campaigns = []
 
     if campaigns:
@@ -217,24 +239,31 @@ def load_campaign_definitions(
 
     try:
         if os.path.exists(cache_path):
-            with open(cache_path, "r", encoding="utf-8") as handle:
+            with open(cache_path, encoding="utf-8") as handle:
                 payload = json.load(handle)
             cached = payload.get("campaigns", payload if isinstance(payload, list) else [])
             if isinstance(cached, list) and cached:
+                logger.info("Loaded %d campaign definitions from cache.", len(cached))
                 return normalize_campaign_rows(cached)
-    except Exception:
-        pass
+    except (OSError, json.JSONDecodeError, AttributeError) as error:
+        logger.warning("Failed to read campaign cache %s: %s", cache_path, error)
 
     # Fallback to bootstrap curated csv
-    local_csv = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'bootstrap', 'campaign_definitions.curated.csv')
+    local_csv = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        'bootstrap', 'campaign_definitions.curated.csv',
+    )
     fallback = load_campaign_definitions_from_csv(local_csv)
     if fallback:
+        logger.info("Loaded %d campaign definitions from bootstrap CSV.", len(fallback))
         return fallback
 
+    logger.warning("No campaign definitions available from any source.")
     return []
 
 
 def ensure_campaign_columns(conn: sqlite3.Connection) -> None:
+    """Add the campaign tagging columns to ``unique_events`` when missing."""
     conn.execute("PRAGMA journal_mode=WAL;")
     for ddl in (
         "ALTER TABLE unique_events ADD COLUMN campaign_id TEXT",
@@ -249,17 +278,23 @@ def ensure_campaign_columns(conn: sqlite3.Connection) -> None:
 
 
 def match_event_campaign(
-    campaigns: List[Dict[str, Any]],
+    campaigns: list[dict[str, Any]],
     target_type: Any,
     event_text: Any,
-) -> Optional[Dict[str, Any]]:
+) -> dict[str, Any] | None:
+    """Return the best campaign match for an event, or ``None``.
+
+    A campaign matches when the event's target type matches one of the
+    campaign's target types and at least one campaign keyword appears in
+    the event text. The best match maximizes keyword count, then length.
+    """
     norm_target = _normalize_text(target_type)
     norm_text = _normalize_text(event_text)
 
     if not norm_target or not norm_text or not campaigns:
         return None
 
-    best: Optional[Dict[str, Any]] = None
+    best: dict[str, Any] | None = None
     best_score = -1
 
     for campaign in campaigns:
@@ -295,13 +330,15 @@ def match_event_campaign(
     return best
 
 
-def _campaign_status(last_event_dt: Optional[datetime], live_days: int = 30) -> str:
+def _campaign_status(last_event_dt: datetime | None, live_days: int = 30) -> str:
+    """Classify a campaign as LIVE or STANDBY from its most recent event."""
     if not last_event_dt:
         return "STANDBY"
     return "LIVE" if (_now_utc() - last_event_dt) <= timedelta(days=live_days) else "STANDBY"
 
 
 def _build_fallback_brief(name: str, weekly_tie: float, sum_vec_e: float, status: str, total_events: int) -> str:
+    """Produce a deterministic brief used when the LLM is unavailable."""
     return (
         f"{name}: {status} posture with {total_events} tagged events. "
         f"Weekly T.I.E. cumulative is {weekly_tie:.1f} and cumulative E-vector impact is {sum_vec_e:.1f}."
@@ -314,7 +351,8 @@ def _maybe_generate_llm_brief(
     total_events: int,
     weekly_tie_cumulative: float,
     sum_vec_e: float,
-) -> Optional[str]:
+) -> str | None:
+    """Generate an LLM strategic brief, or ``None`` when unavailable."""
     api_key = os.getenv("OPENROUTER_API_KEY")
     if not api_key or OpenAI is None:
         return None
@@ -338,17 +376,23 @@ def _maybe_generate_llm_brief(
         )
         content = (response.choices[0].message.content or "").strip()
         return content or None
-    except Exception:
+    except Exception as error:
+        logger.warning("LLM brief generation failed for '%s': %s", campaign_name, error)
         return None
 
 
 def build_campaign_reports(
-    features: List[Dict[str, Any]],
-    campaigns: List[Dict[str, Any]],
+    features: list[dict[str, Any]],
+    campaigns: list[dict[str, Any]],
     output_path: str,
     sparkline_days: int = 30,
     weekly_window_days: int = 7,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
+    """Build per-campaign report payloads and write them to ``output_path``.
+
+    Briefs are generated concurrently (LLM with deterministic fallback) and
+    each report includes sparkline series, weekly T.I.E., and status.
+    """
     now_utc = _now_utc()
     weekly_start = now_utc - timedelta(days=weekly_window_days)
     sparkline_start = now_utc - timedelta(days=sparkline_days - 1)
@@ -358,7 +402,7 @@ def build_campaign_reports(
         for idx in range(sparkline_days)
     ]
 
-    by_campaign: Dict[str, List[Dict[str, Any]]] = {}
+    by_campaign: dict[str, list[dict[str, Any]]] = {}
     for feature in features:
         props = feature.get("properties", {})
         campaign_id = _normalize_text(props.get("campaign_id"))
@@ -458,8 +502,8 @@ def build_campaign_reports(
             try:
                 idx, brief = future.result()
                 report_items[idx]["brief_text"] = brief
-            except Exception:
-                pass
+            except Exception as error:
+                logger.warning("Campaign brief worker failed: %s", error)
 
     payload = {
         "generated_at": now_utc.isoformat(),
@@ -472,12 +516,13 @@ def build_campaign_reports(
 
 
 def build_campaigns_geo(
-    features: List[Dict[str, Any]],
-    campaigns: List[Dict[str, Any]],
+    features: list[dict[str, Any]],
+    campaigns: list[dict[str, Any]],
     output_path: str,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
+    """Group tagged event points per campaign and write the geo payload."""
     campaign_index = {c["campaign_id"]: c for c in campaigns}
-    grouped: Dict[str, Dict[str, Any]] = {}
+    grouped: dict[str, dict[str, Any]] = {}
 
     for feature in features:
         props = feature.get("properties", {})

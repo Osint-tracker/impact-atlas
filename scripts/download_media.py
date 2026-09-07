@@ -1,10 +1,8 @@
 import os
-import sys
 import json
 import asyncio
 import sqlite3
 import random
-import time
 from telethon import TelegramClient
 from telethon.errors import FloodWaitError
 from dotenv import load_dotenv
@@ -46,10 +44,10 @@ async def main():
 
     cursor.execute("SELECT event_id, media_urls FROM unique_events WHERE media_urls IS NOT NULL AND media_urls != '[]' AND media_urls != ''")
     rows = cursor.fetchall()
-    
+
     updated = 0
     downloaded_count = 0
-    
+
     print(f"[STATS] Trovati {len(rows)} eventi con media potenziali.")
 
     for event_id, media_urls_str in rows:
@@ -57,16 +55,16 @@ async def main():
             urls = json.loads(media_urls_str)
             new_urls = []
             changed = False
-            
+
             for url in urls:
                 if url.startswith('https://t.me/') and '/s/' not in url:
                     parts = url.split('t.me/')[1].split('/')
                     if len(parts) >= 2:
                         channel = parts[0]
                         msg_id = int(parts[1])
-                        
+
                         file_path = os.path.join(MEDIA_DIR, f"{channel}_{msg_id}.mp4")
-                        
+
                         # Verifica se esiste già per evitare scaricamenti doppi
                         found_local = False
                         for existing_ext in ['.mp4', '.jpg', '.jpeg', '.png']:
@@ -75,16 +73,16 @@ async def main():
                                 file_path = check_path
                                 found_local = True
                                 break
-                        
+
                         if not found_local:
                             if downloaded_count >= MAX_DOWNLOADS:
                                 continue # Skip remainder if we hit max
-                                
+
                             print(f"[DOWNLOAD] Scarico media {channel}/{msg_id} (attesa per sicurezza...)")
-                            
+
                             # --- SLEEP ANTI-BAN ---
                             await asyncio.sleep(random.uniform(MIN_SLEEP, MAX_SLEEP))
-                            
+
                             try:
                                 msg = await client.get_messages(channel, ids=msg_id)
                                 if msg and msg.media:
@@ -93,12 +91,12 @@ async def main():
                                         file_path = downloaded
                                         print(f"  [OK] Salvato: {os.path.basename(file_path)}")
                                         downloaded_count += 1
-                                        
+
                                         # Pausa lunga ogni batch
                                         if downloaded_count % BATCH_SIZE == 0:
                                             print(f"[PAUSE] Pausa di {BATCH_SLEEP}s per raffreddamento API...")
                                             await asyncio.sleep(BATCH_SLEEP)
-                                            
+
                                     else:
                                         print("  [FAIL] Impossibile scaricare (nessun file utile)")
                                 else:
@@ -110,7 +108,7 @@ async def main():
                                 print("  [RESUME] Riprendo lentamente...")
                             except Exception as e:
                                 print(f"  [WARN] Errore generico (forse canale privato o bannato): {e}")
-                                
+
                         if os.path.exists(file_path):
                             abs_path = os.path.abspath(file_path)
                             new_urls.append(abs_path)
@@ -121,13 +119,13 @@ async def main():
                         new_urls.append(url)
                 else:
                     new_urls.append(url)
-                    
+
             if changed:
                 new_json = json.dumps(new_urls)
                 cursor.execute("UPDATE unique_events SET media_urls = ? WHERE event_id = ?", (new_json, event_id))
                 updated += 1
                 conn.commit()
-                
+
         except Exception as e:
             print(f"Errore DB per {event_id}: {e}")
 

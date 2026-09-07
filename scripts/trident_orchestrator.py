@@ -1,7 +1,6 @@
 from layer1_sensor import TitanSensor                # La Calcolatrice
 from ai_inference_node import TitanIntelligenceNode  # Il Cervello
 import sqlite3
-import json
 import sys
 import os
 import time
@@ -68,7 +67,7 @@ class NewTridentOrchestrator:
         cursor = conn.cursor()
 
         query = """
-            UPDATE raw_signals SET 
+            UPDATE raw_signals SET
                 classification = ?,
                 confidence = ?,
                 reasoning = ?,

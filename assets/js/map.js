@@ -856,7 +856,7 @@
     const equipmentTags = document.getElementById('axisEquipmentTags');
     if (equipmentTags) {
       const tags = metrics.equipmentTags.length > 0 ? metrics.equipmentTags : ['No heavy-platform signatures'];
-      equipmentTags.innerHTML = tags.map(tag => `<span class="axis-tag">${tag}</span>`).join('');
+      equipmentTags.innerHTML = tags.map(tag => `<span class="axis-tag">${escapeHtml(tag)}</span>`).join('');
     }
 
     document.getElementById('axisDoctrineMeta').textContent = metrics.totalEvents > 0
@@ -3394,9 +3394,10 @@
     const format = (v) => v || '--';
     const stripHtml = (raw) => {
       if (!raw) return 'N/A';
-      const el = document.createElement('div');
-      el.innerHTML = String(raw);
-      return (el.textContent || el.innerText || 'N/A').trim().replace(/\s+/g, ' ');
+      return String(raw)
+        .replace(/<[^>]*>/g, ' ')
+        .trim()
+        .replace(/\s+/g, ' ') || 'N/A';
     };
     const URL_TOKEN_REGEX = /(https?:\/\/[^\s]+|(?:t\.me\/[^\s]+))/i;
     const escapeHtml = (raw) => {
@@ -3728,9 +3729,19 @@
     if (owl) {
       // 1. Emblem (Media Link)
       if (owl.emblem_url && elFlag) {
-        if (owl.emblem_url.includes('hostedimage')) {
-            const fbSvg = elFlag.innerHTML.replace(/'/g, "\'").replace(/"/g, "&quot;");
-            elFlag.innerHTML = `<img src="${owl.emblem_url}" onerror="this.outerHTML='${fbSvg}'" style="width:100%; height:100%; object-fit:cover; border-radius:4px;">`;
+        try {
+          const emblemUrl = new URL(String(owl.emblem_url));
+          if (emblemUrl.protocol === 'https:') {
+            const fallbackNodes = Array.from(elFlag.childNodes, node => node.cloneNode(true));
+            const image = document.createElement('img');
+            image.src = emblemUrl.href;
+            image.alt = '';
+            image.style.cssText = 'width:100%; height:100%; object-fit:cover; border-radius:4px;';
+            image.addEventListener('error', () => elFlag.replaceChildren(...fallbackNodes));
+            elFlag.replaceChildren(image);
+          }
+        } catch (error) {
+          console.warn('Ignoring invalid unit emblem URL.', error);
         }
       }
 
@@ -3748,10 +3759,8 @@
 
       // 3. Extracted Equipment/Base from old description
       if (owl.description) {
-          const rawDesc = owl.description;
-          const tmpDiv = document.createElement('div');
-          tmpDiv.innerHTML = rawDesc;
-          const plain = (tmpDiv.textContent || tmpDiv.innerText || '').trim();
+        const rawDesc = owl.description;
+        const plain = stripHtml(rawDesc);
           const equipMatch = plain.match(/(?:equipped|armed|using|operates?)\s+(?:with\s+)?(.+?)(?:\.|,|\n|Military|$)/i);
           const basedMatch = plain.match(/based (?:at|in)\s+(.+?)(?:\.|,|\n|Military|$)/i);
           
@@ -3858,15 +3867,15 @@
           el.innerHTML = `
             <div class="ud-activity-header">
               <span class="ud-activity-date">
-                <i class="fa-solid fa-calendar-day"></i> ${item.dateText}
+                <i class="fa-solid fa-calendar-day"></i> ${escapeHtml(item.dateText)}
               </span>
               <span class="ud-activity-badge" style="background:${badgeBg}; color:${badgeColor}; border:1px solid ${badgeColor}40;">
-                ${badgeText}
+                ${escapeHtml(badgeText)}
               </span>
             </div>
             <div class="ud-activity-body">
               <i class="fa-solid ${icon}" style="margin-right:8px; color:${badgeColor}; font-size:0.75rem;"></i>
-              ${item.title}
+              ${escapeHtml(item.title)}
             </div>
             ${item.location ? `
               <div class="ud-activity-zone">
@@ -4261,7 +4270,7 @@
               return `
                 <div class="source-item" style="cursor:default; opacity:0.8; display:flex; align-items:center;">
                     <i class="fa-solid fa-file-lines" style="margin-right:8px; opacity:0.5;"></i>
-                    <span>${displayName}</span>
+                    <span>${escapeHtml(displayName)}</span>
                 </div>`;
             }
             return '';
@@ -4282,12 +4291,12 @@
             faviconDomain = new URL(url).hostname.replace('www.', '');
           } catch (e) { }
 
-          const faviconUrl = `https://www.google.com/s2/favicons?domain=${faviconDomain}&sz=32`;
+          const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(faviconDomain)}&sz=32`;
 
           return `
-                <a href="${url}" target="_blank" rel="noopener noreferrer" class="source-item">
-                    <img src="${faviconUrl}" class="source-icon" onerror="this.style.display='none'">
-                    <span>${displayName}</span>
+                <a href="${escapeAttr(sanitizeUrl(url))}" target="_blank" rel="noopener noreferrer" class="source-item">
+                    <img src="${escapeAttr(faviconUrl)}" class="source-icon" onerror="this.style.display='none'">
+                    <span>${escapeHtml(displayName)}</span>
                     <i class="fa-solid fa-external-link-alt" style="margin-left:auto; font-size:0.7rem; opacity:0.5;"></i>
                 </a>`;
         }).filter(Boolean).join('');
@@ -4314,7 +4323,7 @@
                             <i class="fa-brands fa-telegram" style="color:#38bdf8; font-size:1.1rem;"></i>
                             <h5 style="color:#94a3b8; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; margin:0;">PRIMARY SOURCE MEDIA</h5>
                         </div>
-                        <iframe src="${embedUrl}" style="width: 100%; height: 500px; border: none; border-radius: 8px; overflow: hidden; background: #fff;" allow="fullscreen"></iframe>
+                        <iframe src="${escapeAttr(sanitizeUrl(embedUrl))}" style="width: 100%; height: 500px; border: none; border-radius: 8px; overflow: hidden; background: #fff;" allow="fullscreen"></iframe>
                     </div>
                 `;
             videoContainer.style.display = 'block';
@@ -4384,7 +4393,7 @@
                 </div>
             </div>
         </div>
-        <p style="font-size:0.9rem; line-height:1.5; color:#cbd5e1;">${reasoning}</p>
+        <p style="font-size:0.9rem; line-height:1.5; color:#cbd5e1;">${escapeHtml(reasoning)}</p>
       `;
     }
 
@@ -4615,14 +4624,15 @@
       }
 
       if (bgUrl) {
+        const safeBg = safeCssUrl(bgUrl);
         item.innerHTML = `
-          <div style="background-image:url('${bgUrl}'); width:100%; height:100%; background-size:cover; background-position:center;"></div>
+          <div style="background-image:url('${safeBg}'); width:100%; height:100%; background-size:cover; background-position:center;"></div>
           <div style="position:absolute; bottom:0; left:0; width:100%; background:linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding:10px; color:white;">
             <div style="font-size:0.85rem; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow: 0 1px 2px black;">
-              ${e.type === 'video' ? '<i class="fa-solid fa-play-circle"></i> ' : ''} ${e.title}
+              ${e.type === 'video' ? '<i class="fa-solid fa-play-circle"></i> ' : ''} ${escapeHtml(e.title)}
             </div>
             <div style="font-size:0.75rem; color:#cbd5e1; display:flex; justify-content:space-between;">
-              <span>${e.date}</span>
+              <span>${escapeHtml(e.date)}</span>
               <span style="color:#f59e0b;">${e.intensity > 0.7 ? 'CRITICAL' : ''}</span>
             </div>
           </div>`;

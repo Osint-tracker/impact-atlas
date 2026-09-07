@@ -1,173 +1,106 @@
-<div align="center">
+# Impact Atlas — OSINT Conflict Intelligence Platform
 
-<div align="center">
+A production OSINT pipeline and C4ISR-style dashboard that ingests open-source
+conflict data from 11+ sources, fuses and geolocates events with a multi-agent
+LLM analysis tier (T.I.E. scoring), and exports sanitized, OPSEC-gated
+artifacts for the browser-based operational dashboard.
 
-![Impact Atlas](assets/images/impact_atlas_banner.png)
-
-### **AI-POWERED MILITARY INTELLIGENCE PLATFORM**
-*Autonomous Multi-Agent Swarm for Conflict Monitoring & Analysis*
-
-[![Status](https://img.shields.io/badge/STATUS-OPERATIONAL-059669?style=for-the-badge&logo=prometheus&logoColor=white)](https://github.com/Osint-tracker/impact-atlas)
-[![Intelligence](https://img.shields.io/badge/INTEL-LEVEL%204-dc2626?style=for-the-badge&logo=wikidata&logoColor=white)](https://github.com/Osint-tracker/impact-atlas)
-[![Python](https://img.shields.io/badge/CORE-PYTHON%203.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![Privacy](https://img.shields.io/badge/ACCESS-CLASSIFIED-1e293b?style=for-the-badge&logo=torproject&logoColor=white)](LICENSE)
-
-[**MISSION BRIEF**](#-mission-brief) • [**CAPABILITIES**](#-capabilities) • [**DEPLOYMENT**](#-deployment) • [**CLASSIFIED DOCS**](#-classified-docs)
-
-</div>
-
----
-
-## 📜 Mission Brief
-
-> **"Turning Noise into Signal."**
-
-**IMPACT ATLAS** is a sovereign intelligence platform designed to ingest high-volume, unstructured OSINT data (Telegram, GDELT, Satellites) and distill it into precise, actionable military insights. 
-
-Operated by a **7-Agent AI Swarm**, the system autonomously verifies targets, calculates kinetic impact, tracks unit movements, and maintains a real-time Common Operational Picture (COP) of the Russia-Ukraine theater.
-
----
-
-## 🧠 The "Super Squad" Architecture
-
-```mermaid
-graph LR
-    Input[📡 Raw SIGINT/OSINT] --> Bouncer[👮 Bouncer]
-    Bouncer -->|Cleaned| Brain[🧠 Brain]
-    Brain --> Soldier[🪖 Soldier]
-    Soldier --> Visionary[👁️ Visionary 2.0]
-    Visionary --> Titan[🤖 Titan]
-    Titan --> Calculator[Hz Calculator]
-    Calculator --> Journalist[📰 Journalist]
-    Journalist --> Strategist[♟️ Strategist]
-    Strategist --> Output[🎯 Intelligence Feed]
-    
-    style Input fill:#f9f,stroke:#333
-    style Output fill:#0ea5e9,stroke:#333,color:#fff
-    style Bouncer fill:#1e293b,stroke:#333,color:#fff
-    style Brain fill:#1e293b,stroke:#333,color:#fff
-    style Soldier fill:#1e293b,stroke:#333,color:#fff
-    style Visionary fill:#f59e0b,stroke:#333,color:#000
-    style Titan fill:#b91c1c,stroke:#333,color:#fff
-    style Calculator fill:#1e293b,stroke:#333,color:#fff
-    style Journalist fill:#1e293b,stroke:#333,color:#fff
-    style Strategist fill:#1e293b,stroke:#333,color:#fff
+```
+Raw sources ──► master_ingestor ──► impact_atlas.db ─┐
+Telegram/GDELT ─► scheduled pipeline ─► raw_events.db ─┼─► ai_agent (7-agent swarm)
+FIRMS thermal ──► map_loader ─► thermal_firms.geojson ┘        │ T.I.E. scoring
+                                                               ▼
+                                              generate_output ─► assets/data/* ─► index.html
 ```
 
----
+## Quick start
 
-## 🛠️ Capabilities
-
-| Vector | Description | Status |
-|:---|:---|:---|
-| **Targeting** | Automatic identification of HVT (High Value Targets) vs. Civilian objects. | ✅ Active |
-| **Multimodal Intel** | **Visionary 2.0**: Neural fusion of Video (Geometric Sampling), Audio (Whisper STT), and Text. | ✅ Active |
-| **Ballistics** | Weapon system identification (S-300, Himars, Shahed) via multi-modal signatures. | ✅ Active |
-| **Damage** | **T.I.E. Scoring** (Target-Kinetic-Effect) to assess strike effectiveness (1-100). | ✅ Active |
-| **Reliability & Bias** | Source grading (0-100 scale) and political bias detection. | ✅ Active |
-
-### 🌐 Data Ingestion & Sources
-| Source | Type | Status |
-|:---|:---|:---|
-| **Telegram / Web** | Near real-time text/media via custom API connectors. | ✅ Active |
-| **GDELT Project** | Global event database ingestion for macro-trends. | ✅ Active |
-| **NASA FIRMS** | Thermal hotspots (VIIRS/MODIS) bounded to UA/RU conflict zone. | ✅ Active |
-| **Open-Meteo V.F.R** | Live Drone Visibility Index (cloud cover & visibility) for 5 frontline sectors. | ✅ Active |
-| **Parabellum & WarSpotting** | Specialized military databases for unit and equipment tracking. | ✅ Active |
-
-### 🗺️ Geospatial Intelligence & C4ISR Dashboard (V2)
-| Component | Description | Status |
-|:---|:---|:---|
-| **Project Owl** | Live frontline integration & unit tracking (International/OSINT). | ✅ Active |
-| **ORBAT Tracker** | Regimental/Brigade level unit tracking with **Whitelist Filtering** & Factions (UA/RU). | ✅ Active |
-| **C4ISR Nav Rail** | Advanced UI with Analytics Drawer, Tactical Graveyard (Equipment Losses), and Operational Tempo. | ✅ Active |
-| **Semantic Clustering** | AI clustering of related events into Deep Strike Dossiers with tactical kill-chain visuals. | ✅ Active |
-| **Intelligence Briefing** | Automated generation of daily NATO-grade HTML Intelligence Reports. | ✅ Active |
-
----
-
-## 🚀 Deployment
-
-### Prerequisites
-- **Python 3.13+**
-- **Core Models**:
-  - **Embedding**: `openai/text-embedding-3-large` (1536-dim)
-  - **Vision/Multimodal**: `qwen/qwen3-vl-235b-a22b-instruct`
-  - **Audio/STT**: `openai/whisper-large-v3-turbo`
-- **Inference**: OpenRouter API
-
-### Protocol: Initiation
-```bash
-# 1. Clone Repository
-git clone https://github.com/Osint-tracker/impact-atlas.git
-cd osint-tracker
-
-# 2. Establish Environment
+```powershell
+# 1. Create the virtual environment and install dependencies
 python -m venv .venv
-source .venv/bin/activate
+.venv\Scripts\pip install -r requirements.txt
 
-# 3. Install Dependencies
-pip install -r requirements.txt
+# 2. Configure credentials
+copy .env.example .env      # then fill in the required keys
 
-# 4. Configure Credentials
-cp .env.example .env
+# 3. Initialize the database schema without network calls
+.venv\Scripts\python scripts\master_ingestor.py --dry-run
+
+# 4. Run the full pipeline (ingest -> thermal -> AI analysis -> export)
+.\run_tracker.ps1
+
+# 5. Open the dashboard
+start index.html
 ```
 
-### Protocol: Operation
-```bash
-# [PHASE 1] Data Ingestion
-python scripts2/master_ingestor.py      # Main pipeline (Telegram, GDELT, Parbaellum, etc.)
-python map_loader.py                    # FIRMS & OSINT map layers
+## Canonical pipeline (scripts/)
 
-# [PHASE 2] AI Analysis (Swarm Activation)
-python scripts2/ai_agent.py
+| Stage | Command | Purpose |
+| --- | --- | --- |
+| Ingestion | `python scripts\master_ingestor.py [--source ws ml ox ...]` | 11 OSINT sources into `impact_atlas.db` with entity resolution |
+| Thermal | `python map_loader.py` | NASA FIRMS thermal detections to `assets\data\thermal_firms.geojson` |
+| Analysis | `python scripts\ai_agent.py` | 7-agent LLM swarm; T.I.E. scoring; writes `ai_report_json` |
+| Fusion | `python scripts\smart_fusion.py` / `scripts\unify_clusters.py` | duplicate fusion and cluster unification |
+| Export | `python scripts\generate_output.py` | all `assets\data\*` artifacts (GeoJSON/JSON/CSV) |
+| Reports | `run_report.bat` | PDF SITREP + `report.html` console |
+| Admin | `python scripts\admin_api.py` → `http://localhost:8800/admin_merge.html` | manual event merge tooling |
 
-# [PHASE 3] Geocoding & Refinement
-python scripts2/geolocator_agent.py
+Raw-signal ingestion (Telegram + GDELT → `raw_events.db`) runs on the
+scheduled 8-hour task registered by `war_tracker_v2\scripts2\schedule_pipeline.ps1`
+(`auto_pipeline.py`: backfill → refinement → event building).
 
-# [PHASE 4] Tactical Display
-python scripts2/generate_output.py
-# -> Open index.html
-```
-
----
-
-## 📂 System Hierarchy
+## Project layout
 
 ```
-osint-tracker/
-├── assets/                 # Frontend Assets
-│   ├── data/               # GeoJSON, JSON exports (events, ORBAT, FIRMS)
-│   ├── js/                 # Tactical Display Logic (map.js, orbat_tracker.js)
-│   └── css/                # V2 Styling (index.css, report_styles.css)
-├── scripts2/               # Command & Control Python backend
-│   ├── master_ingestor.py  # Data acquisition
-│   ├── ai_agent.py         # DeepSeek Swarm Orchestrator
-│   ├── geolocator_agent.py # Photon/AI geocoding
-│   └── generate_output.py  # GeoJSON compiler
-├── map_loader.py           # FIRMS & OSINT data fetcher
-├── index.html              # V2 C4ISR Dashboard Interface
-├── report.html             # NATO-grade Daily Briefing
-└── technical-specification.md  # Master Specs
+impact_atlas/        Shared production foundation: typed config, validated
+                     settings, resilient HTTP, SQLite transactions, JSON
+                     logging, error taxonomy, domain models.
+ingestion/           Connector library (WarSpotting, Parabellum) and the
+                     raw-event repository.
+scripts/             THE canonical backend (ingestor, ai_agent, analytics,
+                     exporters, admin API). Legacy generations live in
+                     _archive/ and are not executed.
+war_tracker_v2/      Live raw-signal tier + scheduled pipeline + PDF SITREP.
+assets/              Dashboard JS/CSS and generated data artifacts.
+tests/               Standard-library-safe regression suite (pytest).
+_archive/            Quarantined legacy code. Not imported, not executed.
+reports/             Phase audit and refactoring reports.
 ```
 
----
+## Configuration
 
-## 🧪 Score Vector (T.I.E.)
+All secrets are read from environment variables (see `.env.example`).
+Nothing is hardcoded. The pipeline resolves every database and output path
+through `impact_atlas.config.ProjectPaths`, so it can run from any working
+directory.
 
-$$ TIE = \frac{K \times T \times E}{10} $$
+## Quality gates
 
-> **K (Kinetic)**: Weapon magnitude _(1=Rifle → 10=WMD)_  
-> **T (Target)**: Target value _(1=Field → 10=Capital)_  
-> **E (Effect)**: Damage outcome _(1=Miss → 10=Total Erase)_  
+```powershell
+.venv\Scripts\python -m pytest tests               # regression suite
+.venv\Scripts\python -m ruff check impact_atlas ingestion scripts map_loader.py tests
+.venv\Scripts\python -m mypy impact_atlas ingestion
+.venv\Scripts\python tests\verify_dom_ids.py       # every JS-referenced DOM id resolves
+.venv\Scripts\python tests\verify_html_structure.py # page markup is structurally sound
+```
 
----
+CI (`.github/workflows/ci.yml`) runs the same checks on every push.
 
-## 📚 Classified Docs
+## Console operations
 
-- **[Technical Specification (v4.1)](technical-specification.md)** – Full Architecture
-- **[Data Schema](GEOJSON_STRUCTURE.md)** – JSON Formats
+* Keys **1-7** switch the rail panels (Maps, ORBAT, Intel, Tempo, Losses,
+  Stats, Campaigns).
+* The command bar shows live telemetry: event count, data cut, data age
+  (green < 6h / yellow < 24h / red beyond), Zulu clock, and a system pill
+  that flips to DEGRADED if the clock heartbeat stalls.
 
-<div align="center">
-  <sub>Authorized Personnel Only | Private Repository</sub>
-</div>
+## Operational notes
+
+* **OPSEC**: sensitive movement events are withheld for 24h
+  (`OPSEC_CUTOFF_HOURS`); counts are surfaced in artifact metadata.
+* **PII**: person names and license plates are redacted from every public
+  artifact (`generate_output.sanitize_public_*`).
+* **Write amplification**: each ingestion source commits in one batch
+  transaction; per-row commits are a compatibility fallback only.
+* **Logging**: JSON records under `logs/` per stage
+  (`master_ingestor.log`, `generate_output.log`, `admin_api.log`, ...).

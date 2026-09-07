@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Impact Atlas | Conflict Monitor</title>
-  <meta name="description" content="Impact Atlas is an experimental university OSINT research dashboard for aggregated conflict monitoring and AI-assisted source analysis.">
+  <title>Impact Atlas — OSINT Command Console</title>
+  <meta name="description" content="Impact Atlas is an OSINT fusion console: multi-source conflict intelligence, T.I.E. event scoring, ORBAT tracking, and campaign analytics on a live tactical map.">
   <link rel="canonical" href="https://osint-tracker.github.io/impact-atlas/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Impact Atlas">
@@ -27,8 +27,16 @@
 
   <link rel="preload" href="assets/data/events_latest.json" as="fetch" crossorigin>
 
-  <link rel="stylesheet" href="assets/css/style.css?v=4">
-  <link rel="stylesheet" href="assets/css/dossier_styles.css?v=4">
+  <script src="assets/js/safe_dom.js?v=1"></script>
+  <script src="assets/js/console.js?v=1"></script>
+
+  <!-- Design system: tokens first, legacy styles, redesign layer last -->
+  <link rel="stylesheet" href="assets/css/theme.css?v=1">
+  <link rel="stylesheet" href="assets/css/style.css?v=5">
+  <link rel="stylesheet" href="assets/css/dossier_styles.css?v=5">
+  <link rel="stylesheet" href="assets/css/unit_dossier.css?v=3">
+  <link rel="stylesheet" href="assets/css/dashboard.css?v=2">
+  <link rel="stylesheet" href="assets/css/console.css?v=1">
   <!-- Mapbox GL JS -->
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
@@ -44,10 +52,6 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-
-  <link rel="stylesheet" href="assets/css/style.css?v=2">
-  <link rel="stylesheet" href="assets/css/dossier_styles.css?v=2">
-  <link rel="stylesheet" href="assets/css/unit_dossier.css?v=2">
 
   <!-- Chart.js (Radar + Sparkline for Unit Dossier) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
@@ -3433,13 +3437,40 @@
     <div class="header-content">
       <div class="brand">
         <h1>IMPACT<span>ATLAS</span></h1>
-        <span class="subtitle" style="color:#94a3b8; font-size:0.8rem; margin-left:10px;">Global Conflict Monitor</span>
       </div>
+      <div class="classification-strip" title="Open-source intelligence — unclassified compilation">OSINT // OPEN SOURCE</div>
+
+      <div class="header-telemetry" aria-live="off">
+        <div class="tele-block">
+          <span class="tele-label">Events</span>
+          <span class="tele-value tele-value--signal" id="eventCount">0</span>
+        </div>
+        <div class="tele-divider"></div>
+        <div class="tele-block tele-block--secondary">
+          <span class="tele-label">Data Cut</span>
+          <span class="tele-value" id="lastUpdate">--</span>
+        </div>
+        <div class="tele-divider"></div>
+        <div class="tele-block tele-block--secondary">
+          <span class="tele-label">Data Age</span>
+          <span class="tele-value" id="dataAgeBadge">--</span>
+        </div>
+        <div class="tele-divider"></div>
+        <div class="tele-block">
+          <span class="tele-label">Time&nbsp;Zulu</span>
+          <span class="tele-value tele-value--clock" id="liveClockDisplay">--:--:--Z</span>
+        </div>
+        <div class="tele-divider"></div>
+        <div class="tele-block tele-block--secondary">
+          <span class="tele-label">System</span>
+          <span class="pill pill--ok" id="sysStatusPill"><span class="dot dot--pulse"></span>ONLINE</span>
+        </div>
+      </div>
+
       <nav>
-        <a href="#" class="active">Dashboard</a>
-        <a href="#methodology">Methodology</a>
-        <a href="#data">Export Data</a>
-        <a href="#" class="btn-primary" style="padding: 5px 15px;">Login</a>
+        <a href="report.html" target="_blank" rel="noopener noreferrer" title="Daily briefing console">Briefing</a>
+        <a href="legal.html" target="_blank" rel="noopener noreferrer" title="Methodology and terms">Methodology</a>
+        <a href="assets/data/events_export.csv" download title="Export the full event dataset as CSV">Export CSV</a>
       </nav>
     </div>
   </header>
@@ -3450,26 +3481,26 @@
     <nav class="nav-rail">
       <div class="nav-rail-logo"><i class="fas fa-crosshairs"></i></div>
       <div class="nav-divider"></div>
-      <div class="nav-item active" data-panel="layers" title="Maps / Layers" onclick="navSwitchTab('layers', this)">
+      <div class="nav-item active" data-panel="layers" title="Maps / Layers [key 1]" onclick="navSwitchTab('layers', this)">
         <i class="fas fa-layer-group"></i><span class="nav-item-label">Maps</span>
       </div>
-      <div class="nav-item" data-panel="orbat" title="ORBAT Tracker" onclick="navSwitchTab('orbat', this)">
+      <div class="nav-item" data-panel="orbat" title="ORBAT Tracker [key 2]" onclick="navSwitchTab('orbat', this)">
         <i class="fas fa-shield-alt"></i><span class="nav-item-label">ORBAT</span>
       </div>
-      <div class="nav-item" data-panel="intel" title="Intel Feed" onclick="navSwitchTab('intel', this)">
+      <div class="nav-item" data-panel="intel" title="Intel Feed [key 3]" onclick="navSwitchTab('intel', this)">
         <i class="fas fa-rss"></i><span class="nav-item-label">Intel</span>
       </div>
-      <div class="nav-item" data-panel="tempo" title="Operational Tempo" onclick="navSwitchTab('tempo', this)">
+      <div class="nav-item" data-panel="tempo" title="Operational Tempo [key 4]" onclick="navSwitchTab('tempo', this)">
         <i class="fas fa-chart-line"></i><span class="nav-item-label">Tempo</span>
       </div>
-      <div class="nav-item" data-panel="losses" title="Equipment Losses" onclick="navSwitchTab('losses', this)">
+      <div class="nav-item" data-panel="losses" title="Equipment Losses [key 5]" onclick="navSwitchTab('losses', this)">
         <i class="fas fa-skull-crossbones"></i><span class="nav-item-label">Losses</span>
       </div>
-      <div class="nav-item" data-panel="analytics" title="Analytics" onclick="navSwitchTab('analytics', this)">
+      <div class="nav-item" data-panel="analytics" title="Analytics [key 6]" onclick="navSwitchTab('analytics', this)">
         <i class="fas fa-chart-pie"></i><span class="nav-item-label">Stats</span>
       </div>
-      <div class="nav-item" data-panel="strategic_campaigns" title="Strategic Campaigns" onclick="navSwitchTab('strategic_campaigns', this)">
-        <i class="fa-solid fa-bullseye-arrow" style="color:#f59e0b;"></i><span class="nav-item-label">Campaigns</span>
+      <div class="nav-item" data-panel="strategic_campaigns" title="Strategic Campaigns [key 7]" onclick="navSwitchTab('strategic_campaigns', this)">
+        <i class="fa-solid fa-bullseye" style="color:#f59e0b;"></i><span class="nav-item-label">Campaigns</span>
       </div>
       <div class="nav-spacer"></div>
       <div class="nav-item nav-bottom collapse-btn" title="Collapse Sidebar" onclick="toggleSidebarCollapse()">
@@ -3902,21 +3933,6 @@
 
     <main class="main-content">
 
-      <div class="kpi-bar">
-        <div class="kpi-card">
-          <span class="kpi-label">Total Events</span>
-          <span class="kpi-value" id="eventCount">0</span>
-        </div>
-        <div class="kpi-card">
-          <span class="kpi-label">Last Update</span>
-          <span class="kpi-value" id="lastUpdate" style="font-size:1.2rem;">Loading...</span>
-        </div>
-        <div class="kpi-card" id="categoryStats">
-          <span class="kpi-label">System Status</span>
-          <span class="kpi-value" style="color:#f59e0b; font-size:1.2rem;">ONLINE</span>
-        </div>
-      </div>
-
       <div class="public-safety-strip" role="status" aria-live="polite">
         <div class="ai-disclaimer">
           <strong>AI Disclaimer:</strong>
@@ -3937,10 +3953,6 @@
             <i class="fas fa-globe-europe"></i> TACTICAL MAP
           </div>
           <div class="map-topbar-right">
-            <div class="map-topbar-clock">
-              <i class="fas fa-clock"></i>
-              <span id="liveClockDisplay">--:--:--Z</span>
-            </div>
             <div class="map-topbar-actions">
               <button title="Notifications"><i class="fas fa-bell"></i></button>
               <button title="User"><i class="fas fa-user-circle"></i></button>
@@ -3969,7 +3981,7 @@
           <button class="ttb-btn" onclick="setTimeWindow(0)" data-hours="0">ALL</button>
           <div class="ttb-divider"></div>
           <div class="ttb-custom-group">
-            <input type="number" class="ttb-custom-input" id="ttbCustomHours" min="1" max="720" placeholder="—"
+            <input type="number" class="ttb-custom-input" id="ttbCustomHours" min="1" max="720" placeholder="â€”"
               title="Custom hours" onchange="setTimeWindow(parseInt(this.value) || 0)">
             <span class="ttb-custom-suffix">H</span>
           </div>
@@ -3996,11 +4008,11 @@
           <div class="ttb-divider"></div>
           <!-- Performance Filters -->
           <button class="ttb-btn perf-filter-btn" data-filter="elite" onclick="togglePerformanceFilter('elite')"
-            title="Show only high-value engagements (T.I.E. ≥ 80 or T ≥ 8)">
+            title="Show only high-value engagements (T.I.E. â‰¥ 80 or T â‰¥ 8)">
             <i class="fa-solid fa-star" style="font-size:0.6rem;"></i> ELITE
           </button>
           <button class="ttb-btn perf-filter-btn" data-filter="attrition" onclick="togglePerformanceFilter('attrition')"
-            title="Show only events with major confirmed effect (E ≥ 7)">
+            title="Show only events with major confirmed effect (E â‰¥ 7)">
             <i class="fa-solid fa-skull" style="font-size:0.6rem;"></i> ATTRITION
           </button>
           <button class="ttb-btn perf-filter-btn" id="lowRepFilterBtn" onclick="toggleLowReputationVisibility()"
@@ -4471,7 +4483,6 @@
       </div>
 
       <!-- Dashboard specific scripts loaded later -->
-      <link rel="stylesheet" href="assets/css/dashboard.css">
       <script src="assets/js/dashboard.js"></script>
 
       <div id="videoModal" class="modal-overlay" onclick="closeModal(event)">
@@ -4540,11 +4551,11 @@
                       <div class="tooltip-header">T.I.E. Score</div>
                       <div class="tooltip-body">
                         Composite metric (0-100) measuring event significance:<br><br>
-                        • <strong>Kinetic (K)</strong>: Violence/Intensity<br>
-                        • <strong>Target (T)</strong>: Strategic value<br>
-                        • <strong>Effect (E)</strong>: Confirmed success
+                        â€¢ <strong>Kinetic (K)</strong>: Violence/Intensity<br>
+                        â€¢ <strong>Target (T)</strong>: Strategic value<br>
+                        â€¢ <strong>Effect (E)</strong>: Confirmed success
                       </div>
-                      <div class="tooltip-footer">Formula: (T^1.6) × (E/10) × K-Mult</div>
+                      <div class="tooltip-footer">Formula: (T^1.6) Ã— (E/10) Ã— K-Mult</div>
                     </div>
                   </div>
                 </div>
@@ -4596,9 +4607,9 @@
                             <div class="tooltip-header">Bias Score (-10 to +10)</div>
                             <div class="tooltip-body">
                               Indicates narrative leaning:<br>
-                              • <span style="color:#ef4444">-10 to -3:</span> Pro-Russian<br>
-                              • <span style="color:#94a3b8">-3 to +3:</span> Neutral<br>
-                              • <span style="color:#3b82f6">+3 to +10:</span> Pro-Ukrainian
+                              â€¢ <span style="color:#ef4444">-10 to -3:</span> Pro-Russian<br>
+                              â€¢ <span style="color:#94a3b8">-3 to +3:</span> Neutral<br>
+                              â€¢ <span style="color:#3b82f6">+3 to +10:</span> Pro-Ukrainian
                             </div>
                             <div class="tooltip-footer">Calculated via HBC Formula.</div>
                           </div>
@@ -4721,7 +4732,7 @@
             <div class="ud-title-group">
               <h2 id="udTitle">Unit Name</h2>
               <div class="ud-subtitle">
-                <span id="udFaction">Faction</span> •
+                <span id="udFaction">Faction</span> â€¢
                 <span id="udEchelon">Echelon</span>
                 <span id="udTypeBadge" class="ud-badge">Type</span>
               </div>
@@ -4789,7 +4800,7 @@
                   <span class="ud-stat-value" id="udEquipment">--</span>
                 </div>
                 <div class="ud-stat-row" id="udMilUnitRow" style="display:none;">
-                  <span class="ud-stat-label">Military Unit №</span>
+                  <span class="ud-stat-label">Military Unit â„–</span>
                   <span class="ud-stat-value" id="udMilUnit">--</span>
                 </div>
                 <div class="ud-stat-row" id="udBaseRow" style="display:none;">
@@ -5057,7 +5068,7 @@
 
       <script src="assets/js/charts.js?v=2.2"></script>
 
-      <script src="assets/js/map.js?v=3.8"></script>
+      <script src="assets/js/map.js?v=3.9"></script>
       <script src="assets/js/orbat_tracker.js?v=2.2"></script>
       <script src="assets/js/unit_dossier.js?v=2"></script>
 
@@ -5291,21 +5302,21 @@
             html += '<div onclick="openEventDossierFromFeed(' + i + ')" style="padding:6px 8px; margin-bottom:2px; background:rgba(22,33,62,0.8); border:1px solid #233554; border-left:3px solid ' + tieColor + '; border-radius:4px; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor=\'#f59e0b\';this.style.background=\'rgba(30,41,59,0.9)\'" onmouseout="this.style.borderColor=\'#233554\';this.style.background=\'rgba(22,33,62,0.8)\'">';
             // Row 1: Title + TIE badge
             html += '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px;">';
-            html += '<div style="font-size:0.68rem; color:#e2e8f0; font-weight:600; line-height:1.3; flex:1; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">' + title + '</div>';
+            html += '<div style="font-size:0.68rem; color:#e2e8f0; font-weight:600; line-height:1.3; flex:1; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">' + (window.escapeHtml ? window.escapeHtml(title) : title) + '</div>';
             html += '<div style="min-width:32px; text-align:center; background:' + tieColor + '15; border:1px solid ' + tieColor + '; border-radius:4px; padding:2px 4px;">';
             html += '<div style="font-family:JetBrains Mono,monospace; font-size:0.6rem; font-weight:800; color:' + tieColor + ';">' + tie.toFixed(1) + '</div>';
             html += '</div></div>';
             // Row 2: Meta line
             html += '<div style="display:flex; align-items:center; gap:6px; margin-top:3px; flex-wrap:wrap;">';
-            html += '<span style="font-family:JetBrains Mono,monospace; font-size:0.52rem; color:#64748b; text-transform:uppercase;">' + date + '</span>';
-            html += '<span style="background:' + catColor + '20; color:' + catColor + '; font-family:JetBrains Mono,monospace; font-size:0.48rem; font-weight:700; padding:1px 5px; border-radius:3px; text-transform:uppercase;">' + cat + '</span>';
-            if (srcName) html += '<span style="font-family:JetBrains Mono,monospace; font-size:0.48rem; color:#94a3b8; text-transform:uppercase;"><i class="fas fa-rss" style="font-size:0.4rem; margin-right:2px;"></i>' + (srcName.length > 14 ? srcName.substring(0, 14) + '..' : srcName) + '</span>';
+            html += '<span style="font-family:JetBrains Mono,monospace; font-size:0.52rem; color:#64748b; text-transform:uppercase;">' + (window.escapeHtml ? window.escapeHtml(date) : date) + '</span>';
+            html += '<span style="background:' + catColor + '20; color:' + catColor + '; font-family:JetBrains Mono,monospace; font-size:0.48rem; font-weight:700; padding:1px 5px; border-radius:3px; text-transform:uppercase;">' + (window.escapeHtml ? window.escapeHtml(cat) : cat) + '</span>';
+            if (srcName) html += '<span style="font-family:JetBrains Mono,monospace; font-size:0.48rem; color:#94a3b8; text-transform:uppercase;"><i class="fas fa-rss" style="font-size:0.4rem; margin-right:2px;"></i>' + (window.escapeHtml ? window.escapeHtml(srcName.length > 14 ? srcName.substring(0, 14) + '..' : srcName) : srcName) + '</span>';
             html += '</div></div>';
           });
           container.innerHTML = html;
         }
 
-        // Open event dossier from intel feed — fly to event + open source URL
+        // Open event dossier from intel feed â€” fly to event + open source URL
         function openEventDossierFromFeed(index) {
           var events = getLoadedEvents();
           var sorted = events.slice().sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
@@ -5450,7 +5461,7 @@
             _analyticsCharts.tie = new Chart(ctx2, { type: 'bar', data: { labels: ['0-2', '2-4', '4-6', '6-8', '8-10'], datasets: [{ data: tieBuckets, backgroundColor: ['#233554', '#06b6d4', '#f59e0b', '#f97316', '#e94560'], borderRadius: 3, borderSkipped: false }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b', font: { size: 8, family: 'JetBrains Mono' } }, grid: { display: false } }, y: { ticks: { color: '#64748b', font: { size: 8 } }, grid: { color: '#233554' } } } } });
           }
 
-          // Source Breakdown — parse sources_list, apply dropdown filter
+          // Source Breakdown â€” parse sources_list, apply dropdown filter
           var srcCounts = {};
           var allSrcNames = {};
           events.forEach(function (e) {
@@ -5547,7 +5558,7 @@
             var cats = {}; ev.forEach(function (e) { var c = e.category || 'OTHER'; cats[c] = (cats[c] || 0) + 1; });
             el = document.getElementById('drawerCategories'); if (el) el.textContent = Object.keys(cats).length;
 
-            // LAST 24H — use timestamp field (ms since epoch) for accurate 24h window
+            // LAST 24H â€” use timestamp field (ms since epoch) for accurate 24h window
             var now24 = Date.now(); var count24h = 0;
             ev.forEach(function (e) {
               var ts = parseInt(e.timestamp || 0);
@@ -5555,7 +5566,7 @@
             });
             el = document.getElementById('drawerLast24h'); if (el) el.textContent = count24h;
 
-            // TOP REGION — extract from title heuristic (Ukrainian oblasts)
+            // TOP REGION â€” extract from title heuristic (Ukrainian oblasts)
             var oblastNames = ['Donetsk', 'Luhansk', 'Kherson', 'Zaporizhzhia', 'Kharkiv', 'Mykolaiv', 'Dnipropetrovsk', 'Odesa', 'Sumy', 'Chernihiv', 'Kyiv', 'Crimea', 'Kursk', 'Belgorod', 'Bryansk', 'Rostov'];
             var regionCounts = {};
             ev.forEach(function (e) {
@@ -6456,6 +6467,7 @@
           </div>
         </div>
       </div>
+    </main>
 
       <div id="firstRunTutorial" class="tutorial-modal" aria-hidden="true">
         <div class="tutorial-card" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">

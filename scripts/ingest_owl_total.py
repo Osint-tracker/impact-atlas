@@ -1,9 +1,8 @@
-import requests
+﻿import requests
 import zipfile
 import io
 import json
 import os
-import re
 from bs4 import BeautifulSoup
 
 # Config
@@ -29,7 +28,7 @@ def parse_coordinates(coord_str):
 
 def harvest_owl_layers():
     print("Owl Map Harvester v2.0 (KMZ Edition)...")
-    
+
     try:
         print(f"1. Downloading KMZ from {KMZ_URL}...")
         r = requests.get(KMZ_URL, timeout=60)
@@ -46,7 +45,7 @@ def harvest_owl_layers():
             if not kml_files:
                 print("No KML found inside KMZ")
                 return
-            
+
             print(f"   Found KML: {kml_files[0]}")
             kml_content = z.read(kml_files[0])
     except Exception as e:
@@ -57,11 +56,11 @@ def harvest_owl_layers():
     # Using 'lxml' if available, else 'xml' (html.parser is bad for case sensitive tags)
     try:
         soup = BeautifulSoup(kml_content, 'xml')
-    except:
+    except (ValueError, TypeError):
         soup = BeautifulSoup(kml_content, 'lxml-xml')
-    
+
     features = []
-    
+
     # Iterate through Top-Level Folders to properly assign side (UA/RU)
     top_folders = soup.find('Document').find_all('Folder', recursive=False)
     print(f"   Found {len(top_folders)} top-level folders. Processing...")
@@ -69,22 +68,22 @@ def harvest_owl_layers():
     for folder in top_folders:
         folder_name_tag = folder.find('name', recursive=False)
         folder_name = folder_name_tag.text if folder_name_tag else "Unknown"
-        
+
         # Determine side from folder name
         folder_side = "NEUTRAL"
         if "ukrain" in folder_name.lower() or "ua" in folder_name.lower():
             folder_side = "UA"
         elif "russian" in folder_name.lower() or "ru" in folder_name.lower():
             folder_side = "RU"
-        
+
         placemarks = folder.find_all('Placemark')
         print(f"   Folder '{folder_name}' ({folder_side}): {len(placemarks)} placemarks")
-        
+
         for pm in placemarks:
             name = pm.find('name').text if pm.find('name') else "Unknown"
             description = pm.find('description').text if pm.find('description') else ""
             style_url = pm.find('styleUrl').text if pm.find('styleUrl') else ""
-            
+
             # Inherit side from folder, with fallback to style/name heuristics for neutral folders
             side = folder_side
             if side == "NEUTRAL":
@@ -93,10 +92,10 @@ def harvest_owl_layers():
                     side = "UA"
                 elif "russia" in full_text or "ru" in style_url.lower() or "#icon-ci-3" in style_url.lower():
                     side = "RU"
-            
+
             # Geometry extraction
             geo_json_geometry = None
-        
+
             # 1. LineString
             line = pm.find('LineString')
             if line:
@@ -108,7 +107,7 @@ def harvest_owl_layers():
                             "type": "LineString",
                             "coordinates": coords
                         }
-        
+
             # 2. Polygon
             if not geo_json_geometry:
                 poly = pm.find('Polygon')
@@ -186,15 +185,15 @@ def harvest_owl_layers():
 
     # Save
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
-    
+
     geojson = {
         "type": "FeatureCollection",
         "features": features
     }
-    
+
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         json.dump(geojson, f, indent=2, ensure_ascii=False)
-        
+
     print(f"\nSaved {len(features)} features to {OUTPUT_FILE}")
 
 if __name__ == "__main__":

@@ -4,8 +4,8 @@ import argparse
 import json
 import os
 import sqlite3
-from datetime import datetime, timezone
-from typing import Any, Dict, List
+from datetime import datetime, UTC
+from typing import Any
 
 try:
     from dotenv import load_dotenv
@@ -95,14 +95,14 @@ def parse_args() -> argparse.Namespace:
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _load_env_file_fallback(path: str, overwrite: bool = False) -> None:
     if not path or not os.path.exists(path):
         return
     try:
-        with open(path, "r", encoding="utf-8") as handle:
+        with open(path, encoding="utf-8") as handle:
             for raw_line in handle:
                 line = raw_line.strip()
                 if not line or line.startswith("#") or "=" not in line:
@@ -118,7 +118,7 @@ def _load_env_file_fallback(path: str, overwrite: bool = False) -> None:
         return
 
 
-def _safe_json_load(value: Any) -> Dict[str, Any]:
+def _safe_json_load(value: Any) -> dict[str, Any]:
     if isinstance(value, dict):
         return value
     if not value:
@@ -130,7 +130,7 @@ def _safe_json_load(value: Any) -> Dict[str, Any]:
         return {}
 
 
-def _fetch_rows(conn: sqlite3.Connection, retag: bool, limit: int, offset: int) -> List[sqlite3.Row]:
+def _fetch_rows(conn: sqlite3.Connection, retag: bool, limit: int, offset: int) -> list[sqlite3.Row]:
     where = ["ai_analysis_status = 'COMPLETED'"]
     if not retag:
         where.append("(campaign_id IS NULL OR TRIM(campaign_id) = '')")
@@ -154,7 +154,7 @@ def _fetch_rows(conn: sqlite3.Connection, retag: bool, limit: int, offset: int) 
         WHERE {where_sql}
         ORDER BY last_seen_date DESC
     """
-    params: List[Any] = []
+    params: list[Any] = []
     if limit and limit > 0:
         sql += " LIMIT ?"
         params.append(int(limit))
@@ -169,7 +169,7 @@ def _fetch_rows(conn: sqlite3.Connection, retag: bool, limit: int, offset: int) 
     return cur.fetchall()
 
 
-def _append_proposal(proposals: Dict[str, Dict[str, Any]], proposal: Any) -> None:
+def _append_proposal(proposals: dict[str, dict[str, Any]], proposal: Any) -> None:
     if not isinstance(proposal, dict):
         return
     should_create = bool(proposal.get("should_create", False))
@@ -201,7 +201,7 @@ def _append_proposal(proposals: Dict[str, Dict[str, Any]], proposal: Any) -> Non
 def _persist_admission(
     conn: sqlite3.Connection,
     row: sqlite3.Row,
-    admission: Dict[str, Any],
+    admission: dict[str, Any],
     overwrite_existing: bool,
     dry_run: bool,
 ) -> int:
@@ -245,7 +245,7 @@ def _persist_admission(
     return int(cur.rowcount or 0)
 
 
-def _write_proposals(path: str, proposals: Dict[str, Dict[str, Any]]) -> None:
+def _write_proposals(path: str, proposals: dict[str, dict[str, Any]]) -> None:
     payload = {
         "generated_at": _now_iso(),
         "source": "run_backfill two_agent_admission_v1",
@@ -315,7 +315,7 @@ def main() -> None:
         "admitted": 0,
         "db_updated": 0,
     }
-    proposals: Dict[str, Dict[str, Any]] = {}
+    proposals: dict[str, dict[str, Any]] = {}
     pending_commits = 0
 
     for idx, row in enumerate(rows, start=1):

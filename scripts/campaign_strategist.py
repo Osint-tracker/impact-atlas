@@ -22,8 +22,8 @@ import sqlite3
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import datetime, UTC
+from typing import Any
 
 try:
     from dotenv import load_dotenv
@@ -81,8 +81,8 @@ class CampaignDef:
     """Single campaign definition loaded from CSV."""
     campaign_id: str
     name: str
-    target_types: List[str]
-    keywords: List[str]
+    target_types: list[str]
+    keywords: list[str]
 
     def to_prompt_block(self) -> str:
         return (
@@ -96,7 +96,7 @@ class CampaignDef:
 @dataclass
 class LLMResult:
     """Parsed result from a single LLM campaign assignment call."""
-    campaign_id: Optional[str] = None
+    campaign_id: str | None = None
     reasoning: str = ""
     confidence: float = 0.0
     raw_response: str = ""
@@ -115,7 +115,7 @@ class RunMetrics:
     db_updates: int = 0
     total_weighted_tie: float = 0.0
     total_api_time: float = 0.0
-    campaigns_hit: Dict[str, int] = field(default_factory=dict)
+    campaigns_hit: dict[str, int] = field(default_factory=dict)
 
     def summary(self) -> str:
         lines = [
@@ -150,13 +150,13 @@ def _normalize(value: Any) -> str:
     return re.sub(r"\s+", " ", str(value or "").strip().lower())
 
 
-def _split_tokens(raw: Any, separators: str = r"[|;,]") -> List[str]:
+def _split_tokens(raw: Any, separators: str = r"[|;,]") -> list[str]:
     """Split a delimited string into cleaned, deduplicated tokens."""
     if not raw:
         return []
     parts = re.split(separators, str(raw))
     seen: set[str] = set()
-    out: List[str] = []
+    out: list[str] = []
     for p in parts:
         token = _normalize(p)
         if len(token) < 2 or token in seen:
@@ -166,15 +166,15 @@ def _split_tokens(raw: Any, separators: str = r"[|;,]") -> List[str]:
     return out
 
 
-def load_campaigns_from_csv(path: str) -> List[CampaignDef]:
+def load_campaigns_from_csv(path: str) -> list[CampaignDef]:
     """Parse a campaign definitions CSV file into CampaignDef objects."""
     if not path or not os.path.isfile(path):
         logger.warning("CSV not found: %s", path)
         return []
 
-    campaigns: List[CampaignDef] = []
+    campaigns: list[CampaignDef] = []
     try:
-        with open(path, "r", encoding="utf-8-sig", newline="") as f:
+        with open(path, encoding="utf-8-sig", newline="") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 lowered = {str(k).strip().lower(): v for k, v in row.items()}
@@ -198,15 +198,15 @@ def load_campaigns_from_csv(path: str) -> List[CampaignDef]:
     return campaigns
 
 
-def load_campaigns_from_cache(path: str) -> List[CampaignDef]:
+def load_campaigns_from_cache(path: str) -> list[CampaignDef]:
     """Load campaign definitions from cached JSON."""
     if not path or not os.path.isfile(path):
         return []
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             data = json.load(f)
         raw_list = data.get("campaigns", data if isinstance(data, list) else [])
-        campaigns: List[CampaignDef] = []
+        campaigns: list[CampaignDef] = []
         for item in raw_list:
             cid = _normalize(item.get("campaign_id"))
             name = str(item.get("name") or "").strip()
@@ -221,7 +221,7 @@ def load_campaigns_from_cache(path: str) -> List[CampaignDef]:
         return []
 
 
-def load_campaign_definitions() -> List[CampaignDef]:
+def load_campaign_definitions() -> list[CampaignDef]:
     """
     Load campaign definitions with priority chain:
     1. Curated CSV (authoritative)
@@ -295,7 +295,7 @@ def connect_db(db_path: str) -> sqlite3.Connection:
     return conn
 
 
-def fetch_untagged_events(conn: sqlite3.Connection, limit: int) -> List[sqlite3.Row]:
+def fetch_untagged_events(conn: sqlite3.Connection, limit: int) -> list[sqlite3.Row]:
     """Fetch Master Events without campaign assignment."""
     cursor = conn.cursor()
     cursor.execute(FETCH_SQL, (limit,))
@@ -322,7 +322,7 @@ def ensure_campaign_columns(conn: sqlite3.Connection) -> None:
 # EVENT DATA EXTRACTION
 # ============================================================================
 
-def _safe_json(raw: Any) -> Dict[str, Any]:
+def _safe_json(raw: Any) -> dict[str, Any]:
     """Safely parse a JSON string or return empty dict."""
     if isinstance(raw, dict):
         return raw
@@ -335,7 +335,7 @@ def _safe_json(raw: Any) -> Dict[str, Any]:
         return {}
 
 
-def extract_event_context(row: sqlite3.Row) -> Dict[str, Any]:
+def extract_event_context(row: sqlite3.Row) -> dict[str, Any]:
     """
     Extract tactical context from a DB row for prompt construction.
     Pulls classification and target_type from ai_report_json.
@@ -416,7 +416,7 @@ You MUST respond with a JSON object containing exactly these fields:
 Example: {"campaign_id": "energy_grid_degradation", "reasoning": "Strike on power substation aligns with systematic energy infrastructure targeting pattern", "confidence": 0.88}"""
 
 
-def build_campaign_catalog(campaigns: List[CampaignDef]) -> str:
+def build_campaign_catalog(campaigns: list[CampaignDef]) -> str:
     """Build the campaign catalog section of the prompt."""
     lines = ["ACTIVE STRATEGIC CAMPAIGNS:"]
     for c in campaigns:
@@ -424,7 +424,7 @@ def build_campaign_catalog(campaigns: List[CampaignDef]) -> str:
     return "\n".join(lines)
 
 
-def build_event_prompt(ctx: Dict[str, Any], catalog: str) -> str:
+def build_event_prompt(ctx: dict[str, Any], catalog: str) -> str:
     """Build the per-event user prompt for LLM analysis."""
     return (
         f"{catalog}\n\n"
@@ -472,7 +472,7 @@ def create_openrouter_client(api_key: str) -> Any:
     return client
 
 
-def call_llm(client: Any, system: str, user_prompt: str) -> Tuple[str, float]:
+def call_llm(client: Any, system: str, user_prompt: str) -> tuple[str, float]:
     """
     Call deepseek/deepseek-v4-flash and return (raw_response, elapsed_seconds).
     Retries on empty response or transient API errors (429, 502, 503, etc.).
@@ -480,7 +480,7 @@ def call_llm(client: Any, system: str, user_prompt: str) -> Tuple[str, float]:
     import random
     t0 = time.monotonic()
     max_attempts = 3
-    
+
     for attempt in range(1, max_attempts + 1):
         try:
             response = client.chat.completions.create(
@@ -497,23 +497,23 @@ def call_llm(client: Any, system: str, user_prompt: str) -> Tuple[str, float]:
             if raw:
                 elapsed = time.monotonic() - t0
                 return raw, elapsed
-            
+
             logger.warning("Empty LLM response (Attempt %d/%d)", attempt, max_attempts)
             if attempt == max_attempts:
                 break
         except Exception as e:
             err_str = str(e).lower()
             is_transient = any(x in err_str for x in ["rate limit", "timeout", "bad gateway", "overloaded", "429", "502", "503"])
-            
+
             if not is_transient or attempt == max_attempts:
                 logger.error("LLM Hard Error: %s", e)
                 raise e
-            
+
             wait_time = 2.0 * (2 ** (attempt - 1)) + random.uniform(0, 1)
-            logger.warning("API Transient Error (%s). Retrying in %.1fs (Attempt %d/%d)...", 
+            logger.warning("API Transient Error (%s). Retrying in %.1fs (Attempt %d/%d)...",
                            type(e).__name__, wait_time, attempt, max_attempts)
             time.sleep(wait_time)
-            
+
     return "", time.monotonic() - t0
 
 
@@ -534,7 +534,7 @@ def parse_llm_response(raw: str, valid_ids: set[str]) -> LLMResult:
         result.error = "Empty LLM response"
         return result
 
-    parsed: Optional[Dict[str, Any]] = None
+    parsed: dict[str, Any] | None = None
 
     # Level 1: Direct parse
     try:
@@ -612,10 +612,10 @@ class CampaignStrategist:
         self.api_key = api_key or os.getenv("OPENROUTER_API_KEY", "")
         self.confidence_min = confidence_min
         self.dry_run = dry_run
-        self.campaigns: List[CampaignDef] = []
+        self.campaigns: list[CampaignDef] = []
         self.valid_ids: set[str] = set()
         self.catalog_prompt: str = ""
-        self.conn: Optional[sqlite3.Connection] = None
+        self.conn: sqlite3.Connection | None = None
         self.client: Any = None
         self.metrics = RunMetrics()
 
@@ -697,10 +697,10 @@ class CampaignStrategist:
             "tie_score": ctx["tie_score"],
             "reliability": ctx["reliability"],
             "sector_id": ctx["sector_id"],
-            "decided_at": datetime.now(timezone.utc).isoformat(),
+            "decided_at": datetime.now(UTC).isoformat(),
         }, ensure_ascii=False)
 
-        tagged_at = datetime.now(timezone.utc).isoformat()
+        tagged_at = datetime.now(UTC).isoformat()
 
         logger.info(
             "[%s] ASSIGNED -> %s (conf=%.2f, wTIE=%.1f)",

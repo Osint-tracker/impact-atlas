@@ -1,0 +1,586 @@
+/* ============================================================================
+   IMPACT ATLAS — CONSOLE REDESIGN LAYER (v1.0)
+   ----------------------------------------------------------------------------
+   Loaded AFTER the legacy stylesheets. It restyles the existing component
+   surfaces (command bar, nav rail, sidebar, map chrome, toolbars, cards,
+   strips, scroll areas) onto the theme.css design system without touching
+   their markup contracts (IDs and behavior hooks are untouched).
+   Tokens come exclusively from theme.css.
+   ========================================================================== */
+
+/* ============================================================================
+   1. COMMAND BAR (replaces the legacy page header)
+   ========================================================================== */
+
+.acled-header {
+  height: 48px;
+  background: linear-gradient(180deg, var(--sx-850), var(--sx-900));
+  border-bottom: 1px solid var(--line-soft);
+  box-shadow: 0 1px 0 rgba(245, 158, 11, 0.18), var(--el-2);
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+}
+
+.acled-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.header-content {
+  max-width: none;
+  padding: 0 var(--sp-4);
+  gap: var(--sp-4);
+}
+
+/* --- Brand block ----------------------------------------------------------- */
+
+.brand h1 {
+  font-family: var(--font-data);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: var(--tx-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand h1::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--am-500);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+
+.brand h1 span {
+  color: var(--tx-signal);
+  margin-left: -0.22em;
+}
+
+.brand .subtitle {
+  display: none;
+}
+
+/* --- Classification strip --------------------------------------------------- */
+
+.classification-strip {
+  font-family: var(--font-data);
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: var(--tx-dim);
+  padding: 2px 14px;
+  border: 1px solid var(--line-hair);
+  border-radius: var(--r-zero);
+  background: rgba(11, 18, 32, 0.6);
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* --- Telemetry cluster ------------------------------------------------------ */
+
+.header-telemetry {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-family: var(--font-data);
+  font-size: var(--fs-label);
+}
+
+.header-telemetry .tele-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.header-telemetry .tele-label {
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--tx-dim);
+  text-transform: uppercase;
+}
+
+.header-telemetry .tele-value {
+  font-weight: 700;
+  color: var(--tx-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.header-telemetry .tele-value--signal {
+  color: var(--tx-signal);
+}
+
+#liveClockDisplay,
+.header-telemetry .tele-value--clock {
+  font-size: var(--fs-lead);
+  font-weight: 800;
+  color: var(--tx-signal);
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+
+.tele-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--line-soft);
+  flex: none;
+}
+
+/* --- Header links ------------------------------------------------------------ */
+
+.acled-header nav {
+  gap: var(--sp-2);
+  margin-left: auto;
+}
+
+.acled-header nav a {
+  font-family: var(--font-data);
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tx-muted);
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--r-zero);
+}
+
+.acled-header nav a:hover,
+.acled-header nav a.active {
+  color: var(--tx-signal);
+  border-color: var(--line-signal);
+  background: rgba(245, 158, 11, 0.07);
+}
+
+/* ============================================================================
+   2. NAV RAIL
+   ========================================================================== */
+
+.nav-rail {
+  background: var(--sx-900);
+  border-right: 1px solid var(--line-hair);
+  width: 56px;
+}
+
+.nav-rail-logo {
+  color: var(--tx-signal);
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.5));
+}
+
+.nav-item {
+  color: var(--tx-dim);
+  border-left: 2px solid transparent;
+  transition: color var(--motion-fast), background var(--motion-fast),
+    border-color var(--motion-fast);
+}
+
+.nav-item:hover {
+  color: var(--tx-secondary);
+  background: rgba(148, 163, 184, 0.05);
+}
+
+.nav-item.active {
+  color: var(--tx-signal);
+  background: rgba(245, 158, 11, 0.08);
+  border-left-color: var(--am-500);
+}
+
+.nav-item.active .nav-item-label {
+  color: var(--tx-signal);
+}
+
+.nav-item-label {
+  font-family: var(--font-data);
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.nav-divider {
+  height: 1px;
+  background: var(--line-hair);
+  margin: 6px 8px;
+}
+
+.nav-spacer {
+  flex: 1;
+}
+
+/* ============================================================================
+   3. SIDEBAR SHELL & CARDS
+   ========================================================================== */
+
+.sidebar-shell {
+  background: var(--bg-panel);
+  border-right: 1px solid var(--line-hair);
+}
+
+.sidebar {
+  background: transparent;
+}
+
+.sidebar-tabs {
+  border-bottom: 1px solid var(--line-hair);
+  background: rgba(11, 18, 32, 0.5);
+}
+
+.s-tab-btn {
+  font-family: var(--font-data);
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--tx-dim);
+  border-bottom: 2px solid transparent;
+}
+
+.s-tab-btn:hover {
+  color: var(--tx-secondary);
+}
+
+.s-tab-btn.active {
+  color: var(--tx-signal);
+  border-bottom-color: var(--am-500);
+}
+
+.layer-section-title {
+  font-family: var(--font-data);
+  font-size: var(--fs-micro);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--tx-dim);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.layer-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--line-soft), transparent);
+}
+
+.map-layer-card {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line-hair);
+  border-radius: var(--r-tight);
+  transition: border-color var(--motion-fast), background var(--motion-fast),
+    transform var(--motion-fast);
+}
+
+.map-layer-card:hover {
+  border-color: var(--line-signal);
+  background: rgba(245, 158, 11, 0.05);
+}
+
+.map-layer-card.active {
+  border-color: var(--line-signal);
+  box-shadow: inset 2px 0 0 var(--am-500);
+}
+
+.card-title {
+  font-family: var(--font-data);
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--tx-primary);
+}
+
+.card-desc {
+  font-size: var(--fs-label);
+  color: var(--tx-muted);
+  line-height: 1.45;
+}
+
+.tech-toggle-row {
+  border-bottom: 1px solid var(--line-hair);
+}
+
+.tech-toggle-label {
+  font-size: var(--fs-label);
+  color: var(--tx-secondary);
+}
+
+.tech-switch {
+  background: var(--sx-600);
+  border: 1px solid var(--line-soft);
+}
+
+.tech-toggle-row input:checked + .tech-switch {
+  background: rgba(245, 158, 11, 0.35);
+  border-color: var(--line-signal);
+}
+
+/* ============================================================================
+   4. MAIN SURFACE — strips, toolbars, map chrome
+   ========================================================================== */
+
+.main-content {
+  position: relative;
+  background: var(--bg-body);
+}
+
+.main-content::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.02) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* --- Status strip (AI disclaimer + data badge) -------------------------------- */
+
+.public-safety-strip {
+  background: rgba(11, 18, 32, 0.75);
+  border: 1px solid var(--line-hair);
+  border-left: 2px solid var(--am-600);
+  border-radius: var(--r-tight);
+  font-size: var(--fs-label);
+}
+
+.ai-disclaimer {
+  color: var(--tx-muted);
+}
+
+.ai-disclaimer strong {
+  color: var(--tx-signal);
+  font-family: var(--font-data);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.data-update-badge {
+  font-family: var(--font-data);
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--tx-signal);
+}
+
+/* --- Map top bar -------------------------------------------------------------- */
+
+.map-topbar {
+  background: linear-gradient(180deg, var(--sx-850), var(--sx-900));
+  border: 1px solid var(--line-hair);
+  border-radius: var(--r-tight) var(--r-tight) 0 0;
+}
+
+.map-topbar-title {
+  font-family: var(--font-data);
+  font-size: var(--fs-label);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: var(--tx-secondary);
+}
+
+.map-topbar-title i {
+  color: var(--tx-signal);
+}
+
+.map-topbar-actions button {
+  color: var(--tx-dim);
+  border: 1px solid var(--line-hair);
+  border-radius: var(--r-tight);
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.map-topbar-actions button:hover {
+  color: var(--tx-signal);
+  border-color: var(--line-signal);
+}
+
+/* --- Tactical time command bar -------------------------------------------------- */
+
+.tactical-time-bar {
+  background: rgba(6, 11, 22, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line-hair);
+  border-radius: var(--r-soft);
+  box-shadow: var(--el-2);
+}
+
+.ttb-btn {
+  font-family: var(--font-data);
+  font-size: var(--fs-micro);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--tx-dim);
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid var(--line-hair);
+  border-radius: var(--r-zero);
+  transition: all var(--motion-fast);
+}
+
+.ttb-btn:hover {
+  color: var(--tx-secondary);
+  border-color: var(--line-soft);
+}
+
+.ttb-btn.active {
+  color: var(--tx-signal);
+  border-color: var(--line-signal);
+  background: rgba(245, 158, 11, 0.12);
+  box-shadow: var(--el-glow);
+}
+
+.ttb-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--line-soft);
+}
+
+.ttb-custom-input {
+  font-family: var(--font-data);
+  background: var(--bg-inset);
+  border: 1px solid var(--line-soft);
+  color: var(--tx-primary);
+  border-radius: var(--r-zero);
+}
+
+/* --- Quick search ----------------------------------------------------------------- */
+
+.map-quick-search {
+  background: rgba(6, 11, 22, 0.9);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-soft);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--el-2);
+}
+
+.map-quick-search input {
+  font-family: var(--font-data);
+  color: var(--tx-primary);
+}
+
+.qs-results {
+  background: var(--sx-850);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-tight);
+}
+
+/* ============================================================================
+   5. DATA DENSITY READOUTS — mono numerics everywhere
+   ========================================================================== */
+
+.kpi-card .kpi-value,
+.kpi-card .kpi-label,
+.axis-metric-value,
+.ud-stat-value {
+  font-family: var(--font-data) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-bar {
+  gap: var(--sp-2);
+}
+
+.kpi-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--line-hair);
+  border-radius: var(--r-tight);
+  padding: var(--sp-2) var(--sp-3);
+  min-width: 0;
+}
+
+.kpi-label {
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+
+.kpi-value {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--tx-primary);
+}
+
+/* ============================================================================
+   6. SCROLL AREAS — unified inner chrome
+   ========================================================================== */
+
+.sidebar-scroll-area::-webkit-scrollbar,
+.report-scroll::-webkit-scrollbar,
+.intel-feed::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-scroll-area::-webkit-scrollbar-thumb,
+.report-scroll::-webkit-scrollbar-thumb,
+.intel-feed::-webkit-scrollbar-thumb {
+  border-width: 1px;
+}
+
+/* --- Data age semantics (driven by console.js) ------------------------------- */
+
+#dataAgeBadge.age-fresh {
+  color: var(--st-ok);
+}
+
+#dataAgeBadge.age-stale {
+  color: var(--st-med);
+}
+
+#dataAgeBadge.age-aged {
+  color: var(--st-crit);
+}
+
+/* ============================================================================
+   7. RESPONSIVE — the console degrades to a tablet, then a field tablet
+   ========================================================================== */
+
+@media (max-width: 1280px) {
+  .header-telemetry .tele-block--secondary {
+    display: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .classification-strip {
+    display: none;
+  }
+
+  .header-telemetry {
+    gap: var(--sp-2);
+  }
+
+  .acled-header nav a:not(.btn--signal) {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .acled-header {
+    height: 44px;
+  }
+
+  .header-telemetry .tele-value {
+    max-width: 110px;
+  }
+
+  .tele-divider {
+    display: none;
+  }
+}

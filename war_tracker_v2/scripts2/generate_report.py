@@ -86,7 +86,7 @@ def classify_sector(lat, lon, target_type):
             if la > 50.0 and lo > 36.0: return 'DEEP STRIKE'
             if lo <= 36.0 and la < 48.0: return 'SOUTHERN'
             if lo > 36.0 and la < 50.0: return 'EASTERN'
-        except: pass
+        except (TypeError, ValueError): pass
     return 'EASTERN'
 
 # =============================================================================
@@ -113,9 +113,9 @@ class IntelEngine:
                        reliability, bias_score, ai_report_json, ai_summary
                 FROM unique_events
                 WHERE ai_analysis_status = 'COMPLETED'
-                  AND last_seen_date >= '{cutoff}'
+                  AND last_seen_date >= ?
                 ORDER BY tie_score DESC, last_seen_date DESC
-            """).fetchall()
+            """, (cutoff,)).fetchall()
         except sqlite3.Error as e:
             log.error(f"SQL: {e}")
             conn.close()
@@ -126,7 +126,7 @@ class IntelEngine:
             ai = {}
             if r['ai_report_json']:
                 try: ai = json.loads(r['ai_report_json'])
-                except: pass
+                except (TypeError, ValueError): pass
 
             strat = ai.get('strategy', {})
             if not isinstance(strat, dict): strat = {}
@@ -145,7 +145,7 @@ class IntelEngine:
                     exp = geo.get('explicit', {})
                     if isinstance(exp, dict):
                         lat, lon = exp.get('lat'), exp.get('lon')
-            except: pass
+            except (TypeError, ValueError): pass
 
             # Target type
             tgt_cat = titan.get('target_type_category', '')
@@ -316,7 +316,7 @@ class Doc(FPDF):
             p = C.FONTS / fn
             if p.exists():
                 try: self.add_font(fam, sty, str(p))
-                except: pass
+                except Exception: pass
 
     def header(self):
         if self.page_no() == 1: return
@@ -678,7 +678,7 @@ def main():
     for p in ch.values():
         if p and os.path.exists(p):
             try: os.remove(p)
-            except: pass
+            except OSError: pass
 
 if __name__ == "__main__":
     main()

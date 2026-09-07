@@ -17,6 +17,15 @@ Chart.defaults.scale.grid.color = THEME.grid;
 
 const SYNONYMS = { 'kiev': 'kyiv', 'kiew': 'kyiv', 'kharkov': 'kharkiv', 'odessa': 'odesa', 'nikolaev': 'mykolaiv', 'artemivsk': 'bakhmut', 'dnepropetrovsk': 'dnipro', 'lvov': 'lviv' };
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // --- INIT ---
 window.initCharts = function (events) {
     if (!events || events.length === 0) return;
@@ -331,9 +340,9 @@ function renderHVTCarousel(data) {
         const classification = (e.classification || '').toUpperCase();
         const badge = BADGE_COLORS[classification] || BADGE_COLORS['DEFAULT'];
         const tieTotal = Math.round(parseFloat(e.tie_total) || 0);
-        const title = (e.title || 'Unknown Event');
+        const title = String(e.title || 'Unknown Event');
         const truncTitle = title.length > 60 ? title.substring(0, 57) + '…' : title;
-        const dateStr = e.date || '--';
+        const dateStr = String(e.date || '--');
 
         // TIE color intensity
         let tieColor = '#64748b';
@@ -343,16 +352,16 @@ function renderHVTCarousel(data) {
 
         card.innerHTML = `
             <div class="hvt-card-header">
-                <span class="hvt-date">${dateStr}</span>
+                <span class="hvt-date">${escapeHtml(dateStr)}</span>
                 <span class="hvt-badge" style="background:${badge.bg}; color:${badge.color};">${badge.label}</span>
             </div>
             <div class="hvt-card-body">
-                <div class="hvt-card-title" title="${title.replace(/"/g, '&quot;')}">${truncTitle}</div>
+                <div class="hvt-card-title" title="${escapeHtml(title)}">${escapeHtml(truncTitle)}</div>
             </div>
             <div class="hvt-card-footer">
                 <span class="hvt-tie-label">T.I.E.</span>
                 <span class="hvt-tie-value" style="color:${tieColor};">${tieTotal}</span>
-                <span class="hvt-vectors">T:${e.vec_t || '-'} K:${e.vec_k || '-'} E:${e.vec_e || '-'}</span>
+                <span class="hvt-vectors">T:${escapeHtml(e.vec_t || '-')} K:${escapeHtml(e.vec_k || '-')} E:${escapeHtml(e.vec_e || '-')}</span>
             </div>
         `;
 

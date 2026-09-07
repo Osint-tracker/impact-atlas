@@ -5,7 +5,7 @@ import csv
 import json
 import os
 import re
-from typing import Any, Dict, List
+from typing import Any
 
 try:
     from dotenv import load_dotenv
@@ -47,7 +47,7 @@ def _load_env_file_fallback(path: str) -> None:
     if not path or not os.path.exists(path):
         return
     try:
-        with open(path, "r", encoding="utf-8") as handle:
+        with open(path, encoding="utf-8") as handle:
             for raw_line in handle:
                 line = raw_line.strip()
                 if not line or line.startswith("#") or "=" not in line:
@@ -83,12 +83,12 @@ def _normalize_text(value: Any) -> str:
     return re.sub(r"\s+", " ", str(value or "").strip())
 
 
-def _split_tokens(value: Any) -> List[str]:
+def _split_tokens(value: Any) -> list[str]:
     if isinstance(value, list):
         raw_items = value
     else:
         raw_items = re.split(r"[|,;]", str(value or ""))
-    out: List[str] = []
+    out: list[str] = []
     seen = set()
     for item in raw_items:
         token = _normalize_text(item).lower()
@@ -112,7 +112,7 @@ def _normalize_hex(value: Any) -> str:
     return "#f59e0b"
 
 
-def _normalize_row(row: Dict[str, Any]) -> Dict[str, str]:
+def _normalize_row(row: dict[str, Any]) -> dict[str, str]:
     campaign_id = _normalize_text(row.get("campaign_id")).lower()
     name = _normalize_text(row.get("name")) or campaign_id.replace("_", " ").title()
     target_types = _split_tokens(row.get("target_types"))
@@ -131,10 +131,10 @@ def _normalize_row(row: Dict[str, Any]) -> Dict[str, str]:
     }
 
 
-def _load_rows_from_json(path: str) -> List[Dict[str, Any]]:
+def _load_rows_from_json(path: str) -> list[dict[str, Any]]:
     if not path or not os.path.exists(path):
         return []
-    with open(path, "r", encoding="utf-8") as handle:
+    with open(path, encoding="utf-8") as handle:
         payload = json.load(handle)
 
     if isinstance(payload, list):
@@ -151,12 +151,12 @@ def _load_rows_from_json(path: str) -> List[Dict[str, Any]]:
     return [r for r in rows if isinstance(r, dict)]
 
 
-def _load_rows_from_csv(path: str) -> List[Dict[str, Any]]:
+def _load_rows_from_csv(path: str) -> list[dict[str, Any]]:
     if not path or not os.path.exists(path):
         return []
-    with open(path, "r", encoding="utf-8-sig", newline="") as handle:
+    with open(path, encoding="utf-8-sig", newline="") as handle:
         reader = csv.DictReader(handle)
-        rows: List[Dict[str, Any]] = []
+        rows: list[dict[str, Any]] = []
         for row in reader:
             if not isinstance(row, dict):
                 continue
@@ -188,7 +188,7 @@ def _authorize(credentials_path: str):
     return gspread.authorize(creds)
 
 
-def _ensure_headers(worksheet) -> Dict[str, int]:
+def _ensure_headers(worksheet) -> dict[str, int]:
     values = worksheet.get_all_values()
     if not values:
         worksheet.append_row(REQUIRED_HEADERS, value_input_option="USER_ENTERED")
@@ -202,7 +202,7 @@ def _ensure_headers(worksheet) -> Dict[str, int]:
         compact = re.sub(r"\s+", " ", compact)
         normalized_headers.append(compact)
 
-    header_map: Dict[str, int] = {}
+    header_map: dict[str, int] = {}
     for canonical, aliases in HEADER_ALIASES.items():
         for idx, h in enumerate(normalized_headers):
             h_norm = h.strip()
@@ -231,9 +231,9 @@ def _ensure_headers(worksheet) -> Dict[str, int]:
     return header_map
 
 
-def _existing_row_index(worksheet, header_map: Dict[str, int]) -> Dict[str, int]:
+def _existing_row_index(worksheet, header_map: dict[str, int]) -> dict[str, int]:
     values = worksheet.get_all_values()
-    out: Dict[str, int] = {}
+    out: dict[str, int] = {}
     for idx, row in enumerate(values[1:], start=2):
         cid = ""
         try:
@@ -269,7 +269,7 @@ def main() -> None:
             }
         )
 
-    normalized: List[Dict[str, str]] = []
+    normalized: list[dict[str, str]] = []
     seen = set()
     for row in payload_rows:
         clean = _normalize_row(row)

@@ -14,7 +14,6 @@
 # =========================================================================
 
 import os
-import json
 import logging
 import base64
 import re
@@ -24,9 +23,7 @@ import numpy as np
 import tempfile
 import aiohttp
 import asyncio
-from typing import List, Dict, Tuple, Optional
 from bs4 import BeautifulSoup
-from io import BytesIO
 import random
 import time
 import threading
@@ -62,7 +59,7 @@ class MediaProcessor:
         os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = self._FFMPEG_OPTIONS
         logger.info("MediaProcessor initialized (anti-hotlinking headers set).")
 
-    def extract_keyframes(self, media_url: str) -> List[Dict]:
+    def extract_keyframes(self, media_url: str) -> list[dict]:
         """
         Extract top keyframes from a media URL (video or image).
 
@@ -114,7 +111,7 @@ class MediaProcessor:
             logger.error(f"MediaProcessor: Exception processing {media_url[:80]}...: {e}")
             return []
 
-    def _process_video_stream(self, cap: cv2.VideoCapture, fps: float) -> List[Dict]:
+    def _process_video_stream(self, cap: cv2.VideoCapture, fps: float) -> list[dict]:
         """
         Process a video stream using geometric sampling (10%, 40%, 70%, 90%).
         """
@@ -124,7 +121,7 @@ class MediaProcessor:
 
         percentiles = [0.1, 0.4, 0.7, 0.9]
         target_indices = [int(p * total_frames) for p in percentiles]
-        
+
         final_frames = []
         for idx in target_indices:
             cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
@@ -138,11 +135,11 @@ class MediaProcessor:
                         "frame_index": idx,
                         "selection_reason": "geometric_sample"
                     })
-        
+
         cap.release()
         return final_frames
 
-    def _process_single_image(self, cap: cv2.VideoCapture) -> List[Dict]:
+    def _process_single_image(self, cap: cv2.VideoCapture) -> list[dict]:
         """Process a single image (or 1-frame stream) and return as enriched dict."""
         try:
             ret, frame = cap.read()
@@ -202,23 +199,23 @@ class MediaProcessor:
         Protected by Semaphore and Jitter to prevent rate limiting.
         """
         embed_url = tme_url + "?embed=1"
-        
+
         UAS = [
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0",
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
         ]
-        
+
         headers = {
             "User-Agent": random.choice(UAS),
             "Referer": "https://t.me/"
         }
-        
+
         # Implement robust retry strategy with backoff to bypass Telegram rate limiting
         from requests.adapters import HTTPAdapter
         from urllib3.util.retry import Retry
-        
+
         session = requests.Session()
         retry = Retry(
             total=3,
@@ -229,7 +226,7 @@ class MediaProcessor:
         adapter = HTTPAdapter(max_retries=retry)
         session.mount("http://", adapter)
         session.mount("https://", adapter)
-        
+
         try:
             with _TME_SEMAPHORE:
                 # Jitter to mimic human behavior
@@ -238,14 +235,14 @@ class MediaProcessor:
 
             if r.status_code != 200:
                 return None
-                
+
             soup = BeautifulSoup(r.text, 'html.parser')
-            
+
             # 1. Try to find a video source
             video_tag = soup.find('video')
             if video_tag and video_tag.has_attr('src'):
                 return video_tag['src']
-                
+
             # 2. Try to find a photo background image
             photo_tags = soup.find_all('a', class_='tgme_widget_message_photo_wrap')
             if photo_tags:
@@ -253,9 +250,9 @@ class MediaProcessor:
                 match = re.search(r"url\('([^']+)'\)", style)
                 if match:
                     return match.group(1)
-                    
+
             return None
-            
+
         except Exception as e:
             logger.error(f"MediaProcessor: Error resolving {tme_url}: {e}")
             return None
@@ -274,21 +271,20 @@ class MediaProcessor:
         import uuid
         import base64
         import subprocess
-        
+
         temp_dir = tempfile.gettempdir()
         v_name = f"vid_{uuid.uuid4().hex}.mp4"
         a_name = f"aud_{uuid.uuid4().hex}.wav"
         v_path = os.path.join(temp_dir, v_name)
         a_path = os.path.join(temp_dir, a_name)
-        
+
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(media_url, timeout=45) as r:
-                    if r.status != 200:
-                        return ""
-                    with open(v_path, 'wb') as f:
-                        async for chunk in r.content.iter_chunked(8192):
-                            f.write(chunk)
+            async with aiohttp.ClientSession() as session, session.get(media_url, timeout=45) as r:
+                if r.status != 200:
+                    return ""
+                with open(v_path, 'wb') as f:
+                    async for chunk in r.content.iter_chunked(8192):
+                        f.write(chunk)
 
             # Extract audio using ffmpeg to WAV
             cmd = [
@@ -297,7 +293,7 @@ class MediaProcessor:
                 a_path
             ]
             await asyncio.to_thread(subprocess.run, cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            
+
             if not os.path.exists(a_path):
                 return ""
 
@@ -319,14 +315,14 @@ class MediaProcessor:
                 ],
                 "stream": False
             }
-            
+
             headers = {
                 "Authorization": f"Bearer {os.environ.get('OPENROUTER_API_KEY')}",
                 "Content-Type": "application/json",
                 "HTTP-Referer": "https://impact-atlas.io",
                 "X-Title": "Impact Atlas"
             }
-            
+
             async with aiohttp.ClientSession() as session:
                 async with session.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload, timeout=60) as resp:
                     if resp.status == 200:
@@ -337,7 +333,7 @@ class MediaProcessor:
                         err_text = await resp.text()
                         logger.error(f"MediaProcessor: OpenRouter audio API error {resp.status}: {err_text}")
                         return ""
-                        
+
         except Exception as e:
             logger.error(f"MediaProcessor: Audio extraction error: {e}")
             return ""
@@ -349,5 +345,5 @@ class MediaProcessor:
                         os.remove(p)
                     except Exception as cleanup_err:
                         logger.warning(f"MediaProcessor: Cleanup failed for {p}: {cleanup_err}")
-        
+
         return ""
