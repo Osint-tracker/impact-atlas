@@ -1,4 +1,4 @@
-﻿"""
+"""
 ENHANCED FUSION PROTOCOL V6 - Tiered Thresholds + Multi-Signal Matching
 ========================================================================
 This script merges GDELT and Telegram events using:

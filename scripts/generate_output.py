@@ -39,6 +39,12 @@ from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 
+# Resolve the project root so the shared packages import when this file is
+# executed directly (python scripts\generate_output.py).
+_PROJECT_ROOT = str(Path(__file__).resolve().parents[1])
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
+
 try:
     import orjson
 
@@ -90,8 +96,8 @@ except ImportError:  # executed directly from the scripts/ directory
         write_json,
     )
 
-from impact_atlas.config import ProjectPaths
-from impact_atlas.logging import configure_logging
+from impact_atlas.config import ProjectPaths  # noqa: E402
+from impact_atlas.logging import configure_logging  # noqa: E402
 
 # =============================================================================
 # CONFIGURATION

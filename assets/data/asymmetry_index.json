@@ -118,22 +118,22 @@
     },
     "UNKNOWN_SECTOR": {
       "UA": {
-        "asymmetry_index": 4.7589,
-        "events": 274,
-        "numerator": 6672.0,
-        "denominator": 1402.0
+        "asymmetry_index": 5.3003,
+        "events": 554,
+        "numerator": 15551.0,
+        "denominator": 2934.0
       },
       "UNK": {
-        "asymmetry_index": 4.5859,
-        "events": 26,
-        "numerator": 454.0,
-        "denominator": 99.0
+        "asymmetry_index": 4.8503,
+        "events": 89,
+        "numerator": 1523.0,
+        "denominator": 314.0
       },
       "RU": {
-        "asymmetry_index": 6.1605,
-        "events": 278,
-        "numerator": 6487.0,
-        "denominator": 1053.0
+        "asymmetry_index": 7.8085,
+        "events": 555,
+        "numerator": 16187.0,
+        "denominator": 2073.0
       }
     },
     "Kharkiv Axis": {
@@ -220,8 +220,8 @@
     }
   },
   "global": {
-    "RU": 5.0707,
-    "UA": 4.7083,
-    "UNK": 3.6635
+    "RU": 6.0548,
+    "UA": 5.009,
+    "UNK": 4.1031
   }
 }

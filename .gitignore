@@ -23,6 +23,8 @@ __pycache__/
 
 # --- DATABASE PESANTI (DA IGNORARE ASSOLUTAMENTE) ---
 *.db
+*.db-shm
+*.db-wal
 *.sqlite3
 *.sqlite
 chroma.sqlite3

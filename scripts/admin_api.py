@@ -1,5 +1,5 @@
-﻿"""
-IMPACT ATLAS â€” Admin Manual Merge API
+"""
+IMPACT ATLAS — Admin Manual Merge API
 Lightweight HTTP server for browsing events and manually merging duplicates.
 Uses the same merge protocol as smart_fusion.py.
 
@@ -18,8 +18,15 @@ import sys
 import uuid
 from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse, parse_qs, unquote
+
+# Resolve the project root so the shared packages import when this file is
+# executed directly (python scripts\admin_api.py).
+_PROJECT_ROOT = str(Path(__file__).resolve().parents[1])
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
 
 from impact_atlas.config import ProjectPaths
 from impact_atlas.logging import configure_logging

@@ -1,4 +1,4 @@
-﻿import requests
+import requests
 import zipfile
 import io
 import json

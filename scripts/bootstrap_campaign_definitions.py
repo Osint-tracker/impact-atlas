@@ -1,4 +1,4 @@
-﻿"""
+"""
 Bootstrap campaign_definitions generator.
 
 Scans historical events in SQLite unique_events, extracts dominant target types,

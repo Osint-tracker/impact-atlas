@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 master_ingestor.py -- Production-Grade OSINT Multi-Source Ingestor
 =================================================================
@@ -30,6 +30,7 @@ import json
 import logging
 import re
 import sqlite3
+import sys
 import time
 from contextlib import contextmanager
 from datetime import datetime, UTC
@@ -42,8 +43,14 @@ import requests
 from bs4 import BeautifulSoup
 from io import BytesIO
 
-from impact_atlas.config import ProjectPaths, RuntimeSettings
-from impact_atlas.logging import configure_logging
+# Resolve the project root so the shared packages import when this file is
+# executed directly (python scripts\master_ingestor.py).
+_PROJECT_ROOT = str(Path(__file__).resolve().parents[1])
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
+
+from impact_atlas.config import ProjectPaths, RuntimeSettings  # noqa: E402
+from impact_atlas.logging import configure_logging  # noqa: E402
 
 try:
     from PIL import Image
@@ -51,7 +58,7 @@ try:
     PHASH_INGEST_AVAILABLE = True
 except Exception:
     PHASH_INGEST_AVAILABLE = False
-from ingestion.connectors import WarSpottingClient, ParabellumGeoExtractor
+from ingestion.connectors import WarSpottingClient, ParabellumGeoExtractor  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # CONFIGURATION
@@ -96,7 +103,7 @@ class UnitResolver:
 
     # Master alias dictionary: canonical_id -> [list of known aliases/patterns]
     ALIAS_MAP: dict[str, list[str]] = {
-        # â”€â”€ Ukrainian Ground Forces â”€â”€
+        # ── Ukrainian Ground Forces ──
         "ua_1_tank": ["1st tank brigade", "1 otbr", "1-a otbr", "1st tank bde"],
         "ua_3_assault": ["3rd assault brigade", "3rd assault", "3 oshbr", "azov brigade"],
         "ua_10_mtn_assault": ["10th mountain assault brigade", "10 ogshbr", "10th mtn assault"],
@@ -116,7 +123,7 @@ class UnitResolver:
         "ua_93_mech": ["93rd mechanized brigade", "93 ombr", "93rd mech", "kholodny yar"],
         "ua_110_mech": ["110th mechanized brigade", "110 ombr", "110th mech"],
         "ua_128_mtn_assault": ["128th mountain assault brigade", "128 ogshbr", "128th mtn"],
-        # â”€â”€ Russian Ground Forces â”€â”€
+        # ── Russian Ground Forces ──
         "ru_1_gta": ["1st guards tank army", "1 gta", "1st tank army", "1-ya gvardeiskaya"],
         "ru_2_gma": ["2nd guards motor rifle army", "2nd combined arms army", "2 oa"],
         "ru_4_tank": ["4th guards tank division", "4 gtd", "4th kantemirovskaya"],
@@ -125,8 +132,8 @@ class UnitResolver:
         "ru_155_marine": ["155th marine brigade", "155 obmp", "155th marines", "pacific marines"],
         "ru_200_motor": ["200th motor rifle brigade", "200 omsbr", "200th arctic"],
         "ru_810_marine": ["810th marine brigade", "810 obmp", "810th marines", "sevastopol marines"],
-        "ru_storm_z": ["storm-z", "shtorm z", "ÑˆÑ‚ÑƒÑ€Ð¼-z", "storm z detachment"],
-        "ru_wagner": ["wagner group", "pmc wagner", "wagner pmc", "Ñ‡Ð²Ðº Ð²Ð°Ð³Ð½ÐµÑ€", "prigozhin"],
+        "ru_storm_z": ["storm-z", "shtorm z", "штурм-z", "storm z detachment"],
+        "ru_wagner": ["wagner group", "pmc wagner", "wagner pmc", "чвк вагнер", "prigozhin"],
     }
 
     def __init__(self):
@@ -164,11 +171,11 @@ class UnitResolver:
 
         normalized = self._normalize(raw_name)
 
-        # â”€â”€ Direct match â”€â”€
+        # ── Direct match ──
         if normalized in self._lookup:
             return self._lookup[normalized]
 
-        # â”€â”€ Substring / keyword match â”€â”€
+        # ── Substring / keyword match ──
         for alias_norm, canonical_id in self._lookup.items():
             if alias_norm in normalized or normalized in alias_norm:
                 logger.debug(
@@ -177,7 +184,7 @@ class UnitResolver:
                 )
                 return canonical_id
 
-        # â”€â”€ Ordinal extraction heuristic â”€â”€
+        # ── Ordinal extraction heuristic ──
         numbers = re.findall(r"\d+", normalized)
         if numbers:
             for num in numbers:
@@ -193,7 +200,7 @@ class UnitResolver:
                                 )
                                 return canonical_id
 
-        # â”€â”€ No match â”€â”€
+        # ── No match ──
         logger.warning("UnitResolver: UNRESOLVED unit '%s' -- needs human review", raw_name)
         return None
 

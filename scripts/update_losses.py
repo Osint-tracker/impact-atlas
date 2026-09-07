@@ -1,9 +1,9 @@
-﻿"""
-Equipment Loss Scraper v3.0 â€” War Ledger Edition
+"""
+Equipment Loss Scraper v3.0 — War Ledger Edition
 Scrapes Oryx (RU + UA pages) and WarSpotting for verified equipment losses.
 Produces:
-  1. external_losses.json â€” Individual item-level losses (legacy format, enriched)
-  2. net_losses_summary.json â€” Per-category Net Loss aggregation for the War Ledger UI
+  1. external_losses.json — Individual item-level losses (legacy format, enriched)
+  2. net_losses_summary.json — Per-category Net Loss aggregation for the War Ledger UI
 """
 import requests
 import json
@@ -29,7 +29,7 @@ def safe_print(msg):
 
 
 # =============================================================================
-# ORYX CATEGORY MAPPING â€” Normalize H3 titles to standard categories
+# ORYX CATEGORY MAPPING — Normalize H3 titles to standard categories
 # =============================================================================
 CATEGORY_MAP = {
     'tanks': 'Tanks',
@@ -150,7 +150,7 @@ class OryxDualProvider:
                 for cat, s in faction_stats.items():
                     safe_print(f"   {cat}: {s['total']} (D:{s['destroyed']} Dam:{s['damaged']} Ab:{s['abandoned']} Cap:{s['captured']})")
 
-                # ---- PHASE 2: Parse individual <li> items â€” expand each entry ----
+                # ---- PHASE 2: Parse individual <li> items — expand each entry ----
                 li_items = soup.find_all('li')
                 count = 0
 
@@ -302,9 +302,9 @@ class OryxDualProvider:
 
 
 def main():
-    safe_print("â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—")
-    safe_print("â•‘   WAR LEDGER â€” Equipment Loss Scraper v3.0  â•‘")
-    safe_print("â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•")
+    safe_print("=" * 62)
+    safe_print("=" * 30 + " WAR LEDGER " + "=" * 30)
+    safe_print("=" * 62)
 
     oryx = OryxDualProvider()
     oryx.fetch()
@@ -328,7 +328,7 @@ def main():
         safe_print(f"[SUCCESS] Wrote Net Loss summary to {NET_SUMMARY_FILE}")
 
         # Print summary
-        safe_print("\nâ•â•â• WAR LEDGER SUMMARY â•â•â•")
+        safe_print("\n" + "=" * 40 + " WAR LEDGER SUMMARY " + "=" * 40)
         for faction in ['RU', 'UA']:
             g = net_summary['global'][faction]
             safe_print(f"\n  {faction} GLOBAL: Total Lost={g['total_lost']}, Captured from Enemy={g['captured_from_enemy']}, NET LOSS={g['net_loss']}")

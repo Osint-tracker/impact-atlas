@@ -1,4 +1,4 @@
-﻿import requests
+import requests
 from bs4 import BeautifulSoup
 import time
 import csv
@@ -11,14 +11,14 @@ HEADERS = {
 }
 
 def get_all_unit_links():
-    """Scarica la lista completa delle unitÃ  militari."""
-    print("Recupero indice delle unitÃ ...")
+    """Scarica la lista completa delle unità militari."""
+    print("Recupero indice delle unità...")
     try:
         response = requests.get(UNITS_INDEX_URL, headers=HEADERS, timeout=15)
         soup = BeautifulSoup(response.content, 'html.parser')
 
         units = []
-        # La tabella delle unitÃ  Ã¨ l'elemento principale della pagina
+        # La tabella delle unità è l'elemento principale della pagina
         # Cerchiamo i link dentro le righe della tabella
         rows = soup.find_all('tr')
 
@@ -34,14 +34,14 @@ def get_all_unit_links():
 
         # Deduplica (a volte ci sono link doppi)
         units = [dict(t) for t in {tuple(d.items()) for d in units}]
-        print(f"Trovate {len(units)} unitÃ  militari da scansionare.")
+        print(f"Trovate {len(units)} unità militari da scansionare.")
         return units
     except Exception as e:
-        print(f"Errore critico nel recupero indice unitÃ : {e}")
+        print(f"Errore critico nel recupero indice unità: {e}")
         return []
 
 def scrape_unit_casualties(unit_url, unit_name):
-    """Scrapa TUTTE le pagine di una singola unitÃ ."""
+    """Scrapa TUTTE le pagine di una singola unità."""
     soldiers = []
     page = 1
     max_retries = 3
@@ -118,5 +118,5 @@ if __name__ == "__main__":
                 total_extracted += len(unit_casualties)
                 f.flush() # Salva su disco in tempo reale
 
-    print(f"\nScraping Completato! Totale caduti assegnati a unitÃ : {total_extracted}")
+    print(f"\nScraping Completato! Totale caduti assegnati a unità: {total_extracted}")
     print(f"Dati salvati in: {csv_file}")

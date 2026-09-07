@@ -1,4 +1,4 @@
-﻿"""
+"""
 Impact Atlas - Military Intelligence SITREP Generator (v7.0)
 ------------------------------------------------------------
 NATO-grade intelligence briefing with actionable analysis.

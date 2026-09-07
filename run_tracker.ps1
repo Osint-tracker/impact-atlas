@@ -26,13 +26,16 @@ $RunLog = Join-Path $LogDir "run_tracker.log"
 
 function Write-Log([string]$Message) {
     $Line = "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') $Message"
-    Add-Content -Path $RunLog -Value $Line
+    Add-Content -Path $RunLog -Value $Line -Encoding UTF8
     Write-Host $Line
 }
 
 function Invoke-Stage([string]$Name, [string]$ScriptPath, [string[]]$Arguments = @()) {
     Write-Log "START $Name"
-    & $Python $ScriptPath @Arguments 2>&1 | Tee-Object -FilePath $RunLog -Append
+    & $Python $ScriptPath @Arguments 2>&1 | ForEach-Object {
+        Add-Content -Path $RunLog -Value $_ -Encoding UTF8
+        Write-Host $_
+    }
     if ($LASTEXITCODE -ne 0) {
         Write-Log "FAIL  $Name (exit $LASTEXITCODE)"
         return $false

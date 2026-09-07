@@ -1522,7 +1522,7 @@
           }
         }).addTo(map);
 
- console.log(`°¸º¯¸ Historical map loaded: ${dateString}`);
+ console.log(` Historical map loaded: ${dateString}`);
       })
       .catch(err => console.error("Error loading historical map:", err));
   }
@@ -1540,7 +1540,7 @@
     window.currentFilteredEvents = filtered;
     renderInternal(filtered);
 
- console.log(`°¸¦ Filtered to ${filtered.length} events up to ${dateString}`);
+ console.log(` Filtered to ${filtered.length} events up to ${dateString}`);
   }
 
   // Pre-load ORBAT metadata for richness
@@ -1550,7 +1550,7 @@
       window.orbatData = data;
       console.log(`✅ ORBAT Metadata Loaded: ${data.length} units`);
     })
- .catch(e => console.warn("¢¡ ¯¸ ORBAT Metadata missing"));
+ .catch(e => console.warn(" ORBAT Metadata missing"));
 
   // ===========================================
   // OWL INTEGRATION: DATA FETCHER (No Auto-Render)
@@ -1562,7 +1562,7 @@
   };
 
   function fetchOwlData() {
- console.log("°¸¦° Fetching Project Owl Data...");
+ console.log(" Fetching Project Owl Data...");
 
     return fetch('assets/data/owl_layer.geojson')
       .then(res => res.json())
@@ -1650,7 +1650,7 @@
           }
         });
 
- console.log(`°¸¦° Owl Data Ready: ${units.size} Units, ${fortifications.length} Forts`);
+ console.log(` Owl Data Ready: ${units.size} Units, ${fortifications.length} Forts`);
         return window.owlData;
       })
       .catch(err => console.error("❌ Failed to fetch Owl Data:", err));
@@ -1731,7 +1731,7 @@
       .then(res => res.json())
       .then(dates => {
         mapDates = dates;
- console.log("°¸¦ Historical dates loaded:", mapDates.length);
+ console.log(" Historical dates loaded:", mapDates.length);
 
         const dateSlider = document.getElementById('date-slider');
         const dateLabel = document.getElementById('date-label');
@@ -1780,7 +1780,7 @@
     // FIX: Check both internal state string and DOM element
     const container = L.DomUtil.get('map');
     if (map || (container && container._leaflet_id)) {
- console.log("¢¡ ¯¸ Map container already initialized. Skipping init.");
+ console.log(" Map container already initialized. Skipping init.");
       return;
     }
 
@@ -1816,7 +1816,7 @@
 
     // DEBUG: Log all clicks
     map.on('click', function (e) {
- console.log(`°¸±¯¸ MAP CLICK AT: ${e.latlng.lat}, ${e.latlng.lng}`);
+ console.log(` MAP CLICK AT: ${e.latlng.lat}, ${e.latlng.lng}`);
       // alert(`DEBUG: Map clicked at ${e.latlng}`);
     });
 
@@ -1831,7 +1831,7 @@
   // ============================================
 
   function loadSectorsData() {
- console.log("°¸¥ Starting sectors download...");
+ console.log(" Starting sectors download...");
     fetch('assets/data/operational_sectors.geojson')
       .then(response => response.json())
       .then(data => {
@@ -1942,7 +1942,7 @@
   };
 
   function loadEventsData(isArchiveLoad) {
- console.log("°¸¥ Starting event download...");
+ console.log(" Starting event download...");
 
     fetch(currentEventsDataUrl)
       .then(response => response.json())
@@ -1950,10 +1950,10 @@
         // 1. Raw Data
         window.allEventsData = normalizeEventsPayload(data);
         updateDataStatusBadge(window.eventsMetadata, !!isArchiveLoad);
- console.log(`°¸¾ Data downloaded: ${window.allEventsData.length} raw events`);
+ console.log(` Data downloaded: ${window.allEventsData.length} raw events`);
 
         if (window.allEventsData.length === 0) {
- console.warn("¢¡ ¯¸ No events found in GeoJSON");
+ console.warn(" No events found in GeoJSON");
           return;
         }
 
@@ -2046,7 +2046,7 @@
           const sectorSelect = document.getElementById('sectorFilter');
           const selectedSector = sectorSelect ? sectorSelect.value : '';
 
- console.log(`°¸ Filtering: Range[${startDate}-${endDate}] Actor[${selectedActor}] Cat[${selectedCategory}] Sector[${selectedSector}] Search[${searchTerm}]`);
+ console.log(` Filtering: Range[${startDate}-${endDate}] Actor[${selectedActor}] Cat[${selectedCategory}] Sector[${selectedSector}] Search[${searchTerm}]`);
 
           // B. Filtering Cycle
           const filtered = window.globalEvents.filter(e => {
@@ -2501,7 +2501,7 @@
       }
     }
 
- console.log(`°¸ ž Switching map source: ${sourceName}`);
+ console.log(` ž Switching map source: ${sourceName}`);
 
     let dataUrl = '';
     let colorStyle = '#ff3838';
@@ -2572,7 +2572,7 @@
       // PARABELLUM FORTIFICATIONS (Repaired Data)
       if (isChecked) {
         if (!window.fortificationsLayer) {
- console.log("°¸º¡¯¸ Loading Fortifications (Dragon's Teeth)...");
+ console.log(" Loading Fortifications (Dragon's Teeth)...");
           fetch('assets/data/fortifications_parabellum.geojson')
             .then(r => r.json())
             .then(data => {
@@ -2601,7 +2601,7 @@
     } else if (layerName === 'units') {
       // ORBAT Units Layer - PARABELLUM PRIMARY + OWL ENRICHMENT
       if (isChecked) {
- console.log("°¸¡¬ STARTING UNITS FETCH (PARABELLUM PRIMARY)...");
+ console.log(" STARTING UNITS FETCH (PARABELLUM PRIMARY)...");
 
         // 1. Fetch Parabellum Data (Primary — accurate WFS positions)
         fetch(`assets/data/orbat_units.json?v=${new Date().getTime()}`)
@@ -3111,7 +3111,7 @@
   window.initWeatherRadar = function () {
     if (window.radarLayer) return; // Already running
 
- console.log("°¸¦¯¸ Starting Weather Radar Loop (Fetching Metadata)...");
+ console.log(" Starting Weather Radar Loop (Fetching Metadata)...");
 
     // FETCH VALID TIMESTAMPS FROM RAINVIEWER API
     fetch('https://api.rainviewer.com/public/weather-maps.json')
@@ -3157,7 +3157,7 @@
     }
     window.radarLayer = null;
     currentFrameIndex = 0;
- console.log("°¸º Weather Radar Stopped");
+ console.log(" Weather Radar Stopped");
   };
 
   // C. Drone Visibility Index (V.F.R.)
@@ -3165,7 +3165,7 @@
 
   window.showVFR = function () {
     if (window.vfrLayer) return;
- console.log("°¸¡ Fetching Drone V.F.R. Data...");
+ console.log(" Fetching Drone V.F.R. Data...");
 
     // 5 Key frontline sectors
     const sectors = [
@@ -3204,7 +3204,7 @@
             const labelIcon = L.divIcon({
               className: 'vfr-label',
               html: `<div style="background: rgba(15, 23, 42, 0.8); border: 1px solid #ef4444; color: #ef4444; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; font-weight: bold; white-space: nowrap; text-align: center;">
- ¢¡ ¯¸ V.F.R. DEGRADED<br>
+  V.F.R. DEGRADED<br>
                                 <span style="color:#94a3b8; font-size:0.6rem;">Clouds: ${clouds}% | Vis: ${(vis / 1000).toFixed(1)}km</span>
                              </div>`,
               iconSize: [120, 40],
@@ -3229,7 +3229,7 @@
     // Center of Frontline (approx Donbas)
     const lat = 48.0, lon = 37.8;
 
- console.log("°¸¡¯¸ Fetching Tactical Weather Forecast...");
+ console.log(" Fetching Tactical Weather Forecast...");
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=soil_moisture_0_1cm,soil_temperature_0cm&forecast_days=3`)
       .then(r => r.json())
       .then(data => {
@@ -3387,7 +3387,7 @@
     // Ensure clean state
     window.closeAllModals();
 
- console.log("°¸¦ openUnitModal CALLED with:", unit?.display_name || unit?.unit_name || 'unknown');
+ console.log(" openUnitModal CALLED with:", unit?.display_name || unit?.unit_name || 'unknown');
 
     // Helper must be function-scoped
     const safeText = (txt) => txt || 'N/A';
@@ -3487,13 +3487,13 @@
       }
 
       console.log("✅ Modal element found. Current display:", modal.style.display);
- console.log("°¸ Modal computed style:", window.getComputedStyle(modal).display);
+ console.log(" Modal computed style:", window.getComputedStyle(modal).display);
 
       // NUCLEAR STYLE RESET
       modal.setAttribute('style', 'display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 9999 !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(15, 23, 42, 0.9) !important; justify-content: center !important; align-items: center !important;');
 
- console.log("°¸§ AFTER setAttribute - display:", modal.style.display);
- console.log("°¸ AFTER computed style:", window.getComputedStyle(modal).display);
+ console.log(" AFTER setAttribute - display:", modal.style.display);
+ console.log(" AFTER computed style:", window.getComputedStyle(modal).display);
 
       // Header
       const elTitle = document.getElementById('udTitle');
@@ -3972,7 +3972,7 @@
   let tieRadarInstance = null; // Global instance for the modal chart
 
   window.openIntelDossier = function (eventData) {
- console.log("°¸š Opening Dossier for:", eventData.title);
+ console.log(" Opening Dossier for:", eventData.title);
 
     document.getElementById('videoModal').style.display = 'flex'; // Use Flex for centering
 
@@ -4890,7 +4890,7 @@
 
   // Wait for DOM before initializing
   function startApp() {
- console.log("°¸¡¬ Starting Impact Atlas...");
+ console.log(" Starting Impact Atlas...");
     initAxisStatsPanelControls();
     initProductionUi();
     syncAxisHudOffset();

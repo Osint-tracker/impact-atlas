@@ -1,4 +1,4 @@
-﻿"""Resilient HTTP transport with explicit retries, timeouts, and rate limits."""
+"""Resilient HTTP transport with explicit retries, timeouts, and rate limits."""
 
 from __future__ import annotations
 

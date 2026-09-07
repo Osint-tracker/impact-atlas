@@ -1,4 +1,4 @@
-﻿"""Campaign definition loading, event tagging, and campaign report builders.
+"""Campaign definition loading, event tagging, and campaign report builders.
 
 Campaign definitions load through a three-tier fallback chain: the Google
 Sheet CSV export, the local JSON cache, and finally the curated bootstrap

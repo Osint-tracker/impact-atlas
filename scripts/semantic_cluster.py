@@ -1,4 +1,4 @@
-﻿"""
+"""
 Semantic Narrative Generator (v1.0)
 Clusters military events by Space + Time + Semantics using DBSCAN,
 then generates AI-powered strategic narratives for each cluster.

@@ -7,6 +7,7 @@ Author: Impact Atlas Project (Modified via Gemini)
 import csv
 import json
 import logging
+import sys
 from datetime import datetime
 from io import StringIO
 from pathlib import Path
@@ -15,9 +16,15 @@ from typing import Any
 import requests
 from shapely.geometry import Point, Polygon
 
-from impact_atlas.config import ProjectPaths, RuntimeSettings
-from impact_atlas.http import ResilientHttpClient, RetryPolicy
-from impact_atlas.logging import configure_logging
+# Resolve the project root so the shared packages import regardless of the
+# working directory this file is executed from.
+_PROJECT_ROOT = str(Path(__file__).resolve().parents[0])
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
+
+from impact_atlas.config import ProjectPaths, RuntimeSettings  # noqa: E402
+from impact_atlas.http import ResilientHttpClient, RetryPolicy  # noqa: E402
+from impact_atlas.logging import configure_logging  # noqa: E402
 
 logger = logging.getLogger(__name__)
 PROJECT_ROOT = ProjectPaths.discover().root

@@ -1,4 +1,4 @@
-﻿import argparse
+import argparse
 import json
 import os
 import sqlite3
@@ -309,7 +309,7 @@ def _evaluate_pair(evt_a, evt_b, score):
     if delta > MAX_TIME_DIFF_HOURS:
         return False
 
-    print(f"  ðŸ”— Checking: {evt_a['title'][:30]} vs {evt_b['title'][:30]} (Sim: {score:.2f})")
+    print(f"   Checking: {evt_a['title'][:30]} vs {evt_b['title'][:30]} (Sim: {score:.2f})")
 
     lat_i, lon_i = evt_a['lat'], evt_a['lon']
     lat_j, lon_j = evt_b['lat'], evt_b['lon']
@@ -330,32 +330,32 @@ def _evaluate_pair(evt_a, evt_b, score):
 
     if score >= 0.85 and distance_known and distance_km <= 10.0 and delta <= 12:
         is_match = True
-        print("      ðŸš€ FAST-TRACK AUTO-MERGE (No LLM needed)")
+        print("FAST-TRACK AUTO-MERGE (No LLM needed)")
     else:
         if not distance_known:
             if score >= 0.95:
                 is_match = True
-                print("      ðŸš€ AUTO-MERGE HIGH SIM NO-GEO (>=0.95, Judge skipped)")
+                print("AUTO-MERGE HIGH SIM NO-GEO (>=0.95, Judge skipped)")
             else:
-                print("      âš–ï¸ JUDGE NO-GEO: Distance unavailable, asking The Judge...")
+                print("JUDGE NO-GEO: Distance unavailable, asking The Judge...")
                 verdict = ask_the_judge(evt_a, evt_b)
                 if verdict and verdict.get('is_same_event'):
                     is_match = True
-                    print(f"      âœ… AI CONFIRMED (Conf: {verdict.get('confidence')})")
+                    print(f"       AI CONFIRMED (Conf: {verdict.get('confidence')})")
                 else:
-                    print("      âŒ AI REJECTED")
+                    print("AI REJECTED")
         else:
             if distance_km > 150.0 and score <= 0.93:
                 is_match = False
-                print("      ðŸ›‘ REJECTED TOO-FAR: (>150km) and similarity not extreme.")
+                print("›‘ REJECTED TOO-FAR: (>150km) and similarity not extreme.")
             else:
-                print("      âš–ï¸ INCONCLUSIVE: Asking The Judge...")
+                print("INCONCLUSIVE: Asking The Judge...")
                 verdict = ask_the_judge(evt_a, evt_b)
                 if verdict and verdict.get('is_same_event'):
                     is_match = True
-                    print(f"      âœ… AI CONFIRMED (Conf: {verdict.get('confidence')})")
+                    print(f"       AI CONFIRMED (Conf: {verdict.get('confidence')})")
                 else:
-                    print("      âŒ AI REJECTED")
+                    print("AI REJECTED")
 
     return is_match
 
@@ -370,7 +370,7 @@ def _apply_merges(cursor, merges):
     if not merges:
         return 0
 
-    print(f"ðŸ’¾ Scrittura {len(merges)} fusioni nel DB...")
+    print(f" Scrittura {len(merges)} fusioni nel DB...")
     for m, v in merges:
         new_text = f"{m['text']} ||| [MERGED]: {v['text']}"
         cursor.execute(
@@ -437,7 +437,7 @@ def _prepare_active_events(rows, cursor, historical_rows):
             if not raw_vec or not isinstance(raw_vec, list):
                 continue
 
-            # Enforce dimension consistency â€” discard corrupt/legacy vectors
+            # Enforce dimension consistency — discard corrupt/legacy vectors
             if expected_dim is None:
                 expected_dim = len(raw_vec)
             elif len(raw_vec) != expected_dim:
@@ -462,7 +462,7 @@ def _prepare_active_events(rows, cursor, historical_rows):
             })
             vectors.append(raw_vec)
             # Track events already processed by the FUSION engine (not just AI-analyzed).
-            # fusion_checked_at is set AFTER a successful fusion run â€” NULL means never fused yet.
+            # fusion_checked_at is set AFTER a successful fusion run — NULL means never fused yet.
             if r['fusion_checked_at'] is not None:
                 already_completed.add(r['event_id'])
         except Exception:
@@ -612,7 +612,7 @@ def main():
     args = parser.parse_args()
 
     mode = "FULL-SCAN" if args.full_scan else "INCREMENTAL"
-    print(f"ðŸš€ AVVIO SMART FUSION ({mode}) + PHASH ANTI-PROPAGANDA")
+    print(f" AVVIO SMART FUSION ({mode}) + PHASH ANTI-PROPAGANDA")
     if args.full_scan:
         print(f"   Window Size: {WINDOW_SIZE} | Overlap: {WINDOW_OVERLAP}")
 
@@ -628,10 +628,10 @@ def main():
     historical_rows = load_historical_rows(cursor)
     all_rows = load_completed_rows(cursor)
     total_events = len(all_rows)
-    print(f"âœ… Indice caricato: {total_events} eventi pronti.")
+    print(f" Indice caricato: {total_events} eventi pronti.")
 
     if total_events == 0:
-        print("âš ï¸ Nessun evento con vettori trovato.")
+        print(" Nessun evento con vettori trovato.")
         conn.close()
         return
 
@@ -640,13 +640,13 @@ def main():
 
     if not active_events:
         conn.close()
-        print("âš ï¸ Nessun evento attivo dopo filtro propaganda/validazione.")
+        print(" Nessun evento attivo dopo filtro propaganda/validazione.")
         return
 
     checked_ids = []
 
     if args.full_scan:
-        print("   â³ Smart Fusion Scope: Analyzing ALL processed events")
+        print("Smart Fusion Scope: Analyzing ALL processed events")
         total_fused = _run_full_scan(cursor, active_events, vectors, already_completed)
         checked_ids = [e['id'] for e in active_events]
     else:
@@ -656,13 +656,13 @@ def main():
 
         if not targets:
             conn.close()
-            print("âœ… Nessun target incrementale da processare. Tutto aggiornato.")
-            print(f"ðŸ›¡ï¸ Eventi taggati NULL (propaganda pHash): {total_tagged_null}")
+            print(" Nessun target incrementale da processare. Tutto aggiornato.")
+            print(f"› Eventi taggati NULL (propaganda pHash): {total_tagged_null}")
             return
 
         # If the target set is too large, full scan is more efficient.
         if len(targets) >= max(1000, int(len(active_events) * 0.6)):
-            print("   â³ Troppi target incrementali: fallback automatico a FULL-SCAN per questa run.")
+            print("Troppi target incrementali: fallback automatico a FULL-SCAN per questa run.")
             total_fused = _run_full_scan(cursor, active_events, vectors, already_completed)
             checked_ids = [e['id'] for e in active_events]
         else:
@@ -674,8 +674,8 @@ def main():
     conn.commit()
     conn.close()
 
-    print(f"\nðŸ CLUSTERING COMPLETATO. Totale fusioni: {total_fused}")
-    print(f"ðŸ›¡ï¸ Eventi taggati NULL (propaganda pHash): {total_tagged_null}")
+    print(f"\n CLUSTERING COMPLETATO. Totale fusioni: {total_fused}")
+    print(f"› Eventi taggati NULL (propaganda pHash): {total_tagged_null}")
 
 
 if __name__ == "__main__":

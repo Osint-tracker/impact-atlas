@@ -1,4 +1,4 @@
-﻿"""V4.2 analytics layer: source reputation, sector anomalies, and asymmetry.
+"""V4.2 analytics layer: source reputation, sector anomalies, and asymmetry.
 
 Pure functions (plus two schema/maintenance helpers) that derive analytic
 layers from exported event features and maintain the source-reputation

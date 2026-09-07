@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-06-29T20:32:43.894729+00:00",
+  "generated_at": "2026-09-07T17:14:47.542197+00:00",
   "campaigns": [
     {
       "campaign_id": "refineries_and_oil_hubs",
       "name": "Refineries And Oil Hubs",
       "color": "#f59e0b",
-      "status": "LIVE",
-      "total_events": 172,
-      "last_event_date": "2026-05-31T10:31:53+00:00",
+      "status": "STANDBY",
+      "total_events": 182,
+      "last_event_date": "2026-06-11T11:18:26+00:00",
       "points": [
         {
           "event_id": "fus_332428_1768864389",
@@ -1384,6 +1384,86 @@
           "date": "2026-05-31T07:39:15",
           "vec_e": 9.0,
           "tie_total": 53.0
+        },
+        {
+          "event_id": "13597109-55a0-4dd7-9216-ffc5c9a30270",
+          "lat": 50.1325,
+          "lon": 31.462500000000002,
+          "date": "2026-06-11T11:18:26",
+          "vec_e": 9.0,
+          "tie_total": 44.0
+        },
+        {
+          "event_id": "51926ab4-7869-4ab9-8f52-1f2858fa57d0",
+          "lat": 49.457499999999996,
+          "lon": 31.315,
+          "date": "2026-06-10T19:42:36",
+          "vec_e": 9.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "522a6612-47e4-425d-8e87-c4522950967e",
+          "lat": 49.8625,
+          "lon": 32.2875,
+          "date": "2026-06-11T03:20:20",
+          "vec_e": 9.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "62d4ffce-e57c-42e5-abd5-c788a3056806",
+          "lat": 50.415,
+          "lon": 33.08,
+          "date": "2026-06-10T17:34:55",
+          "vec_e": 9.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "6d2124f1-2969-4ab0-b3fe-91eaea87735b",
+          "lat": 48.684999999999995,
+          "lon": 31.240000000000002,
+          "date": "2026-06-10T11:48:33",
+          "vec_e": 9.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "8a00ce8c-9553-4f59-bb42-49f9b6f8a6cb",
+          "lat": 49.474999999999994,
+          "lon": 31.625,
+          "date": "2026-06-10T15:02:21",
+          "vec_e": 9.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "a381ad4a-1931-4151-8e88-adb38a710be1",
+          "lat": 48.887499999999996,
+          "lon": 31.68,
+          "date": "2026-06-10T19:22:32",
+          "vec_e": 9.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "acda4d54-fcfe-4a98-822a-af3dd17d0625",
+          "lat": 50.224999999999994,
+          "lon": 33.1425,
+          "date": "2026-06-11T09:32:01",
+          "vec_e": 9.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "e7098a6c-56d4-4f8d-8cdb-6065bc39e341",
+          "lat": 49.565,
+          "lon": 33.25,
+          "date": "2026-06-10T08:31:43",
+          "vec_e": 4.0,
+          "tie_total": 87.0
+        },
+        {
+          "event_id": "fced44d1-2a6e-4543-a32a-e4c6b256c8b3",
+          "lat": 50.07,
+          "lon": 32.0675,
+          "date": "2026-06-10T01:19:51",
+          "vec_e": 9.0,
+          "tie_total": 100.0
         }
       ]
     },
@@ -1391,9 +1471,9 @@
       "campaign_id": "civilian_pressure_ops",
       "name": "Civilian Pressure Ops",
       "color": "#94a3b8",
-      "status": "LIVE",
-      "total_events": 325,
-      "last_event_date": "2026-05-31T11:07:01+00:00",
+      "status": "STANDBY",
+      "total_events": 338,
+      "last_event_date": "2026-06-11T06:55:24+00:00",
       "points": [
         {
           "event_id": "fus_332462_1768864389",
@@ -3994,6 +4074,110 @@
           "date": "2026-05-28T04:20:09",
           "vec_e": 4.0,
           "tie_total": 4.0
+        },
+        {
+          "event_id": "014cfb97-68af-48d8-8385-ecfb543c5973",
+          "lat": 49.805,
+          "lon": 31.995,
+          "date": "2026-06-10T05:56:01",
+          "vec_e": 1.0,
+          "tie_total": 6.0
+        },
+        {
+          "event_id": "09099db6-62cb-4fc4-b5cf-2139a83702fd",
+          "lat": 49.6325,
+          "lon": 31.185000000000002,
+          "date": "2026-06-10T05:31:51",
+          "vec_e": 9.0,
+          "tie_total": 19.0
+        },
+        {
+          "event_id": "232e4190-8bbd-424b-8b74-f610d4552ab0",
+          "lat": 49.79,
+          "lon": 32.895,
+          "date": "2026-06-10T07:31:04",
+          "vec_e": 4.0,
+          "tie_total": 6.0
+        },
+        {
+          "event_id": "28a2560c-934f-4530-b08c-abf130ed5c82",
+          "lat": 49.9725,
+          "lon": 32.7125,
+          "date": "2026-06-10T19:44:36",
+          "vec_e": 9.0,
+          "tie_total": 17.0
+        },
+        {
+          "event_id": "5c6b75fa-055c-4e16-9daf-c70115ecd2a7",
+          "lat": 48.5725,
+          "lon": 31.5775,
+          "date": "2026-06-10T08:58:57",
+          "vec_e": 4.0,
+          "tie_total": 5.0
+        },
+        {
+          "event_id": "8ee17cae-e664-4219-b8ec-6092d4857326",
+          "lat": 48.584999999999994,
+          "lon": 32.325,
+          "date": "2026-06-10T07:27:49",
+          "vec_e": 4.0,
+          "tie_total": 7.0
+        },
+        {
+          "event_id": "9095298e-3a5f-4ba5-a750-4ee116784a13",
+          "lat": 49.529999999999994,
+          "lon": 32.2975,
+          "date": "2026-06-10T17:45:30",
+          "vec_e": 9.0,
+          "tie_total": 14.0
+        },
+        {
+          "event_id": "9224f333-adf0-43af-b3cd-9981234d09dd",
+          "lat": 49.455,
+          "lon": 31.4475,
+          "date": "2026-06-10T08:07:18",
+          "vec_e": 4.0,
+          "tie_total": 6.0
+        },
+        {
+          "event_id": "9d62c2f4-ca7d-4244-a0e7-921fc238a91d",
+          "lat": 49.6175,
+          "lon": 32.945,
+          "date": "2026-06-10T08:48:15",
+          "vec_e": 9.0,
+          "tie_total": 14.0
+        },
+        {
+          "event_id": "d5985195-6797-4a78-ba49-d170f8abcc7d",
+          "lat": 49.184999999999995,
+          "lon": 33.245000000000005,
+          "date": "2026-06-11T06:55:24",
+          "vec_e": 9.0,
+          "tie_total": 14.0
+        },
+        {
+          "event_id": "ea546cb1-ea9d-42a8-9afa-7d9c417f0453",
+          "lat": 49.87,
+          "lon": 31.642500000000002,
+          "date": "2026-06-10T08:10:10",
+          "vec_e": 9.0,
+          "tie_total": 12.0
+        },
+        {
+          "event_id": "f30d7843-2ad3-4cf0-8ba8-0d7b29657edf",
+          "lat": 48.644999999999996,
+          "lon": 31.2525,
+          "date": "2026-06-10T05:58:20",
+          "vec_e": 9.0,
+          "tie_total": 18.0
+        },
+        {
+          "event_id": "f414f972-93fb-466d-b272-5f358b97cfca",
+          "lat": 50.637499999999996,
+          "lon": 31.7425,
+          "date": "2026-06-09T18:39:57",
+          "vec_e": 9.0,
+          "tie_total": 10.0
         }
       ]
     },
@@ -4001,9 +4185,9 @@
       "campaign_id": "uav_ecosystem",
       "name": "UAV Ecosystem",
       "color": "#a3e635",
-      "status": "LIVE",
-      "total_events": 91,
-      "last_event_date": "2026-05-31T09:50:09+00:00",
+      "status": "STANDBY",
+      "total_events": 104,
+      "last_event_date": "2026-06-11T11:55:48+00:00",
       "points": [
         {
           "event_id": "fus_333259_1768864392",
@@ -4732,6 +4916,110 @@
           "date": "2026-05-29T19:25:04",
           "vec_e": 3.0,
           "tie_total": 8.0
+        },
+        {
+          "event_id": "10938cca-c20e-4860-89c0-00d7db04e737",
+          "lat": 49.2825,
+          "lon": 32.655,
+          "date": "2026-06-10T05:25:10",
+          "vec_e": 1.0,
+          "tie_total": 1.0
+        },
+        {
+          "event_id": "19b09195-a123-45b8-a0a9-127c54eaeb6c",
+          "lat": 50.732499999999995,
+          "lon": 33.25,
+          "date": "2026-06-11T11:55:48",
+          "vec_e": 1.0,
+          "tie_total": 0.0
+        },
+        {
+          "event_id": "24c98254-0012-478b-9217-8ac8ec64c39a",
+          "lat": 49.844425422570055,
+          "lon": 36.654888121412654,
+          "date": "2026-06-11T08:43:44",
+          "vec_e": 4.0,
+          "tie_total": 45.0
+        },
+        {
+          "event_id": "30725956-b43e-48b5-b9fb-b47adc47304e",
+          "lat": 48.5475,
+          "lon": 32.7275,
+          "date": "2026-06-11T09:11:08",
+          "vec_e": 9.0,
+          "tie_total": 78.0
+        },
+        {
+          "event_id": "35dc83d1-777f-4e66-a658-d783d3d81376",
+          "lat": 50.05,
+          "lon": 33.46,
+          "date": "2026-06-11T07:40:47",
+          "vec_e": 4.0,
+          "tie_total": 63.0
+        },
+        {
+          "event_id": "488824e4-fefc-4d7c-8482-b64454042ed7",
+          "lat": 48.72706313446457,
+          "lon": 37.601008471811866,
+          "date": "2026-06-10T13:59:51",
+          "vec_e": 7.0,
+          "tie_total": 34.0
+        },
+        {
+          "event_id": "55b0ca37-0bff-4690-8e22-884f0347222d",
+          "lat": 49.844471,
+          "lon": 36.65495,
+          "date": "2026-06-11T11:19:44",
+          "vec_e": 5.0,
+          "tie_total": 37.0
+        },
+        {
+          "event_id": "705f3a3a-9274-4018-a2ca-af3806439cdd",
+          "lat": 49.765,
+          "lon": 33.1525,
+          "date": "2026-06-09T20:59:40",
+          "vec_e": 9.0,
+          "tie_total": 35.0
+        },
+        {
+          "event_id": "84792e66-bdbe-41b7-a788-a45502e2ae2a",
+          "lat": 50.03910414863134,
+          "lon": 37.40173347726392,
+          "date": "2026-06-10T12:03:57",
+          "vec_e": 4.0,
+          "tie_total": 18.0
+        },
+        {
+          "event_id": "978cd6e3-2014-4795-91ac-d398273973cd",
+          "lat": 49.69997,
+          "lon": 37.1732,
+          "date": "2026-06-11T03:13:59",
+          "vec_e": 6.0,
+          "tie_total": 10.0
+        },
+        {
+          "event_id": "a44ab24e-0694-44ac-9a07-2a780c428537",
+          "lat": 49.9,
+          "lon": 31.285,
+          "date": "2026-06-10T08:37:41",
+          "vec_e": 9.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "f12d95e8-07f1-49a8-b482-043fe0df3e18",
+          "lat": 48.887499999999996,
+          "lon": 32.315000000000005,
+          "date": "2026-06-10T14:42:32",
+          "vec_e": 4.0,
+          "tie_total": 12.0
+        },
+        {
+          "event_id": "fbf80987-a64e-4efa-8831-682cb848c98f",
+          "lat": 50.207499999999996,
+          "lon": 32.3975,
+          "date": "2026-06-09T21:08:35",
+          "vec_e": 9.0,
+          "tie_total": 27.0
         }
       ]
     },
@@ -4739,9 +5027,9 @@
       "campaign_id": "logistics_network_attrition",
       "name": "Logistics Network Attrition",
       "color": "#fb7185",
-      "status": "LIVE",
-      "total_events": 135,
-      "last_event_date": "2026-05-31T11:00:58+00:00",
+      "status": "STANDBY",
+      "total_events": 153,
+      "last_event_date": "2026-06-11T14:10:12+00:00",
       "points": [
         {
           "event_id": "fus_418394_1768864393",
@@ -5822,6 +6110,150 @@
           "date": "2026-05-28T05:48:01",
           "vec_e": 9.0,
           "tie_total": 44.0
+        },
+        {
+          "event_id": "0e5863ba-1c00-4cd0-80f1-a546d0f1affd",
+          "lat": 48.9875,
+          "lon": 31.6275,
+          "date": "2026-06-11T14:10:12",
+          "vec_e": 6.0,
+          "tie_total": 87.0
+        },
+        {
+          "event_id": "1fa6a3e8-c9a6-4c45-958d-70bc99efa51d",
+          "lat": 49.9925,
+          "lon": 33.0675,
+          "date": "2026-06-11T09:49:37",
+          "vec_e": 7.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "2754f622-8757-410d-9845-a8bd6b16d9d0",
+          "lat": 50.512499999999996,
+          "lon": 33.175000000000004,
+          "date": "2026-06-11T08:05:24",
+          "vec_e": 1.0,
+          "tie_total": 3.0
+        },
+        {
+          "event_id": "2c1e2b1a-55e8-490a-857b-3131a20cebc0",
+          "lat": 49.622499999999995,
+          "lon": 31.720000000000002,
+          "date": "2026-06-10T14:35:09",
+          "vec_e": 4.0,
+          "tie_total": 87.0
+        },
+        {
+          "event_id": "2e2df8b5-aeee-41bc-8e76-cd80b6171951",
+          "lat": 48.834999999999994,
+          "lon": 31.2575,
+          "date": "2026-06-10T05:00:19",
+          "vec_e": 4.0,
+          "tie_total": 87.0
+        },
+        {
+          "event_id": "38848a99-f06c-4828-b05d-15ff963b8ef2",
+          "lat": 49.555,
+          "lon": 32.865,
+          "date": "2026-06-11T13:00:00",
+          "vec_e": 1.0,
+          "tie_total": 18.0
+        },
+        {
+          "event_id": "3c1622bd-9409-4c01-998c-848ed3b1a477",
+          "lat": 50.6125,
+          "lon": 31.4375,
+          "date": "2026-06-10T16:03:01",
+          "vec_e": 5.0,
+          "tie_total": 24.0
+        },
+        {
+          "event_id": "519e650d-5a7c-46e9-abb9-28938540c06d",
+          "lat": 47.44787465260495,
+          "lon": 33.39689112475631,
+          "date": "2026-06-09T16:37:54",
+          "vec_e": 8.0,
+          "tie_total": 31.0
+        },
+        {
+          "event_id": "91a02c69-9c70-45d2-8110-94aa2d8cbbbc",
+          "lat": 48.879999999999995,
+          "lon": 31.4175,
+          "date": "2026-06-10T15:33:43",
+          "vec_e": 9.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "9f562bd9-bd11-4ec4-b202-8fc134266428",
+          "lat": 49.285,
+          "lon": 31.610000000000003,
+          "date": "2026-06-11T07:35:06",
+          "vec_e": 1.0,
+          "tie_total": 22.0
+        },
+        {
+          "event_id": "bc7a7e2a-3fe2-4c8e-a53a-c86ff63ed089",
+          "lat": 49.3375,
+          "lon": 33.0725,
+          "date": "2026-06-10T11:43:21",
+          "vec_e": 9.0,
+          "tie_total": 2.0
+        },
+        {
+          "event_id": "c343def9-efba-4b88-a96a-011cc8c1be3d",
+          "lat": 48.692499999999995,
+          "lon": 32.32,
+          "date": "2026-06-09T21:40:43",
+          "vec_e": 6.0,
+          "tie_total": 91.0
+        },
+        {
+          "event_id": "c66fc617-62c3-4f54-9f19-90a2a989f73a",
+          "lat": 49.052499999999995,
+          "lon": 31.565,
+          "date": "2026-06-11T08:07:01",
+          "vec_e": 1.0,
+          "tie_total": 3.0
+        },
+        {
+          "event_id": "cf09b6ad-7a60-4a46-a909-73cd194efa11",
+          "lat": 48.4375,
+          "lon": 32.9925,
+          "date": "2026-06-10T15:25:43",
+          "vec_e": 9.0,
+          "tie_total": 53.0
+        },
+        {
+          "event_id": "d7129b23-af41-448e-83af-aadb0c612aad",
+          "lat": 50.442499999999995,
+          "lon": 31.450000000000003,
+          "date": "2026-06-10T08:14:43",
+          "vec_e": 9.0,
+          "tie_total": 48.0
+        },
+        {
+          "event_id": "dd33e44c-e44d-46d8-9685-77b07a2f11eb",
+          "lat": 49.235,
+          "lon": 33.3775,
+          "date": "2026-06-10T17:30:13",
+          "vec_e": 9.0,
+          "tie_total": 58.0
+        },
+        {
+          "event_id": "de7054b6-e509-4a3c-8c77-151a42998532",
+          "lat": 50.32,
+          "lon": 33.0775,
+          "date": "2026-06-10T19:21:37",
+          "vec_e": 9.0,
+          "tie_total": 51.0
+        },
+        {
+          "event_id": "f75295d3-8855-4642-b78d-d7b3355afe8e",
+          "lat": 50.732499999999995,
+          "lon": 32.2325,
+          "date": "2026-06-10T17:49:22",
+          "vec_e": 7.0,
+          "tie_total": 100.0
         }
       ]
     },
@@ -6160,8 +6592,8 @@
       "name": "Missile And Strike Complex",
       "color": "#f97316",
       "status": "STANDBY",
-      "total_events": 37,
-      "last_event_date": "2026-05-26T04:08:36+00:00",
+      "total_events": 43,
+      "last_event_date": "2026-06-11T13:00:10+00:00",
       "points": [
         {
           "event_id": "fus_669984_1769034366",
@@ -6458,6 +6890,54 @@
           "date": "2026-05-25T08:42:46",
           "vec_e": 1.0,
           "tie_total": 11.0
+        },
+        {
+          "event_id": "012e9a8b-91f8-45a7-b524-a5edfcdd4ad2",
+          "lat": 48.39,
+          "lon": 31.6825,
+          "date": "2026-06-10T16:53:03",
+          "vec_e": 9.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "2028ad09-c645-4ffc-aab5-f5bba73182a0",
+          "lat": 48.942499999999995,
+          "lon": 33.005,
+          "date": "2026-06-11T12:17:00",
+          "vec_e": 9.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "223df037-fc06-41f8-ad27-2fc906d1c3c1",
+          "lat": 50.2575,
+          "lon": 32.885,
+          "date": "2026-06-11T04:07:39",
+          "vec_e": 3.0,
+          "tie_total": 35.0
+        },
+        {
+          "event_id": "9816b790-2ea0-46ab-a828-29279c0477b3",
+          "lat": 49.8225,
+          "lon": 31.985000000000003,
+          "date": "2026-06-11T13:00:10",
+          "vec_e": 9.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "aab91deb-758e-49db-91c4-8bf008c4a879",
+          "lat": 49.012499999999996,
+          "lon": 33.465,
+          "date": "2026-06-10T06:48:38",
+          "vec_e": 9.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "c3078884-f506-4397-8ad3-546643afbd96",
+          "lat": 48.65,
+          "lon": 31.5625,
+          "date": "2026-06-10T06:51:53",
+          "vec_e": 1.0,
+          "tie_total": 18.0
         }
       ]
     },
@@ -6465,7 +6945,7 @@
       "campaign_id": "air_defense_suppression",
       "name": "Air Defense Suppression",
       "color": "#ef4444",
-      "status": "LIVE",
+      "status": "STANDBY",
       "total_events": 66,
       "last_event_date": "2026-05-31T09:04:22+00:00",
       "points": [
@@ -7004,8 +7484,8 @@
       "name": "Command And Control Disruption",
       "color": "#38bdf8",
       "status": "STANDBY",
-      "total_events": 31,
-      "last_event_date": "2026-05-29T15:32:10+00:00",
+      "total_events": 32,
+      "last_event_date": "2026-06-10T13:21:40+00:00",
       "points": [
         {
           "event_id": "c8ba334f-573e-4108-bab2-e24350a69df2",
@@ -7254,6 +7734,14 @@
           "date": "2026-05-29T14:30:11",
           "vec_e": 4.0,
           "tie_total": 45.0
+        },
+        {
+          "event_id": "38d70e7f-f3fd-40a2-a455-01b8ceb09854",
+          "lat": 50.074999999999996,
+          "lon": 32.292500000000004,
+          "date": "2026-06-10T13:21:40",
+          "vec_e": 8.0,
+          "tie_total": 31.0
         }
       ]
     },
@@ -7424,8 +7912,8 @@
       "name": "Naval Pressure Campaign",
       "color": "#06b6d4",
       "status": "STANDBY",
-      "total_events": 80,
-      "last_event_date": "2026-05-29T19:55:25+00:00",
+      "total_events": 82,
+      "last_event_date": "2026-06-11T12:30:29+00:00",
       "points": [
         {
           "event_id": "298069e1-1b5b-4bc8-99d8-441ee1d80b5a",
@@ -8066,6 +8554,22 @@
           "date": "2026-05-28T16:00:06",
           "vec_e": 1.0,
           "tie_total": 8.0
+        },
+        {
+          "event_id": "30a28c75-ca46-4841-9c42-7a6500883ebd",
+          "lat": 50.3375,
+          "lon": 32.7825,
+          "date": "2026-06-11T08:05:06",
+          "vec_e": 9.0,
+          "tie_total": 100.0
+        },
+        {
+          "event_id": "6bf8b089-2f78-46ab-b1d3-9cff9641ac37",
+          "lat": 50.089999999999996,
+          "lon": 33.410000000000004,
+          "date": "2026-06-11T12:30:29",
+          "vec_e": 9.0,
+          "tie_total": 100.0
         }
       ]
     }
