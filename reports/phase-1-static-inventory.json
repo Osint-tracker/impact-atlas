@@ -1,0 +1,1613 @@
+{
+  "date": "2026-10-02",
+  "scope": "Workspace application, archive, diagnostic and training Python/JS/HTML, including ignored source. Environments, dependency/cache directories and skill bundles excluded. Tracked JSON/GeoJSON validated separately.",
+  "enumeration_errors": "",
+  "python": [
+    {
+      "path": "_archive/diagnostics/check_schema.py",
+      "tracked": true,
+      "lines": 10,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "_archive/diagnostics/find_table.py",
+      "tracked": true,
+      "lines": 36,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "_archive/diagnostics/fix_map.py",
+      "tracked": true,
+      "lines": 13,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "_archive/diagnostics/fix_mojibake.py",
+      "tracked": true,
+      "lines": 108,
+      "functions": 3,
+      "undocumented": 3,
+      "bare_except": 0,
+      "broad_except": 4
+    },
+    {
+      "path": "_archive/diagnostics/migrate_media.py",
+      "tracked": true,
+      "lines": 45,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "_archive/diagnostics/scan_mojibake.py",
+      "tracked": true,
+      "lines": 91,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 3
+    },
+    {
+      "path": "_archive/diagnostics/scan_python_open.py",
+      "tracked": true,
+      "lines": 31,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "_archive/legacy_ingestion/fetch_gdelt.py",
+      "tracked": true,
+      "lines": 136,
+      "functions": 2,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "_archive/legacy_ingestion/fetch_telegram.py",
+      "tracked": true,
+      "lines": 259,
+      "functions": 4,
+      "undocumented": 2,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "_archive/scripts2/__init__.py",
+      "tracked": true,
+      "lines": 1,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "_archive/scripts2/backfill_sectors.py",
+      "tracked": true,
+      "lines": 68,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 1,
+      "broad_except": 1
+    },
+    {
+      "path": "_archive/scripts2/bootstrap_campaign_definitions.py",
+      "tracked": true,
+      "lines": 408,
+      "functions": 18,
+      "undocumented": 18,
+      "bare_except": 0,
+      "broad_except": 5
+    },
+    {
+      "path": "_archive/scripts2/campaign_admission.py",
+      "tracked": true,
+      "lines": 409,
+      "functions": 13,
+      "undocumented": 13,
+      "bare_except": 0,
+      "broad_except": 7
+    },
+    {
+      "path": "_archive/scripts2/campaigns_engine.py",
+      "tracked": true,
+      "lines": 534,
+      "functions": 18,
+      "undocumented": 18,
+      "bare_except": 0,
+      "broad_except": 9
+    },
+    {
+      "path": "_archive/scripts2/generate_output.py",
+      "tracked": true,
+      "lines": 1477,
+      "functions": 23,
+      "undocumented": 10,
+      "bare_except": 8,
+      "broad_except": 13
+    },
+    {
+      "path": "_archive/scripts2/generate_report.py",
+      "tracked": true,
+      "lines": 823,
+      "functions": 18,
+      "undocumented": 15,
+      "bare_except": 7,
+      "broad_except": 2
+    },
+    {
+      "path": "_archive/scripts2/geolocator_agent.py",
+      "tracked": true,
+      "lines": 252,
+      "functions": 13,
+      "undocumented": 11,
+      "bare_except": 1,
+      "broad_except": 5
+    },
+    {
+      "path": "_archive/scripts2/master_ingestor.py",
+      "tracked": true,
+      "lines": 1470,
+      "functions": 30,
+      "undocumented": 8,
+      "bare_except": 0,
+      "broad_except": 14
+    },
+    {
+      "path": "_archive/scripts2/migrate_db_sectors.py",
+      "tracked": true,
+      "lines": 43,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "_archive/scripts2/run_backfill.py",
+      "tracked": true,
+      "lines": 380,
+      "functions": 10,
+      "undocumented": 10,
+      "bare_except": 0,
+      "broad_except": 3
+    },
+    {
+      "path": "_archive/scripts2/update_gsheet_campaigns.py",
+      "tracked": true,
+      "lines": 332,
+      "functions": 13,
+      "undocumented": 13,
+      "bare_except": 0,
+      "broad_except": 4
+    },
+    {
+      "path": "_archive/scripts2/v42_analytics.py",
+      "tracked": true,
+      "lines": 376,
+      "functions": 15,
+      "undocumented": 14,
+      "bare_except": 0,
+      "broad_except": 6
+    },
+    {
+      "path": "impact_atlas/__init__.py",
+      "tracked": true,
+      "lines": 29,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "impact_atlas/config.py",
+      "tracked": true,
+      "lines": 107,
+      "functions": 5,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "impact_atlas/errors.py",
+      "tracked": true,
+      "lines": 29,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "impact_atlas/http.py",
+      "tracked": true,
+      "lines": 125,
+      "functions": 4,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "impact_atlas/logging.py",
+      "tracked": true,
+      "lines": 47,
+      "functions": 2,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "impact_atlas/models.py",
+      "tracked": true,
+      "lines": 53,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "impact_atlas/sqlite.py",
+      "tracked": true,
+      "lines": 40,
+      "functions": 3,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "ingestion/__init__.py",
+      "tracked": true,
+      "lines": 0,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "ingestion/connectors.py",
+      "tracked": true,
+      "lines": 304,
+      "functions": 13,
+      "undocumented": 4,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "ingestion/db_manager.py",
+      "tracked": true,
+      "lines": 142,
+      "functions": 7,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "map_loader.py",
+      "tracked": true,
+      "lines": 301,
+      "functions": 8,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts/admin_api.py",
+      "tracked": true,
+      "lines": 676,
+      "functions": 18,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts/ai_agent.py",
+      "tracked": true,
+      "lines": 3341,
+      "functions": 38,
+      "undocumented": 15,
+      "bare_except": 0,
+      "broad_except": 27
+    },
+    {
+      "path": "scripts/ai_inference_node.py",
+      "tracked": true,
+      "lines": 91,
+      "functions": 2,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts/bootstrap_campaign_definitions.py",
+      "tracked": true,
+      "lines": 409,
+      "functions": 18,
+      "undocumented": 18,
+      "bare_except": 0,
+      "broad_except": 5
+    },
+    {
+      "path": "scripts/build_orbat_from_kmz.py",
+      "tracked": true,
+      "lines": 266,
+      "functions": 5,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts/calculate_frontline_delta.py",
+      "tracked": true,
+      "lines": 176,
+      "functions": 3,
+      "undocumented": 3,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts/campaign_admission.py",
+      "tracked": true,
+      "lines": 409,
+      "functions": 13,
+      "undocumented": 13,
+      "bare_except": 0,
+      "broad_except": 7
+    },
+    {
+      "path": "scripts/campaign_strategist.py",
+      "tracked": true,
+      "lines": 823,
+      "functions": 26,
+      "undocumented": 5,
+      "bare_except": 0,
+      "broad_except": 6
+    },
+    {
+      "path": "scripts/campaigns_engine.py",
+      "tracked": true,
+      "lines": 591,
+      "functions": 19,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 5
+    },
+    {
+      "path": "scripts/debug_instrument.py",
+      "tracked": true,
+      "lines": 205,
+      "functions": 5,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts/download_media.py",
+      "tracked": true,
+      "lines": 137,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts/fetch_trenches.py",
+      "tracked": true,
+      "lines": 79,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts/generate_output.py",
+      "tracked": true,
+      "lines": 1406,
+      "functions": 34,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts/geo_instrument.py",
+      "tracked": true,
+      "lines": 462,
+      "functions": 7,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts/geocode_reviewer.py",
+      "tracked": true,
+      "lines": 207,
+      "functions": 3,
+      "undocumented": 2,
+      "bare_except": 0,
+      "broad_except": 3
+    },
+    {
+      "path": "scripts/geolocator_agent.py",
+      "tracked": true,
+      "lines": 338,
+      "functions": 17,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts/history_instrument.py",
+      "tracked": true,
+      "lines": 496,
+      "functions": 8,
+      "undocumented": 2,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts/ingest_orbat_wfs.py",
+      "tracked": true,
+      "lines": 114,
+      "functions": 3,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts/ingest_owl_db.py",
+      "tracked": true,
+      "lines": 284,
+      "functions": 5,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts/ingest_owl_timeline.py",
+      "tracked": true,
+      "lines": 141,
+      "functions": 4,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts/ingest_owl_total.py",
+      "tracked": true,
+      "lines": 200,
+      "functions": 2,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts/inspect_owl.py",
+      "tracked": true,
+      "lines": 37,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts/instruments/__init__.py",
+      "tracked": true,
+      "lines": 1,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts/instruments/vision_instrument.py",
+      "tracked": true,
+      "lines": 349,
+      "functions": 7,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 5
+    },
+    {
+      "path": "scripts/layer1_sensor.py",
+      "tracked": true,
+      "lines": 81,
+      "functions": 3,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts/losses.py",
+      "tracked": true,
+      "lines": 122,
+      "functions": 2,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts/master_ingestor.py",
+      "tracked": true,
+      "lines": 1537,
+      "functions": 36,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 13
+    },
+    {
+      "path": "scripts/optimize_geojson.py",
+      "tracked": true,
+      "lines": 49,
+      "functions": 2,
+      "undocumented": 2,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts/orbat_seeder.py",
+      "tracked": true,
+      "lines": 154,
+      "functions": 6,
+      "undocumented": 4,
+      "bare_except": 0,
+      "broad_except": 3
+    },
+    {
+      "path": "scripts/parabellum_sync.py",
+      "tracked": true,
+      "lines": 354,
+      "functions": 7,
+      "undocumented": 1,
+      "bare_except": 2,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts/promote_geodata.py",
+      "tracked": true,
+      "lines": 156,
+      "functions": 4,
+      "undocumented": 4,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts/run_backfill.py",
+      "tracked": true,
+      "lines": 380,
+      "functions": 10,
+      "undocumented": 10,
+      "bare_except": 0,
+      "broad_except": 3
+    },
+    {
+      "path": "scripts/semantic_cluster.py",
+      "tracked": true,
+      "lines": 524,
+      "functions": 13,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 3
+    },
+    {
+      "path": "scripts/smart_fusion.py",
+      "tracked": true,
+      "lines": 682,
+      "functions": 23,
+      "undocumented": 16,
+      "bare_except": 0,
+      "broad_except": 7
+    },
+    {
+      "path": "scripts/strategic_assessment.py",
+      "tracked": true,
+      "lines": 138,
+      "functions": 4,
+      "undocumented": 4,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts/trident_orchestrator.py",
+      "tracked": true,
+      "lines": 128,
+      "functions": 4,
+      "undocumented": 3,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts/unify_clusters.py",
+      "tracked": true,
+      "lines": 402,
+      "functions": 7,
+      "undocumented": 4,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts/update_gsheet_campaigns.py",
+      "tracked": true,
+      "lines": 332,
+      "functions": 13,
+      "undocumented": 13,
+      "bare_except": 0,
+      "broad_except": 4
+    },
+    {
+      "path": "scripts/update_losses.py",
+      "tracked": true,
+      "lines": 340,
+      "functions": 5,
+      "undocumented": 4,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts/v42_analytics.py",
+      "tracked": true,
+      "lines": 439,
+      "functions": 16,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/analyze_bias.py",
+      "tracked": false,
+      "lines": 96,
+      "functions": 3,
+      "undocumented": 3,
+      "bare_except": 1,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/analyze_clusters.py",
+      "tracked": false,
+      "lines": 91,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 1,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/analyze_geojson.py",
+      "tracked": true,
+      "lines": 83,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 1,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/apply_titan_layer1.py",
+      "tracked": true,
+      "lines": 109,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/batch_check.py",
+      "tracked": false,
+      "lines": 75,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/batch_export.py",
+      "tracked": false,
+      "lines": 88,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/batch_import.py",
+      "tracked": false,
+      "lines": 125,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts_una_tantum/batch_submit.py",
+      "tracked": false,
+      "lines": 88,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/batch_submit_sequential.py",
+      "tracked": false,
+      "lines": 146,
+      "functions": 4,
+      "undocumented": 2,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts_una_tantum/bridge_gdelt.py",
+      "tracked": false,
+      "lines": 80,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/check_embedded_flag.py",
+      "tracked": false,
+      "lines": 27,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/check_gdelt.py",
+      "tracked": false,
+      "lines": 29,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/check_gdelt_dates.py",
+      "tracked": false,
+      "lines": 26,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/check_gdelt_name.py",
+      "tracked": false,
+      "lines": 23,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/check_geojson.py",
+      "tracked": true,
+      "lines": 15,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/check_mixed.py",
+      "tracked": false,
+      "lines": 64,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/check_nulls.py",
+      "tracked": false,
+      "lines": 22,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/check_source_overlap.py",
+      "tracked": false,
+      "lines": 77,
+      "functions": 2,
+      "undocumented": 2,
+      "bare_except": 1,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/check_status.py",
+      "tracked": false,
+      "lines": 25,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/cluster_check.py",
+      "tracked": false,
+      "lines": 47,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/cluster_vectors.py",
+      "tracked": false,
+      "lines": 144,
+      "functions": 3,
+      "undocumented": 1,
+      "bare_except": 3,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/db_check.py",
+      "tracked": false,
+      "lines": 32,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/debug_db.py",
+      "tracked": true,
+      "lines": 22,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/debug_firms.py",
+      "tracked": false,
+      "lines": 294,
+      "functions": 6,
+      "undocumented": 0,
+      "bare_except": 1,
+      "broad_except": 6
+    },
+    {
+      "path": "scripts_una_tantum/debug_fusion.py",
+      "tracked": false,
+      "lines": 56,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/debug_fusion_failure.py",
+      "tracked": false,
+      "lines": 92,
+      "functions": 3,
+      "undocumented": 3,
+      "bare_except": 1,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/debug_gdelt.py",
+      "tracked": false,
+      "lines": 72,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/debug_pipeline.py",
+      "tracked": false,
+      "lines": 531,
+      "functions": 14,
+      "undocumented": 4,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts_una_tantum/debug_similarity.py",
+      "tracked": false,
+      "lines": 62,
+      "functions": 3,
+      "undocumented": 3,
+      "bare_except": 1,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/debug_sources.py",
+      "tracked": false,
+      "lines": 27,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/debug_titan.py",
+      "tracked": false,
+      "lines": 101,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/debug_vector.py",
+      "tracked": false,
+      "lines": 26,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts_una_tantum/deduplicate_db.py",
+      "tracked": false,
+      "lines": 110,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/delete_legacy_events.py",
+      "tracked": false,
+      "lines": 35,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/diag_db.py",
+      "tracked": true,
+      "lines": 19,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/diagnose_db.py",
+      "tracked": false,
+      "lines": 41,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/export_orbat_only.py",
+      "tracked": false,
+      "lines": 44,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/fast_trace.py",
+      "tracked": false,
+      "lines": 24,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/fast_verify.py",
+      "tracked": false,
+      "lines": 34,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/fix_all_coordinates.py",
+      "tracked": true,
+      "lines": 243,
+      "functions": 3,
+      "undocumented": 3,
+      "bare_except": 4,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/fix_and_verify.py",
+      "tracked": false,
+      "lines": 217,
+      "functions": 4,
+      "undocumented": 1,
+      "bare_except": 1,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/fix_coordinates.py",
+      "tracked": true,
+      "lines": 88,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/fix_db_status.py",
+      "tracked": false,
+      "lines": 34,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/fix_webnews_urls.py",
+      "tracked": false,
+      "lines": 70,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 1,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/fixjson.py",
+      "tracked": true,
+      "lines": 167,
+      "functions": 4,
+      "undocumented": 3,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts_una_tantum/fusion_deep_analysis.py",
+      "tracked": false,
+      "lines": 108,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/gdelt_probe.py",
+      "tracked": false,
+      "lines": 332,
+      "functions": 7,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/generate_vectors.py",
+      "tracked": false,
+      "lines": 122,
+      "functions": 2,
+      "undocumented": 2,
+      "bare_except": 0,
+      "broad_except": 3
+    },
+    {
+      "path": "scripts_una_tantum/inspect_chromadb.py",
+      "tracked": false,
+      "lines": 55,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/inspect_gdelt_vectors.py",
+      "tracked": false,
+      "lines": 35,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/inspect_pending_ai.py",
+      "tracked": false,
+      "lines": 25,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/inspect_schema.py",
+      "tracked": true,
+      "lines": 21,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/investigate_single_source.py",
+      "tracked": false,
+      "lines": 72,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/locate_vectors.py",
+      "tracked": false,
+      "lines": 77,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 4
+    },
+    {
+      "path": "scripts_una_tantum/migrate_chroma_to_raw.py",
+      "tracked": false,
+      "lines": 100,
+      "functions": 2,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/migrate_chroma_to_raw_fast.py",
+      "tracked": false,
+      "lines": 121,
+      "functions": 2,
+      "undocumented": 2,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/migrate_vectors.py",
+      "tracked": true,
+      "lines": 139,
+      "functions": 2,
+      "undocumented": 1,
+      "bare_except": 1,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/post_fusion_check.py",
+      "tracked": false,
+      "lines": 101,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 1,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/preflight_check.py",
+      "tracked": false,
+      "lines": 47,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/quick_check.py",
+      "tracked": false,
+      "lines": 22,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/refiner.py",
+      "tracked": false,
+      "lines": 602,
+      "functions": 9,
+      "undocumented": 6,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "scripts_una_tantum/reset_gdelt.py",
+      "tracked": false,
+      "lines": 25,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/reset_status.py",
+      "tracked": true,
+      "lines": 60,
+      "functions": 1,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/run_pipeline.py",
+      "tracked": false,
+      "lines": 48,
+      "functions": 3,
+      "undocumented": 3,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/safety_check_delete.py",
+      "tracked": false,
+      "lines": 88,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/source_distribution.py",
+      "tracked": false,
+      "lines": 122,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 2,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/status_check.py",
+      "tracked": false,
+      "lines": 48,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/stress_test_builder.py",
+      "tracked": false,
+      "lines": 152,
+      "functions": 4,
+      "undocumented": 2,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/test_geo_integration.py",
+      "tracked": false,
+      "lines": 151,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 3
+    },
+    {
+      "path": "scripts_una_tantum/verify_build.py",
+      "tracked": false,
+      "lines": 51,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/verify_fusion.py",
+      "tracked": false,
+      "lines": 29,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "scripts_una_tantum/verify_geojson_integrity.py",
+      "tracked": false,
+      "lines": 81,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 1,
+      "broad_except": 0
+    },
+    {
+      "path": "scripts_una_tantum/verify_mixed_correct.py",
+      "tracked": false,
+      "lines": 79,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "test_audio.py",
+      "tracked": true,
+      "lines": 50,
+      "functions": 1,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "test_audio_post.py",
+      "tracked": true,
+      "lines": 38,
+      "functions": 1,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "tests/__init__.py",
+      "tracked": true,
+      "lines": 1,
+      "functions": 0,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "tests/test_phase1_regressions.py",
+      "tracked": true,
+      "lines": 99,
+      "functions": 4,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "tests/test_phase2_refactors.py",
+      "tracked": true,
+      "lines": 238,
+      "functions": 19,
+      "undocumented": 19,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "tests/test_stability_audit.py",
+      "tracked": false,
+      "lines": 267,
+      "functions": 22,
+      "undocumented": 22,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "tests/verify_dom_ids.py",
+      "tracked": true,
+      "lines": 96,
+      "functions": 4,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "tests/verify_html_structure.py",
+      "tracked": true,
+      "lines": 84,
+      "functions": 6,
+      "undocumented": 4,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "training_finetuning/auto_teacher.py",
+      "tracked": false,
+      "lines": 207,
+      "functions": 4,
+      "undocumented": 2,
+      "bare_except": 1,
+      "broad_except": 1
+    },
+    {
+      "path": "training_finetuning/teach_trident.py",
+      "tracked": false,
+      "lines": 68,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "war_tracker_v2/scripts2/auto_pipeline.py",
+      "tracked": true,
+      "lines": 88,
+      "functions": 2,
+      "undocumented": 2,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "war_tracker_v2/scripts2/db_manager.py",
+      "tracked": true,
+      "lines": 114,
+      "functions": 4,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "war_tracker_v2/scripts2/embedding_final_events.py",
+      "tracked": true,
+      "lines": 92,
+      "functions": 2,
+      "undocumented": 2,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "war_tracker_v2/scripts2/event_builder.py",
+      "tracked": true,
+      "lines": 361,
+      "functions": 10,
+      "undocumented": 7,
+      "bare_except": 2,
+      "broad_except": 4
+    },
+    {
+      "path": "war_tracker_v2/scripts2/fetch_gdelt.py",
+      "tracked": true,
+      "lines": 171,
+      "functions": 4,
+      "undocumented": 0,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "war_tracker_v2/scripts2/fetch_telegram.py",
+      "tracked": true,
+      "lines": 284,
+      "functions": 5,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 1
+    },
+    {
+      "path": "war_tracker_v2/scripts2/generate_report.py",
+      "tracked": true,
+      "lines": 685,
+      "functions": 15,
+      "undocumented": 12,
+      "bare_except": 0,
+      "broad_except": 2
+    },
+    {
+      "path": "war_tracker_v2/scripts2/refiner_fast.py",
+      "tracked": true,
+      "lines": 439,
+      "functions": 6,
+      "undocumented": 2,
+      "bare_except": 1,
+      "broad_except": 1
+    },
+    {
+      "path": "war_tracker_v2/scripts2/run_backfill.py",
+      "tracked": true,
+      "lines": 95,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "war_tracker_v2/scripts2/run_daily.py",
+      "tracked": true,
+      "lines": 49,
+      "functions": 1,
+      "undocumented": 1,
+      "bare_except": 0,
+      "broad_except": 0
+    },
+    {
+      "path": "war_tracker_v2/scripts2/vision_rescue.py",
+      "tracked": true,
+      "lines": 219,
+      "functions": 9,
+      "undocumented": 4,
+      "bare_except": 1,
+      "broad_except": 2
+    }
+  ],
+  "syntax_errors": [],
+  "javascript": [
+    {
+      "path": "_archive/dead/debug.js",
+      "ok": true,
+      "error": ""
+    },
+    {
+      "path": "_archive/dead/test.js",
+      "ok": true,
+      "error": ""
+    },
+    {
+      "path": "assets/js/charts.js",
+      "ok": true,
+      "error": ""
+    },
+    {
+      "path": "assets/js/console.js",
+      "ok": true,
+      "error": ""
+    },
+    {
+      "path": "assets/js/dashboard.js",
+      "ok": true,
+      "error": ""
+    },
+    {
+      "path": "assets/js/map.js",
+      "ok": true,
+      "error": ""
+    },
+    {
+      "path": "assets/js/orbat_tracker.js",
+      "ok": true,
+      "error": ""
+    },
+    {
+      "path": "assets/js/report.js",
+      "ok": true,
+      "error": ""
+    },
+    {
+      "path": "assets/js/safe_dom.js",
+      "ok": true,
+      "error": ""
+    },
+    {
+      "path": "assets/js/unit_dossier.js",
+      "ok": true,
+      "error": ""
+    },
+    {
+      "path": "tests/test_dashboard_security.js",
+      "ok": true,
+      "error": ""
+    }
+  ],
+  "html_inline_scripts": 5,
+  "json_files": 558,
+  "json_errors": [],
+  "largest_public_assets": [
+    {
+      "path": "assets/data/fortifications_parabellum.geojson",
+      "bytes": 28573496
+    },
+    {
+      "path": "assets/data/owl_layer.geojson",
+      "bytes": 15095313
+    },
+    {
+      "path": "assets/data/owl_layer_old.geojson",
+      "bytes": 10760254
+    },
+    {
+      "path": "assets/data/owl_positions.json",
+      "bytes": 6536739
+    },
+    {
+      "path": "assets/data/events.geojson",
+      "bytes": 6118616
+    },
+    {
+      "path": "assets/data/events_timeline.json",
+      "bytes": 2337403
+    },
+    {
+      "path": "assets/data/thermal_firms.geojson",
+      "bytes": 1799837
+    },
+    {
+      "path": "assets/data/units.json",
+      "bytes": 1556773
+    },
+    {
+      "path": "assets/data/orbat_units.json",
+      "bytes": 516069
+    },
+    {
+      "path": "assets/data/orbat_full.json",
+      "bytes": 364119
+    }
+  ]
+}

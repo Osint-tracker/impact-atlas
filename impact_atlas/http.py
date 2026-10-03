@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import logging
+import math
 import time
 from dataclasses import dataclass
 from typing import Any
 from collections.abc import Callable, Mapping
+from urllib.parse import urlsplit
 
 import requests
 
@@ -37,9 +39,11 @@ class ResilientHttpClient:
         clock: Callable[[], float] = time.monotonic,
     ) -> None:
         """Create a transport. Injectable time/session dependencies keep it unit-testable."""
-        if retry_policy.max_attempts <= 0 or retry_policy.timeout_seconds <= 0 or retry_policy.backoff_seconds <= 0:
+        if any(not math.isfinite(value) or value <= 0 for value in (
+            retry_policy.max_attempts, retry_policy.timeout_seconds, retry_policy.backoff_seconds
+        )):
             raise ValueError("RetryPolicy values must be positive.")
-        if rate_limit_seconds < 0:
+        if not math.isfinite(rate_limit_seconds) or rate_limit_seconds < 0:
             raise ValueError("rate_limit_seconds cannot be negative.")
         self._logger = logging.getLogger(f"impact_atlas.http.{name}")
         self._policy = retry_policy
@@ -60,6 +64,12 @@ class ResilientHttpClient:
     ) -> requests.Response | None:
         """Return a successful response or ``None`` after a logged, bounded failure."""
         request_headers = dict(headers or {})
+        kwargs.setdefault("timeout", self._policy.timeout_seconds)
+        # Provider URLs may embed credentials in paths, queries or userinfo.
+        try:
+            destination = urlsplit(url).hostname or "<invalid-host>"
+        except ValueError:
+            destination = "<invalid-host>"
         for attempt in range(1, self._policy.max_attempts + 1):
             self._respect_rate_limit()
             try:
@@ -67,30 +77,36 @@ class ResilientHttpClient:
                     method=method,
                     url=url,
                     headers=request_headers or None,
-                    timeout=self._policy.timeout_seconds,
                     **kwargs,
                 )
             except requests.RequestException as error:
                 if attempt == self._policy.max_attempts:
-                    self._logger.error("HTTP request exhausted retries: %s %s (%s)", method, url, error)
+                    self._logger.error(
+                        "HTTP request exhausted retries: %s %s (%s)", method, destination, type(error).__name__
+                    )
                     return None
-                self._logger.warning("HTTP transport error; retrying %s %s (%s)", method, url, error)
+                self._logger.warning(
+                    "HTTP transport error; retrying %s %s (%s)", method, destination, type(error).__name__
+                )
                 self._sleeper(self._policy.backoff_seconds * attempt)
                 continue
 
             if 200 <= response.status_code < 300:
                 return response
+            response.close()
             if response.status_code not in self._TRANSIENT_STATUS_CODES:
-                self._logger.warning("HTTP request rejected: %s %s returned %s", method, url, response.status_code)
+                self._logger.warning(
+                    "HTTP request rejected: %s %s returned %s", method, destination, response.status_code
+                )
                 return None
             if attempt == self._policy.max_attempts:
                 self._logger.error(
                     "HTTP request exhausted retries: %s %s returned %s",
-                    method, url, response.status_code,
+                    method, destination, response.status_code,
                 )
                 return None
             self._logger.warning(
-                "Transient HTTP response; retrying %s %s after status %s", method, url, response.status_code
+                "Transient HTTP response; retrying %s %s after status %s", method, destination, response.status_code
             )
             self._sleeper(self._policy.backoff_seconds * attempt)
         return None

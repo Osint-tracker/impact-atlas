@@ -1,0 +1,12 @@
+# Direct dependencies needed by the canonical quality gates.
+ruff>=0.16,<0.17
+mypy>=2.3,<3
+pytest>=9,<10
+types-requests
+requests>=2.31,<3
+python-dotenv>=1,<2
+shapely>=2,<3
+aiohttp>=3.9,<4
+pandas>=2,<3
+beautifulsoup4>=4.12,<5
+numpy>=1.24,<3

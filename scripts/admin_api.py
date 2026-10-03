@@ -12,11 +12,13 @@ from __future__ import annotations
 import contextlib
 import json
 import logging
+import math
+import os
 import mimetypes
 import sqlite3
 import sys
 import uuid
-from datetime import datetime
+from datetime import datetime, UTC
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from typing import Any
@@ -28,8 +30,10 @@ _PROJECT_ROOT = str(Path(__file__).resolve().parents[1])
 if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
-from impact_atlas.config import ProjectPaths
-from impact_atlas.logging import configure_logging
+# These imports require the repository-path bootstrap for direct script execution.
+from impact_atlas.config import ProjectPaths  # noqa: E402
+from impact_atlas.logging import configure_logging  # noqa: E402
+from impact_atlas.admin_security import AdminAccess  # noqa: E402
 
 PATHS = ProjectPaths.discover()
 DB_PATH = PATHS.raw_events_database
@@ -37,6 +41,7 @@ STATIC_DIR = PATHS.root
 
 PORT = 8800
 MAX_PER_PAGE = 500
+MAX_BODY_BYTES = 64 * 1024
 
 logger = logging.getLogger("admin_api")
 
@@ -45,6 +50,12 @@ class AdminHTTPServer(HTTPServer):
     """HTTP server that tolerates immediate port reuse across restarts."""
 
     allow_reuse_address = True
+
+    def __init__(self, server_address: tuple[str, int], handler: type[BaseHTTPRequestHandler],
+                 *, access: AdminAccess | None = None) -> None:
+        """Start with authenticated APIs; static public pages stay public."""
+        self.access = access if access is not None else AdminAccess()
+        super().__init__(server_address, handler)
 
 
 def get_db() -> sqlite3.Connection:
@@ -65,12 +76,41 @@ def _error_id(error: Exception) -> str:
 class AdminAPIHandler(BaseHTTPRequestHandler):
     """Request handler exposing the manual merge REST endpoints."""
 
+    def _authorize(self, *, write: bool = False) -> bool:
+        """Require a valid capability before any API database access."""
+        role = self.server.access.role_for(self.headers.get('Authorization'))
+        if role is None:
+            self._json_response(401, {"error": "Admin authentication required"})
+            return False
+        if write and role != 'writer':
+            self._json_response(403, {"error": "Write permission required"})
+            return False
+        return True
+
+    def _allow_request(self) -> bool:
+        """Reject foreign hosts/origins on this loopback-only administrative service."""
+        port = self.server.server_port
+        allowed_hosts = {f"localhost:{port}", f"127.0.0.1:{port}", f"[::1]:{port}"}
+        host = self.headers.get("Host", "").lower()
+        origin = self.headers.get("Origin")
+        if host not in allowed_hosts or (origin is not None and origin != f"http://{host}"):
+            self._json_response(403, {"error": "Only same-origin localhost requests are allowed"})
+            return False
+        return True
+
     def do_GET(self) -> None:
         """Route GET requests to the API or the static file server."""
+        if not self._allow_request():
+            return
         parsed = urlparse(self.path)
         path = parsed.path
 
-        if path == '/api/events':
+        if path.startswith('/api/') and not self._authorize():
+            return
+
+        if path == '/api/session':
+            self._json_response(200, {"role": self.server.access.role_for(self.headers.get('Authorization'))})
+        elif path == '/api/events':
             self._handle_list_events(parse_qs(parsed.query))
         elif path.startswith('/api/event/'):
             event_id = unquote(path.split('/api/event/')[-1])
@@ -83,21 +123,34 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             self._serve_static(path)
 
     def do_OPTIONS(self) -> None:
-        """Answer CORS preflight requests."""
-        self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        """Reject cross-origin preflight requests."""
+        if not self._allow_request():
+            return
+        self.send_response(204)
         self.end_headers()
 
     def do_POST(self) -> None:
         """Route POST bodies to merge/unmerge endpoints."""
+        if not self._allow_request():
+            return
+        if not self._authorize(write=True):
+            return
         parsed = urlparse(self.path)
+        if self.headers.get_content_type() != "application/json":
+            self._json_response(415, {"error": "Content-Type must be application/json"})
+            return
         try:
             content_length = int(self.headers.get('Content-Length', 0))
+            if not 0 < content_length <= MAX_BODY_BYTES or self.headers.get('Transfer-Encoding'):
+                self._json_response(400, {"error": "Invalid or oversized request body"})
+                return
+            self.connection.settimeout(10)
             body = json.loads(self.rfile.read(content_length))
-        except (ValueError, json.JSONDecodeError):
+        except (ValueError, UnicodeError, TimeoutError):
             self._json_response(400, {"error": "Malformed JSON body"})
+            return
+        if not isinstance(body, dict):
+            self._json_response(400, {"error": "JSON body must be an object"})
             return
 
         if parsed.path == '/api/merge':
@@ -114,9 +167,22 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
         if path == '/' or path == '':
             path = '/admin_merge.html'
 
-        # Security: prevent path traversal
-        safe_path = (STATIC_DIR / path.lstrip('/')).resolve()
-        if not str(safe_path).startswith(str(STATIC_DIR)):
+        # Only public UI artifacts may be served, even within the project root.
+        root = STATIC_DIR.resolve()
+        try:
+            safe_path = (root / unquote(path).lstrip('/')).resolve()
+            relative = safe_path.relative_to(root)
+        except (ValueError, OSError):
+            self.send_error(403, "Forbidden")
+            return
+        public_pages = {"admin_merge.html", "index.html", "report.html", "legal.html",
+                        "campaign_dossier_console.html"}
+        public_extensions = {".css", ".js", ".json", ".geojson", ".csv", ".png", ".jpg",
+                             ".jpeg", ".svg", ".webp", ".gif", ".ico", ".woff", ".woff2", ".ttf"}
+        if (any(part.startswith('.') for part in relative.parts)
+                or not (relative.as_posix() in public_pages
+                        or (relative.parts and relative.parts[0] == 'assets'
+                            and safe_path.suffix.lower() in public_extensions))):
             self.send_error(403, "Forbidden")
             return
 
@@ -135,12 +201,12 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-Type', content_type)
             self.send_header('Content-Length', str(len(content)))
-            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('X-Content-Type-Options', 'nosniff')
             self.end_headers()
             self.wfile.write(content)
             self.wfile.flush()
         except OSError as e:
-            self.send_error(500, str(e))
+            self.send_error(500, f"File access error (ref {_error_id(e)})")
 
     # â”€â”€â”€ JSON helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -151,7 +217,10 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             self.send_response(status)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.send_header('Content-Length', str(len(body)))
-            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('X-Content-Type-Options', 'nosniff')
+            self.send_header('Cache-Control', 'no-store')
+            if status == 401:
+                self.send_header('WWW-Authenticate', 'Bearer realm="Local administration"')
             self.end_headers()
             self.wfile.write(body)
             self.wfile.flush()
@@ -176,6 +245,9 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             except ValueError:
                 page, per_page = 1, 50
             offset = (page - 1) * per_page
+            if offset > 2**63 - 1:
+                self._json_response(400, {"error": "Page exceeds supported range"})
+                return
 
             conditions = []
             bind_params: list[Any] = []
@@ -254,7 +326,8 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             ai_data: dict[str, Any] = {}
             if row["ai_report_json"]:
                 try:
-                    ai_data = json.loads(row["ai_report_json"])
+                    parsed_report = json.loads(row["ai_report_json"])
+                    ai_data = parsed_report if isinstance(parsed_report, dict) else {}
                     geo = ai_data.get("tactics", {}).get("geo_location", {})
                     expl = geo.get("explicit", {})
                     lat = expl.get("lat") or geo.get("inferred", {}).get("lat")
@@ -315,8 +388,10 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
         conn: sqlite3.Connection | None = None
         try:
             event_ids = data.get("event_ids", [])
-            if not isinstance(event_ids, list) or len(event_ids) < 2:
-                self._json_response(400, {"error": "Need at least 2 events"})
+            if (not isinstance(event_ids, list) or not 2 <= len(event_ids) <= MAX_PER_PAGE
+                    or any(not isinstance(value, str) or not value.strip() for value in event_ids)
+                    or len(set(event_ids)) != len(event_ids)):
+                self._json_response(400, {"error": "Need 2 to 500 distinct, non-empty event IDs"})
                 return
 
             conn = get_db()
@@ -329,7 +404,7 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             """, event_ids)
             events = cursor.fetchall()
 
-            if len(events) < 2:
+            if len(events) != len(event_ids):
                 self._json_response(400, {"error": f"Only {len(events)} events found"})
                 return
 
@@ -398,7 +473,7 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
         conn: sqlite3.Connection | None = None
         try:
             event_id = data.get("event_id", "")
-            if not event_id:
+            if not isinstance(event_id, str) or not event_id.strip():
                 self._json_response(400, {"error": "Missing event_id"})
                 return
 
@@ -429,10 +504,11 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
 
     @staticmethod
     def _parse_local_iso(value: str) -> datetime | None:
-        """Parse an ISO date string to a naive local datetime, or ``None``."""
+        """Parse an ISO date string to UTC, treating legacy naive values as UTC."""
         if not value:
             return None
-        return datetime.fromisoformat(value.replace('Z', '+00:00')).replace(tzinfo=None)
+        parsed = datetime.fromisoformat(value.replace('Z', '+00:00'))
+        return parsed.replace(tzinfo=UTC) if parsed.tzinfo is None else parsed.astimezone(UTC)
 
     def _handle_suggestions(self, params: dict[str, list[str]]) -> None:
         """Cluster similar events via embedding cosine similarity."""
@@ -446,6 +522,9 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                 limit = min(5000, max(2, int(params.get('limit', ['2000'])[0])))
             except ValueError:
                 self._json_response(400, {"error": "threshold, hours and limit must be numeric"})
+                return
+            if not math.isfinite(sim_threshold) or not 0 <= sim_threshold <= 1 or not math.isfinite(max_hours) or max_hours < 0:
+                self._json_response(400, {"error": "threshold must be 0..1 and hours must be finite and non-negative"})
                 return
             sector = params.get('sector', [''])[0].strip()
             search = params.get('search', [''])[0].strip()
@@ -496,7 +575,11 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             for r in rows:
                 try:
                     vec = json.loads(r["embedding_vector"])
-                    if not vec or len(vec) < 10:
+                    if not isinstance(vec, list) or len(vec) < 10:
+                        continue
+                    if any(not isinstance(value, (int, float)) or not math.isfinite(value) for value in vec):
+                        continue
+                    if vectors and len(vec) != len(vectors[0]):
                         continue
 
                     raw_title = r["title"]
@@ -611,7 +694,12 @@ def main() -> None:
     print(f"[*] Static: {STATIC_DIR}")
     print(f"[*] DB: {DB_PATH}")
     print(f"[*] Open http://localhost:{PORT}/admin_merge.html")
-    server = AdminHTTPServer(('localhost', PORT), AdminAPIHandler)
+    configured_writer = os.environ.get('IMPACT_ADMIN_WRITE_TOKEN')
+    access = AdminAccess(**({"writer_token": configured_writer} if configured_writer else {}),
+                         reader_token=os.environ.get('IMPACT_ADMIN_READ_TOKEN'))
+    server = AdminHTTPServer(('localhost', PORT), AdminAPIHandler, access=access)
+    if not configured_writer:
+        print(f"[*] Session admin token (enter in the admin page): {access.writer_token}")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

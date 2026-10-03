@@ -325,7 +325,7 @@ class EquipmentTicker {
 
     // --- CLICK TO LOCATE ---
     _flyToLoss(lat, lon, model) {
-        if (!lat || !lon || !window.map) return;
+        if (!Number.isFinite(lat) || !Number.isFinite(lon) || !window.map) return;
 
         // Fly to location
         window.map.flyTo([lat, lon], 13, { animate: true, duration: 1.5 });
@@ -343,7 +343,7 @@ class EquipmentTicker {
         // Popup
         pulseMarker.bindPopup(
             `<div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#f8fafc;background:#0f172a;padding:6px 10px;border-radius:4px;">
-                <b style="color:#f59e0b;">⚡ ${model}</b><br>Equipment Loss Location
+                <b style="color:#f59e0b;">⚡ ${escapeHtml(model)}</b><br>Equipment Loss Location
             </div>`,
             { className: 'pulse-popup', closeButton: false, autoClose: true }
         ).openPopup();
@@ -500,10 +500,12 @@ class EquipmentTicker {
 
         const displayData = this.data.slice(0, 50);
 
-        const itemsHtml = displayData.map(item => {
-            const statusClass = (item.status || 'unknown').toLowerCase().replace(/\s+/g, '-');
-            const svgIcon = this._getSvgIcon(item.model, item.type);
-            const econValue = this._getEconomicValue(item.model, item.type);
+        const itemsHtml = displayData.map((item, index) => {
+            const model = String(item.model || 'Unknown');
+            const type = String(item.type || '');
+            const statusClass = String(item.status || 'unknown').toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+            const svgIcon = this._getSvgIcon(model, type);
+            const econValue = this._getEconomicValue(model, type);
             const econStr = econValue >= 100 ? `$${econValue.toFixed(0)}M` : `$${econValue.toFixed(1)}M`;
             const tieTotal = Math.round(item.tie_total || 0);
             const vecT = parseFloat(item.vec_t || 0);
@@ -520,37 +522,31 @@ class EquipmentTicker {
 
             // Source badge
             const sourceBadge = item.source_tag
-                ? `<span class="loss-source-tag">${item.source_tag}</span>` : '';
+                ? `<span class="loss-source-tag">${escapeHtml(item.source_tag)}</span>` : '';
 
             // IMINT / Tooltip integration
-            let imintHover = '';
             let imintIcon = '';
             if (item.visual_evidence) {
-                imintHover = `onmouseover="window.showImintTooltip(this, '${item.visual_evidence}')" onmouseout="window.hideImintTooltip()"`;
                 imintIcon = `<i class="fa-solid fa-camera" style="color:#f59e0b; font-size:0.6rem; margin-left:4px;" title="IMINT Available"></i>`;
             }
 
             // Proof link
             const proofLink = item.proof_url
-                ? `<a href="${item.proof_url}" target="_blank" rel="noopener" class="loss-proof-link" title="View proof" onclick="event.stopPropagation()"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>` : '';
+                ? `<a href="${escapeAttr(sanitizeUrl(item.proof_url))}" target="_blank" rel="noopener" class="loss-proof-link" title="View proof"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>` : '';
 
             // Clickable attributes
-            const clickAttr = (item.lat && item.lon)
-                ? `onclick="window.Dashboard.ticker._flyToLoss(${item.lat}, ${item.lon}, '${(item.model || '').replace(/'/g, "\\'")}')" style="cursor:pointer;"`
-                : '';
-
             return `
-            <div class="loss-card holo ${statusClass} ${isHVT ? 'hvt-glow hvt-elite-border' : ''} ${recentClass}" ${clickAttr} ${imintHover}>
+            <div class="loss-card holo ${statusClass} ${isHVT ? 'hvt-glow hvt-elite-border' : ''} ${recentClass}" data-loss-index="${index}">
                 <div class="loss-icon-svg">${svgIcon}</div>
                 <div class="loss-info">
-                    <span class="loss-model">${item.model || 'Unknown'} ${imintIcon}</span>
-                    <span class="loss-meta">${item.type || ''} • ${item.date || '--'}</span>
+                    <span class="loss-model">${escapeHtml(model)} ${imintIcon}</span>
+                    <span class="loss-meta">${escapeHtml(type)} • ${escapeHtml(item.date || '--')}</span>
                 </div>
                 <div class="loss-econ">
                     <span class="loss-econ-value">${econStr}</span>
                     ${tieTotal > 0 ? `<span class="loss-tie-badge">TIE ${tieTotal}</span>` : ''}
                 </div>
-                <span class="loss-status ${statusClass}">${(item.status || '').split(' ')[0].toUpperCase()}</span>
+                <span class="loss-status ${statusClass}">${escapeHtml(String(item.status || '').split(' ')[0].toUpperCase())}</span>
                 <span class="loss-country">${flagIcon}</span>
                 ${sourceBadge}
                 ${proofLink}
@@ -558,6 +554,21 @@ class EquipmentTicker {
         }).join('');
 
         this.content.innerHTML = itemsHtml;
+        this.content.querySelectorAll('[data-loss-index]').forEach(card => {
+            const item = displayData[Number(card.dataset.lossIndex)];
+            const lat = item.lat == null || item.lat === '' ? NaN : Number(item.lat);
+            const lon = item.lon == null || item.lon === '' ? NaN : Number(item.lon);
+            if (Number.isFinite(lat) && Number.isFinite(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180) {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', () => this._flyToLoss(lat, lon, String(item.model || '')));
+            }
+            const proof = card.querySelector('.loss-proof-link');
+            if (proof) proof.addEventListener('click', event => event.stopPropagation());
+            if (item.visual_evidence) {
+                card.addEventListener('mouseenter', () => window.showImintTooltip(card, item.visual_evidence));
+                card.addEventListener('mouseleave', window.hideImintTooltip);
+            }
+        });
         console.log(`✅ EquipmentTicker v2.0 rendered ${displayData.length} items`);
     }
 }
@@ -673,7 +684,10 @@ window.showImintTooltip = function (el, imgUrl) {
     }
 
     // Add image
-    tooltip.innerHTML = `<img src="${imgUrl}" style="max-width:200px; max-height:150px; border-radius:2px; display:block;">`;
+    const img = document.createElement('img');
+    img.src = sanitizeUrl(imgUrl);
+    img.style.cssText = 'max-width:200px; max-height:150px; border-radius:2px; display:block;';
+    tooltip.replaceChildren(img);
 
     // Position
     const rect = el.getBoundingClientRect();

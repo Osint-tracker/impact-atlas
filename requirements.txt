@@ -1,5 +1,6 @@
 # Impact Atlas runtime dependencies (Python 3.11+).
-# Versions are bounded to compatible major series; CI installs this file.
+# Direct requirements. Install requirements.lock for reproducible runtime environments.
+# CI uses the separately resolved requirements-ci.lock.
 # Optional accelerators (orjson) degrade gracefully when absent.
 
 # --- Core HTTP / config / logging ------------------------------------

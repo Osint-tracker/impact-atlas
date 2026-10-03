@@ -445,10 +445,19 @@
         <span class="badge">ADMIN MERGE TOOL</span>
         <button id="aiScanBtn" onclick="loadSuggestions()" style="background:var(--blue);color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:0.5px;transition:all 0.2s;">🤖 Scan for Duplicates</button>
         <span style="flex:1"></span>
-        <span id="statusIndicator" style="font-size:12px; color:var(--green);">● Connected</span>
+        <span id="statusIndicator" style="font-size:12px; color:var(--green);">Authentication required</span>
     </div>
 
-    <div class="main">
+    <section style="padding:16px 24px; border-bottom:1px solid var(--border);">
+        <form id="adminLoginForm" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;">
+            <label for="adminToken">Admin access token</label>
+            <input id="adminToken" type="password" autocomplete="off" maxlength="256" required style="padding:8px;min-width:240px;" />
+            <button type="submit" style="padding:8px 16px;">Connect</button>
+            <button type="button" id="adminLogout" hidden style="padding:8px 16px;">Disconnect</button>
+            <span id="adminAuthStatus" role="status">Use the token from the local server terminal.</span>
+        </form>
+    </section>
+    <div class="main" id="adminWorkspace" inert>
         <!-- LEFT: Event Browser -->
         <div class="browser-panel">
             <!-- AI SUGGESTIONS PANEL -->
@@ -519,7 +528,43 @@
     <div class="status-bar" id="statusBar">Ready. Select events to merge.</div>
 
     <script>
-        const API_BASE = 'http://localhost:8800';
+        const API_BASE = window.location.origin;
+        let adminToken = '';
+        let adminCanWrite = false;
+        let adminAbort = new AbortController();
+
+        function lockAdmin() {
+            adminAbort.abort();
+            adminAbort = new AbortController();
+            adminToken = '';
+            adminCanWrite = false;
+            document.getElementById('adminWorkspace').inert = true;
+            document.getElementById('adminLogout').hidden = true;
+            document.getElementById('adminAuthStatus').textContent = 'Authentication required.';
+            document.getElementById('statusIndicator').textContent = 'Disconnected';
+            stagedEvents = [];
+            suggestionsData = [];
+            document.getElementById('suggestionsCount').textContent = '0';
+            document.getElementById('eventTableBody').replaceChildren();
+            document.getElementById('suggestionsBody').replaceChildren();
+            renderStaged();
+            updateMergeButton();
+        }
+
+        async function apiFetch(url, options = {}) {
+            if (!adminToken) throw new Error('Connect with an admin access token first.');
+            const requestToken = adminToken;
+            const headers = new Headers(options.headers || {});
+            headers.set('Authorization', 'Bearer ' + adminToken);
+            const response = await fetch(url, { ...options, headers, cache: 'no-store', signal: adminAbort.signal });
+            if (requestToken !== adminToken) throw new Error('Admin session changed.');
+            if (!response.ok) {
+                if (response.status === 401) lockAdmin();
+                const message = response.status === 403 ? 'Write permission required.' : 'Admin request failed (' + response.status + ').';
+                throw new Error(message);
+            }
+            return response;
+        }
         let currentPage = 1;
         let totalPages = 1;
         let stagedEvents = []; // Array of {event_id, title, date, description, tie_score}
@@ -536,7 +581,7 @@
         // Load sector options
         async function loadSectors() {
             try {
-                const res = await fetch(`${API_BASE}/api/sectors`);
+                const res = await apiFetch(`${API_BASE}/api/sectors`);
                 const data = await res.json();
                 const sel = document.getElementById('sectorFilter');
                 data.sectors.forEach(s => {
@@ -565,7 +610,7 @@
             });
 
             try {
-                const res = await fetch(`${API_BASE}/api/events?${params}`);
+                const res = await apiFetch(`${API_BASE}/api/events?${params}`);
                 const data = await res.json();
                 currentPage = data.page;
                 totalPages = data.pages;
@@ -592,14 +637,14 @@
                 tr.innerHTML = `
                     <td class="cb-cell">
                         <input type="checkbox" ${isStaged ? 'checked' : ''} 
-                            onchange="toggleStaged('${ev.event_id}', this.checked)"
-                            data-eid="${ev.event_id}" />
+                            data-eid="${escapeHtml(ev.event_id)}" />
                     </td>
                     <td class="title-col"><div class="title-text">${escapeHtml(ev.title)}</div></td>
-                    <td class="date-col">${ev.date ? ev.date.substring(0, 10) : '—'}</td>
+                    <td class="date-col">${escapeHtml(ev.date ? String(ev.date).substring(0, 10) : '—')}</td>
                     <td class="tie-col ${tieClass}">${(ev.tie_score || 0).toFixed(1)}</td>
-                    <td><span class="sector-badge">${ev.sector}</span></td>
+                    <td><span class="sector-badge">${escapeHtml(ev.sector)}</span></td>
                 `;
+                tr.querySelector('input').addEventListener('change', event => toggleStaged(ev.event_id, event.target.checked));
                 tr.addEventListener('dblclick', () => showEventDetail(ev.event_id));
                 tbody.appendChild(tr);
             });
@@ -609,7 +654,7 @@
             if (checked) {
                 // Fetch full details
                 try {
-                    const res = await fetch(`${API_BASE}/api/event/${eventId}`);
+                    const res = await apiFetch(`${API_BASE}/api/event/${encodeURIComponent(eventId)}`);
                     const ev = await res.json();
                     stagedEvents.push(ev);
                     // Sort by date (oldest first = master)
@@ -649,12 +694,12 @@
 
             list.innerHTML = stagedEvents.map(ev => `
                 <div class="staged-card">
-                    <button class="remove-btn" onclick="toggleStaged('${ev.event_id}', false)">✕</button>
+                    <button class="remove-btn" data-remove-id="${escapeHtml(ev.event_id)}">✕</button>
                     <div class="card-title">${escapeHtml(ev.title || '(No title)')}</div>
                     <div class="card-meta">
-                        📅 ${(ev.date || '—').substring(0, 10)} &nbsp;|&nbsp;
+                        📅 ${escapeHtml(String(ev.date || '—').substring(0, 10))} &nbsp;|&nbsp;
                         TIE: ${(ev.tie_score || 0).toFixed(1)} &nbsp;|&nbsp;
-                        📍 ${ev.sector || '—'}
+                        📍 ${escapeHtml(ev.sector || '—')}
                     </div>
                     ${ev.lat && ev.lon ? `<div class="card-meta">🌐 ${ev.lat.toFixed(4)}, ${ev.lon.toFixed(4)}</div>` : ''}
                     <div class="card-desc">${escapeHtml(ev.description || ev.ai_summary || '')}</div>
@@ -662,16 +707,21 @@
             `).join('');
         }
 
+        document.addEventListener('click', event => {
+            const button = event.target.closest('[data-remove-id]');
+            if (button) toggleStaged(button.dataset.removeId, false);
+        });
+
         function updateMergeButton() {
             const btn = document.getElementById('mergeBtn');
-            btn.disabled = stagedEvents.length < 2;
+            btn.disabled = !adminCanWrite || stagedEvents.length < 2;
             btn.textContent = stagedEvents.length >= 2
                 ? `🔗 MERGE ${stagedEvents.length} EVENTS`
                 : '🔗 EXECUTE MERGE';
         }
 
         async function executeMerge() {
-            if (stagedEvents.length < 2) return;
+            if (!adminCanWrite || stagedEvents.length < 2) return;
 
             const master = stagedEvents[0];
             const count = stagedEvents.length;
@@ -681,7 +731,7 @@
             }
 
             try {
-                const res = await fetch(`${API_BASE}/api/merge`, {
+                const res = await apiFetch(`${API_BASE}/api/merge`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ event_ids: stagedEvents.map(s => s.event_id) })
@@ -714,7 +764,7 @@
 
         async function showEventDetail(eventId) {
             try {
-                const res = await fetch(`${API_BASE}/api/event/${eventId}`);
+                const res = await apiFetch(`${API_BASE}/api/event/${encodeURIComponent(eventId)}`);
                 const ev = await res.json();
                 alert(
                     `EVENT DETAIL\n` +
@@ -745,7 +795,10 @@
 
         function setStatus(msg, isError = false) {
             const bar = document.getElementById('statusBar');
-            bar.innerHTML = `<span class="${isError ? 'error' : ''}">${msg}</span>`;
+            const message = document.createElement('span');
+            message.className = isError ? 'error' : '';
+            message.textContent = String(msg);
+            bar.replaceChildren(message);
         }
 
         function showToast(msg, isError = false) {
@@ -757,14 +810,33 @@
         }
 
         function escapeHtml(s) {
-            if (!s) return '';
-            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            if (s === null || s === undefined) return '';
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
 
         // Init
         document.addEventListener('DOMContentLoaded', () => {
-            loadSectors();
-            loadEvents(1);
+            document.getElementById('adminLoginForm').addEventListener('submit', async event => {
+                event.preventDefault();
+                lockAdmin();
+                adminToken = document.getElementById('adminToken').value.trim();
+                document.getElementById('adminToken').value = '';
+                try {
+                    const session = await (await apiFetch(`${API_BASE}/api/session`)).json();
+                    adminCanWrite = session.role === 'writer';
+                    document.getElementById('adminWorkspace').inert = false;
+                    document.getElementById('adminLogout').hidden = false;
+                    document.getElementById('adminAuthStatus').textContent = adminCanWrite ? 'Connected · Read and write' : 'Connected · Read only';
+                    document.getElementById('statusIndicator').textContent = 'Authenticated';
+                    document.getElementById('sectorFilter').replaceChildren(new Option('All Sectors', ''));
+                    updateMergeButton();
+                    await Promise.all([loadSectors(), loadEvents(1)]);
+                } catch (error) {
+                    lockAdmin();
+                    document.getElementById('adminAuthStatus').textContent = error.message;
+                }
+            });
+            document.getElementById('adminLogout').addEventListener('click', lockAdmin);
 
             // Debounced search
             const searchInput = document.getElementById('searchInput');
@@ -800,7 +872,7 @@
                 if (sector) params.set('sector', sector);
                 if (search) params.set('search', search);
                 if (status) params.set('status', status);
-                const res = await fetch(`${API_BASE}/api/suggestions?${params}`);
+                const res = await apiFetch(`${API_BASE}/api/suggestions?${params}`);
                 const data = await res.json();
                 suggestionsData = data.suggestions || [];
                 document.getElementById('suggestionsCount').textContent = suggestionsData.length;
@@ -836,7 +908,7 @@
                         </div>
                         <div class="suggestion-info">
                             <div class="sg-title">${sg.count}× ${firstTitle}</div>
-                            <div class="sg-meta">📅 ${dates} · ${sg.events.map(e => e.sector).filter((v,i,a) => a.indexOf(v)===i).join(', ')}</div>
+                            <div class="sg-meta">📅 ${escapeHtml(dates)} · ${escapeHtml(sg.events.map(e => e.sector).filter((v,i,a) => a.indexOf(v)===i).join(', '))}</div>
                         </div>
                         <button class="suggestion-stage-btn" onclick="event.stopPropagation(); stageSuggestion(${idx})">Stage →</button>
                     </div>
@@ -851,7 +923,7 @@
             stagedEvents = [];
             for (const ev of sg.events) {
                 try {
-                    const res = await fetch(`${API_BASE}/api/event/${ev.event_id}`);
+                    const res = await apiFetch(`${API_BASE}/api/event/${encodeURIComponent(ev.event_id)}`);
                     const full = await res.json();
                     stagedEvents.push(full);
                 } catch(e) {

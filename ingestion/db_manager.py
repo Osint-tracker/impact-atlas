@@ -7,6 +7,7 @@ ingestors. New code should depend on :class:`RawEventRepository` directly.
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
 import sqlite3
 from dataclasses import dataclass
@@ -44,12 +45,20 @@ class RawEvent:
         if not isinstance(text, str) or not text.strip():
             return None
         media_urls = event.get("media_urls", "[]")
+        if isinstance(media_urls, str):
+            try:
+                media_urls = json.loads(media_urls)
+            except ValueError:
+                media_urls = []
+        if not isinstance(media_urls, list):
+            media_urls = []
+        media_urls = [url for url in media_urls if isinstance(url, str) and url.strip()]
         return cls(
             text=text,
             source_type=_as_optional_text(event.get("type")),
             source_name=_as_optional_text(event.get("source")),
             published_at=_as_optional_text(event.get("date")),
-            media_urls=media_urls if isinstance(media_urls, str) else str(media_urls),
+            media_urls=json.dumps(media_urls, ensure_ascii=False),
             url=_as_optional_text(event.get("url")),
         )
 

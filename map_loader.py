@@ -7,6 +7,7 @@ Author: Impact Atlas Project (Modified via Gemini)
 import csv
 import json
 import logging
+import math
 import sys
 from datetime import datetime
 from io import StringIO
@@ -26,7 +27,7 @@ from impact_atlas.config import ProjectPaths, RuntimeSettings  # noqa: E402
 from impact_atlas.http import ResilientHttpClient, RetryPolicy  # noqa: E402
 from impact_atlas.logging import configure_logging  # noqa: E402
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("map_loader")
 PROJECT_ROOT = ProjectPaths.discover().root
 
 
@@ -167,19 +168,24 @@ class MapDataLoader:
                     try:
                         lat = float(data['latitude'])
                         lon = float(data['longitude'])
+                        if (not math.isfinite(lat) or not math.isfinite(lon)
+                                or not -90 <= lat <= 90 or not -180 <= lon <= 180):
+                            continue
 
                         # Mandatory Geo-Filtering (Backend)
                         if not self.is_in_theater(lat, lon):
                             continue
 
                         # Deduplication by rounded coordinates (prevent near-duplicates)
-                        coord_key = (round(lat, 3), round(lon, 3))
+                        coord_key = (round(lat, 3), round(lon, 3), data.get('acq_date'), data.get('acq_time'))
                         if coord_key in seen_coords:
                             continue
-                        seen_coords.add(coord_key)
 
                         # Get brightness - field name varies by satellite
                         brightness = float(data.get('bright_ti4', data.get('brightness', 300)))
+                        frp = float(data.get('frp') or 0)
+                        if not math.isfinite(brightness) or not math.isfinite(frp):
+                            continue
 
                         feature = {
                             "type": "Feature",
@@ -193,10 +199,11 @@ class MapDataLoader:
                                 "acq_date": data.get('acq_date'),
                                 "acq_time": data.get('acq_time'),
                                 "satellite": source_label,
-                                "frp": float(data.get('frp', 0)) if data.get('frp') else 0
+                                "frp": frp
                             }
                         }
                         all_features.append(feature)
+                        seen_coords.add(coord_key)
                         count += 1
 
                     except (TypeError, ValueError, KeyError):
@@ -266,14 +273,14 @@ class MapDataLoader:
             logger.error(f"KML conversion failed: {e}")
             return False
 
-    def run_all(self):
+    def run_all(self) -> bool:
         """Run all data fetchers."""
         logger.info("=" * 60)
         logger.info("STARTING IMPACT ATLAS LEGITIMATE DATA LOADER")
         logger.info("=" * 60)
 
         # 1. NASA FIRMS (Multi-satellite, 3-day window)
-        self.load_nasa_firms(days=3)
+        thermal_success = self.load_nasa_firms(days=3)
 
         # 2. CONVERSIONE MANUALE (Se hai scaricato un file KML)
         # Se metti un file chiamato 'manual_frontline.kml' nella cartella, lui lo converte
@@ -285,9 +292,10 @@ class MapDataLoader:
         self.create_dummy_geojson("events.geojson", "Point")
 
         logger.info("\nData loading complete!")
+        return thermal_success
 
 
 if __name__ == "__main__":
     configure_logging("map_loader", PROJECT_ROOT / "logs" / "map_loader.log")
     loader = MapDataLoader()
-    loader.run_all()
+    raise SystemExit(0 if loader.run_all() else 1)

@@ -39,6 +39,12 @@
     return '#';
   }
 
+  function escapeJsString(value) {
+    // Escape a string inside a quoted inline handler, then its HTML attribute.
+    return escapeHtml(JSON.stringify(String(value == null ? '' : value))
+      .slice(1, -1).replace(/'/g, '\\u0027'));
+  }
+
   function safeCssUrl(url) {
     var raw = sanitizeUrl(url);
     if (raw === '#') return '';
@@ -54,6 +60,7 @@
   global.SafeDom = {
     escapeHtml: escapeHtml,
     escapeAttr: escapeHtml,
+    escapeJsString: escapeJsString,
     sanitizeUrl: sanitizeUrl,
     safeCssUrl: safeCssUrl,
     setText: setText
@@ -61,6 +68,7 @@
 
   global.escapeHtml = escapeHtml;
   global.escapeAttr = escapeHtml;
+  global.escapeJsString = escapeJsString;
   global.sanitizeUrl = sanitizeUrl;
   global.safeCssUrl = safeCssUrl;
   global.setText = setText;

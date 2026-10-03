@@ -51,6 +51,7 @@ if _PROJECT_ROOT not in sys.path:
 
 from impact_atlas.config import ProjectPaths, RuntimeSettings  # noqa: E402
 from impact_atlas.logging import configure_logging  # noqa: E402
+from impact_atlas.errors import IngestionError  # noqa: E402
 
 try:
     from PIL import Image
@@ -1461,14 +1462,14 @@ def run_pipeline(sources: list[str] | None = None, dry_run: bool = False) -> Non
         with db.transaction():
             for unit_id, aliases in resolver.ALIAS_MAP.items():
                 official_name = aliases[0].title()
-                db.upsert_unit(
-                    unit_id=unit_id,
-                    official_name=official_name,
-                    faction="Unknown",
-                    aliases=",".join(aliases),
+                db.conn.execute(
+                    "INSERT OR IGNORE INTO units_registry (unit_id, official_name, faction, aliases) "
+                    "VALUES (?, ?, ?, ?)",
+                    (unit_id, official_name, "Unknown", ",".join(aliases)),
                 )
         logger.info("Seeded %d known units.", len(resolver.ALIAS_MAP))
 
+        failed_sources = []
         for key, (name, func) in targets.items():
             try:
                 logger.info("--- Starting source: %s [%s] ---", name, key)
@@ -1478,6 +1479,7 @@ def run_pipeline(sources: list[str] | None = None, dry_run: bool = False) -> Non
                 elapsed = time.time() - start_time
                 logger.info("--- Completed %s in %.1fs ---", name, elapsed)
             except Exception as e:
+                failed_sources.append(name)
                 logger.error(
                     "CRITICAL: Source %s failed with unhandled exception: %s",
                     name, e, exc_info=True,
@@ -1490,6 +1492,8 @@ def run_pipeline(sources: list[str] | None = None, dry_run: bool = False) -> Non
         logger.info("    units_registry:  %6d rows", stats["units_registry"])
         logger.info("    kinetic_events:  %6d rows", stats["kinetic_events"])
         logger.info("=====================================================")
+        if failed_sources:
+            raise IngestionError(f"Sources failed: {', '.join(failed_sources)}")
 
 
 # ===========================================================================
