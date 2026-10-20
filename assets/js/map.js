@@ -1005,8 +1005,8 @@
       sourceFooter = `
             <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #334155; display: flex; align-items: center; justify-content: space-between;">
               <span style="font-size: 0.7rem; color: #64748b;">Source:</span>
-              <a href="${primaryUrl}" target="_blank" style="color: #3b82f6; text-decoration: none;">
-                 <i class="fa-solid fa-link"></i> ${domain}
+              <a href="${escapeAttr(sanitizeUrl(primaryUrl))}" target="_blank" style="color: #3b82f6; text-decoration: none;">
+                 <i class="fa-solid fa-link"></i> ${escapeHtml(domain)}
               </a>
             </div>`;
     }
@@ -1018,23 +1018,23 @@
     <div class="acled-popup" style="color:#e2e8f0; font-family: 'Inter', sans-serif; min-width: 260px;">
       
       <div style="border-left: 4px solid ${color}; padding-left: 12px; margin-bottom: 12px;">
-        <h5 style="margin:0; font-weight:700; font-size:1rem; line-height:1.3; color:#f8fafc;">${e.title}</h5>
+        <h5 style="margin:0; font-weight:700; font-size:1rem; line-height:1.3; color:#f8fafc;">${escapeHtml(e.title)}</h5>
         
         <div style="margin-top:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-          <span class="popup-meta-tag" style="background:#1e293b; padding:2px 6px; border-radius:4px; font-size:0.75rem;"><i class="fa-regular fa-calendar"></i> ${e.date}</span>
-          <span class="popup-meta-tag" style="background:#1e293b; padding:2px 6px; border-radius:4px; font-size:0.75rem;"><i class="fa-solid fa-tag"></i> ${e.type || 'Event'}</span>
-          <span id="weather-badge-${id}" style="font-size:0.75rem; display:inline-block;"></span>
+          <span class="popup-meta-tag" style="background:#1e293b; padding:2px 6px; border-radius:4px; font-size:0.75rem;"><i class="fa-regular fa-calendar"></i> ${escapeHtml(e.date)}</span>
+          <span class="popup-meta-tag" style="background:#1e293b; padding:2px 6px; border-radius:4px; font-size:0.75rem;"><i class="fa-solid fa-tag"></i> ${escapeHtml(e.type || 'Event')}</span>
+          <span id="weather-badge-${escapeAttr(id)}" style="font-size:0.75rem; display:inline-block;"></span>
         </div>
       </div>
 
       <div style="font-size:0.85rem; line-height:1.6; color:#cbd5e1; margin-bottom:15px;">
-        ${e.description ? (e.description.length > 120 ? e.description.substring(0, 120) + '...' : e.description) : 'No description.'}
+        ${escapeHtml(e.description ? (e.description.length > 120 ? e.description.substring(0, 120) + '...' : e.description) : 'No description.')}
       </div>
       
       <div class="popup-actions">
         <button 
           class="custom-dossier-btn" 
-          onclick="openModal('${id}')"> 
+          onclick="openModal('${escapeJsString(id)}')">
           <i class="fas fa-folder-open"></i> OPEN DOSSIER
         </button>
         
@@ -1247,27 +1247,27 @@
       const assessment = (window.strategicAssessments || {})[item.campaign_id] || {};
       const aiInsight = assessment.situational_overview ? 
         `<div class="sc-ai-insight" style="margin-bottom:12px; background:rgba(245,158,11,0.05); border-left:2px solid var(--amber-500); padding:8px; font-size:0.75rem; color:#cbd5e1; font-style:italic; line-height:1.4;">
-            <span style="color:var(--amber-500); font-weight:700; font-family:var(--font-mono); font-size:0.6rem; display:block; margin-bottom:4px;">[ STRATEGIC INTEL ]</span> ${assessment.situational_overview}
+            <span style="color:var(--amber-500); font-weight:700; font-family:var(--font-mono); font-size:0.6rem; display:block; margin-bottom:4px;">[ STRATEGIC INTEL ]</span> ${escapeHtml(assessment.situational_overview)}
          </div>` : '';
 
       return `
-        <article class="sc-card ${isActive ? 'active' : ''}" data-campaign-id="${item.campaign_id}">
-          <div class="sc-row" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')" style="cursor:pointer;">
+        <article class="sc-card ${isActive ? 'active' : ''}" data-campaign-id="${escapeAttr(item.campaign_id)}">
+          <div class="sc-row" onclick="toggleStrategicCampaignSelection('${escapeJsString(item.campaign_id)}')" style="cursor:pointer;">
             <div class="sc-name">${escapeSc(item.name)}</div>
             <span class="sc-badge ${statusClass}">${escapeSc(item.status)}</span>
           </div>
-          <div class="sc-row" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')" style="cursor:pointer;">
+          <div class="sc-row" onclick="toggleStrategicCampaignSelection('${escapeJsString(item.campaign_id)}')" style="cursor:pointer;">
             <div class="sc-metric-wrap">
               <div class="sc-metric">${item.sum_vec_e.toFixed(1)}</div>
               <div class="sc-metric-label">Cumulative E-Vector</div>
             </div>
           </div>
-          <div class="sc-sparkline-wrap" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')"><canvas id="${sparkId}" height="42"></canvas></div>
-          <div class="sc-brief" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')">${escapeSc(item.brief_text)}</div>
+          <div class="sc-sparkline-wrap" onclick="toggleStrategicCampaignSelection('${escapeJsString(item.campaign_id)}')"><canvas id="${sparkId}" height="42"></canvas></div>
+          <div class="sc-brief" onclick="toggleStrategicCampaignSelection('${escapeJsString(item.campaign_id)}')">${escapeSc(item.brief_text)}</div>
           ${aiInsight}
           <div class="sc-actions" style="margin-top:auto; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">
             <button class="sc-dossier-btn" 
-                    onclick="event.stopPropagation(); openCampaignDossier('${item.campaign_id}')" 
+                    onclick="event.stopPropagation(); openCampaignDossier('${escapeJsString(item.campaign_id)}')"
                     style="width:100%; background:rgba(245, 158, 11, 0.1); border:1px solid #f59e0b; color:#fbbf24; padding:6px; border-radius:4px; cursor:pointer; font-family:var(--font-mono); font-size:0.65rem; font-weight:700; text-transform:uppercase; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s;"
                     onmouseover="this.style.background='rgba(245, 158, 11, 0.2)'; this.style.boxShadow='0 0 10px rgba(245, 158, 11, 0.2)';" 
                     onmouseout="this.style.background='rgba(245, 158, 11, 0.1)'; this.style.boxShadow='none';">
@@ -1283,27 +1283,27 @@
       const assessment = (window.strategicAssessments || {})[item.campaign_id] || {};
       const aiInsight = assessment.situational_overview ? 
         `<div class="sc-ai-insight" style="margin-bottom:12px; background:rgba(245,158,11,0.05); border-left:2px solid var(--amber-500); padding:8px; font-size:0.75rem; color:#cbd5e1; font-style:italic; line-height:1.4;">
-            <span style="color:var(--amber-500); font-weight:700; font-family:var(--font-mono); font-size:0.6rem; display:block; margin-bottom:4px;">[ STRATEGIC INTEL ]</span> ${assessment.situational_overview}
+            <span style="color:var(--amber-500); font-weight:700; font-family:var(--font-mono); font-size:0.6rem; display:block; margin-bottom:4px;">[ STRATEGIC INTEL ]</span> ${escapeHtml(assessment.situational_overview)}
          </div>` : '';
 
       return `
-        <article class="sc-card ${isActive ? 'active' : ''}" data-campaign-id="${item.campaign_id}">
-          <div class="sc-row" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')" style="cursor:pointer;">
+        <article class="sc-card ${isActive ? 'active' : ''}" data-campaign-id="${escapeAttr(item.campaign_id)}">
+          <div class="sc-row" onclick="toggleStrategicCampaignSelection('${escapeJsString(item.campaign_id)}')" style="cursor:pointer;">
             <div class="sc-name">${escapeSc(item.name)}</div>
             <span class="sc-badge ${statusClass}">${escapeSc(item.status)}</span>
           </div>
-          <div class="sc-row" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')" style="cursor:pointer;">
+          <div class="sc-row" onclick="toggleStrategicCampaignSelection('${escapeJsString(item.campaign_id)}')" style="cursor:pointer;">
             <div class="sc-metric-wrap">
               <div class="sc-metric">${item.sum_vec_e.toFixed(1)}</div>
               <div class="sc-metric-label">Cumulative E-Vector</div>
             </div>
           </div>
-          <div class="sc-sparkline-wrap" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')"><canvas id="${sparkId}" height="42"></canvas></div>
-          <div class="sc-brief" onclick="toggleStrategicCampaignSelection('${item.campaign_id}')">${escapeSc(item.brief_text)}</div>
+          <div class="sc-sparkline-wrap" onclick="toggleStrategicCampaignSelection('${escapeJsString(item.campaign_id)}')"><canvas id="${sparkId}" height="42"></canvas></div>
+          <div class="sc-brief" onclick="toggleStrategicCampaignSelection('${escapeJsString(item.campaign_id)}')">${escapeSc(item.brief_text)}</div>
           ${aiInsight}
           <div class="sc-actions" style="margin-top:auto; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">
             <button class="sc-dossier-btn" 
-                    onclick="event.stopPropagation(); openCampaignDossier('${item.campaign_id}')" 
+                    onclick="event.stopPropagation(); openCampaignDossier('${escapeJsString(item.campaign_id)}')"
                     style="width:100%; background:rgba(245, 158, 11, 0.1); border:1px solid #f59e0b; color:#fbbf24; padding:6px; border-radius:4px; cursor:pointer; font-family:var(--font-mono); font-size:0.65rem; font-weight:700; text-transform:uppercase; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s;"
                     onmouseover="this.style.background='rgba(245, 158, 11, 0.2)'; this.style.boxShadow='0 0 10px rgba(245, 158, 11, 0.2)';" 
                     onmouseout="this.style.background='rgba(245, 158, 11, 0.1)'; this.style.boxShadow='none';">
@@ -1786,6 +1786,7 @@
 
     map = L.map('map', {
       zoomControl: false,
+      maxZoom: 19, // Vector basemaps do not supply Leaflet's raster zoom limit.
       preferCanvas: true, // Performance boost
       wheelPxPerZoomLevel: 120
     }).setView([48.5, 32.0], 6);
@@ -1793,10 +1794,7 @@
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      maxZoom: 19,
-      attribution: '© IMPACT ATLAS'
-    }).addTo(map);
+    window.AtlasBasemap.addTo(map);
 
     eventsLayer = L.markerClusterGroup({
       chunkedLoading: true,
@@ -3368,11 +3366,13 @@
   // ============================================
 
   window.closeUnitModal = function (e) {
-    // If e is provided, it's an event. Close only if clicking overlay.
-    if (e && e.target.id !== 'unitModal' && !e.target.classList.contains('close-modal')) {
+    const dialog = document.getElementById('unitModal');
+    const target = e && e.target;
+    // Children of the close button count as the button; content clicks do not.
+    if (target && target !== dialog && !(target.closest && target.closest('.close-modal'))) {
       return;
     }
-    if (modal) modal.style.display = 'none';
+    if (dialog) dialog.style.display = 'none';
   };
 
   window.openUnitModalFromId = function (unitId) {
@@ -4023,7 +4023,7 @@
           const isRU = u.faction === 'RU' || u.faction === 'RU_PROXY' || u.faction === 'RU_PMC';
           const accentColor = isUA ? '#3b82f6' : (isRU ? '#ef4444' : '#64748b');
           const unitName = u.display_name || u.unit_name || u.unit_id || "Unknown Unit";
-          const unitLinkAttr = u.unit_id ? `onclick="window.openUnitModalFromId('${u.unit_id}')" title="Open Unit Dossier"` : '';
+          const unitLinkAttr = u.unit_id ? `onclick="window.openUnitModalFromId('${escapeJsString(u.unit_id)}')" title="Open Unit Dossier"` : '';
           const cursorStyle = u.unit_id ? 'cursor: pointer;' : '';
 
           return `
@@ -4045,7 +4045,7 @@
                   ${isUA ? 'UA FORCES' : (isRU ? 'RU FORCES' : 'UNKNOWN')}
                 </span>
                 <span style="color: #f8fafc; font-size: 0.85rem; font-weight: 600; white-space: nowrap;">
-                  ${unitName}
+                  ${escapeHtml(unitName)}
                 </span>
               </div>
               <div style="margin-left: auto;">

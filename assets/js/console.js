@@ -123,11 +123,36 @@
 
   /* --- Boot ------------------------------------------------------------------------ */
 
+  /** Keep accessibility state synchronized with the existing shell classes. */
+  function bindShellAccessibility() {
+    var shell = getEl('appShell');
+    var sidebar = getEl('sidebarShell');
+    if (!shell || !sidebar) return;
+    function sync() {
+      var collapsed = shell.classList.contains('sidebar-collapsed');
+      var collapseButton = document.querySelector('.collapse-btn');
+      if (collapseButton) collapseButton.setAttribute('aria-expanded', String(!collapsed));
+      sidebar.inert = collapsed;
+      document.querySelectorAll('.nav-item[data-panel]').forEach(function (button) {
+        if (button.classList.contains('active')) button.setAttribute('aria-current', 'page');
+        else button.removeAttribute('aria-current');
+      });
+    }
+    sync();
+    var observer = new MutationObserver(sync);
+    var options = { attributes: true, attributeFilter: ['class'] };
+    observer.observe(shell, options);
+    document.querySelectorAll('.nav-item[data-panel]').forEach(function (button) {
+      observer.observe(button, options);
+    });
+  }
+
   function boot() {
     updateDataAge();
     setInterval(updateDataAge, AGE_REFRESH_MS);
     watchHeartbeat();
     bindKeyboardNav();
+    bindShellAccessibility();
   }
 
   if (document.readyState === 'loading') {

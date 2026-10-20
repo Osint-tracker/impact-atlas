@@ -422,11 +422,11 @@ function renderKanban(data) {
         card.onclick = () => window.openModal(encoded);
 
         card.innerHTML = `
-            <span class="k-tag">${e.type}</span>
-            <span class="k-title">${e.title}</span>
+            <span class="k-tag">${escapeHtml(e.type)}</span>
+            <span class="k-title">${escapeHtml(e.title)}</span>
             <div class="k-footer">
                 <span>${moment(e.timestamp).fromNow()}</span>
-                <span>${e.actor_code}</span>
+                <span>${escapeHtml(e.actor_code)}</span>
             </div>
         `;
         if (cols[target]) cols[target].appendChild(card);
@@ -460,7 +460,7 @@ function renderVisualGallery(data) {
         let bgStyle = '';
 
         if (e.before_img) {
-            bgStyle = `background-image: url('${e.before_img}');`;
+            bgStyle = `background-image: url('${escapeAttr(safeCssUrl(e.before_img))}');`;
             contentHtml = '';
         }
 
@@ -470,7 +470,7 @@ function renderVisualGallery(data) {
             </div>
             <div class="visual-info">
                 <div class="v-date">${moment(e.timestamp).format('DD MMM HH:mm')}</div>
-                <div class="v-title">${e.title}</div>
+                <div class="v-title">${escapeHtml(e.title)}</div>
             </div>
         `;
         container.appendChild(card);
@@ -486,8 +486,8 @@ function renderIntelFeed(data) {
         const item = document.createElement('div');
         item.className = 'feed-item';
         item.innerHTML = `
-            <div class="f-meta"><span>${moment(e.timestamp).format('HH:mm')}</span> <span style="color:var(--primary)">${e.actor_code}</span></div>
-            <div class="f-title">${e.title}</div>
+            <div class="f-meta"><span>${moment(e.timestamp).format('HH:mm')}</span> <span style="color:var(--primary)">${escapeHtml(e.actor_code)}</span></div>
+            <div class="f-title">${escapeHtml(e.title)}</div>
         `;
 
         item.onclick = () => {
@@ -502,6 +502,9 @@ function renderIntelFeed(data) {
 
 function showIntelDetail(e) {
     const container = document.getElementById('intel-detail-content');
+    if (!container) return;
+    const coordinateText = value => value != null && value !== '' && Number.isFinite(Number(value))
+        ? Number(value).toFixed(4) : 'Unknown';
     const encoded = encodeURIComponent(JSON.stringify(e)); // For the "Open Full Modal" button
 
     let mediaHtml = '';
@@ -509,17 +512,17 @@ function showIntelDetail(e) {
 
     container.innerHTML = `
         <div class="d-header">
-            <span class="d-tag">${e.type}</span>
-            <h2 class="d-title">${e.title}</h2>
+            <span class="d-tag">${escapeHtml(e.type)}</span>
+            <h2 class="d-title">${escapeHtml(e.title)}</h2>
             <div class="d-meta">
                 <span><i class="fa-regular fa-clock"></i> ${moment(e.timestamp).format('DD MMM YYYY, HH:mm')}</span>
-                <span><i class="fa-solid fa-map-location-dot"></i> ${e.lat.toFixed(4)}, ${e.lon.toFixed(4)}</span>
+                <span><i class="fa-solid fa-map-location-dot"></i> ${coordinateText(e.lat)}, ${coordinateText(e.lon)}</span>
             </div>
         </div>
         <div class="d-body">
-            <p>${e.description || "No detailed description available."}</p>
+            <p>${escapeHtml(e.description || "No detailed description available.")}</p>
             ${mediaHtml}
-            <button class="btn-primary" onclick="window.openModal('${encoded}')" style="margin-top:20px; width:100%;">
+            <button class="btn-primary" onclick="window.openModal('${escapeJsString(encoded)}')" style="margin-top:20px; width:100%;">
                 <i class="fa-solid fa-expand"></i> Open Full Dossier & Media
             </button>
         </div>
@@ -585,7 +588,10 @@ function populateFilters(data) {
     // Sort and create options
     const sortedTypes = [...uniqueTypes].sort();
     sortedTypes.forEach(t => {
-        select.innerHTML += `<option value="${t}">${t}</option>`;
+        const option = document.createElement('option');
+        option.value = t;
+        option.textContent = t;
+        select.appendChild(option);
     });
 
     select.value = currentVal;

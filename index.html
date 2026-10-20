@@ -28,11 +28,11 @@
   <link rel="preload" href="assets/data/events_latest.json" as="fetch" crossorigin>
 
   <script src="assets/js/safe_dom.js?v=1"></script>
-  <script src="assets/js/console.js?v=1"></script>
+  <script src="assets/js/console.js?v=2"></script>
 
   <!-- Design system: tokens first, legacy styles, redesign layer last -->
   <link rel="stylesheet" href="assets/css/theme.css?v=1">
-  <link rel="stylesheet" href="assets/css/style.css?v=5">
+  <link rel="stylesheet" href="assets/css/style.css?v=6">
   <link rel="stylesheet" href="assets/css/dossier_styles.css?v=5">
   <link rel="stylesheet" href="assets/css/unit_dossier.css?v=3">
   <link rel="stylesheet" href="assets/css/dashboard.css?v=2">
@@ -52,6 +52,10 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css">
+  <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js"></script>
+  <script src="assets/js/basemap.js?v=1"></script>
 
   <!-- Chart.js (Radar + Sparkline for Unit Dossier) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
@@ -554,26 +558,6 @@
     }
 
     /* --- OVERRIDES FOR EXISTING CLASSES --- */
-    /* Force colors to match V2 deep navy palette (override style.css :root) */
-    :root {
-      --bg-body: #1a1a2e !important;
-      --bg-surface: #16213e !important;
-    }
-
-    body {
-      background: #1a1a2e !important;
-    }
-
-    .acled-header {
-      display: none !important;
-      height: 0 !important;
-    }
-
-    header {
-      display: none !important;
-      height: 0 !important;
-    }
-
     .dashboard-container {
       display: contents !important;
     }
@@ -3429,9 +3413,11 @@
       transition: transform 0.3s;
     }
   </style>
+  <link rel="stylesheet" href="assets/css/appearance.css?v=2">
 </head>
 
-<body>
+<body class="app-page">
+  <a class="skip-link" href="#mainContent">Skip to main content</a>
 
   <header class="acled-header">
     <div class="header-content">
@@ -3478,34 +3464,34 @@
   <div class="app-shell" id="appShell">
 
     <!-- 1. NAVIGATION RAIL -->
-    <nav class="nav-rail">
-      <div class="nav-rail-logo"><i class="fas fa-crosshairs"></i></div>
+    <nav class="nav-rail" aria-label="Main navigation">
+      <div class="nav-rail-logo" aria-hidden="true">IA</div>
       <div class="nav-divider"></div>
-      <div class="nav-item active" data-panel="layers" title="Maps / Layers [key 1]" onclick="navSwitchTab('layers', this)">
-        <i class="fas fa-layer-group"></i><span class="nav-item-label">Maps</span>
-      </div>
-      <div class="nav-item" data-panel="orbat" title="ORBAT Tracker [key 2]" onclick="navSwitchTab('orbat', this)">
-        <i class="fas fa-shield-alt"></i><span class="nav-item-label">ORBAT</span>
-      </div>
-      <div class="nav-item" data-panel="intel" title="Intel Feed [key 3]" onclick="navSwitchTab('intel', this)">
-        <i class="fas fa-rss"></i><span class="nav-item-label">Intel</span>
-      </div>
-      <div class="nav-item" data-panel="tempo" title="Operational Tempo [key 4]" onclick="navSwitchTab('tempo', this)">
-        <i class="fas fa-chart-line"></i><span class="nav-item-label">Tempo</span>
-      </div>
-      <div class="nav-item" data-panel="losses" title="Equipment Losses [key 5]" onclick="navSwitchTab('losses', this)">
-        <i class="fas fa-skull-crossbones"></i><span class="nav-item-label">Losses</span>
-      </div>
-      <div class="nav-item" data-panel="analytics" title="Analytics [key 6]" onclick="navSwitchTab('analytics', this)">
-        <i class="fas fa-chart-pie"></i><span class="nav-item-label">Stats</span>
-      </div>
-      <div class="nav-item" data-panel="strategic_campaigns" title="Strategic Campaigns [key 7]" onclick="navSwitchTab('strategic_campaigns', this)">
-        <i class="fa-solid fa-bullseye" style="color:#f59e0b;"></i><span class="nav-item-label">Campaigns</span>
-      </div>
+      <button type="button" class="nav-item active" data-panel="layers" title="Maps / Layers [key 1]" onclick="navSwitchTab('layers', this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg><span class="nav-item-label">Maps</span>
+      </button>
+      <button type="button" class="nav-item" data-panel="orbat" title="ORBAT Tracker [key 2]" onclick="navSwitchTab('orbat', this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h10l4 4v14H5zM9 11h6M9 15h6"/></svg><span class="nav-item-label">ORBAT</span>
+      </button>
+      <button type="button" class="nav-item" data-panel="intel" title="Intel Feed [key 3]" onclick="navSwitchTab('intel', this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5a14 14 0 0 1 14 14M5 11a8 8 0 0 1 8 8M5 18v1"/></svg><span class="nav-item-label">Intel</span>
+      </button>
+      <button type="button" class="nav-item" data-panel="tempo" title="Operational Tempo [key 4]" onclick="navSwitchTab('tempo', this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h4l3-7 4 12 3-5h4"/></svg><span class="nav-item-label">Tempo</span>
+      </button>
+      <button type="button" class="nav-item" data-panel="losses" title="Equipment Losses [key 5]" onclick="navSwitchTab('losses', this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v5H3zM5 9v12h14V9M9 13h6"/></svg><span class="nav-item-label">Losses</span>
+      </button>
+      <button type="button" class="nav-item" data-panel="analytics" title="Analytics [key 6]" onclick="navSwitchTab('analytics', this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg><span class="nav-item-label">Stats</span>
+      </button>
+      <button type="button" class="nav-item" data-panel="strategic_campaigns" title="Strategic Campaigns [key 7]" onclick="navSwitchTab('strategic_campaigns', this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h7l2 3h9v12H3z"/></svg><span class="nav-item-label">Campaigns</span>
+      </button>
       <div class="nav-spacer"></div>
-      <div class="nav-item nav-bottom collapse-btn" title="Collapse Sidebar" onclick="toggleSidebarCollapse()">
-        <i class="fas fa-angles-left" id="collapseIcon"></i>
-      </div>
+      <button type="button" class="nav-item nav-bottom collapse-btn" title="Toggle sidebar" aria-label="Toggle sidebar" aria-controls="sidebarShell" aria-expanded="true" onclick="toggleSidebarCollapse()">
+        <svg class="nav-icon" id="collapseIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
     </nav>
 
     <!-- 2. SIDEBAR SHELL -->
@@ -3931,7 +3917,7 @@
       </div> <!-- end dossier-panel -->
     </aside> <!-- end sidebar-shell -->
 
-    <main class="main-content">
+    <main class="main-content" id="mainContent" tabindex="-1">
 
       <div class="public-safety-strip" role="status" aria-live="polite">
         <div class="ai-disclaimer">
@@ -4725,7 +4711,7 @@
       <!-- UNIT DOSSIER MODAL -->
       <div id="unitModal" class="modal-overlay" onclick="closeUnitModal(event)">
         <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto; padding: 0;">
-          <span class="close-modal" onclick="closeUnitModal(event)" style="z-index: 10; margin: 10px;">&times;</span>
+          <button type="button" class="close-modal" onclick="closeUnitModal(event)" aria-label="Close details" style="z-index: 10; margin: 10px;">&times;</button>
 
           <div class="unit-dossier-header" id="udHeader">
             <div id="udFlagContainer"></div>
@@ -5058,17 +5044,14 @@
 
       <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 
-      <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-      <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-
-      <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+      <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
 
 
 
       <script src="assets/js/charts.js?v=2.2"></script>
 
-      <script src="assets/js/map.js?v=3.9"></script>
+      <script src="assets/js/map.js?v=4.0"></script>
       <script src="assets/js/orbat_tracker.js?v=2.2"></script>
       <script src="assets/js/unit_dossier.js?v=2"></script>
 

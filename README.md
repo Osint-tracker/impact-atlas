@@ -1,6 +1,6 @@
 # Impact Atlas — OSINT Conflict Intelligence Platform
 
-A production OSINT pipeline and C4ISR-style dashboard that ingests open-source
+An OSINT research pipeline and C4ISR-style dashboard that ingests open-source
 conflict data from 11+ sources, fuses and geolocates events with a multi-agent
 LLM analysis tier (T.I.E. scoring), and exports sanitized, OPSEC-gated
 artifacts for the browser-based operational dashboard.
@@ -18,7 +18,7 @@ FIRMS thermal ──► map_loader ─► thermal_firms.geojson ┘        │ T
 ```powershell
 # 1. Create the virtual environment and install dependencies
 python -m venv .venv
-.venv\Scripts\pip install -r requirements.txt
+.venv\Scripts\pip install --require-hashes -r requirements.lock
 
 # 2. Configure credentials
 copy .env.example .env      # then fill in the required keys
@@ -29,8 +29,9 @@ copy .env.example .env      # then fill in the required keys
 # 4. Run the full pipeline (ingest -> thermal -> AI analysis -> export)
 .\run_tracker.ps1
 
-# 5. Open the dashboard
-start index.html
+# 5. Serve the dashboard (file:// cannot reliably fetch its data)
+.venv\Scripts\python scripts\admin_api.py
+# Open http://localhost:8800/index.html
 ```
 
 ## Canonical pipeline (scripts/)
@@ -84,7 +85,67 @@ directory.
 .venv\Scripts\python tests\verify_html_structure.py # page markup is structurally sound
 ```
 
-CI (`.github/workflows/ci.yml`) runs the same checks on every push.
+CI (`.github/workflows/ci.yml`) runs these checks on pushes to `main`,
+`feature/**`, and `codex/**`, and on pull requests targeting `main`.
+The configured lint scope excludes legacy and experimental tiers; strict
+typing covers `impact_atlas` and `ingestion`, not the whole application.
+
+### Reproducible dependencies
+
+`requirements.txt` and `requirements-ci.in` declare direct dependencies.
+`requirements.lock` and `requirements-ci.lock` pin transitive dependencies
+with SHA-256 hashes. Regenerate both intentionally with uv 0.12.22:
+
+```powershell
+uv pip compile requirements.txt --python-version 3.11 --universal --generate-hashes --output-file requirements.lock
+uv pip compile requirements-ci.in --python-version 3.11 --universal --generate-hashes --output-file requirements-ci.lock
+```
+
+The CI lock has been installed and tested in a clean Windows Python 3.11.11
+environment. The full runtime lock has been resolved but has not undergone
+external-provider integration or load testing. Exact versions and hashes
+improve reproducibility; they are not a vulnerability certification.
+
+### Local administrator access
+
+The server binds to localhost. Public pages remain readable; every `/api/`
+request requires an `Authorization: Bearer ...` header. Enter the session
+token printed by the server in `admin_merge.html`. Each restart generates
+a new token unless `IMPACT_ADMIN_WRITE_TOKEN` is configured in the process
+environment. Optional `IMPACT_ADMIN_READ_TOKEN` grants API read access only.
+Use separate, randomly generated tokens with at least 32 URL-safe characters.
+The server does not load these two settings from `.env` automatically.
+
+The page keeps its token in memory, clears it on disconnect, and does not
+put it in URLs or browser storage. This is local capability authentication,
+not a hosted identity service. Hosted deployment remains unresolved;
+see the current risk ledger in
+[the follow-up report](reports/stability-followup-2026-10-03.md).
+
+New admin merges now record recovery history in the same SQLite transaction.
+Open **Recovery history** in the admin page to undo a recorded merge. Undo
+restores the original values only if none of its records have changed since
+the merge; conflicting, missing or schema-changed records cause the entire
+operation to be refused. Repeating a completed undo is harmless. Overlapping
+merges must be undone in reverse order.
+
+The API returns `merge_id` from `POST /api/merge`. Read recent metadata at
+`GET /api/merge-history`; send `{"merge_id":"..."}` to `POST /api/unmerge`.
+Undo requires write permission. The old `event_id` unmerge request is rejected:
+merges made before recovery history existed cannot be reconstructed safely.
+Undo restores database records; it does not regenerate previously exported
+public files. Protect the database and its history, which retains original
+text and source values. See [recovery guarantees and tests](reports/admin-recovery-2026-10-03.md).
+
+### Background map
+
+The main dashboard uses the [OpenFreeMap](https://openfreemap.org/)
+dark vector basemap via pinned MapLibre GL and Leaflet integration scripts.
+Its public instance requires neither registration nor an API key. It still
+uses OpenStreetMap/OpenMapTiles data, with their required attribution.
+It needs network access and WebGL; free public hosting has no availability
+guarantee. The UI reports background-map failures rather than silently
+showing a blank map. Application data layers are separate from the basemap.
 
 ## Console operations
 

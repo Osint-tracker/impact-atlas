@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
+import math
+from dataclasses import dataclass, field
 from pathlib import Path
 from collections.abc import Mapping
 
@@ -65,8 +66,8 @@ class RuntimeSettings:
     max_retries: int
     retry_backoff_seconds: float
     user_agent: str
-    firms_api_key: str | None
-    openrouter_api_key: str | None
+    firms_api_key: str | None = field(repr=False)
+    openrouter_api_key: str | None = field(repr=False)
 
     @classmethod
     def from_environment(
@@ -76,16 +77,14 @@ class RuntimeSettings:
         dotenv_path: Path | None = None,
     ) -> RuntimeSettings:
         """Load and validate environment-backed settings without logging secrets."""
-        if dotenv_path is not None:
-            load_dotenv(dotenv_path, override=False)
-        else:
-            load_dotenv(override=False)
-        values = environment or os.environ
+        if environment is None:
+            load_dotenv(dotenv_path or ProjectPaths.discover().root / ".env", override=False)
+        values = os.environ if environment is None else environment
         try:
             retry_backoff = float(values.get("IMPACT_ATLAS_RETRY_BACKOFF_SECONDS", "1.5"))
         except ValueError as error:
             raise ConfigurationError("IMPACT_ATLAS_RETRY_BACKOFF_SECONDS must be numeric.") from error
-        if retry_backoff <= 0:
+        if not math.isfinite(retry_backoff) or retry_backoff <= 0:
             raise ConfigurationError("IMPACT_ATLAS_RETRY_BACKOFF_SECONDS must be greater than zero.")
         return cls(
             request_timeout_seconds=_positive_int(
@@ -103,6 +102,6 @@ class RuntimeSettings:
 
     def require(self, setting_name: str, value: str | None) -> str:
         """Return a required secret value or raise a clear configuration error."""
-        if not value:
+        if not value or not value.strip():
             raise ConfigurationError(f"{setting_name} must be configured before this operation can run.")
         return value

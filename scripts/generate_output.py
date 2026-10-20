@@ -24,9 +24,9 @@ from __future__ import annotations
 import contextlib
 import csv
 import datetime as _dt
-import hashlib
 import json
 import logging
+import math
 import os
 import re
 import sqlite3
@@ -98,6 +98,7 @@ except ImportError:  # executed directly from the scripts/ directory
 
 from impact_atlas.config import ProjectPaths  # noqa: E402
 from impact_atlas.logging import configure_logging  # noqa: E402
+from impact_atlas.serialization import atomic_text_writer, csv_safe_value  # noqa: E402
 
 # =============================================================================
 # CONFIGURATION
@@ -195,14 +196,20 @@ def _safe_float(val: Any, default: float = 0.0) -> float:
     if val is None:
         return default
     if isinstance(val, (int, float)):
-        return float(val)
+        try:
+            parsed = float(val)
+        except OverflowError:
+            return default
+        return parsed if math.isfinite(parsed) else default
     try:
         clean = str(val).strip()
         match = re.match(r"^[-+]?\d*\.?\d+", clean)
         if match:
-            return float(match.group(0))
-        return float(clean)
-    except (ValueError, TypeError):
+            parsed = float(match.group(0))
+        else:
+            parsed = float(clean)
+        return parsed if math.isfinite(parsed) else default
+    except (ValueError, TypeError, OverflowError):
         return default
 
 
@@ -572,6 +579,12 @@ def save_media_frame(event_id: str, frame_id: Any, base64_str: Any) -> str:
 
     if not base64_str or not isinstance(base64_str, str):
         return ""
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", str(event_id)) or not re.fullmatch(r"[A-Za-z0-9_-]+", str(frame_id)):
+        logger.warning("Skipping media frame with an unsafe identifier")
+        return ""
+    if len(base64_str) > 28 * 1024 * 1024:
+        logger.warning("Skipping oversized media frame")
+        return ""
 
     if base64_str.startswith("data:image/"):
         try:
@@ -584,9 +597,11 @@ def save_media_frame(event_id: str, frame_id: Any, base64_str: Any) -> str:
     else:
         raw_b64 = base64_str
         ext = "jpg"
+    if ext not in {"jpg", "png", "webp", "gif"}:
+        return ""
 
     try:
-        img_data = base64.b64decode(raw_b64)
+        img_data = base64.b64decode(raw_b64, validate=True)
     except (ValueError, TypeError) as error:
         logger.warning("Failed to decode base64 for event %s frame %s: %s", event_id, frame_id, error)
         return ""
@@ -595,7 +610,9 @@ def save_media_frame(event_id: str, frame_id: Any, base64_str: Any) -> str:
     media_dir.mkdir(parents=True, exist_ok=True)
 
     filename = f"{event_id}_{frame_id}.{ext}"
-    filepath = media_dir / filename
+    filepath = (media_dir / filename).resolve()
+    if not filepath.is_relative_to(media_dir):
+        return ""
     try:
         if not filepath.exists():
             with open(filepath, "wb") as handle:
@@ -699,7 +716,11 @@ def _build_dossier_fields(stats_entry: Mapping[str, Any]) -> dict[str, Any]:
     else:
         result["avg_tie"] = {"kinetic": 0, "target": 0, "effect": 0}
     result["assets_detected"] = sorted(list(stats_entry.get("assets_set", set())))
-    raw_dates = stats_entry.get("daily_dates", [])
+    raw_dates = [
+        parsed.date().isoformat()
+        for value in stats_entry.get("daily_dates", [])
+        if (parsed := _parse_event_datetime_utc(value)) is not None
+    ]
     if raw_dates:
         valid_dates = sorted([d for d in raw_dates if d and len(d) >= 10])
         anchor = _dt.datetime.strptime(valid_dates[-1], "%Y-%m-%d").date() if valid_dates else _dt.date.today()
@@ -717,7 +738,7 @@ def _build_dossier_fields(stats_entry: Mapping[str, Any]) -> dict[str, Any]:
     total_30d = sum(trend)
     result["engagement_freq_label"] = "High" if total_30d > 8 else ("Medium" if total_30d >= 3 else "Low")
     recent = stats_entry.get("recent_events", [])
-    result["recent_engagements"] = sorted(recent, key=lambda x: x.get("date", ""), reverse=True)[:5]
+    result["recent_engagements"] = sorted(recent, key=lambda x: _date_to_epoch_ms(x.get("date")), reverse=True)[:5]
     return result
 
 
@@ -1036,13 +1057,21 @@ def _resolve_event_coordinates(
     ai_data: Mapping[str, Any],
 ) -> tuple[Any, Any]:
     """Recover explicit or inferred coordinates from the AI report."""
-    tactics = ai_data.get("tactics") or {}
-    geo = (tactics.get("geo_location") or {}).get("explicit") or {}
-    lat, lon = geo.get("lat"), geo.get("lon")
-    if not lat or not lon:
-        inferred = (tactics.get("geo_location") or {}).get("inferred") or {}
-        lat, lon = inferred.get("lat"), inferred.get("lon")
-    return lat, lon
+    tactics = ai_data.get("tactics")
+    location = tactics.get("geo_location") if isinstance(tactics, dict) else None
+    if not isinstance(location, dict):
+        return None, None
+    for kind in ("explicit", "inferred"):
+        point = location.get(kind)
+        if not isinstance(point, dict):
+            continue
+        try:
+            lat, lon = float(point.get("lat")), float(point.get("lon"))
+        except (ValueError, TypeError, OverflowError):
+            continue
+        if math.isfinite(lat) and math.isfinite(lon) and -90 <= lat <= 90 and -180 <= lon <= 180:
+            return lat, lon
+    return None, None
 
 
 def _recover_text_fallbacks(
@@ -1227,15 +1256,10 @@ def main() -> int:
                 opsec_withheld_count += 1
                 continue
 
-            # Geo jitter fallback for IMINT-only events without coordinates.
-            if not lat or not lon or float(lat) == 0 or float(lon) == 0:
-                if visual_analysis:
-                    h1 = int(hashlib.md5(event_id.encode("utf-8"), usedforsecurity=False).hexdigest()[:8], 16)  # noqa: S324
-                    h2 = int(hashlib.md5(event_id.encode("utf-8")[::-1], usedforsecurity=False).hexdigest()[:8], 16)  # noqa: S324
-                    lat = 48.3 + (h1 % 1000) / 400.0
-                    lon = 31.1 + (h2 % 1000) / 400.0
-                else:
-                    continue
+            # Never invent a location for an event whose report has no valid coordinates.
+            if lat is None or lon is None:
+                logger.warning("Excluding event %s from map exports: no valid coordinates", event_id)
+                continue
 
             radius, color = get_marker_style(tie_score, e_score)
             raw_units = (ai_data.get("tactics") or {}).get("military_units_detected", []) if ai_data else []
@@ -1363,10 +1387,10 @@ def main() -> int:
     )
     generate_strategic_trends(geojson_features)
 
-    with open(CSV_PATH, "w", newline="", encoding="utf-8") as handle:
+    with atomic_text_writer(CSV_PATH, newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=csv_headers)
         writer.writeheader()
-        writer.writerows(csv_rows)
+        writer.writerows({key: csv_safe_value(value) for key, value in row.items()} for row in csv_rows)
 
     export_units(unit_stats_acc, orbat_data, casualties_index)
     export_equipment_losses()

@@ -1,4 +1,6 @@
 import json
+import hashlib
+import math
 import logging
 import re
 from abc import ABC, abstractmethod
@@ -80,7 +82,10 @@ class WarSpottingClient(BaseConnector):
             return []
 
         # API v0.4 returns {"losses": [...]}
-        items = data.get('losses', [])
+        items = data.get('losses', []) if isinstance(data, dict) else []
+        if not isinstance(items, list):
+            logger.warning("[%s] Invalid losses response: expected a list", self.name)
+            return []
         logger.info(f"[{self.name}] Retrieved {len(items)} raw items")
 
         normalized_events = []
@@ -110,9 +115,13 @@ class WarSpottingClient(BaseConnector):
             lon: float | None = None
             if geo:
                 raw_lat = geo.get('lat')
-                raw_lon = geo.get('lng') or geo.get('lon')
-                lat = float(raw_lat) if raw_lat else None
-                lon = float(raw_lon) if raw_lon else None
+                raw_lon = geo.get('lng') if geo.get('lng') is not None else geo.get('lon')
+                lat = float(raw_lat) if raw_lat is not None else None
+                lon = float(raw_lon) if raw_lon is not None else None
+                if lat is not None and (not math.isfinite(lat) or not -90 <= lat <= 90):
+                    return None
+                if lon is not None and (not math.isfinite(lon) or not -180 <= lon <= 180):
+                    return None
 
             # Unit info
             unit_raw = item.get('unit')
@@ -184,7 +193,9 @@ class ParabellumGeoExtractor(BaseConnector):
         for match in geojson_matches:
             try:
                 data = json.loads(match)
-                features = data.get('features', [])
+                features = data.get('features', []) if isinstance(data, dict) else []
+                if not isinstance(features, list):
+                    continue
                 logger.info(f"[{self.name}] Found embedded FeatureCollection with {len(features)} features")
                 for feat in features:
                     parsed = self._parse_feature(feat, layer_name="embedded_html")
@@ -214,7 +225,9 @@ class ParabellumGeoExtractor(BaseConnector):
 
             try:
                 data = resp.json()
-                features = data.get('features', [])
+                features = data.get('features', []) if isinstance(data, dict) else []
+                if not isinstance(features, list):
+                    continue
                 logger.info(f"[{self.name}] WFS Layer '{layer}': {len(features)} features")
 
                 for feat in features:
@@ -236,8 +249,8 @@ class ParabellumGeoExtractor(BaseConnector):
             raw_id = feature.get('id') or props.get('id') or props.get('fid')
             if not raw_id:
                 # Generate hash from properties if no ID
-                prop_str = json.dumps(props, sort_keys=True)
-                raw_id = f"gen_{hash(prop_str) % 10000000}"
+                identity = json.dumps([props, geom], sort_keys=True, separators=(",", ":"))
+                raw_id = f"gen_{hashlib.sha256(identity.encode('utf-8')).hexdigest()}"
 
             # Geometry extraction (Centroid for non-points)
             lat, lon = None, None

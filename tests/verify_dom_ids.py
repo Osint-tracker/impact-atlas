@@ -88,7 +88,7 @@ def main() -> int:
             print(f"  note: #{item} not present in index.html")
 
     # Hard-fail only on inline references (page-specific contracts).
-    print("RESULT:", "FAIL" if failures else "PASS — all page-scoped id references resolve")
+    print("RESULT:", "FAIL" if failures else "PASS — inline references checked; external references are advisory only")
     return 1 if failures else 0
 
 
