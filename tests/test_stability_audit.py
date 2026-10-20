@@ -286,4 +286,60 @@ def test_api_authentication_and_read_only_authorization(admin_server):
     assert request(admin_server, "/api/merge", "POST", "{}", reader)[0] == 403
     assert request(admin_server, "/api/unmerge", "POST", "{}", reader)[0] == 403
     assert request(admin_server, "/api/session", headers=reader)[0] == 200
+    assert request(admin_server, "/api/merge-history", headers=reader)[0] == 200
     assert request(admin_server, "/api/events", headers={"Authorization": "Bearer " + "z" * 40})[0] == 401
+
+
+def test_admin_merge_recovery_restores_original_values_and_is_idempotent(admin_server):
+    headers = {"Content-Type": "application/json"}
+    with closing(sqlite3.connect(admin_api.DB_PATH)) as connection:
+        connection.execute("UPDATE unique_events SET full_text_dossier='Original A', urls_list='https://example.org/a', sources_list='A' WHERE event_id='one'")
+        connection.execute("UPDATE unique_events SET full_text_dossier='Original B', urls_list='https://example.org/b', sources_list='B' WHERE event_id='two'")
+        connection.commit()
+        original = connection.execute("SELECT * FROM unique_events ORDER BY event_id").fetchall()
+    status, body, _ = request(admin_server, "/api/merge", "POST", '{"event_ids":["one","two"]}', headers)
+    assert status == 200
+    merge_id = json.loads(body)["merge_id"]
+    history = json.loads(request(admin_server, "/api/merge-history")[1])["changes"]
+    assert history[0]["merge_id"] == merge_id
+    assert set(history[0]) == {"merge_id", "record_count", "created_at", "reverted_at"}
+    for already_reverted in (False, True):
+        status, body, _ = request(admin_server, "/api/unmerge", "POST", json.dumps({"merge_id": merge_id}), headers)
+        assert status == 200
+        assert json.loads(body)["already_reverted"] is already_reverted
+        with closing(sqlite3.connect(admin_api.DB_PATH)) as connection:
+            assert connection.execute("SELECT * FROM unique_events ORDER BY event_id").fetchall() == original
+    assert json.loads(request(admin_server, "/api/merge-history")[1])["changes"][0]["reverted_at"]
+
+
+def test_admin_undo_refuses_later_edits_and_legacy_requests(admin_server):
+    headers = {"Content-Type": "application/json"}
+    result = json.loads(request(admin_server, "/api/merge", "POST", '{"event_ids":["one","two"]}', headers)[1])
+    with closing(sqlite3.connect(admin_api.DB_PATH)) as connection:
+        connection.execute("UPDATE unique_events SET title='Later edit' WHERE event_id='one'")
+        connection.commit()
+        current = connection.execute("SELECT * FROM unique_events ORDER BY event_id").fetchall()
+    assert request(admin_server, "/api/unmerge", "POST", json.dumps({"merge_id": result["merge_id"]}), headers)[0] == 409
+    assert request(admin_server, "/api/unmerge", "POST", '{"event_id":"two"}', headers)[0] == 400
+    assert request(admin_server, "/api/unmerge", "POST", json.dumps({"merge_id": "0" * 32}), headers)[0] == 404
+    with closing(sqlite3.connect(admin_api.DB_PATH)) as connection:
+        assert connection.execute("SELECT * FROM unique_events ORDER BY event_id").fetchall() == current
+
+
+def test_admin_journal_failure_rolls_back_the_merge(admin_server):
+    with patch.object(admin_api.RowChangeJournal, "record", side_effect=sqlite3.OperationalError("Injected storage failure")):
+        status, _, _ = request(admin_server, "/api/merge", "POST", '{"event_ids":["one","two"]}', {"Content-Type": "application/json"})
+    assert status == 500
+    assert json.loads(request(admin_server, "/api/event/two")[1])["status"] == "PENDING"
+    assert json.loads(request(admin_server, "/api/event/one")[1])["full_text"] == ""
+    assert json.loads(request(admin_server, "/api/merge-history")[1])["changes"] == []
+
+
+def test_admin_database_setup_failure_closes_connection():
+    connection = Mock()
+    error = sqlite3.OperationalError("Injected initialization failure")
+    connection.execute.side_effect = error
+    with patch.object(admin_api.sqlite3, "connect", return_value=connection), pytest.raises(sqlite3.OperationalError) as caught:
+        admin_api.get_db()
+    assert caught.value is error
+    connection.close.assert_called_once()

@@ -34,6 +34,7 @@ if _PROJECT_ROOT not in sys.path:
 from impact_atlas.config import ProjectPaths  # noqa: E402
 from impact_atlas.logging import configure_logging  # noqa: E402
 from impact_atlas.admin_security import AdminAccess  # noqa: E402
+from impact_atlas.change_journal import ChangeNotFound, JournalConflict, RowChangeJournal  # noqa: E402
 
 PATHS = ProjectPaths.discover()
 DB_PATH = PATHS.raw_events_database
@@ -42,9 +43,14 @@ STATIC_DIR = PATHS.root
 PORT = 8800
 MAX_PER_PAGE = 500
 MAX_BODY_BYTES = 64 * 1024
-
 logger = logging.getLogger("admin_api")
 
+
+def merge_journal(connection: sqlite3.Connection) -> RowChangeJournal:
+    """Bind generic recovery to the columns the existing admin merge modifies."""
+    return RowChangeJournal(connection, table="unique_events", key="event_id", columns=(
+        "full_text_dossier", "urls_list", "sources_list", "ai_analysis_status",
+    ))
 
 class AdminHTTPServer(HTTPServer):
     """HTTP server that tolerates immediate port reuse across restarts."""
@@ -61,8 +67,13 @@ class AdminHTTPServer(HTTPServer):
 def get_db() -> sqlite3.Connection:
     """Open a WAL-mode connection to the raw-events database."""
     conn = sqlite3.connect(str(DB_PATH), check_same_thread=False, timeout=10)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL;")
+    try:
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA journal_mode=WAL;")
+    except BaseException:
+        with contextlib.suppress(sqlite3.Error):
+            conn.close()
+        raise
     return conn
 
 
@@ -117,6 +128,8 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             self._handle_get_event(event_id)
         elif path == '/api/sectors':
             self._handle_list_sectors()
+        elif path == '/api/merge-history':
+            self._handle_merge_history()
         elif path == '/api/suggestions':
             self._handle_suggestions(parse_qs(parsed.query))
         else:
@@ -395,6 +408,7 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                 return
 
             conn = get_db()
+            conn.execute("BEGIN IMMEDIATE")
             cursor = conn.cursor()
             placeholders = ','.join(['?'] * len(event_ids))
             cursor.execute(f"""
@@ -407,6 +421,9 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
             if len(events) != len(event_ids):
                 self._json_response(400, {"error": f"Only {len(events)} events found"})
                 return
+
+            journal = merge_journal(conn)
+            before = journal.capture(event_ids)
 
             sorted_events = sorted(events, key=lambda e: e["last_seen_date"] or "")
             master = sorted_events[0]
@@ -445,10 +462,12 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                 WHERE event_id=?
             """, (merged_text, merged_urls, merged_sources, master["event_id"]))
 
+            merge_id = journal.record(before)
             conn.commit()
 
             self._json_response(200, {
                 "status": "ok",
+                "merge_id": merge_id,
                 "master_id": master["event_id"],
                 "master_title": master["title"],
                 "merged_count": len(victims),
@@ -458,6 +477,10 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
                 "Merged %d events into master %s",
                 len(victims), master["event_id"],
             )
+        except JournalConflict as error:
+            if conn is not None:
+                conn.rollback()
+            self._json_response(409, {"error": str(error)})
         except sqlite3.Error as e:
             if conn is not None:
                 conn.rollback()
@@ -468,39 +491,54 @@ class AdminAPIHandler(BaseHTTPRequestHandler):
 
     # â”€â”€â”€ API: Unmerge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    def _handle_unmerge(self, data: dict[str, Any]) -> None:
-        """Revert a previously merged event back to PENDING analysis."""
+    def _handle_merge_history(self) -> None:
+        """Return recent recovery metadata without exposing stored row snapshots."""
         conn: sqlite3.Connection | None = None
         try:
-            event_id = data.get("event_id", "")
-            if not isinstance(event_id, str) or not event_id.strip():
-                self._json_response(400, {"error": "Missing event_id"})
-                return
-
             conn = get_db()
-            cursor = conn.cursor()
-            cursor.execute(
-                "UPDATE unique_events SET ai_analysis_status='PENDING' "
-                "WHERE event_id=? AND ai_analysis_status='MERGED'",
-                (event_id,)
-            )
-            affected = cursor.rowcount
-            conn.commit()
-
-            if affected == 0:
-                self._json_response(404, {"error": "Not MERGED or not found"})
-            else:
-                self._json_response(200, {"status": "ok", "event_id": event_id})
-                logger.info("Unmerged event %s", event_id)
-        except sqlite3.Error as e:
-            if conn is not None:
-                conn.rollback()
-            self._json_response(500, {"error": f"Database error (ref {_error_id(e)})"})
+            history = merge_journal(conn).history()
+            self._json_response(200, {"changes": [
+                {"merge_id": item.change_id, "record_count": item.record_count,
+                 "created_at": item.created_at, "reverted_at": item.reverted_at}
+                for item in history
+            ]})
+        except sqlite3.Error as error:
+            self._json_response(500, {"error": f"Database error (ref {_error_id(error)})"})
         finally:
             if conn is not None:
                 conn.close()
 
-    # â”€â”€â”€ API: AI Suggestions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    def _handle_unmerge(self, data: dict[str, Any]) -> None:
+        """Restore a recorded merge, or reject stale/legacy operations without mutation."""
+        merge_id = data.get("merge_id")
+        if not isinstance(merge_id, str) or not merge_id:
+            self._json_response(400, {"error": "merge_id is required; legacy merges cannot be safely undone"})
+            return
+        conn: sqlite3.Connection | None = None
+        try:
+            conn = get_db()
+            conn.execute("BEGIN IMMEDIATE")
+            result = merge_journal(conn).restore(merge_id)
+            conn.commit()
+            self._json_response(200, {"status": "ok", "merge_id": result.change_id,
+                                      "restored_count": result.record_count,
+                                      "already_reverted": result.already_reverted})
+            logger.info("Restored recorded merge %s (%d records)", result.change_id, result.record_count)
+        except ChangeNotFound:
+            if conn is not None:
+                conn.rollback()
+            self._json_response(404, {"error": "No recovery history exists for this merge"})
+        except JournalConflict as error:
+            if conn is not None:
+                conn.rollback()
+            self._json_response(409, {"error": str(error)})
+        except sqlite3.Error as error:
+            if conn is not None:
+                conn.rollback()
+            self._json_response(500, {"error": f"Database error (ref {_error_id(error)})"})
+        finally:
+            if conn is not None:
+                conn.close()
 
     @staticmethod
     def _parse_local_iso(value: str) -> datetime | None:

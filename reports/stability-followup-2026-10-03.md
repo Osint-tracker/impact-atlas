@@ -4,6 +4,8 @@
 
 This report supersedes the status of the items changed here, while preserving the earlier phase reports as historical records. Work is limited to general software security, dependency reproducibility, background cartography and presentation. Operational military-event correlation, positioning, unit analysis and dossier processing were not enhanced.
 
+**Subsequent update:** [Transactional admin recovery](admin-recovery-2026-10-03.md) is now implemented for newly recorded merges. Its verification supersedes the earlier counts below: 126 Python tests and strict typing of 13 modules. The table below reflects that update; the implementation narrative and earlier verification remain a record of the preceding change.
+
 ## Implemented in the real project
 
 ### Administrator authentication and rendering security
@@ -68,14 +70,14 @@ Browser tests require Playwright and a local server at `UI_BASE_URL` (default po
 | Non-atomic artifact sets | **Partial:** atomic CSV replacement exists; coordinated publication of all artifacts and stage-failure propagation remain open. |
 | Provider failure versus legitimate emptiness | **Open:** collection/provider semantics were not changed. |
 | Split schema/repository ownership | **Partial:** shared transaction rollback and cleanup are fixed; consolidation and migrations remain open. |
-| Hosted admin authentication, authorization and reversible merges | **Partial:** local bearer authentication and read/write authorization added and tested. Hosted service architecture and reversible merge history remain open. |
+| Hosted admin authentication, authorization and reversible merges | **Partial:** local bearer authentication, read/write authorization and transactional undo/history for new admin merges are implemented and tested. Hosted identity/service architecture and recovery of legacy merges without snapshots remain open. |
 | Rendering security across all views | **Partial:** earlier escaping fixes plus admin text/identifier protections and browser security regressions. Exhaustive verification of every renderer remains open. |
 | AI/provider schemas and public-artifact validation | **Partial:** prior CSV formula protection remains; semantic schemas, publication validation and comprehensive redaction remain open. |
-| Monoliths and global/import-time state | **Partial:** explicit shared boundaries for logging, transactions, serialization and admin authorization. Domain monoliths remain. |
+| Monoliths and global/import-time state | **Partial:** explicit shared boundaries for logging, transactions, serialization, admin authorization and row recovery. Domain monoliths remain. |
 | Quadratic matching | **Open:** no military-event correlation or fusion optimization. |
 | Long-lived writer transactions during network work | **Open:** no orchestration-level transaction redesign. |
 | Heavy browser payloads | **Open:** presentation and background cartography changed; application datasets were not reduced or reorganized. |
-| Uneven quality gates | **Partial:** more security regressions and 12 files under strict typing; no full-domain typing/documentation migration. |
+| Uneven quality gates | **Partial:** more security/recovery regressions and 13 files under strict typing; no full-domain typing/documentation migration. |
 | Dependency reproducibility and integration coverage | **Partial:** hashed Python locks and a tested clean CI install added. Full runtime/provider integration and load certification remain open. |
 
 The reported campaign-marker alignment and event-dossier errors remain unresolved. No verified root cause for the latter is asserted here. The generic close-button failure was independently reproduced and corrected. Publicly available data and delayed publication do not by themselves establish that operational military-intelligence features are safe to enhance; those capabilities remain outside this change set.

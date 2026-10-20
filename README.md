@@ -118,9 +118,24 @@ The server does not load these two settings from `.env` automatically.
 
 The page keeps its token in memory, clears it on disconnect, and does not
 put it in URLs or browser storage. This is local capability authentication,
-not a hosted identity service. Hosted deployment and reversible merge
-history remain unresolved; see the current risk ledger in
+not a hosted identity service. Hosted deployment remains unresolved;
+see the current risk ledger in
 [the follow-up report](reports/stability-followup-2026-10-03.md).
+
+New admin merges now record recovery history in the same SQLite transaction.
+Open **Recovery history** in the admin page to undo a recorded merge. Undo
+restores the original values only if none of its records have changed since
+the merge; conflicting, missing or schema-changed records cause the entire
+operation to be refused. Repeating a completed undo is harmless. Overlapping
+merges must be undone in reverse order.
+
+The API returns `merge_id` from `POST /api/merge`. Read recent metadata at
+`GET /api/merge-history`; send `{"merge_id":"..."}` to `POST /api/unmerge`.
+Undo requires write permission. The old `event_id` unmerge request is rejected:
+merges made before recovery history existed cannot be reconstructed safely.
+Undo restores database records; it does not regenerate previously exported
+public files. Protect the database and its history, which retains original
+text and source values. See [recovery guarantees and tests](reports/admin-recovery-2026-10-03.md).
 
 ### Background map
 

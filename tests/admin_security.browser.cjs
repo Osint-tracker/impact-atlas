@@ -15,6 +15,8 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE_PATH || 'playwright')
   const event = { event_id: hostile, title: hostile, date: hostile, sector: hostile,
     tie_score: 0, description: hostile };
   page.on('pageerror', error => errors.push(error.message));
+  await page.route('https://fonts.googleapis.com/**', route => route.abort());
+  await page.route('https://fonts.gstatic.com/**', route => route.abort());
   await page.route(base + '/api/**', async route => {
     const request = route.request();
     requests.push(request);
@@ -23,6 +25,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE_PATH || 'playwright')
     const pathname = new URL(request.url()).pathname;
     const payload = pathname === '/api/session' ? { role: 'reader' } :
       pathname === '/api/sectors' ? { sectors: [{ name: hostile, count: 1 }] } :
+      pathname === '/api/merge-history' ? { changes: [{ merge_id: hostile, created_at: hostile, record_count: 2, reverted_at: null }] } :
       pathname.startsWith('/api/event/') ? event :
       { events: [event], page: 1, pages: 1, total: 1 };
     await route.fulfill({ contentType: 'application/json', body: JSON.stringify(payload) });
@@ -37,6 +40,9 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE_PATH || 'playwright')
     assert.equal(await page.locator('#eventTableBody .title-text').textContent(), hostile);
     assert.equal(await page.locator('#eventTableBody img').count(), 0);
     assert.equal(await page.locator('#adminToken').inputValue(), '');
+    await page.waitForFunction(() => document.querySelectorAll('.history-entry').length === 1);
+    assert.equal(await page.locator('#mergeHistoryList img').count(), 0);
+    assert.equal(await page.locator('#mergeHistoryList button').isDisabled(), true);
     await page.locator('#eventTableBody input[type=checkbox]').check();
     await page.waitForFunction(() => document.querySelectorAll('.staged-card').length === 1);
     assert.equal(await page.locator('.staged-card .card-title').textContent(), hostile);
@@ -51,6 +57,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE_PATH || 'playwright')
     assert.equal(await page.locator('#adminWorkspace').evaluate(node => node.inert), true);
     assert.equal(await page.locator('#eventTableBody tr').count(), 0);
     assert.equal(await page.locator('.staged-card').count(), 0);
+    assert.equal(await page.locator('.history-entry').count(), 0);
     assert.deepEqual(errors, []);
     console.log('Admin authentication UI, reader permissions, logout and hostile HTML checks passed.');
   } finally {

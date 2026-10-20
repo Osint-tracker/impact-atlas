@@ -437,6 +437,14 @@
             vertical-align: middle;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .merge-history { padding: 16px; border-top: 1px solid var(--border); }
+        .merge-history summary { cursor: pointer; font-size: 13px; font-weight: 600; }
+        .merge-history p { color: var(--text-secondary); font-size: 12px; line-height: 1.5; margin: 12px 0; }
+        .merge-history button { padding: 6px 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; }
+        .merge-history button:disabled { opacity: .5; cursor: not-allowed; }
+        #mergeHistoryList { max-height: 260px; overflow-y: auto; margin-top: 12px; }
+        .history-entry { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); font-size: 12px; }
+        .history-entry span { overflow-wrap: anywhere; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -522,6 +530,12 @@
                 </button>
                 <button class="clear-btn" onclick="clearStaged()">Clear Queue</button>
             </div>
+            <details class="merge-history">
+                <summary>Recovery history</summary>
+                <p>Undo restores the original values only if these records have not changed since the merge. Older merges without recovery history cannot be undone here.</p>
+                <button type="button" onclick="loadMergeHistory()">Refresh history</button>
+                <div id="mergeHistoryList" role="status"></div>
+            </details>
         </div>
     </div>
 
@@ -547,6 +561,7 @@
             document.getElementById('suggestionsCount').textContent = '0';
             document.getElementById('eventTableBody').replaceChildren();
             document.getElementById('suggestionsBody').replaceChildren();
+            document.getElementById('mergeHistoryList').replaceChildren();
             renderStaged();
             updateMergeButton();
         }
@@ -560,7 +575,9 @@
             if (requestToken !== adminToken) throw new Error('Admin session changed.');
             if (!response.ok) {
                 if (response.status === 401) lockAdmin();
-                const message = response.status === 403 ? 'Write permission required.' : 'Admin request failed (' + response.status + ').';
+                const message = response.status === 403 ? 'Write permission required.' :
+                    response.status === 409 ? 'Operation conflicts with current records or recovery history. No changes were applied.' :
+                    'Admin request failed (' + response.status + ').';
                 throw new Error(message);
             }
             return response;
@@ -726,7 +743,7 @@
             const master = stagedEvents[0];
             const count = stagedEvents.length;
 
-            if (!confirm(`Merge ${count} events?\n\nMASTER (oldest): "${master.title}"\n\nThis will:\n• Set ${count - 1} victim(s) to MERGED status\n• Concatenate all text into the master\n• Reset master to PENDING for re-analysis`)) {
+            if (!confirm(`Merge ${count} events?\n\nMASTER (oldest): "${master.title}"\n\nThis will:\n• Set ${count - 1} record(s) to MERGED status\n• Combine text and sources in the master\n• Record recovery history for all selected records`)) {
                 return;
             }
 
@@ -743,6 +760,7 @@
                     setStatus(`Merge complete: master=${result.master_id}, victims=${result.merged_ids.join(', ')}`);
                     clearStaged();
                     loadEvents(currentPage);
+                    loadMergeHistory();
                 } else {
                     showToast(`Error: ${result.error}`, true);
                 }
@@ -760,6 +778,48 @@
                 cb.checked = false;
                 cb.closest('tr').classList.remove('selected');
             });
+        }
+
+        async function loadMergeHistory() {
+            const list = document.getElementById('mergeHistoryList');
+            try {
+                const data = await (await apiFetch(`${API_BASE}/api/merge-history`)).json();
+                if (!Array.isArray(data.changes)) throw new Error('Invalid recovery history response.');
+                list.replaceChildren();
+                if (!data.changes.length) list.textContent = 'No recorded merges.';
+                for (const change of data.changes) {
+                    const row = document.createElement('div');
+                    row.className = 'history-entry';
+                    const label = document.createElement('span');
+                    label.textContent = `${change.created_at} · ${change.record_count} records · ${change.merge_id}`;
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.textContent = change.reverted_at ? 'Restored' : 'Undo merge';
+                    button.disabled = !adminCanWrite || Boolean(change.reverted_at);
+                    button.addEventListener('click', () => undoMerge(change.merge_id, button));
+                    row.append(label, button);
+                    list.appendChild(row);
+                }
+            } catch (error) {
+                if (adminToken) list.textContent = error.message;
+            }
+        }
+
+        async function undoMerge(mergeId, button) {
+            if (!adminCanWrite || !confirm('Restore every record in this merge to its original values?\n\nIf any record has changed since the merge, the server will refuse the entire operation.')) return;
+            button.disabled = true;
+            try {
+                const result = await (await apiFetch(`${API_BASE}/api/unmerge`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ merge_id: mergeId })
+                })).json();
+                clearStaged();
+                await Promise.all([loadEvents(currentPage), loadMergeHistory()]);
+                setStatus(result.already_reverted ? 'This merge was already restored.' : `Restored ${result.restored_count} records.`);
+            } catch (error) {
+                setStatus(error.message, true);
+                button.disabled = !adminCanWrite;
+            }
         }
 
         async function showEventDetail(eventId) {
@@ -830,7 +890,7 @@
                     document.getElementById('statusIndicator').textContent = 'Authenticated';
                     document.getElementById('sectorFilter').replaceChildren(new Option('All Sectors', ''));
                     updateMergeButton();
-                    await Promise.all([loadSectors(), loadEvents(1)]);
+                    await Promise.all([loadSectors(), loadEvents(1), loadMergeHistory()]);
                 } catch (error) {
                     lockAdmin();
                     document.getElementById('adminAuthStatus').textContent = error.message;
