@@ -2,6 +2,7 @@ import {combatDock,moveDock} from './views/CombatDock.ts';
 import {cardsView} from './views/CardsView.ts';
 import {boardMap} from './views/BoardMap.ts';
 import {patchElement} from './patchElement.ts';
+import {resolveMapPointers} from './mapPointer.ts';
 import {tutorialSteps} from '../engine/Tutorial.ts';
 import {profileView} from './views/ProfileView.ts';
 import {replayView} from './views/ReplayView.ts';
@@ -415,11 +416,6 @@ export function mountGame(root: HTMLElement): () => void {
     // Only invisible touch targets remain 44 CSS pixels. Artwork and names
     // stay in map coordinates, so zoom scales them with their territories.
   }
-  function territoryAtPoint(svg:SVGSVGElement,x:number,y:number,fallback:number|null){
-    const matrix=svg.getScreenCTM?.();if(!matrix||!state)return fallback;
-    const candidates=mapFor(state).territories.map(t=>({id:t.id,distance:Math.hypot(matrix.a*t.x+matrix.c*t.y+matrix.e-x,matrix.b*t.x+matrix.d*t.y+matrix.f-y)})).filter(t=>t.distance<=22).sort((a,b)=>a.distance-b.distance);
-    return candidates[0]?.id??fallback;
-  }
   function bindMap() {
     const svg = root.querySelector<SVGSVGElement>('.game-table #world-map');
     if (!svg || svg.dataset.bound==='true') return;svg.dataset.bound='true';
@@ -438,9 +434,7 @@ export function mountGame(root: HTMLElement): () => void {
         x: e.clientX,
         y: e.clientY
       });
-      startId = Number((e.target as Element).closest('[data-territory]')?.getAttribute('data-territory'));
-      if (!(e.target as Element).closest('[data-territory]')) startId = null;
-      if(!(e.target as Element).closest('.placement-plus'))startId=territoryAtPoint(svg,e.clientX,e.clientY,startId);
+      startId = resolveMapPointers(svg,[{x:e.clientX,y:e.clientY}])[0];
       moved = false;
       travel = 0;
       clearPress();if(startId!==null&&pointers.size===1){const id=startId;press=setTimeout(()=>{if(!svg.isConnected||pointers.size!==1||moved)return;moved=true;inspectTerritory(id);},450);}
