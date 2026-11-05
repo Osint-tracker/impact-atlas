@@ -1,0 +1,429 @@
+{
+  "version": "2.0.0",
+  "baseline": "risiko-aggiornamento-1.8.0.zip",
+  "baseline_sha256": "0a661b26fcb91425d61f840fa7db6f6fcae97f724bb1429c796fadff773e6eab",
+  "files": [
+    {
+      "path": "README.md",
+      "status": "modified",
+      "sha256": "56554ecc86905f7494e6893845a2e3209d07828246d5f26aabd9b93886f92bec",
+      "bytes": 17045
+    },
+    {
+      "path": "android/app/build.gradle",
+      "status": "modified",
+      "sha256": "405263a9701702ddb8f369999abc9a7155c8e202bf57b51159748ce8183a05ad",
+      "bytes": 1074
+    },
+    {
+      "path": "android/app/src/main/res/drawable-nodpi/app_icon_art.jpg",
+      "status": "modified",
+      "sha256": "ebe9fe51954594a43b94d24e99c60f79e1e277a7d467e4754dc174131b363905",
+      "bytes": 66212
+    },
+    {
+      "path": "docs/AGGIORNAMENTO-2.0.md",
+      "status": "new",
+      "sha256": "aff3a51acd7e6eb1474f547c8540ee3dd7272619d103b45421548a8116ea1a62",
+      "bytes": 5042
+    },
+    {
+      "path": "docs/SPECIFICA-2.0.md",
+      "status": "new",
+      "sha256": "9f0c9a39753ae813bd555aa1c558dc7f2efd0e736dd44582b21b4981806df983",
+      "bytes": 7456
+    },
+    {
+      "path": "docs/VERIFICHE-2.0.md",
+      "status": "new",
+      "sha256": "cd8634a89803968570bac41c47dbdc550e4372f24a469d1d30722d505bf9ede3",
+      "bytes": 2578
+    },
+    {
+      "path": "docs/benchmark-progression-2.0.json",
+      "status": "new",
+      "sha256": "4a9f921d0677c18712031dfb10690578aef6d12722ef60ab813c28c6ea0effb2",
+      "bytes": 33010
+    },
+    {
+      "path": "docs/board-preview.svg",
+      "status": "modified",
+      "sha256": "184336910b1f01d92f5ba5e1b532248aa37e5efe9d86420cb9dbacf28bf42e26",
+      "bytes": 246251
+    },
+    {
+      "path": "ios/App/App.xcodeproj/project.pbxproj",
+      "status": "modified",
+      "sha256": "b5f0bea40d19596706596cdeebcd7c47d226d7c0f02f6b1152f700334efc9659",
+      "bytes": 14731
+    },
+    {
+      "path": "package-lock.json",
+      "status": "modified",
+      "sha256": "d274d0830dd723a0579ee66b4401d158d73de89d8f9bf2e7fb9cbc22b3ffd7e3",
+      "bytes": 80954
+    },
+    {
+      "path": "package.json",
+      "status": "modified",
+      "sha256": "a55dc47c1bd81348b513801fa06133a1cef5f8dab6a81badc961fb45ed4797f9",
+      "bytes": 1406
+    },
+    {
+      "path": "public/app-icon.jpg",
+      "status": "modified",
+      "sha256": "4abb53f62df78301761a029b07e15b637773ce6f5dae589f6d2dce09961f9537",
+      "bytes": 65730
+    },
+    {
+      "path": "public/fonts/LICENSE-atlas-sans.txt",
+      "status": "new",
+      "sha256": "94d4b78643f99d7cfa872145b38da578299f401405ca5cba66a5c95bf13933b0",
+      "bytes": 1031
+    },
+    {
+      "path": "public/fonts/LICENSE-atlas-serif.txt",
+      "status": "new",
+      "sha256": "f32df582a2aab128c07b2f7e36e7b928dc5f6bd82657b905c04f91459f9e5cf9",
+      "bytes": 5756
+    },
+    {
+      "path": "public/fonts/atlas-heading.ttf",
+      "status": "new",
+      "sha256": "aa3b0ef53db12e3d45094030cac0e69d384e44cc5978643dd4390041cad546e2",
+      "bytes": 221328
+    },
+    {
+      "path": "public/fonts/atlas-serif.ttf",
+      "status": "new",
+      "sha256": "443a4dbd694b6e4689925947b456e0532e10b19c90fa32eb39ea6c2cd9db9ebd",
+      "bytes": 370196
+    },
+    {
+      "path": "public/fonts/atlas-ui.ttf",
+      "status": "new",
+      "sha256": "e64e508b2aa2880f907e470c4550980ec4c0694d103a43f36150ac3f93189bee",
+      "bytes": 217360
+    },
+    {
+      "path": "public/icon.svg",
+      "status": "modified",
+      "sha256": "eaa32c8f5d368c0948a73dfd77ffbe2fb64ecea702d8bb2e9842630fc8472e99",
+      "bytes": 41749
+    },
+    {
+      "path": "public/icons/apple-touch-icon.png",
+      "status": "modified",
+      "sha256": "aed4a4e18a6f32fb7b9b844cadd7650404f459a751a43285e1b573e08b16ea94",
+      "bytes": 40843
+    },
+    {
+      "path": "public/icons/icon-192.png",
+      "status": "modified",
+      "sha256": "a01d0ae5d07f021f6432be92aae7e5aca71dfe403db0f9022114711b091c3e4f",
+      "bytes": 45654
+    },
+    {
+      "path": "public/icons/icon-512.png",
+      "status": "modified",
+      "sha256": "e68ba22ece824aa66861de932276a2ac441ddd0401b285496624a96cd45e6a90",
+      "bytes": 273448
+    },
+    {
+      "path": "public/mascot.png",
+      "status": "new",
+      "sha256": "8eaaad23a16b4bbdaa2599f3b8e51e6e324cc6fbc74d33535af06c70b52af6fc",
+      "bytes": 1637668
+    },
+    {
+      "path": "scripts/atlas-icons.mjs",
+      "status": "new",
+      "sha256": "d3d4b0d483bfd704110f281da40fe6bdc21d9c7659ad4602879a1f23b6c402ee",
+      "bytes": 1835
+    },
+    {
+      "path": "scripts/benchmark-progression.mjs",
+      "status": "new",
+      "sha256": "f846e4cc44926ff623d2a281c5e0c3df143102cccf005440f53d58662525d2ef",
+      "bytes": 2974
+    },
+    {
+      "path": "scripts/browser-layout.mjs",
+      "status": "modified",
+      "sha256": "361816bc7de20cd84c0cbaf3ff6960ed902c26fd0317695bf8b0388b77d8dbae",
+      "bytes": 3165
+    },
+    {
+      "path": "scripts/browser-test.mjs",
+      "status": "modified",
+      "sha256": "fbb83b4701e51e1c8bc84c6b60c4e34bfa718a31067e4a335f69981bfd9b76b2",
+      "bytes": 27413
+    },
+    {
+      "path": "scripts/capture-previews.mjs",
+      "status": "new",
+      "sha256": "d78bfdaf12c653a32b70e78b561d8f2debe17b1e2805aa07f5bf0930a3ee6a2b",
+      "bytes": 1570
+    },
+    {
+      "path": "scripts/export-previews.mjs",
+      "status": "new",
+      "sha256": "4acd21482dbaeb1de0c65bf9d40b100b99a50b49577951076e6b38b73720b2ba",
+      "bytes": 13009
+    },
+    {
+      "path": "scripts/package-delta.py",
+      "status": "new",
+      "sha256": "c6041f150506265fe7a0d468d6ae941d1678b995beaacc71a0df10c0a667be8d",
+      "bytes": 3607
+    },
+    {
+      "path": "scripts/pwa-test.mjs",
+      "status": "modified",
+      "sha256": "3b2332224ecb46e82830a1697b6fe827eadff491fa672035d22ee0ae6a361d3f",
+      "bytes": 7236
+    },
+    {
+      "path": "src/ai/Budget.ts",
+      "status": "new",
+      "sha256": "3d5fbb2a5bcdd7f20b4b87abfaeab0064f625cb8e52df121c1aa55e6ff7346f2",
+      "bytes": 522
+    },
+    {
+      "path": "src/ai/Strategy.ts",
+      "status": "modified",
+      "sha256": "6c82c2baa38d5268bd10ded9fd31829d30e6327570f29bc00f397d3c8b536daa",
+      "bytes": 22332
+    },
+    {
+      "path": "src/data/referenceGeometry.ts",
+      "status": "modified",
+      "sha256": "db14a1190273dd7cfc0a4a7f7a906802b45cbb90bcf13b4ec6c302f968e1899e",
+      "bytes": 11542
+    },
+    {
+      "path": "src/engine/Analysis.ts",
+      "status": "new",
+      "sha256": "52256c141d27099c0a16a6ba5073c90c7324dbb6aef190a251c121448c4bbc58",
+      "bytes": 1933
+    },
+    {
+      "path": "src/engine/Privacy.ts",
+      "status": "new",
+      "sha256": "9db8a14049aa35976bab69406c8f3681a8366653d21c78acf10196e9bcd3a5d2",
+      "bytes": 917
+    },
+    {
+      "path": "src/engine/Replay.ts",
+      "status": "new",
+      "sha256": "5bc7ff83aaa5e146eff43546711c99355d16c5f7ef8ddbc7f450372ef6483d8c",
+      "bytes": 1765
+    },
+    {
+      "path": "src/engine/RisikoRulesEngine.ts",
+      "status": "modified",
+      "sha256": "15bbe29a7f8987575b2356710a857bcf6e04da843240c3e8ce9475f700cdb560",
+      "bytes": 28994
+    },
+    {
+      "path": "src/engine/TurnSummary.ts",
+      "status": "new",
+      "sha256": "3f68678dce979266b1e915621a01cb1a80adcc5c04e7fe8a92efed9bd70f4638",
+      "bytes": 1454
+    },
+    {
+      "path": "src/engine/Tutorial.ts",
+      "status": "new",
+      "sha256": "5d11f3b6dedaf46e8567682df9efbe8f6a1f641dbe35f376fbda1589c60c2a9a",
+      "bytes": 2413
+    },
+    {
+      "path": "src/engine/presentation.ts",
+      "status": "modified",
+      "sha256": "ec6b7ab38e759349f3d290af2be1ba960060c25de3cf937c5be92ebe5e4e2a78",
+      "bytes": 4439
+    },
+    {
+      "path": "src/engine/server.worker.ts",
+      "status": "modified",
+      "sha256": "857500cace84d7a1ab8c566f9b3c7c2faaa8f5ce758fe616c3447717560cd3bf",
+      "bytes": 12102
+    },
+    {
+      "path": "src/engine/types.ts",
+      "status": "modified",
+      "sha256": "1f2ceb308cde04e32eeaf392ee7ba115bb2d2b690b3b7ea8fbd74c4883054b5f",
+      "bytes": 4909
+    },
+    {
+      "path": "src/gui/App.ts",
+      "status": "modified",
+      "sha256": "665eae5043ae74d8ff002c7cf8ce620d0206002320e456150f4e0c3490ce9b02",
+      "bytes": 64382
+    },
+    {
+      "path": "src/gui/Icons.ts",
+      "status": "new",
+      "sha256": "2594f3a8b3f0d8b936da5b672675b27cf66a718e06f871914529625acbf2fd10",
+      "bytes": 2872
+    },
+    {
+      "path": "src/gui/art.ts",
+      "status": "modified",
+      "sha256": "16ead1db33b60a249ec8273afdc986c44bd75c44627444010806a28a7c5ac942",
+      "bytes": 8122
+    },
+    {
+      "path": "src/gui/effects.css",
+      "status": "new",
+      "sha256": "b6d37347fd12d2992270ca02492eb3a3ca0177a817e7f5b0430d4a2e5d2d9cb4",
+      "bytes": 12648
+    },
+    {
+      "path": "src/gui/effects.ts",
+      "status": "modified",
+      "sha256": "15490cf50ff75862a28c2816c5be4e82b950b70c95a3db4dd180f966fd734e50",
+      "bytes": 15066
+    },
+    {
+      "path": "src/gui/patchElement.ts",
+      "status": "new",
+      "sha256": "c7ef25fa33602976807ada5142fa9f61342ed562e3f8e93e468d38438579ced8",
+      "bytes": 1033
+    },
+    {
+      "path": "src/gui/styles.css",
+      "status": "modified",
+      "sha256": "df203e7656b7c9f0e416bebc0bf078ab08aa81663fc0a216f752185063b05722",
+      "bytes": 27836
+    },
+    {
+      "path": "src/gui/views/BoardMap.ts",
+      "status": "new",
+      "sha256": "d033387b12b314ce1ec681549095ae0a30d00d10ae45837573c8cf551d900525",
+      "bytes": 7818
+    },
+    {
+      "path": "src/gui/views/BoardView.ts",
+      "status": "new",
+      "sha256": "8e490d07a150a37ba83eab13c4e84cfdb14019444eb065f752ee02308ac97e79",
+      "bytes": 4707
+    },
+    {
+      "path": "src/gui/views/CardsView.ts",
+      "status": "new",
+      "sha256": "4e2eefac32cf1d5e9789b54757d546c546d9cb472fec7fb7c339805d6aeafb97",
+      "bytes": 2454
+    },
+    {
+      "path": "src/gui/views/CombatDock.ts",
+      "status": "new",
+      "sha256": "236176f6a32a56d5fa4b2217f31d87ec265f0aaa7be13fc1f9773dcacf9e8059",
+      "bytes": 3637
+    },
+    {
+      "path": "src/gui/views/HomeView.ts",
+      "status": "new",
+      "sha256": "5cd7915cfd7585f0da6046b47c208a57005dbc8194d934ea2af470369e01ae7f",
+      "bytes": 1812
+    },
+    {
+      "path": "src/gui/views/LibraryView.ts",
+      "status": "new",
+      "sha256": "5cbaadca55892d2a6026f86a9ab21e7c0b03bb1714ec6ae18f2bec68f680dfa6",
+      "bytes": 4187
+    },
+    {
+      "path": "src/gui/views/ProfileView.ts",
+      "status": "new",
+      "sha256": "3504866236e99675754860c642cde943ed6f8eef648b0dd1d18fc465902a3ec3",
+      "bytes": 3429
+    },
+    {
+      "path": "src/gui/views/ReplayView.ts",
+      "status": "new",
+      "sha256": "d47169eacd50133dd35d2b0bef4cb4515a8352217a1095607e8a43504049e3fe",
+      "bytes": 1880
+    },
+    {
+      "path": "src/gui/views/SetupView.ts",
+      "status": "new",
+      "sha256": "5f1860a7f5592dab35213eb44f907eacde39559c23a676c208f2b6892d7028dc",
+      "bytes": 5307
+    },
+    {
+      "path": "src/services/Backup.ts",
+      "status": "modified",
+      "sha256": "4bb1ebd3994686d7d9129bc62085368604f7d7de168f2a61546887fad66542f9",
+      "bytes": 9257
+    },
+    {
+      "path": "src/services/MatchCode.ts",
+      "status": "new",
+      "sha256": "d9ef9a4dbee9610667e2cb9d438c1b69454c3a761ab63b47ac07ebc532c7b77c",
+      "bytes": 1537
+    },
+    {
+      "path": "src/services/Scenarios.ts",
+      "status": "new",
+      "sha256": "470d46a577685da1c1563c946c70aa0799f9ce93297b9d63cdc0a966c266741f",
+      "bytes": 2419
+    },
+    {
+      "path": "src/services/StorageService.ts",
+      "status": "modified",
+      "sha256": "97cb432e8d105c39e1d1a28992984dd6c002a3ec438d21f63bf2012c7c8c1443",
+      "bytes": 10238
+    },
+    {
+      "path": "technical specification.md",
+      "status": "new",
+      "sha256": "5bf66cd947fa5e4d741e7722f94e7178897f405fe58c5761f8020f1319837a36",
+      "bytes": 1214008
+    },
+    {
+      "path": "tests/animation.test.ts",
+      "status": "modified",
+      "sha256": "e4886338f4c5aec8c9006ada507332792099e68437f402ff28d1b4f53fd673d5",
+      "bytes": 5597
+    },
+    {
+      "path": "tests/atlas.test.ts",
+      "status": "new",
+      "sha256": "f19925084be92ea4d67aac6914af0c2d20d20d1dcb6047078c232df9068a4b1e",
+      "bytes": 9937
+    },
+    {
+      "path": "tests/backup.test.ts",
+      "status": "modified",
+      "sha256": "4fefb9cf9465b71e28720ceeba670829aa7fd5b40b00a4685b3192b254507e7b",
+      "bytes": 3743
+    },
+    {
+      "path": "tests/browser-layout.test.ts",
+      "status": "modified",
+      "sha256": "b0e4737af4a6cbe02c6faaa38fdfdbaa13aab1fea4fc3326d60eacc494ab120a",
+      "bytes": 3135
+    },
+    {
+      "path": "tests/playability.test.ts",
+      "status": "modified",
+      "sha256": "bf579d31c83a2ccaf1ef2005875369dae551d70b1b49b311ae328fd940b547bf",
+      "bytes": 8746
+    },
+    {
+      "path": "tests/ui.test.ts",
+      "status": "modified",
+      "sha256": "203804315f475d25be9efa0574174c725f32e36e05e9352a98bd844251d8c260",
+      "bytes": 22020
+    },
+    {
+      "path": "tests/worker.test.ts",
+      "status": "modified",
+      "sha256": "57c3967a93a18fc238e6474c5c7ba4ee03e86ac0f094e34f462ef272bc128b4b",
+      "bytes": 7250
+    }
+  ],
+  "deleted": [],
+  "excluded": "Dependencies, dist, artifacts, native generated assets and build caches"
+}

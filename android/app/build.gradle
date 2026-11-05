@@ -1,0 +1,23 @@
+plugins { id 'com.android.application' }
+android {
+ namespace = 'it.local.risiko'
+ compileSdk = rootProject.ext.compileSdkVersion
+ defaultConfig {
+  applicationId = 'it.local.risiko'
+  minSdk = rootProject.ext.minSdkVersion
+  targetSdk = rootProject.ext.targetSdkVersion
+  versionCode = 13
+  versionName = '2.0.0'
+  testInstrumentationRunner = 'androidx.test.runner.AndroidJUnitRunner'
+ }
+ compileOptions { sourceCompatibility = JavaVersion.VERSION_21; targetCompatibility = JavaVersion.VERSION_21 }
+ buildTypes { release { minifyEnabled = false } }
+ androidResources { ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~' }
+}
+dependencies {
+ implementation project(':capacitor-android')
+ implementation "androidx.appcompat:appcompat:${rootProject.ext.androidxAppCompatVersion}"
+ implementation "androidx.core:core:${rootProject.ext.androidxCoreVersion}"
+ implementation "androidx.activity:activity:${rootProject.ext.androidxActivityVersion}"
+ implementation "androidx.core:core-splashscreen:${rootProject.ext.coreSplashScreenVersion}"
+}

@@ -1,0 +1,9 @@
+import {mapFor} from '../../data/mapGraph.ts';
+import type {GameView} from '../../engine/types.ts';
+import {escapeHtml as e} from '../art.ts';
+import {analyzeGame} from '../../engine/Replay.ts';
+export function replayView(s:GameView,index:number){
+ const rows=s.replay??[];if(!rows.length)return '<p>Replay non disponibile per questa partita precedente.</p>';
+ const row=rows[Math.max(0,Math.min(index,rows.length-1))],map=mapFor(s),analysis=analyzeGame(s);
+ return `<section class="replay-panel"><h2>Replay della partita</h2><label for="replay-turn">Giro ${row.round} · ${e(s.players[row.actor].name)}</label><input id="replay-turn" type="range" min="0" max="${rows.length-1}" value="${Math.min(index,rows.length-1)}"/><svg class="replay-map" viewBox="200 20 880 ${map.height}" role="img" aria-label="Mappa storica giro ${row.round}">${map.territories.map(t=>`<path d="${t.path}" fill="${s.players[row.board[t.id][0]].color}" stroke="#c8a45a" stroke-width="1"/><text x="${t.x}" y="${t.y}" fill="white" text-anchor="middle" font-size="14">${row.board[t.id][1]}</text>`).join('')}</svg><p>${s.players.map((p,i)=>`${e(p.name)}: ${row.points[i]} pt`).join(' · ')}</p><h2>Resoconto strategico</h2><p>Maggiore progresso tra due checkpoint: ${e(s.players[analysis.swing.actor]?.name)} +${analysis.swing.delta} punti al giro ${analysis.swing.round}.</p><p>${analysis.conquests} conquiste registrate.</p><details><summary>Confini continentali esposti</summary>${analysis.exposed.slice(-20).map(x=>`<p>Giro ${x.round}: ${e(s.players[x.owner].name)}, ${e(x.continent)} — ${x.territories.map(e).join(', ')} con un solo carro.</p>`).join('')||'<p>Nessun caso nei checkpoint disponibili.</p>'}</details>${s.analysis?.length?`<details><summary>Attacchi e opportunità</summary>${s.analysis.slice(-60).map(x=>`<p>Giro ${x.round}: ${e(x.message)}</p>`).join('')}</details>`:''}</section>`;
+}

@@ -1,0 +1,80 @@
+RisiKo Offline 2.0.0 — SOLO FILE MODIFICATI / NUOVI
+
+Base: risiko-aggiornamento-1.8.0.zip
+Estrai nella radice del progetto esistente (dove si trova package.json), mantenendo i percorsi e sovrascrivendo gli omonimi. NON eliminare gli altri file e NON caricare una seconda cartella di progetto.
+Prima conserva un backup del progetto e dei dati dell’app.
+Leggi docs/AGGIORNAMENTO-2.0.md e docs/VERIFICHE-2.0.md.
+Le anteprime sono in un archivio separato. Nessun APK incluso.
+
+MODIFICATO README.md
+MODIFICATO android/app/build.gradle
+MODIFICATO android/app/src/main/res/drawable-nodpi/app_icon_art.jpg
+NUOVO     docs/AGGIORNAMENTO-2.0.md
+NUOVO     docs/SPECIFICA-2.0.md
+NUOVO     docs/VERIFICHE-2.0.md
+NUOVO     docs/benchmark-progression-2.0.json
+MODIFICATO docs/board-preview.svg
+MODIFICATO ios/App/App.xcodeproj/project.pbxproj
+MODIFICATO package-lock.json
+MODIFICATO package.json
+MODIFICATO public/app-icon.jpg
+NUOVO     public/fonts/LICENSE-atlas-sans.txt
+NUOVO     public/fonts/LICENSE-atlas-serif.txt
+NUOVO     public/fonts/atlas-heading.ttf
+NUOVO     public/fonts/atlas-serif.ttf
+NUOVO     public/fonts/atlas-ui.ttf
+MODIFICATO public/icon.svg
+MODIFICATO public/icons/apple-touch-icon.png
+MODIFICATO public/icons/icon-192.png
+MODIFICATO public/icons/icon-512.png
+NUOVO     public/mascot.png
+NUOVO     scripts/atlas-icons.mjs
+NUOVO     scripts/benchmark-progression.mjs
+MODIFICATO scripts/browser-layout.mjs
+MODIFICATO scripts/browser-test.mjs
+NUOVO     scripts/capture-previews.mjs
+NUOVO     scripts/export-previews.mjs
+NUOVO     scripts/package-delta.py
+MODIFICATO scripts/pwa-test.mjs
+NUOVO     src/ai/Budget.ts
+MODIFICATO src/ai/Strategy.ts
+MODIFICATO src/data/referenceGeometry.ts
+NUOVO     src/engine/Analysis.ts
+NUOVO     src/engine/Privacy.ts
+NUOVO     src/engine/Replay.ts
+MODIFICATO src/engine/RisikoRulesEngine.ts
+NUOVO     src/engine/TurnSummary.ts
+NUOVO     src/engine/Tutorial.ts
+MODIFICATO src/engine/presentation.ts
+MODIFICATO src/engine/server.worker.ts
+MODIFICATO src/engine/types.ts
+MODIFICATO src/gui/App.ts
+NUOVO     src/gui/Icons.ts
+MODIFICATO src/gui/art.ts
+NUOVO     src/gui/effects.css
+MODIFICATO src/gui/effects.ts
+NUOVO     src/gui/patchElement.ts
+MODIFICATO src/gui/styles.css
+NUOVO     src/gui/views/BoardMap.ts
+NUOVO     src/gui/views/BoardView.ts
+NUOVO     src/gui/views/CardsView.ts
+NUOVO     src/gui/views/CombatDock.ts
+NUOVO     src/gui/views/HomeView.ts
+NUOVO     src/gui/views/LibraryView.ts
+NUOVO     src/gui/views/ProfileView.ts
+NUOVO     src/gui/views/ReplayView.ts
+NUOVO     src/gui/views/SetupView.ts
+MODIFICATO src/services/Backup.ts
+NUOVO     src/services/MatchCode.ts
+NUOVO     src/services/Scenarios.ts
+MODIFICATO src/services/StorageService.ts
+NUOVO     technical specification.md
+MODIFICATO tests/animation.test.ts
+NUOVO     tests/atlas.test.ts
+MODIFICATO tests/backup.test.ts
+MODIFICATO tests/browser-layout.test.ts
+MODIFICATO tests/playability.test.ts
+MODIFICATO tests/ui.test.ts
+MODIFICATO tests/worker.test.ts
+
+RIMOZIONI: nessuna
